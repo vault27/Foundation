@@ -1,3 +1,4 @@
+# IP Design
 - Four billion (232) IP addresses in IPv4 - keep track of them is incredibly complex, and require a lot of resources, that's why we use prefixes.
 - Sticking to prefixes reduces that number down to about one million instead.
 - Contiguous ranges of IP addresses are expressed as IP prefixes  
