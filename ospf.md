@@ -28,6 +28,29 @@ The first version of OSPF was described in RFC 1131, published in October 1989. 
 - LSDB is identical on all routers in 1 area
 - Administrative distance 110
 - Metric is cost, cost is dependent on bandwidth of the link, cost is inversly proportional to the bandwidth, the greater the bandwidth the less the cost, the better the path, cost=Reference bandwidth/100 in Mbps 
+- - Loops are impossible inside the area because every router knows all topology. And between areas all areas have to be connected to area 0, so loops are avoided as well like in distance vector
+- Complicated > high load
+- One area - 500 routers
+- Process id can be different
+- 
+- Metric is based on cumulitive cost of all outgoing interfaces, the lower the mitric the better, it is a price of the route
+- Supports VLSM and CIDR
+- No hop limit
+- - All networks are connected via backbone areas to avoid loops
+- 
+- Hello interval - router sends Hello messages
+- Dead timer - after it neighboor is considered dead
+- Route tags- tag routes as theay are redistributed into OSPF
+- Next-hop field - supports the advertisment of routes with a different next-hop router than the advertising router
+- Manual route summarization - summarization is supported on ABR only
+- If there is an topology change - router sends LSA, if no changes LSAs are sent every 30 mins
+- 
+Each router stores the data, composed of individual link-state advertisements (LSA) , in its own copy of the link-state database (LSDB) . Then, the router applies the Shortest Path First (SPF) algorithm to the LSDB to determine the best (lowest-cost) route for each reachable subnet (prefix/length).  
+
+**Three fundamental concepts of link state protocols**
+1. Every link state router floods information about itself, its links, and its neighbors to every other router. From this flooded information each router builds an identical link state database. Each router then independently runs a shortest-path-first calculation on its database – a local calculation using distributed information – to derive a shortest-path tree. This tree is a sort of map of the shortest path to every other router.
+2. When link state domains grow large, the flooding and the resulting size of the link state database becomes a scaling problem. The problem is remedied by breaking the routing domain into areas: That first concept is modified so that flooding occurs only within the boundaries of an area, and the resulting link state database contains only information from the routers in the area.This, in turn, means that each router’s calculated shortest-path tree only describes the path to other routers within the area.
+3. OSPF areas are connected by one or more Area Border Routers (the other main link state protocol, IS-IS, connects areas somewhat differently) which maintain a separate link state database and calculate a separate shortest-path tree for each of their connected areas. So an ABR by definition is a member of two or more areas. It advertises the prefixes it learns in one area to its other areas by flooding Type 3 LSAs into the areas that basically say, “I know how to reach these destinations.”
 
 ## Pros
 - Router knows all network and builds a tree.
@@ -64,31 +87,6 @@ We have to think through the following:
 - Configure OSPF in GRT, not VRF
 - Passive interface default
 - Configure RID explicitly
-
-## Architecture
-- Loops are impossible inside the area because every router knows all topology. And between areas all areas have to be connected to area 0, so loops are avoided as well like in distance vector
-- Complicated > high load
-- One area - 500 routers
-- Process id can be different
-- 
-- Metric is based on cumulitive cost of all outgoing interfaces, the lower the mitric the better, it is a price of the route
-- Supports VLSM and CIDR
-- No hop limit
-- - All networks are connected via backbone areas to avoid loops
-- 
-- Hello interval - router sends Hello messages
-- Dead timer - after it neighboor is considered dead
-- Route tags- tag routes as theay are redistributed into OSPF
-- Next-hop field - supports the advertisment of routes with a different next-hop router than the advertising router
-- Manual route summarization - summarization is supported on ABR only
-- If there is an topology change - router sends LSA, if no changes LSAs are sent every 30 mins
-- 
-Each router stores the data, composed of individual link-state advertisements (LSA) , in its own copy of the link-state database (LSDB) . Then, the router applies the Shortest Path First (SPF) algorithm to the LSDB to determine the best (lowest-cost) route for each reachable subnet (prefix/length).  
-
-**Three fundamental concepts of link state protocols**
-1. Every link state router floods information about itself, its links, and its neighbors to every other router. From this flooded information each router builds an identical link state database. Each router then independently runs a shortest-path-first calculation on its database – a local calculation using distributed information – to derive a shortest-path tree. This tree is a sort of map of the shortest path to every other router.
-2. When link state domains grow large, the flooding and the resulting size of the link state database becomes a scaling problem. The problem is remedied by breaking the routing domain into areas: That first concept is modified so that flooding occurs only within the boundaries of an area, and the resulting link state database contains only information from the routers in the area.This, in turn, means that each router’s calculated shortest-path tree only describes the path to other routers within the area.
-3. OSPF areas are connected by one or more Area Border Routers (the other main link state protocol, IS-IS, connects areas somewhat differently) which maintain a separate link state database and calculate a separate shortest-path tree for each of their connected areas. So an ABR by definition is a member of two or more areas. It advertises the prefixes it learns in one area to its other areas by flooding Type 3 LSAs into the areas that basically say, “I know how to reach these destinations.”
 
 #Areas
 - Stub - area with single exit point. LSA 5 are not propogated. ABR will send default route to all Internal routers. No additional load on Internal routers
