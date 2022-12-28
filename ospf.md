@@ -18,9 +18,21 @@ The first version of OSPF was described in RFC 1131, published in October 1989. 
 - DR - Designated Router  
 - BDR - BAckup Designated Router  
 
+## Pros
+- Router knows all network and builds a tree - no loops
+- OSPF is very good for traffic engineering in ISP with MPLS
+- Fast convergence
+- Simple
+- IPv4 and IPv6
+- Open protocol
+- Easy to configure
+
+## Cons
+- Main cons is bad performance when many hosts - high CPU load - several thousand prefixes max - because every router has to calculate a tree
+
 ## Concepts
 - Open standard
-- Which networks are advertised by default
+- Which networks are advertised by default???
 - IGP routing protocol for IP networks
 - Uses link state routing (LSR) algorithm or Shotest Path, uses Dijcstra algorithm
 - Operates in one Autonomous System
@@ -52,19 +64,6 @@ Each router stores the data, composed of individual link-state advertisements (L
 2. When link state domains grow large, the flooding and the resulting size of the link state database becomes a scaling problem. The problem is remedied by breaking the routing domain into areas: That first concept is modified so that flooding occurs only within the boundaries of an area, and the resulting link state database contains only information from the routers in the area.This, in turn, means that each router’s calculated shortest-path tree only describes the path to other routers within the area.
 3. OSPF areas are connected by one or more Area Border Routers (the other main link state protocol, IS-IS, connects areas somewhat differently) which maintain a separate link state database and calculate a separate shortest-path tree for each of their connected areas. So an ABR by definition is a member of two or more areas. It advertises the prefixes it learns in one area to its other areas by flooding Type 3 LSAs into the areas that basically say, “I know how to reach these destinations.”
 
-## Pros
-- Router knows all network and builds a tree.
-- OSPF is very good for traffic engineering in ISP with MPLS
-- Fast convergence
-- Simple
-- IPv4 and IPv6
-- Open protocol
-- Easy to configure
-
-## Cons
-- Main cons is bad performance when many hosts - high CPU load - several thousand prefixes max
-- BGP - scalability is much better than OSPF - Internet is 1000000 prefixes
-
 ## Design
 We have to think through the following:
 - IP networks between routers - /31 is ok
@@ -87,6 +86,9 @@ We have to think through the following:
 - Configure OSPF in GRT, not VRF
 - Passive interface default
 - Configure RID explicitly
+
+## Operations
+
 
 #Areas
 - Stub - area with single exit point. LSA 5 are not propogated. ABR will send default route to all Internal routers. No additional load on Internal routers
