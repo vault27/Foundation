@@ -24,7 +24,7 @@ Can be changed with distance command
 - Unreachable - 255
 
 ## Route maps
-Mostly used for route redistribution: permit or deny redistribution based on match + changing something in route with set command as a bonus. Plus they are used to generate default route in OSPF, BGP routing policies and in policy routing.
+Mostly used for route redistribution: permit or deny redistribution based on match + changing something in route with set command as a bonus. Plus they are used to generate default route in OSPF, BGP routing policies(in neighbor statement, in export import commands for RT to control exported and imported routes) and in policy routing.
 - If/Then/Else logic
 - One or more commands
 - Processed in sequential order
