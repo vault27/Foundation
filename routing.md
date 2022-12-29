@@ -121,7 +121,7 @@ vrf GOOGLE
 ## Route leaking
 - It can be configured between two VRFs. With any IGP used. BGP is started locally on one router. For every VRF we configure RD, RT which is use to export routes, RT which are used to import routes (we may import several RTs). Routes go from VRF to global VPNv4 table, and from this table they go to particlar VRF
 - After enabling leaking we need to consider that leaked routes will start spreading across VRFs, so we may require to configure route maps with ip prefixes to increase/decrease local preference or weight to control routes priority, we also may need to filter particular routes
-- When we configure leaks, we need to consider which exact networks will be leaked, if we leak all routing table, it will be a mess, we control it with a route map via ip prefix list. In BGP route map is attached to neighbor command
+- When we configure leaks, we need to consider which exact networks will be leaked, if we leak all routing table, it will be a mess, we control it with a route map via ip prefix list. In BGP route map is attached to neighbor command to set high local preference for example for all routes from this neighbor. Route map is also used to set low local preference and filter which routes to export from particular VRF.
 
 Example of configuration: route leaking via BGP, if firewall is down then leaking routes are active, by default they have low local prefrence and not active. Configured on Nexus 9000. Two VRFs: Google and Nasa. Configuration is for Spine-1.
 ```
