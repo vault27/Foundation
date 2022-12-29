@@ -1,5 +1,7 @@
 # Routing
 
+## Packet processing
+
 ## Routing protocols
 Link State routing protocol - every router builds a tree or a graph of the whole network. Then launches shortest path algorithm to find out best paths to all destinations. These paths go to a Routing table. Generally some variant of Dijkstra's algorithm is used.  
 LPM - Long Prefix Match - network with longest mask will be chosen from routing table. Default route has the shortest prefix and the lowest priority.
