@@ -1,9 +1,10 @@
 # VxLAN
 - RFC 7348
-- Virtual Extensible LAN, MAC in UDP encapsulation, port 4789
+- Virtual Extensible LAN, MAC in UDP encapsulation, port 4789, 50 bytes overhead
+- MTU should be large
 
 ## Components
-- Identifier - VN Identifier - VNID - defines broadcast segment
+- VNID - Vxlan Network Identifier - defines broadcast segment - transfered in VxLAN header - 3 bytes
 - NVE - Network Virtualization Edge - interface where VXLAN ends
 - VTEP - VXLAN Tunnel Endpoint - Nexus - Leaf
 
