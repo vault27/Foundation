@@ -2,6 +2,7 @@
 - RFC 7348
 - Virtual Extensible LAN, MAC in UDP encapsulation, port 4789, 50 bytes overhead
 - MTU should be large
+- Only transport requirement is unicast IP
 
 ## Components
 - VNID - Vxlan Network Identifier - defines broadcast segment - transfered in VxLAN header - 3 bytes
@@ -16,3 +17,9 @@ The source port field in the UDP header is used to enable ECMP load balancing of
 None of the other fields that flow-based ECMP normally uses are suitable for use with VXLANs. All tunnels between the same two VTEPs have the same outer source and destination IP addresses, and the UDP destination port is set to port 4789 by definition. Therefore, none of these fields provide a sufficient way for ECMP to differentiate flows.  
   
 That is why UDP is used, not IP for example.
+
+## BUM traffic
+
+Can be processed in 2 ways:
+- Multicast replication - multicast is enabled on Underlay - BUM is not packed inside VxlAN - it is sent via Underlay - replication point is on rendezvous point - spine - it si difficult to configure multicast on Underlay - not used today
+- Ingress repliaction - packed to VxLAN - and sent to all in VNI - configured statically or with BGP EVPN
