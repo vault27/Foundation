@@ -207,6 +207,7 @@ Network type influences DR/BDR, timers, Hello types(multicast/unicast), Updates(
 Hello Packet > DB description > LSR > LSU
 
 ## DR/BDR
+- Main goal is to avoid LSA flooding
 - DR/BDR are chosen based on hello messages in broadcast segment
 - Non-DR and non-BDR routers only exchange routing information with the DR and BDR, rather than exchanging updates with every other router upon the segment. This, in turn significantly reduces the amount of OSPF routing updates that need to be sent.  
 - Upon the segment each router will go through an election process, to elect a DR and BDR. There are two rules used to determine who is elected:  
