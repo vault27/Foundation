@@ -26,7 +26,8 @@ Can be processed in 2 ways:
 
 ## Configuration on Nexus 9000
 We create special Loopback for overlay, announce it to BGP.  
-For every VLAN where clients are connected we configure VNI.
+For every VLAN where clients are connected we configure VNI.  
+Firewall is a default gateway for clients. Firewall is connected to the borderleaf with TRUNK port, subinterfaces are configured on firewall.
 
 ```
 leaf-1(config)# feature vn-segment-vlan-based
