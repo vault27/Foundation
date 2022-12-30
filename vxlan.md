@@ -54,3 +54,9 @@ interface nve1
       peer-ip 10.10.2.4
       peer-ip 10.10.2.5
 ```
+
+## Verification
+Show all NVE neighboors, not very reliable data, because connections are connectionless :)
+```
+show nve peers
+```
