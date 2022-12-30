@@ -27,14 +27,26 @@ Can be processed in 2 ways:
 ## Configuration on Nexus 9000
 We create special Loopback for overlay, announce it to BGP.  
 For every VLAN where clients are connected we configure VNI.  
-Firewall is a default gateway for clients. Firewall is connected to the borderleaf with TRUNK port, subinterfaces are configured on firewall.
+Firewall is a default gateway for clients. Firewall is connected to the borderleaf with TRUNK port, subinterfaces are configured on firewall.  
+Next we configure nve interface, where we configure peers for every VNI.
 
 ```
-leaf-1(config)# feature vn-segment-vlan-based
-leaf-1(config)# feature nv overlay
+feature vn-segment-vlan-based
+feature nv overlay
 
 vlan 100
   name PROD
   vn-segment 100
 
+interface nve1
+  no shutdown
+  source-interface loopback1
+  member vni 100
+    ingress-replication protocol static
+      peer-ip 10.10.2.4
+      peer-ip 10.10.2.5
+  member vni 200
+    ingress-replication protocol static
+      peer-ip 10.10.2.4
+      peer-ip 10.10.2.5
 ```
