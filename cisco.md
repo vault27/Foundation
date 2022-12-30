@@ -13,6 +13,7 @@ Focuses on the needs of service providers
 ## NX-OS
 
 ## Nexus
+The Nexus platform is modular. Each feature has its own processes, independent of other features.
 
 ##CSR
 Cloud Services Router 1000V Series
