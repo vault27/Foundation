@@ -25,10 +25,15 @@ Can be processed in 2 ways:
 - Ingress repliaction - packed to VxLAN - and sent to all in VNI - configured statically or with BGP EVPN
 
 ## Configuration on Nexus 9000
-We create special Loopback for overlay, announce it to BGP.
+We create special Loopback for overlay, announce it to BGP.  
+For every VLAN where clients are connected we configure VNI.
 
 ```
 leaf-1(config)# feature vn-segment-vlan-based
 leaf-1(config)# feature nv overlay
+
+vlan 100
+  name PROD
+  vn-segment 100
 
 ```
