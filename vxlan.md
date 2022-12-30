@@ -3,6 +3,7 @@
 - Virtual Extensible LAN, MAC in UDP encapsulation, port 4789, 50 bytes overhead
 - MTU should be large
 - Only transport requirement is unicast IP
+- VLAN numbers can be different on all switches, but VNI number should be the same 
 
 ## Components
 - VNID - Vxlan Network Identifier - defines broadcast segment - transfered in VxLAN header - 3 bytes
@@ -23,6 +24,9 @@ That is why UDP is used, not IP for example.
 Can be processed in 2 ways:
 - Multicast replication - multicast is enabled on Underlay - BUM is not packed inside VxlAN - it is sent via Underlay - replication point is on rendezvous point - spine - it si difficult to configure multicast on Underlay - not used today
 - Ingress repliaction - packed to VxLAN - and sent to all in VNI - configured statically or with BGP EVPN
+
+## Static configuration
+First packet and broadcast are sent to all peers, configured for this VNI. 
 
 ## Configuration on Nexus 9000
 We create special Loopback for overlay, announce it to BGP.  
