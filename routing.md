@@ -125,6 +125,11 @@ ip vrf [name]
 
 #ipv4 and ipv6
 vrf definition [name]
+
+interface
+ip vrf forwarding [name]
+or
+vrf forwarding [name]
 ```
 ## Route leaking
 - Route leaking can be done via BGP, static routes or physical cable :)
