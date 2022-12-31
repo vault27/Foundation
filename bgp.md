@@ -183,15 +183,15 @@ Don't use or advertise the route/s learned via an iBGP neighbor to an eBG neighb
 -  
 
 ## Route Distinguisher
+- Used to distinguish different routes for different VRFs in BGP routing table, the routes are different from Best Path Algorithm point of view
 - Part of MP-BGP
 - Route distinguisher and route target were also devised for MPLS
-- Used to distinguish different routes for different VRFs
 - Transfered in NLRI: RD:IP
 - 3 types:
     - ASN2:NN - 64701:1
     - ASN4:NN - 12000012:1
     - IPV4:NN - 192.168.1.1:1
-- RDs allow BGP to advertise and distinguish between duplicate IPv4 prefixes. The concept is simple: Advertise each NLRI (prefix) as the traditional IPv4 prefix, but add another number (the RD) that uniquely identifies the route. 
+- RDs allow BGP to advertise and distinguish between duplicate IPv4 prefixes. The concept is simple: Advertise each NLRI (prefix) as the traditional IPv4 prefix, but add another number (the RD) that uniquely identifies the route
 - Route distinguisher is configured for VRF, after this all routes, exported from this VRF to BGP table, will be with this RD, only one RD for VRF
 
 ## Route target
