@@ -118,7 +118,14 @@ vrf GOOGLE
     neighbor 172.16.1.1
       address-family ipv4 unicast
 ```
+**Configuration on IOS**
+```
+#ipv4 only
+ip vrf [name]
 
+#ipv4 and ipv6
+vrf definition [name]
+```
 ## Route leaking
 - Route leaking can be done via BGP, static routes or physical cable :)
 - It can be configured between two VRFs. With any IGP used. BGP is started locally on one router. For every VRF we configure RD, RT which is use to export routes, RT which are used to import routes (we may import several RTs). Routes go from VRF to global VPNv4 table, and from this table they go to particlar VRF
