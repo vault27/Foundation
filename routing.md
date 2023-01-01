@@ -86,6 +86,7 @@ First hop redundancy protocol (FHRP)
 
 ## VRF
 - Virtual router: separate control plane and data plane, overlapping IP addresses, VPN in general
+- If we configure VRF with legacy command ip vrf, then only ipv4 config will be delted from the interface + routing protocols config on interface
 - Two routers with 2 VRFs are connected with TRUNK with 2 VLANs with 2 sub interfaces and with the same IPs on subs
 - Firewall is connected to switch with TRUNK as well, but IPs are different on subs, because on FW they are in one VRF
 - When we configure VRF connection via VRF and use eBGP we have to allow on some routers seeing their own AS number in updates
