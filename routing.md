@@ -140,6 +140,14 @@ rd [value]
 interface GigabitEthernet0/0/0/0
 • vrf [namel]
 ```
+
+## Verification on Cisco IOS
+```
+#Show all VRFs in a system with their RD
+show ip vrf
+#Show all config related to VRF
+show run vrf
+```
 ## Route leaking
 - Route leaking can be done via BGP, static routes or physical cable :)
 - It can be configured between two VRFs. With any IGP used. BGP is started locally on one router. For every VRF we configure RD, RT which is use to export routes, RT which are used to import routes (we may import several RTs). Routes go from VRF to global VPNv4 table, and from this table they go to particlar VRF
