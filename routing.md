@@ -12,6 +12,12 @@ Routing=Forwarding
 - Change TTL + recalculate checksum
 - New Data Link frame is built: new header and trailer, including new FCS
 
+## Switching paths - methods to optimize the forwarding processing
+In basic forwarding router has to perform for every packet two lookups in two separate tables: routing table + Layer 2 addresses table
+- Process switching - described above
+- Fast switching - first packet goes through process switching, results are added to fast switching cache or route cache. The cache contains the destination IP address, the next-hop information, and the data-link header information that needs to be added to the packet before forwarding. An entry **per each destination address, not per destination subnet/prefix**. All future packets with the same destination addresses use this data and are switched faster. Also called **route once, forward many times**  
+Draw backs: first packets are fully processed, cache entries are timed out quickly, 
+
 
 ## Routing protocols
 Link State routing protocol - every router builds a tree or a graph of the whole network. Then launches shortest path algorithm to find out best paths to all destinations. These paths go to a Routing table. Generally some variant of Dijkstra's algorithm is used.  
