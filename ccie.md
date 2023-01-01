@@ -27,3 +27,10 @@ Learning algorithm
 - TCP/IP Guide 
 - CCIE Routing and Switching Certification Guide, Fourth Edition
 - CCIE Routing and Switching v5.0 Official Cert Guide, Volume 1 and 2 Fifth Edition
+
+## Topics
+| Topic  | Theory | Github | Configuration | Verification | Debug | IPv6 |
+| ------------- | ------------- |
+| Routing concepts|
+| 1.2.b VRF Lite  | Content Cell  |
+| Content Cell  | Content Cell  |
