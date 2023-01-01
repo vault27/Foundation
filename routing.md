@@ -1,5 +1,9 @@
 # Routing
-Routing=Forwarding
+Routing=Forwarding  
+In two words: Layer 2 frame rewrite and send it to correct interface  
+IPv4: TTL and checksum are modified  
+IPv6: only the Hop Count is decremented
+
 
 ## Packet processing
 - Router receives a frame, FCS is checked, router checks the Ethernet Type field for the packet type
@@ -16,7 +20,8 @@ Routing=Forwarding
 In basic forwarding router has to perform for every packet two lookups in two separate tables: routing table + Layer 2 addresses table
 - Process switching - described above
 - Fast switching - first packet goes through process switching, results are added to fast switching cache or route cache. The cache contains the destination IP address, the next-hop information, and the data-link header information that needs to be added to the packet before forwarding. An entry **per each destination address, not per destination subnet/prefix**. All future packets with the same destination addresses use this data and are switched faster. Also called **route once, forward many times**  
-Draw backs: first packets are fully processed, cache entries are timed out quickly, 
+Draw backs: first packets are fully processed, cache entries are timed out quickly, if tables are changed, route entries are invalid, load balancing can only occur per destination  
+Not used any more.
 
 
 ## Routing protocols
