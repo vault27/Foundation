@@ -1,6 +1,17 @@
 # Routing
+Routing=Forwarding
 
 ## Packet processing
+- Router receives a frame, FCS is checked, router checks the Ethernet Type field for the packet type
+- Data Link header and trailer can now be discarded
+- Header checksum is first verified for IPv4, no header checksum for IPv6
+- Router checks destination IP: router itself or not
+- Router checks that TTL is > 1, if not: ICMP Time Exceed + drop
+- Router checks routing table: outgoing interface + next-hop address - the most computation intensive task
+- Find out next hop Layer 2 address: ARP, IP/DLCI - the most computation intensive task
+- Change TTL + recalculate checksum
+- New Data Link frame is built: new header and trailer, including new FCS
+
 
 ## Routing protocols
 Link State routing protocol - every router builds a tree or a graph of the whole network. Then launches shortest path algorithm to find out best paths to all destinations. These paths go to a Routing table. Generally some variant of Dijkstra's algorithm is used.  
