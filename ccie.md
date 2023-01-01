@@ -30,7 +30,7 @@ Learning algorithm
 
 ## Topics
 | Topic  | Theory | Github | Configuration | Verification | Debug | IPv6 |
-| ------------- | ------------- |
+| ------------- | ------------- | ------------- | ------------- | ------------- | ------------- | ------------- |
 | Routing concepts|
-| 1.2.b VRF Lite  | Content Cell  |
-| Content Cell  | Content Cell  |
+| 1.2.b VRF Lite  | Content Cell  | Github | Configuration | Verification | Debug | IPv6 |
+
