@@ -31,6 +31,6 @@ Learning algorithm
 ## Topics
 | Topic  | Theory | Github | Configuration | Verification | Debug | IPv6 |
 | ------------- | ------------- | ------------- | ------------- | ------------- | ------------- | ------------- |
-| Routing concepts|
-| 1.2.b VRF Lite  | Content Cell  | Github | Configuration | Verification | Debug | IPv6 |
+| 1.2 Routing concepts|
+| 1.2.b VRF Lite  | INE, Otus,  | + | + | Verification | - | - |
 
