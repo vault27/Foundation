@@ -86,6 +86,10 @@ First hop redundancy protocol (FHRP)
 
 ## VRF
 - Virtual router: separate control plane and data plane, overlapping IP addresses, VPN in general
+- VRF was developed for MPLS
+- Full VRF - is when many VRFs are tied together
+- VRF Lite: minimum configuration, no MPLS
+- VRFs are not devided in terms of DATA plane, only in control plane, they have access to each other's interfaces
 - If we configure VRF with legacy command ip vrf, then only ipv4 config will be delted from the interface + routing protocols config on interface
 - VRF names are case sensitive. Best practice: name all with upper case
 - Two routers with 2 VRFs are connected with TRUNK with 2 VLANs with 2 sub interfaces and with the same IPs on subs
@@ -132,6 +136,8 @@ interface
 ip vrf forwarding [name]
 or
 vrf forwarding [name]
+
+router ospf router vrf VRFA
 ```
 **Configuration on IOS XR**
 ```
