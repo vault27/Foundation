@@ -7,7 +7,7 @@
 
 ## Components
 - VNID - Vxlan Network Identifier - defines broadcast segment - transfered in VxLAN header - 3 bytes
-- NVE - Network Virtualization Edge - interface where VXLAN ends
+- NVE - Network Virtualization Edge - interface where VXLAN ends - only 1 NVE interface is allowed on the switch.
 - VTEP - VXLAN Tunnel Endpoint - Nexus - Leaf
 
 ## Load balancing
