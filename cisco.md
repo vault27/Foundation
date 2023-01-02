@@ -14,7 +14,7 @@
 - Supports next-generation platforms
 - Combination of a Linux kernel and a monolithic application (IOSd) that runs on top of this kernel
 - Separates the data plane and control plane
-- Introduced for ASR 1000 routers
+- Introduced for ASR 1000 routers, also used in Catalyst 3850, Catalyst 9000, CSR1000v, ISR
 - Running Wireshark on a switch
 
 ## NX-OS
