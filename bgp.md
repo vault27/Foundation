@@ -180,6 +180,7 @@ Don't use or advertise the route/s learned via an iBGP neighbor to an eBG neighb
 -  IPv4, IPv6, multicast, unicast, VPN
 -  Unicast and multicast are stored in different tables
 -  When MP-BGP is configured, BGP installs the MP-BGP routes into different routing tables. Each routing table is identified by the protocol family or address family indicator (AFI) and a subsequent address family identifier (SAFI).
+-  EVPN AFI/SAFI - 25/70 - RFC 7209, 7432, 8365
 -  
 
 ## Route Distinguisher
@@ -203,6 +204,16 @@ Don't use or advertise the route/s learned via an iBGP neighbor to an eBG neighb
 - It is configured for address family in VRF: import command sets which routes to import from global VPNv4 BGP table and export command sets which RT to set to routes which are exported
 - Term export to mean “redistribute out of the VRF into BGP” and the term import to mean “redistribute into the VRF from BGP.”
 - During import we may decrease routes priority by decreasing local preference or weight (these attributes are local and will not leave AS) with route map after import command
+
+## EVPN
+- Allows building l2vpn and l3vpn
+- Used as control plane for VxLAN fabric
+5 route types:
+- Type 1 - Ethernet auto discovery route (A-D)
+- Type 2 - MAC/IP advertisment route
+- Type 3 - Inclusive multicast Ethernet tag route
+- Type 4 - Ethernet segemtn route
+- Type 5 - IP prefix route - for l3vpns
 
 ## Load Share with BGP in Single and Multihomed Environments
 
