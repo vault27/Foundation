@@ -207,7 +207,7 @@ Don't use or advertise the route/s learned via an iBGP neighbor to an eBG neighb
 
 ## EVPN
 - Allows building l2vpn and l3vpn
-- Used as control plane for VxLAN fabric
+- Used as control plane for VxLAN fabric  
 5 route types:
 - Type 1 - Ethernet auto discovery route (A-D)
 - Type 2 - MAC/IP advertisment route
