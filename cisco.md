@@ -1,14 +1,20 @@
 # Cisco
 
 ## IOS
+- Monolith
+- Replaced with Cisco IOS XE
 
 ## IOS XR
-Focuses on the needs of service providers
+- Focuses on the needs of service providers
+- Modular, Linux based, memory protection between processes
+- Has a completely different code base and whose developers implemented a different CLI command set
 
 ## IOS XE
 - Supports next-generation platforms
 - Runs as a single daemon within a modern Linux operating system
 - Separates the data plane and control plane
+- Introduced for ASR 1000 routers
+- 
 
 ## NX-OS
 
