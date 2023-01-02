@@ -66,3 +66,16 @@ Interface Peer-IP                                 State LearnType Uptime   Route
 nve1      10.10.2.4                               Up    DP        01:08:14 n/a
 nve1      10.10.2.5                               Down  DP        0.000000 n/a
 ```
+Show info about nve interface
+```
+leaf-1(config)# show int nve1
+nve1 is up
+admin state is up,  Hardware: NVE
+  MTU 9216 bytes
+  Encapsulation VXLAN
+  Auto-mdix is turned off
+  RX
+    ucast: 71 pkts, 6890 bytes - mcast: 15 pkts, 960 bytes
+  TX
+    ucast: 92 pkts, 12834 bytes - mcast: 0 pkts, 0 bytes
+```
