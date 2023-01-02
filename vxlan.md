@@ -41,6 +41,9 @@ feature nv overlay
 vlan 100
   name PROD
   vn-segment 100
+  
+interface Ethernet1/3
+  switchport access vlan 100
 
 interface nve1
   no shutdown
@@ -53,6 +56,7 @@ interface nve1
     ingress-replication protocol static
       peer-ip 10.10.2.4
       peer-ip 10.10.2.5
+      
 ```
 
 ## Verification
