@@ -3,6 +3,7 @@
 ## History and overview
 - Invented by Xerox in 1973
 - First standard - 1985 - IEEE 802.3
+- 802.3 Ethernet and initial Ethernet are different
 - Alohanet - developed in University of Hawaii - in 1971 - radio - Ethernet is based on it
 - Cable was coaxial - one very long cable - all computers and printers on PaloAlto Xerox research center were connected to it
 - Initially was half-duplex
@@ -24,7 +25,7 @@ CS - Carrier Sense
 Carrier - it's a signal  
 Perform Carrier Sense - listening for signal on the wire, if it is free, wait for a time - inter frame gap - 9 microseconds(the faster the Ethernet the smaller this time) - then send bits on the wire  
 MA - Multiple Access -  we can send many frames one by one - not all old technologies could afford it  
-CD - Collision Detect - when I speak, I also listen - 
+CD - Collision Detect - when I speak, I also listen - if I get something during sending it is a collision
 
 
 ## Frame
