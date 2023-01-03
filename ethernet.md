@@ -25,7 +25,11 @@ CS - Carrier Sense
 Carrier - it's a signal  
 Perform Carrier Sense - listening for signal on the wire, if it is free, wait for a time - inter frame gap - 9 microseconds(the faster the Ethernet the smaller this time) - then send bits on the wire  
 MA - Multiple Access -  we can send many frames one by one - not all old technologies could afford it  
-CD - Collision Detect - when I speak, I also listen - if I get something during sending it is a collision
+CD - Collision Detect - when I speak, I also listen - if I get something during sending it is a collision  
+Collision transforms signals to meaningless garbage  
+If a host detects a collision - it stops everything and  sends a JAM sequence - everybody on the cable recognises it as a sign of a collision  
+After JAM hosts have to wait for a random backoff timer  
+
 
 
 ## Frame
