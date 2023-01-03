@@ -14,3 +14,10 @@
 - Physical layer: media specifications + Physical signalling sublayer
 - Data link layer: Media Access Control sublayer (MAC) + Logical Link Control sublayer (LLC)
 - LLC is not covered by Ethernet standard, it is covered in 802.2, it describes how multiple Layer 3 protocols can interact with multiple Layer 2 technologies, not only Ethernet
+
+## CSMA/CD
+
+## Frame
+
+## Cabling
+
