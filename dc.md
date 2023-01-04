@@ -2,9 +2,8 @@
 
 Multi tenancy - several customers use one something(Data center, firewall, software) and they are called tenants.  
 In DC tenants share Compute, Storage and Network. All these are orchestarted by service orchestration.  
-Segmentation is done via VRF, VLAN, VNI...
-
-
+Segmentation is done via VRF, VLAN, VNI...  
+Microsegmentation: Private VLAN, ACI
 
 ## Naming devices
 Type(Leaf/Spine) - Number - Rack number - Pod number - DC number
