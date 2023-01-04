@@ -4,6 +4,7 @@
 - MTU should be large
 - Only transport requirement is unicast IP
 - VLAN numbers can be different on all switches, but VNI number should be the same 
+- Default gateway can be any device in a fabric
 
 ## Components
 - VNID - Vxlan Network Identifier - defines broadcast segment - transfered in VxLAN header - 3 bytes
@@ -28,10 +29,18 @@ Can be processed in 2 ways:
 ## Static configuration
 First packet and broadcast are sent to all peers, configured for this VNI. 
 
+## Firewall injection
+- Connected to border leaf via TRUNK interface
+- All required subinterfaces are configured on firewall
+- On all required clients we configure firewall as a default gateway
+- All traffic between VLANs goes via firewall
+- Bottle neck for the entire network
+- High load on border leaf
+- ePBR can be also used
+
 ## Configuration on Nexus 9000
 We create special Loopback for overlay, announce it to BGP.  
 For every VLAN where clients are connected we configure VNI.  
-Firewall is a default gateway for clients. Firewall is connected to the borderleaf with TRUNK port, subinterfaces are configured on firewall.  
 Next we configure nve interface, where we configure peers for every VNI.
 
 ```
