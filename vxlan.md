@@ -11,6 +11,7 @@ BRKDCN-2304 - L4-L7 Service Integration in Multi-Tenant VXLAN EVPN Data Center F
 - Only transport requirement is unicast IP
 - VLAN numbers can be different on all switches, but VNI number should be the same 
 - Default gateway can be any device in a fabric
+- VxLAN does not encapsulate CDP, STP....
 
 ## Components
 - VNID - Vxlan Network Identifier - defines broadcast segment - transfered in VxLAN header - 3 bytes
