@@ -25,7 +25,9 @@ The source port field in the UDP header is used to enable ECMP load balancing of
   
 None of the other fields that flow-based ECMP normally uses are suitable for use with VXLANs. All tunnels between the same two VTEPs have the same outer source and destination IP addresses, and the UDP destination port is set to port 4789 by definition. Therefore, none of these fields provide a sufficient way for ECMP to differentiate flows.  
   
-That is why UDP is used, not IP for example.
+That is why UDP is used, not IP for example.  
+
+All VxLAN packets from one Leaf to another have different UDP source ports for load balancing purposes.
 
 ## BUM traffic
 
@@ -34,7 +36,7 @@ Can be processed in 2 ways:
 - Ingress repliaction - packed to VxLAN - and sent to all in VNI - configured statically or with BGP EVPN
 
 ## Static configuration
-First packet and broadcast are sent to all peers, configured for this VNI. 
+It is called ingress-replication. No control plane is used. First packet (ARP) and broadcast are sent to all peers, configured for this VNI. All next packets are sent only to particular VTEP. VxLAN packets between leafs are load balanced between spines.
 
 ## Firewall injection
 - Connected to border leaf via TRUNK interface
@@ -48,8 +50,8 @@ First packet and broadcast are sent to all peers, configured for this VNI.
 ## Configuration on Nexus 9000
 We create special Loopback for overlay, announce it to BGP.  
 For every VLAN where clients are connected we configure VNI.  
-Next we configure nve interface, where we configure peers for every VNI.
-
+Next we configure nve interface, where we configure peers for every VNI.  
+Static confogiration:
 ```
 feature vn-segment-vlan-based
 feature nv overlay
