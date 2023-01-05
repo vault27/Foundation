@@ -101,3 +101,6 @@ admin state is up,  Hardware: NVE
   TX
     ucast: 92 pkts, 12834 bytes - mcast: 0 pkts, 0 bytes
 ```
+
+## EVPN
+- AFI 25, SAFI 70
