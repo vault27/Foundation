@@ -116,3 +116,23 @@ admin state is up,  Hardware: NVE
 - Decrease amount of BUM traffic
 - Providing host mobility
 - Providing multi-homing for active active connections - one host to several switches without any VPC
+
+## Inside EVPN packet
+- Type: Update message (2)
+- Path attributes:
+  - Origin: IGP 
+  - AS_PATH
+  - MP_REACH_NLRI
+    - Address Family Identifier (AFI) - Layer-2 VPN - 25
+    - Subsequent Address Family Identifier (SAFI) - EVPN - 70
+    - Nexthop - lookback IP
+    - Network Layer Reachability Information (NLRI)
+      - EVPN NLRI
+        - Route type: MAC advertisment route (2)
+        - Route Distinguisher
+        - Ethernet TAG ID - 0
+        - MAC address
+- Extended communities
+  - Route target
+  - Encapsulation - VXLAN  
+- 
