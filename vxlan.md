@@ -132,7 +132,19 @@ admin state is up,  Hardware: NVE
         - Route Distinguisher
         - Ethernet TAG ID - 0
         - MAC address
+        - VNI - it can be MPLS label here
 - Extended communities
   - Route target
-  - Encapsulation - VXLAN  
-- 
+  - Encapsulation - VXLAN - because it can work via MPLS as well
+
+## EVPN route types
+- L2 operations
+  - Type 2 - Host Advertisment - advertising MACs 
+  - Type 3 - Inclusive Multicast Ethernet Tag  - for BUM - Ingress Replication
+- L3 operations
+  - Type 4
+  - Type 1
+- External connections
+  - Type 5
+- Multicast
+  - Type 6,7,8 - PIM, IGMP Leave/Join
