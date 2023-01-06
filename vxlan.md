@@ -3,8 +3,7 @@ BRKDCN-2450 - VXLAN EVPN Day-2 operation
 BRKDCT-3378 - Building Data Center Networks with VXLAN BGP-EVPN  
 BRKDCT-2404 - VXLAN Deployment Models - A practical perspective  
 BRKDCN-2304 - L4-L7 Service Integration in Multi-Tenant VXLAN EVPN Data Center Fabrics  
-  
-  
+    
 - RFC 7348
 - Virtual Extensible LAN, MAC in UDP encapsulation, port 4789, 50 bytes overhead
 - MTU should be large
@@ -18,6 +17,11 @@ BRKDCN-2304 - L4-L7 Service Integration in Multi-Tenant VXLAN EVPN Data Center F
 - NVE - Network Virtualization Edge - interface where VXLAN ends - only 1 NVE interface is allowed on the switch.
 - VTEP - VXLAN Tunnel Endpoint - Nexus - Leaf
 
+## BUM traffic
+Can be processed in 2 ways:
+- Multicast replication - multicast is enabled on Underlay - BUM is not packed inside VxlAN - it is sent via Underlay - replication point is on rendezvous point - spine - it is difficult to configure multicast on Underlay - not used today
+- Ingress repliaction - packed to VxLAN - and sent to all in VNI - configured statically or with BGP EVPN
+
 ## Operations
 ### Without BGP, ingress replication of BUM traffic
 Host A in VLAN 1 SVI 1 sends ARP request for Host B in VLAN 2 svi 1. VTEP 1 encapsulates this ARP request to VXLAN and sends it to peer VTEPs for this SVI. VTEP 2 replies, and then all other traffic goes between these 2 VTEPs
@@ -30,24 +34,24 @@ Host A in VLAN 1 SVI 1 sends ARP request for Host B in VLAN 2 svi 1. VTEP 1 enca
 - Host B replies and Leaf 2 sends reply in VXLAN to Leaf 1
 
 ### BUM traffic via Multicast
+- Host sends broadcast
+- Leaf forwards it without VXLAN as a multicast to 225.2.2.1
+- We configure a match between VNI and multicast address - only one multicast packet - Spines will propogate it to all subscribers - load is much less then ingress replication
 
+## Host mobility
+- VM moves from one VTEP to another and continue
+- VTEP-2 creates route type 2 with higher Sequence Number
+- All other VTEPs get a new route
+- Route with higher sequence number wins
 
 ## Load balancing
 The Layer 3 routes that form VXLAN tunnels use per-packet load balancing by default, which means that load balancing is implemented if there are ECMP paths to the remote VTEP. This is different from normal routing behavior in which per-packet load balancing is not used by default. (Normal routing uses per-prefix load balancing by default.)  
   
 The source port field in the UDP header is used to enable ECMP load balancing of the VXLAN traffic in the Layer 3 network. This field is set to a hash of the inner packet fields, which results in a variable that ECMP can use to distinguish between tunnels (flows).  
   
-None of the other fields that flow-based ECMP normally uses are suitable for use with VXLANs. All tunnels between the same two VTEPs have the same outer source and destination IP addresses, and the UDP destination port is set to port 4789 by definition. Therefore, none of these fields provide a sufficient way for ECMP to differentiate flows.  
-  
+None of the other fields that flow-based ECMP normally uses are suitable for use with VXLANs. All tunnels between the same two VTEPs have the same outer source and destination IP addresses, and the UDP destination port is set to port 4789 by definition. Therefore, none of these fields provide a sufficient way for ECMP to differentiate flows.    
 That is why UDP is used, not IP for example.  
-
 All VxLAN packets from one Leaf to another have different UDP source ports for load balancing purposes.
-
-## BUM traffic
-
-Can be processed in 2 ways:
-- Multicast replication - multicast is enabled on Underlay - BUM is not packed inside VxlAN - it is sent via Underlay - replication point is on rendezvous point - spine - it si difficult to configure multicast on Underlay - not used today
-- Ingress repliaction - packed to VxLAN - and sent to all in VNI - configured statically or with BGP EVPN
 
 ## Static configuration
 It is called ingress-replication. No control plane is used. First packet (ARP) and broadcast are sent to all peers, configured for this VNI. All next packets are sent only to particular VTEP. VxLAN packets between leafs are load balanced between spines.
