@@ -20,6 +20,16 @@ BRKDCN-2304 - L4-L7 Service Integration in Multi-Tenant VXLAN EVPN Data Center F
 
 ## Operations
 ### Without BGP, ingress replication of BUM traffic
+Host A in VLAN 1 SVI 1 sends ARP request for Host B in VLAN 2 svi 1. VTEP 1 encapsulates this ARP request to VXLAN and sends it to peer VTEPs for this SVI. VTEP 2 replies, and then all other traffic goes between these 2 VTEPs
+
+### With BGP, ingress replication traffic
+- Host A is online, Leaf-1 sees its MAC and forwards Route Type 2 to all other VTEPS, and now all VTEPs know that Host A is behind Leaf-1
+- Host A in VLAN 1 SVI 1 sends ARP request for Host B in VLAN 2 svi 1
+- Leaf 1 sends this ARP request in VXLAN to all VTEPs from which it got Route Type 3 - Inclusive Multicast Ethernet Tag with SNI 1
+- All VTEPs which got ARP, forward it to all physical ports in this SVI
+- Host B replies and Leaf 2 sends reply in VXLAN to Leaf 1
+
+### BUM traffic via Multicast
 
 
 ## Load balancing
