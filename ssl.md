@@ -32,4 +32,21 @@
 - Auth is always a public key cryptography. Most commonly RSA, but sometimes ECDSA.
 - Auth is dependent on which key exchange algorithm is used.
 - During the RSA key exchange, the client generates a random value as the premaster secret  and sends it encrypted with the server’s public key. The server, which is in possession of the corresponding private key, decrypts the message to obtain the premaster secret. The authentication is implicit: it is assumed that only the server in possession of the corresponding private key can retrieve the premaster secret, construct the correct session keys, and producethe correct Finished message.
-- During the DHE and ECDHE exchanges, the server contributes to the key exchange with its parameters. The parameters are signed with its private key. The client, which is in possession of the corresponding public key (obtained from the validated certificate), can verify that the parameters genuinely arrived from the intended server.
+- During the DHE and ECDHE exchanges, the server contributes to the key exchange with its parameters. The parameters are signed with its private key. The client, which is in possession of the corresponding public key (obtained from the validated certificate), can verify that the parameters genuinely arrived from the intended server
+
+## Key exchange
+Auth - Bulk encryption - MAC  
+ECDHE - RSA - AES128 - GCM - SHA256  
+
+- There is hexadecimal representation for every possible cipher suite
+- Different protocols support different cipher suites
+
+### Protocols  
+- SSLv1(out of date, vulnerable)
+- SSLv2(do not use)
+- SSLv3(do not use)
+- TLS 1.0(deprecated, many attacks, PCI DSS prohibited)
+- TLS 1.1
+- TLS 1.2 - is the best option for now
+- TLS 1.3
+
