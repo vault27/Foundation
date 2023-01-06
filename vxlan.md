@@ -51,8 +51,8 @@ It is called ingress-replication. No control plane is used. First packet (ARP) a
 - RD:MAC-PREFIX:ETI
 - RD:IP-PREFIX:ETI
 - MAC-PREFIX = MAC/48
-- Ethernet Tag ID = 0 - in most cases
-- We add VLAN to VRF instead of interface
+- Ethernet Tag ID = 0 - in most cases - defines bridge table inside VRF - several bridge tables can be in one vrf - in most cases we add 1 vlan to one MAC VRF
+- We add VLAN to MAC VRF instead of interface in IP VRF
 
 ## Configuration of static peers on Nexus 9000
 We create special Loopback for overlay, announce it to BGP.  
@@ -111,3 +111,8 @@ admin state is up,  Hardware: NVE
 
 ## EVPN
 - AFI 25, SAFI 70
+- Dynamic discover of new VTEPs
+- Dynamic learning of MAC and IP information
+- Decrease amount of BUM traffic
+- Providing host mobility
+- Providing multi-homing for active active connections - one host to several switches without any VPC
