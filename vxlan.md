@@ -139,12 +139,12 @@ admin state is up,  Hardware: NVE
 
 ## EVPN route types
 - L2 operations
-  - Type 2 - Host Advertisment - advertising MACs 
-  - Type 3 - Inclusive Multicast Ethernet Tag  - for BUM - Ingress Replication
+  - Type 2 - Host Advertisment - advertising MACs - Generated when new MAC is discovered, is sento all VTEPs withis this VNI, VTEPs import it to required MAC VRF according to RT
+  - Type 3 - Inclusive Multicast Ethernet Tag  - for BUM - Ingress Replication - VTEP with particular VNI and VLAN sends this update to inform everyone that it is ready to accept BUM traffic for this particular VNI
 - L3 operations
-  - Type 4
-  - Type 1
+  - Type 4 - Ethernet Segment Route - one LAN connected to two VTEPs - only one of them should process BUM
+  - Type 1 - Ethernet Auto Discovery Route
 - External connections
-  - Type 5
+  - Type 5 - IP prefix route advertisment
 - Multicast
   - Type 6,7,8 - PIM, IGMP Leave/Join
