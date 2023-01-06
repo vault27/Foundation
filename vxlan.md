@@ -43,6 +43,12 @@ Host A in VLAN 1 SVI 1 sends ARP request for Host B in VLAN 2 svi 1. VTEP 1 enca
 - VTEP-2 creates route type 2 with higher Sequence Number
 - All other VTEPs get a new route
 - Route with higher sequence number wins
+- Problems may appear if MAC is configured staticly on port
+
+## Service models
+- VLAN based service: one VLAN - one MAC VRF (RT, RD) - one bridge table, Ethernet Tag = 0 - one VNI - forwarding based on VNI - most popular - good for multi vendor
+- VLAN bundle service - one bridge table, MAC VRF with RT RD for all VLANs - frames are sent with 802.1Q - Ethernet Tag = 0, MACs in different VLANs should not match
+- VLAN aware bundle service - not supported by all vendors - all VLANs have one VRF(RT, RD) - every VLAN has its own bridge table with VNI and Ethernet tag = VNI
 
 ## Load balancing
 The Layer 3 routes that form VXLAN tunnels use per-packet load balancing by default, which means that load balancing is implemented if there are ECMP paths to the remote VTEP. This is different from normal routing behavior in which per-packet load balancing is not used by default. (Normal routing uses per-prefix load balancing by default.)  
@@ -154,6 +160,7 @@ admin state is up,  Hardware: NVE
 - Extended communities
   - Route target
   - Encapsulation - VXLAN - because it can work via MPLS as well
+  - Sequence number - the more the better, used when host moves from one VTEP to another, new VTEP increases this number and sends to everyone
 
 ## EVPN route types
 VTEP gets all BGP updates and stores them in global table, but installs them to VRF only if there is required VNI
