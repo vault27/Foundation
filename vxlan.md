@@ -47,7 +47,14 @@ It is called ingress-replication. No control plane is used. First packet (ARP) a
 - High load on border leaf
 - ePBR can be also used
 
-## Configuration on Nexus 9000
+## MAC VRF
+- RD:MAC-PREFIX:ETI
+- RD:IP-PREFIX:ETI
+- MAC-PREFIX = MAC/48
+- Ethernet Tag ID = 0 - in most cases
+- We add VLAN to VRF instead of interface
+
+## Configuration of static peers on Nexus 9000
 We create special Loopback for overlay, announce it to BGP.  
 For every VLAN where clients are connected we configure VNI.  
 Next we configure nve interface, where we configure peers for every VNI.  
