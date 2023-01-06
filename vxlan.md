@@ -18,6 +18,10 @@ BRKDCN-2304 - L4-L7 Service Integration in Multi-Tenant VXLAN EVPN Data Center F
 - NVE - Network Virtualization Edge - interface where VXLAN ends - only 1 NVE interface is allowed on the switch.
 - VTEP - VXLAN Tunnel Endpoint - Nexus - Leaf
 
+## Operations
+### Without BGP, ingress replication of BUM traffic
+
+
 ## Load balancing
 The Layer 3 routes that form VXLAN tunnels use per-packet load balancing by default, which means that load balancing is implemented if there are ECMP paths to the remote VTEP. This is different from normal routing behavior in which per-packet load balancing is not used by default. (Normal routing uses per-prefix load balancing by default.)  
   
@@ -138,6 +142,7 @@ admin state is up,  Hardware: NVE
   - Encapsulation - VXLAN - because it can work via MPLS as well
 
 ## EVPN route types
+VTEP gets all BGP updates and stores them in global table, but installs them to VRF only if there is required VNI
 - L2 operations
   - Type 2 - Host Advertisment - advertising MACs - Generated when new MAC is discovered, is sento all VTEPs withis this VNI, VTEPs import it to required MAC VRF according to RT
   - Type 3 - Inclusive Multicast Ethernet Tag  - for BUM - Ingress Replication - VTEP with particular VNI and VLAN sends this update to inform everyone that it is ready to accept BUM traffic for this particular VNI. Attribute PMSI_TUNNEL_ATTRIBUTE is added to BGP update, it contains VNI and replication type: Ingress Replication (or Multicast). This route update is generated for every VNI configured.
