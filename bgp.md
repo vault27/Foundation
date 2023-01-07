@@ -58,7 +58,8 @@
 - As simple as possible
 - If two Leafs are in vPC pair - they may have the same AS number
 - If Leafs have the same AS number - there will be a loop - can be disabled manually
-- Redistribute only networks connected to Leafs, looopbacks for instance 
+- Redistribute only networks connected to Leafs, looopbacks for instance
+- On Spines we configure dynamic neighboring using peer filter, where we configure which AS we accept from leafs, and listen command to specify networks on which we listen for BGP connections. Listen command is a passive mode. Leafs cannot be configured in this mode, they should be active. Listen command specifies which networks to listen, to which peer group place these neighbores and which AS accept
 
 ## ASN
 - Can be 16 bit (2 bytes) and 32 bit (4 bytes)
