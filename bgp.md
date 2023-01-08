@@ -63,7 +63,12 @@
 
 ## Operations
 - If everything is fine, only keepalives are sent, nothing inside them
-- 
+- When connection starts, routers send OPEN messages with AS number, router id and capabilities list
+- Then they send UPDATE messages with next hop as themselfs. One packet can contain several UPDATE messgaes and even KEEPALIVE inside. UPDATE message contains PATH ATTRIBUTES: ORIGIN, AS_PATH, MP_REACH_NLRI
+
+## Capabilities
+
+
 ## ASN
 - Can be 16 bit (2 bytes) and 32 bit (4 bytes)
 - 0 to 65535
@@ -112,7 +117,10 @@ BGP Message
 - Communities - optional
 - Local preference - used only in iBGP, used to show the best exit from AS, the higher the better route, default - 100. Default value exists only for routes, which originate from this router and with in AS, if router is received from different AS, local preference is empty
 
-## Attributes
+## Path attributes
+- ORIGIN
+- AS_PATH
+- MP_REACH_NLRI
 
 ## Best path selection
 **12 steps** 
