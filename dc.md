@@ -6,6 +6,13 @@ Segmentation is done via VRF, VLAN, VNI...
 Microsegmentation: Private VLAN, ACI
 
 ## Non virtualized/legacy data centers
+- Difficult to configure VLANs on all devices
+- VLAN-ID field is 12 bits yielding a maximum of 4094 VLANs
+- MAC scalability is affected due to limits on the number of MAC addresses that can be learned per device. Unpredictable amounts of BUM traffic when the MAC scale limit is surpassed, further impacts resiliency
+- Due to STP, many unused links, no load balancing
+- It is difficult connect two DC and stretch Layer 2 detween them
+- Host mobility
+- Microsegmentation
 
 ## Naming devices
 Type(Leaf/Spine) - Number - Rack number - Pod number - DC number
