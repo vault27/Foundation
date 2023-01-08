@@ -1,9 +1,19 @@
 # Data Centers
 
-Multi tenancy - several customers use one something(Data center, firewall, software) and they are called tenants.  
-In DC tenants share Compute, Storage and Network. All these are orchestarted by service orchestration.  
-Segmentation is done via VRF, VLAN, VNI...  
-Microsegmentation: Private VLAN, ACI
+- Multi tenancy - several customers use one something(Data center, firewall, software) and they are called tenants.  
+- In DC tenants share Compute, Storage and Network. All these are orchestarted by service orchestration.  
+- Segmentation is done via VRF, VLAN, VNI...  
+- Microsegmentation: Private VLAN, ACI
+- People switched from legacy tiered architechture to Clos Fabrics
+
+Alternatives to Clos fabrics:
+- JellyFish
+- Torus
+- Dring
+- DragonFly
+- HyperCube
+- HyperX
+- 
 
 ## Non virtualized/legacy data centers
 - Difficult to configure VLANs on all devices
@@ -13,6 +23,25 @@ Microsegmentation: Private VLAN, ACI
 - It is difficult connect two DC and stretch Layer 2 detween them
 - Host mobility
 - Microsegmentation
+
+## Data Center Fabric / Underlay
+- It is a network architechture, it is used instead of traditional multitier architectures
+- It effectively flattens the network architecture, thereby reducing the distance between endpoints within the data center
+- It is based on Clos topology
+- It provides a solid layer of connectivity in the physical network, tunnel endpoint reachability, equidistant endpoints, non-blocking core, low latency and high bandwidth for both East-West and North-South traffic, load balancing(multipath), use of all links, 
+- Overlay rides on top of the fabric
+- The fabric itself, when paired with an overlay, is called the underlay
+
+## Underlay best practices
+- Do not use LAG between leaf and Spine. If one LAG link fails, it will reduce IGP cost and disable the whole LAG. Use Spines and Super Spines instead
+- Maximum simple config for Spine, do not connect external devices to it, use Border Leafs for it
+
+
+## Overlay
+- The overlay network virtualizes the underlying physical infrastructure by creating logical networks over the physical underlay network
+- It provies network virtualization, segmentation, stretched Ethernet segments, workload mobility, and other services
+- Network based: high requirements for MAC table on ToR switches
+- Host based: high load on host, open source, host has to support technology
 
 ## Naming devices
 Type(Leaf/Spine) - Number - Rack number - Pod number - DC number
