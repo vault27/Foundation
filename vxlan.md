@@ -17,10 +17,10 @@ BRKDCN-2304 - L4-L7 Service Integration in Multi-Tenant VXLAN EVPN Data Center F
 - NVE - Network Virtualization Edge - interface where VXLAN ends - only 1 NVE interface is allowed on the switch.
 - VTEP - VXLAN Tunnel Endpoint - Nexus - Leaf
 
-## BUM traffic
+## BUM traffic forwarding: data plane
 Can be processed in 2 ways:
 - Multicast replication - multicast is enabled on Underlay - BUM is not packed inside VxlAN - it is sent via Underlay - replication point is on rendezvous point - spine - it is difficult to configure multicast on Underlay - not used today
-- Ingress repliaction - packed to VxLAN - and sent to all in VNI - configured statically or with BGP EVPN
+- Ingress replication - packed to VxLAN - and sent to all in VNI - configured statically or with BGP EVPN
 
 ## Operations
 ### Without BGP, ingress replication of BUM traffic
@@ -134,7 +134,12 @@ admin state is up,  Hardware: NVE
 ```
 
 ## EVPN
+- Ethernet VPN (EVPN) is a technology for carrying layer 2 Ethernet traffic as a virtual private network using wide area network protocols. EVPN technologies include Ethernet over MPLS and Ethernet over VXLAN
 - AFI 25, SAFI 70
+- EVPN - is an address family used in MP BGP, MP BGP is transport for it
+- RFC 7432 - EVPN over MPLS
+- RFC 8365 - EVPN over VXLAN
+- RFC 7623 - Provider Backbone Bridges
 - Dynamic discover of new VTEPs
 - Dynamic learning of MAC and IP information
 - Decrease amount of BUM traffic
