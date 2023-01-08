@@ -25,6 +25,8 @@ Alternatives to Clos fabrics:
 - Microsegmentation
 
 ## Data Center Fabric / Underlay
+- The term “fabric” describes how switch, server, and storage nodes connect to all other nodes in a mesh configuration, evoking the image of tightly woven fabric. These links provide multiple redundant communications paths and deliver higher total throughput than traditional networks
+- There are both proprietary architectures and open, standards-based fabrics, such as EVPN-VXLAN
 - It is a network architechture, it is used instead of traditional multitier architectures
 - It effectively flattens the network architecture, thereby reducing the distance between endpoints within the data center
 - It is based on Clos topology
