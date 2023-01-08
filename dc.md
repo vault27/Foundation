@@ -5,6 +5,8 @@ In DC tenants share Compute, Storage and Network. All these are orchestarted by 
 Segmentation is done via VRF, VLAN, VNI...  
 Microsegmentation: Private VLAN, ACI
 
+## Non virtualized/legacy data centers
+
 ## Naming devices
 Type(Leaf/Spine) - Number - Rack number - Pod number - DC number
 
