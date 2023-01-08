@@ -30,7 +30,15 @@ Collision transforms signals to meaningless garbage
 If a host detects a collision - it stops everything and  sends a JAM sequence - everybody on the cable recognises it as a sign of a collision  
 After JAM hosts have to wait for a random backoff timer  
 
-
+## Physical layer standards
+T - UTP - Unshielded twisted pair  
+X - fiber
+- 10 Mbps - Ethernet - 10BASE-T - 802.3 - Copper - 100 m
+- 100 Mbps - Fast Ethernet - 100BASE-T - 802.3u - Copper - 100 m
+- 1000 Mbps - Gigabit Ethernet - 1000BASE-LX - 802.3z - Fiber - 5000 m
+- 1000 Mbps - Gigabit Ethernet - 1000BASE-T - 802.3ab - Cooper - 100 m
+- 10 Gbps - 10 Gig Ethernet - 10GBASE-T - 802.3an - Cooper - 100 m
+- 
 
 ## Frame
 
