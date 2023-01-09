@@ -32,13 +32,33 @@ After JAM hosts have to wait for a random backoff timer
 
 ## Physical layer standards
 T - UTP - Unshielded twisted pair  
-X - fiber
+X - fiber  
+100 - Speed  
+BASE - Baseband - means that entire cable is used  
+At the end there also maybe a number in old standards - it means maximum cable length  
+Pair is twisted because it reduces EMI - Electromagnetic Influence  
+RJ-45 - it is a connector, mostly used, SFP connector can also be used
 - 10 Mbps - Ethernet - 10BASE-T - 802.3 - Copper - 100 m
 - 100 Mbps - Fast Ethernet - 100BASE-T - 802.3u - Copper - 100 m
 - 1000 Mbps - Gigabit Ethernet - 1000BASE-LX - 802.3z - Fiber - 5000 m
 - 1000 Mbps - Gigabit Ethernet - 1000BASE-T - 802.3ab - Cooper - 100 m
 - 10 Gbps - 10 Gig Ethernet - 10GBASE-T - 802.3an - Cooper - 100 m
-- 
+If we connect two devices on one level of OSI model then we use crossover cable: switch-switch hub-hub router-router  
+If we connect two devices on different levels of OSI model, then we use straight-through cable: router-switch, hub-PC, switch-hub  
+Crossover acble: 1 goes to 3, 2 goes to six  
+Auto MDI-X technology on adapters switch automatically to correct cable type  
+The UTP cables differ in the following parameters:
+- Twists per centimeter - the more the better protection against EMI
+- Sheath thickness
+Categories:
+- Cat 5 - 100 Mbs
+- Cat 5e - 1 Gbps
+- Cat 6 - 10 Gbps - 55 meters
+- Cat 6a - 10 Gbps
+- Cat 7/7a - 10 Gbps
+- Cat 8 - 40 Gbits - 30 meters
+STP - Shielded Twisted Pair - covered with foil
+
 
 ## Frame
 
