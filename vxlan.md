@@ -156,6 +156,7 @@ admin state is up,  Hardware: NVE
 - Decrease amount of BUM traffic
 - Providing host mobility
 - Providing multi-homing for active active connections - one host to several switches without any VPC
+- We establish eBGP or iBGP sessions between leafs and spines. If BGP session is used for underlay, than it will be the second session via separate Loopback interfaces. This new BGP session uses only l2vpn address family
 
 ## Inside EVPN packet
 - Type: Update message (2)
