@@ -1,4 +1,5 @@
 # VxLAN
+
 Cisco Live:
 - BRKDCN-2450 - VXLAN EVPN Day-2 operation  
 - BRKDCT-3378 - Building Data Center Networks with VXLAN BGP-EVPN - done
@@ -11,8 +12,9 @@ Juniper:
 - Data Center EVPN-VXLAN Fabric Architecture Guide
 - DAY ONE: DAtA CENtEr FUNDAMENtALS
 - DAY ONE: ROUTING IN FAT TREES (RIFT)
-   
-   
+- THIS WEEK: DATA CENTER DEPLOYMENT WITH EVPN/VXLAN
+ 
+## Concepts   
 - RFC 7348
 - Virtual Extensible LAN, MAC in UDP encapsulation, port 4789, 50 bytes overhead
 - MTU should be large
