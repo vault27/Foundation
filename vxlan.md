@@ -157,6 +157,7 @@ admin state is up,  Hardware: NVE
 - Providing host mobility
 - Providing multi-homing for active active connections - one host to several switches without any VPC
 - We establish eBGP or iBGP sessions between leafs and spines. If BGP session is used for underlay, than it will be the second session via separate Loopback interfaces. This new BGP session uses only l2vpn address family
+- eBGP is better because if we have superspines we will have to configure hierarchical design for RR
 
 ## Inside EVPN packet
 - Type: Update message (2)
