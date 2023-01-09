@@ -5,8 +5,8 @@ Cisco Live:
 - BRKDCT-2404 - VXLAN Deployment Models - A practical perspective  
 - BRKDCN-2304 - L4-L7 Service Integration in Multi-Tenant VXLAN EVPN Data Center Fabrics
 - LTRDCN-2223 - Implementing VXLAN In a Data Center
-- DGTL-BRKDCN-1645 - Introduction to VXLAN - The future path of your datacenter
-
+- DGTL-BRKDCN-1645 - Introduction to VXLAN - The future path of your datacenter  
+  
 Juniper:
 - Data Center EVPN-VXLAN Fabric Architecture Guide
 - DAY ONE: DAtA CENtEr FUNDAMENtALS  
