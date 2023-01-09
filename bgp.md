@@ -65,6 +65,7 @@
 - If everything is fine, only keepalives are sent, nothing inside them
 - When connection starts, routers send OPEN messages with AS number, router id and capabilities list
 - Then they send UPDATE messages with next hop as themselfs. One packet can contain several UPDATE messgaes and even KEEPALIVE inside. UPDATE message contains PATH ATTRIBUTES: ORIGIN, AS_PATH, MP_REACH_NLRI
+- Only the following routes are sent: network command, redistribute command via route map of local addresses, redistribute from other protocols, routes received via BGP, nothing is sent by default
 
 ## Capabilities
 
