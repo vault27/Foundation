@@ -9,8 +9,10 @@ Cisco Live:
   
 Juniper:
 - Data Center EVPN-VXLAN Fabric Architecture Guide
-- DAY ONE: DAtA CENtEr FUNDAMENtALS  
-
+- DAY ONE: DAtA CENtEr FUNDAMENtALS
+- DAY ONE: ROUTING IN FAT TREES (RIFT)
+   
+   
 - RFC 7348
 - Virtual Extensible LAN, MAC in UDP encapsulation, port 4789, 50 bytes overhead
 - MTU should be large
