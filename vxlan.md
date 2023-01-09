@@ -1,8 +1,15 @@
 # VxLAN
-BRKDCN-2450 - VXLAN EVPN Day-2 operation  
-BRKDCT-3378 - Building Data Center Networks with VXLAN BGP-EVPN  
-BRKDCT-2404 - VXLAN Deployment Models - A practical perspective  
-BRKDCN-2304 - L4-L7 Service Integration in Multi-Tenant VXLAN EVPN Data Center Fabrics  
+Cisco Live:
+- BRKDCN-2450 - VXLAN EVPN Day-2 operation  
+- BRKDCT-3378 - Building Data Center Networks with VXLAN BGP-EVPN - done
+- BRKDCT-2404 - VXLAN Deployment Models - A practical perspective  
+- BRKDCN-2304 - L4-L7 Service Integration in Multi-Tenant VXLAN EVPN Data Center Fabrics
+- LTRDCN-2223 - Implementing VXLAN In a Data Center
+- DGTL-BRKDCN-1645 - Introduction to VXLAN - The future path of your datacenter
+
+Juniper:
+- Data Center EVPN-VXLAN Fabric Architecture Guide
+- DAY ONE: DAtA CENtEr FUNDAMENtALS
     
 - RFC 7348
 - Virtual Extensible LAN, MAC in UDP encapsulation, port 4789, 50 bytes overhead
