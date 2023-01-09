@@ -56,7 +56,8 @@ Categories:
 - Cat 6 - 10 Gbps - 55 meters
 - Cat 6a - 10 Gbps
 - Cat 7/7a - 10 Gbps
-- Cat 8 - 40 Gbits - 30 meters
+- Cat 8 - 40 Gbits - 30 meters  
+
 STP - Shielded Twisted Pair - covered with foil
 
 
