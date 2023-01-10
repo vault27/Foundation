@@ -273,9 +273,17 @@ General approach:
 One large configuration file on Nexus with comments, base on my experience
 ```
 feature bgp
+
+#Enable route leaking, RT, RD
 install feature-set mpls
 feature-set mpls
 feature mpls l3vpn
+
+#Enable VTEP for VXLAN on Leaf and border
+nv overlay evpn
+
+#Enable EVPN support in BGP
+nv overlay evpn
 
 router bgp 64701
   router-id 10.10.1.3
@@ -302,6 +310,14 @@ router bgp 64701
     description Spine-2
     timers 3 9
     address-family ipv4 unicast
+ 
+ #Neighboor config for EVPN overlay
+  neighbor 10.10.2.1
+    address-family l2vpn evpn
+        send-community both
+    update-source loopback 1
+ 
+ #VRF config in BGP
   vrf GOOGLE
     address-family ipv4 unicast
       redistribute direct route-map connected
