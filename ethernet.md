@@ -91,3 +91,14 @@ STP - Shielded Twisted Pair - covered with foil
 - carrier
 - collision
 
+## Mac flapping
+A MAC Flap is caused when a switch receives packets from two different interfaces with the same source MAC address.
+It may happen, if static Etherchannel is configured, and one switch considers physical link as individual and other switch considers it as a past of Etherchannel.  
+So LACP is better then static.  
+Check MAC address flapping - one MAC on several ports
+
+## Loop
+To identify a loop on a switch we can see broadcast counters on an interface:
+```
+show interface counters
+```
