@@ -18,6 +18,7 @@
 - LLC is not covered by Ethernet standard, it is covered in 802.2, it describes how multiple Layer 3 protocols can interact with multiple Layer 2 technologies, not only Ethernet
 
 ## CSMA/CD
+- No need any more
 - Simplex - only one side speaks
 - Half-Duplex - one talks, other keeps silence
 - Full-Duplex - both talks
@@ -60,12 +61,22 @@ Categories:
 
 STP - Shielded Twisted Pair - covered with foil
 
+## Auto-Negotiation
+- 802.3u - clause 28
+- Before auto negotiation after inserting a cable network interface sent an electric pulse and interface on other end had a green light
+- Then they encoded supported speeds in this pulse - auto-negotiation - 16 bits long - every bit for its own speed - other end replies with its options and acknowledgements
+- Negotiation: speed, duplex, flow control
+- Enabled everywhere by default and very stable nowdays
 
 ## Frame
 
+## Pause frames
+
+## Flow control
+
 ## Cabling
 
-## Ethernet inertface
+## Ethernet interface
 - scopeid
 - txqueuelen
 - errors - CRC failures on receipt of a frame: bad cable, bad interface, bad switch
