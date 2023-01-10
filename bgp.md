@@ -263,7 +263,14 @@ aggregate-address 10.99.0.0/31 summary-only
 ```
 
 
-## One large configuration file on Nexus with comments, base on my experience
+## Configuration
+General approach:
+- Enable BGP process and specify AS number
+- Configure what to send in IPv4 address family via network command or via redistribute
+- Configure neighbors configuring their AS number, address family, filters via route maps and additonal options like timers or allow-as-in
+- One BGP process serves for all VRFS and can have different neighbors for different address families
+- Dynamic neighbors can be configured
+One large configuration file on Nexus with comments, base on my experience
 ```
 feature bgp
 install feature-set mpls
