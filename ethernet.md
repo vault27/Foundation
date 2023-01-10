@@ -45,7 +45,7 @@ RJ-45 - it is a connector, mostly used, SFP connector can also be used
 - 10 Gbps - 10 Gig Ethernet - 10GBASE-T - 802.3an - Cooper - 100 m
 If we connect two devices on one level of OSI model then we use crossover cable: switch-switch hub-hub router-router  
 If we connect two devices on different levels of OSI model, then we use straight-through cable: router-switch, hub-PC, switch-hub  
-Crossover acble: 1 goes to 3, 2 goes to six  
+Crossover acble: 1 goes to 3, 2 goes to 6  
 Auto MDI-X technology on adapters switch automatically to correct cable type  
 The UTP cables differ in the following parameters:
 - Twists per centimeter - the more the better protection against EMI
