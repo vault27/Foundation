@@ -65,3 +65,13 @@ STP - Shielded Twisted Pair - covered with foil
 
 ## Cabling
 
+## Ethernet inertface
+- scopeid
+- txqueuelen
+- errors - CRC failures on receipt of a frame: bad cable, bad interface, bad switch
+- drops - IPv6, VLANs
+- overrruns
+- frame
+- carrier
+- collision
+
