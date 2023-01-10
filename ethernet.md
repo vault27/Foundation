@@ -69,6 +69,11 @@ STP - Shielded Twisted Pair - covered with foil
 - Enabled everywhere by default and very stable nowdays
 
 ## Frame
+- Preamble - 7 bits - to synch receiver
+- Start of frame
+
+
+## Jumbo frames
 
 ## Pause frames
 
