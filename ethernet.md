@@ -71,7 +71,11 @@ STP - Shielded Twisted Pair - covered with foil
 ## Frame
 - Preamble - 7 bits - to synch receiver
 - Start of frame
-
+  
+FCS
+A frame check sequence (FCS) is an error-detecting code added to a frame in a communications protocol. Frames are used to send payload data from a source to a destination.  
+By far the most popular FCS algorithm is a cyclic redundancy check (CRC), used in Ethernet and other IEEE 802 protocols with 32 bits.  
+The FCS provides error detection only. Error recovery must be performed through separate means. Ethernet, for example, specifies that a damaged frame should be discarded and does not specify any action to cause the frame to be retransmitted. Other protocols, notably the Transmission Control Protocol (TCP), can notice the data loss and initiate retransmission and error recovery.
 
 ## Jumbo frames
 
@@ -102,3 +106,5 @@ To identify a loop on a switch we can see broadcast counters on an interface:
 ```
 show interface counters
 ```
+## Duplex mismatch
+In such conditions, the full-duplex end of the connection sends its packets while receiving other packets; this is exactly the point of a full-duplex connection. Meanwhile, the half-duplex end cannot accept the incoming data while it is sending – it will sense it as a collision.
