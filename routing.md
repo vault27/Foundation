@@ -47,7 +47,6 @@ show ip cef 10.0.0.0 255.0.0.0 longer-prefixes
 show ipv6 cef
 ```
 
-
 ## Routing protocols
 Link State routing protocol - every router builds a tree or a graph of the whole network. Then launches shortest path algorithm to find out best paths to all destinations. These paths go to a Routing table. Generally some variant of Dijkstra's algorithm is used.  
 LPM - Long Prefix Match - network with longest mask will be chosen from routing table. Default route has the shortest prefix and the lowest priority.
@@ -115,17 +114,38 @@ Mostly used for route redistribution: permit or deny redistribution based on mat
 Rapidly changing latency, packet reordering and maximum transmission unit (MTU) differences within a network flow, which could disrupt the operation of many Internet protocols, most notably TCP and path MTU discovery. RFC 2992 - load balances based on hash of packet header.
 
 ## Load balance
+- It is also called Load Sharing in the Unicast FIB
 - Same AD and cost - load balance
 - The IGRP and EIGRP routing processes also support unequal cost load balancing
-- It can be per packet and per destination
+- It can be per packet and per destination and per flow
 - Per-packet load balancing guarantees equal load across all links, however, there is potential that the packets can arrive out of order at the destination because differential delay can exist within the network
 - Per packet load balancing does disable the forwarding acceleration by a route cache, because the route cache information includes the outgoing interface
 - For per-packet load balancing, the forwarding process determines the outgoing interface for each packet when it looks up the route table and picks the least used interface. This ensures equal utilization of the links but is a processor intensive task and impacts the overall forwarding performance
+- Per packet is not used
 - If we use fast switching, per destination load balance is used, in other case per packet is used
-- With show ip route command we can see equal routes
-- There is also an asterisk * next to one of the block entries. This corresponds to the active route that is used for new traffic. The term 'new traffic' corresponds to a single packet or an entire flow to a destination, based on the type of switching configured. The position of the asterisk * continues to rotate among the equal cost paths each time a packet/flow is served
-- 
-
+- Per destination is not used in our days as well
+- Polarization of traffic - when most of the traffic goes via the same link
+- Per flow is used everywhere
+- The unicast RIB installs this best path set into the Forwarding Information Base (FIB) for use by the forwarding plane
+- The forwarding plane uses a load-sharing algorithm to select one of the installed paths in the FIB to use for a given data packet
+- Load sharing uses the same path for all packets in a given flow. A flow is defined by the load-sharing method that you configure
+- Load-sharing method can consist of src/dst IP, src/dst port, in different combinations
+- Default load sharing method in Nexus: address source-destination port source-destination
+- That is why VXLAN traffic always goes via different links - because source UDP port is always different. And usual ping always goes via the same link
+Show method on Nexus:
+```
+leaf-1# show ip load-sharing
+IPv4/IPv6 ECMP load sharing:
+Universal-id (Random Seed): 316862977
+Load-share mode : address source-destination port source-destination
+GRE-Outer hash is disabled
+Concatenation is disabled
+Rotate: 32
+```
+Configure method on Nexus
+```
+switch(config)# ip load-sharing address source-destination
+```
 ## Route map / Prefix map / IP prefix
 
 ## FHRP: GLBP/HSRP/VRRP
