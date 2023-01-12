@@ -129,7 +129,7 @@ Rapidly changing latency, packet reordering and maximum transmission unit (MTU) 
 - The unicast RIB installs this best path set into the Forwarding Information Base (FIB) for use by the forwarding plane
 - The forwarding plane uses a load-sharing algorithm to select one of the installed paths in the FIB to use for a given data packet
 - Load sharing uses the same path for all packets in a given flow. A flow is defined by the load-sharing method that you configure
-- Load-sharing method can consist of src/dst IP, src/dst port, in different combinations
+- Load-sharing method can consist of src/dst IP, src/dst port, in different combinations, then hash is calculated on these values
 - Default load sharing method in Nexus: address source-destination port source-destination
 - That is why VXLAN traffic always goes via different links - because source UDP port is always different. And usual ping always goes via the same link
 Show method on Nexus:
