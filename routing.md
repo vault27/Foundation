@@ -22,6 +22,12 @@ In basic forwarding router has to perform for every packet two lookups in two se
 - Fast switching - first packet goes through process switching, results are added to fast switching cache or route cache. The cache contains the destination IP address, the next-hop information, and the data-link header information that needs to be added to the packet before forwarding. An entry **per each destination address, not per destination subnet/prefix**. All future packets with the same destination addresses use this data and are switched faster. Also called **route once, forward many times**  
 Draw backs: first packets are fully processed, cache entries are timed out quickly, if tables are changed, route entries are invalid, load balancing can only occur per destination  
 Not used any more 
+Disable Fast switching
+```
+Router#configure terminal
+Router(config)#interface Ethernet 0
+Router(config-if)#no ip route-cache
+```
 - CEF - Cisco Express Forwarding - Preconstruct the Layer 2 frame headers and egress interface information for each neighbor, and keep them ready in an adjacency table stored in the router’s memory. This adjacency table can be constructed immediately as the routing table is populated. No need to visit ARP table for every packet.  
 Routing table is very slow to search and contains too much data, that is why the destination prefixes alone from the routing table can be stored in a separate data structure called the Forwarding Information Base, or **FIB**, optimized for rapid lookups (usually, tree-based data structures meet this require- ment). Each entry in the FIB that represents a destination prefix can instead contain
 a pointer toward the particular entry in the adjacency table that stores the appropriate rewrite information: Layer 2 frame header and egress interface indication.  
@@ -104,9 +110,6 @@ Mostly used for route redistribution: permit or deny redistribution based on mat
 - One or more statements with the same name
 - Each has a sequence number
 - Permit or deny, means if packet should match statement or not
-- 
-
-## CEF
 
 ## ECMP
 Rapidly changing latency, packet reordering and maximum transmission unit (MTU) differences within a network flow, which could disrupt the operation of many Internet protocols, most notably TCP and path MTU discovery. RFC 2992 - load balances based on hash of packet header.
@@ -115,6 +118,13 @@ Rapidly changing latency, packet reordering and maximum transmission unit (MTU) 
 - Same AD and cost - load balance
 - The IGRP and EIGRP routing processes also support unequal cost load balancing
 - It can be per packet and per destination
+- Per-packet load balancing guarantees equal load across all links, however, there is potential that the packets can arrive out of order at the destination because differential delay can exist within the network
+- Per packet load balancing does disable the forwarding acceleration by a route cache, because the route cache information includes the outgoing interface
+- For per-packet load balancing, the forwarding process determines the outgoing interface for each packet when it looks up the route table and picks the least used interface. This ensures equal utilization of the links but is a processor intensive task and impacts the overall forwarding performance
+- If we use fast switching, per destination load balance is used, in other case per packet is used
+- With show ip route command we can see equal routes
+- There is also an asterisk * next to one of the block entries. This corresponds to the active route that is used for new traffic. The term 'new traffic' corresponds to a single packet or an entire flow to a destination, based on the type of switching configured. The position of the asterisk * continues to rotate among the equal cost paths each time a packet/flow is served
+- 
 
 ## Route map / Prefix map / IP prefix
 
