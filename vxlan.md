@@ -89,11 +89,12 @@ It is called ingress-replication. No control plane is used. First packet (ARP) a
 - Ethernet Tag ID = 0 - in most cases - defines bridge table inside VRF - several bridge tables can be in one vrf - in most cases we add 1 vlan to one MAC VRF, this is required only when several VLANs are in 1 MAC VRF
 - We add VLAN to MAC VRF instead of interface in IP VRF
 
-## Configuration of static peers on Nexus 9000
-We create special Loopback for overlay, announce it to BGP.  
+## Configuration
+### Static peers on Nexus
+Configuration overview  
+We create special Loopback for overlay, announce it to BGP Underlay.  
 For every VLAN where clients are connected we configure VNI.  
 Next we configure nve interface, where we configure peers for every VNI.  
-Static confogiration:
 ```
 feature vn-segment-vlan-based
 feature nv overlay
@@ -117,6 +118,15 @@ interface nve1
       peer-ip 10.10.2.4
       peer-ip 10.10.2.5
       
+```
+
+### BGP EVPN on Nexus
+Configuration overview  
+Special loopback for Overlay is created. From this overlay address we build l2vpn adjacency with Spines and send then only l2vpn route updates.  
+For overlay neighbor we configure sending all communities, do not change next hop and multihop.
+On  leafs we configure BGP as host reachability protocol and as ingress replication protocol.  
+Also we configure for each VNI RD, RT in evpn section.
+```
 ```
 
 ## Verification
