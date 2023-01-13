@@ -2,7 +2,8 @@
 
 ## Concepts
 - Routing protocol that is used to exchange network layer reachability information (NLRI) between routing domains
-- Internet de facto protocol
+- Internet de facto protocol, Routing protocol of Intenet, Port 179 TCP, EGP
+- In general, it is an application, which establishes connection and exchange information: IPv4, IPv6, l2vpn, VPnv4...All data in a packet is presented in the form of Path attributes, all these make it very flexible
 - It is not binded to interface, we just configure neighbors and then connect to them according to routing table
 - It does not use metric like IGP to calculate best route, it uses many steps and PAs
 - Only one BGP process can be launched with VRFs and using local-as option to send different AS number
@@ -13,8 +14,7 @@
 - Does not know about all networks, knows only about neighboors
 - Use of BGP for Routing in Large-Scale Data Centers - RFC 7938: private ASN, single-hop, AS numbering to avoid path hunting, timers hardening, BFD
 - Very slow convergance by design, Hello - 60 sec, Dead - 180 sec
-- Routing protocol of Intenet, Port 179 TCP, EGP
-- ECMP to work AS Path should be absolutely identical
+- ECMP to work: AS Path should be absolutely identical
 - The AD Values: eBGP - 20, iBGP - 200
 - Flow control, route manipulation, PBR - ???
 - What is happend when route is deleted??
@@ -22,7 +22,6 @@
 - Announces only best path to prefix, even if got three for example, and all three are in ECMP and work well - anyway it will select best and propogate it
 - Router ID - Highest Loopback/Highest Active Physical Interface/Manual
 - When IP redundancy exists between two eBGP peers, the eBGP neighbor commands should use loopback IP addresses to take advantage of that redundancy
-- In fact it is an application - it works on Layer 7 and can built adjanecy over hops
 - Loops are avoided by AS_PATH
 - Does not select the best path from a performance point of view, it will select the best path from a business point of view
 - The Internet, in its purest form, is a loosely connected graph of independent networks (also called Autonomous Systems (AS for short)). These networks use a signaling protocol called BGP (Border Gateway Protocol) to inform their neighbors (also known as peers) about the reachability of IP prefixes (a group of IP addresses) in and through their network. Part of this exchange contains useful metadata about the IP prefix that are used to inform network routing decisions. One example of the metadata is the full AS-path, which consists of the different autonomous systems an IP packet needs to pass through to reach its destination
@@ -45,7 +44,6 @@
 - allowas-in 1 - Accept as-path with my AS present in it
 - Prioritize particular routes via route map and increasing local preference
 - Allow only certain prefixes from certain neighboors via ip prefixes and route maps 
-
 
 ## Data Centre Design
 - ASN numbering to exclude path hunting: Spines have the same AS
@@ -248,6 +246,7 @@ default-information originate
 aggregate-address only when:
 as-set is set and at least one subnet of summarized route use Incomplete (?)
 ```
+
 **Configure Origin code in Route map**
 ```
 dyn1(config-route-map)# set origin ?
@@ -261,7 +260,6 @@ Traffic specified here will be available, while at least one network exists, whi
 ```
 aggregate-address 10.99.0.0/31 summary-only
 ```
-
 
 ## Configuration
 General approach:
