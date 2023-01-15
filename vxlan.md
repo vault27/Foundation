@@ -218,7 +218,8 @@ Interface Peer-IP                                 State LearnType Uptime   Route
 nve1      10.10.2.4                               Up    DP        01:08:14 n/a
 nve1      10.10.2.5                               Down  DP        0.000000 n/a
 ```
-Show info about nve interface
+
+**Show info about nve interface**
 
 ```
 leaf-1(config)# show int nve1
@@ -231,9 +232,11 @@ admin state is up,  Hardware: NVE
     ucast: 71 pkts, 6890 bytes - mcast: 15 pkts, 960 bytes
   TX
     ucast: 92 pkts, 12834 bytes - mcast: 0 pkts, 0 bytes
-    
+ ```
+ 
 **Show l2vpn routing table**  
 With 2 Route Type 2 routes (for host traffic) and 2 Route Type 3 routes (for BUM traffic)
+
 ```
 leaf-2(config-if-nve)# show bgp l2vpn evpn
 BGP routing table information for VRF default, address family L2VPN EVPN
