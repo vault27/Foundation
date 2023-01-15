@@ -238,7 +238,8 @@ admin state is up,  Hardware: NVE
 With 2 Route Type 2 routes (for host traffic) and 2 Route Type 3 routes (for BUM traffic)
 
 ```
-leaf-2(config-if-nve)# show bgp l2vpn evpn
+leaf-2(config-if-nve)# show bgp l2vpn evpn  
+
 BGP routing table information for VRF default, address family L2VPN EVPN
 BGP table version is 58, Local Router ID is 10.10.1.4
 Status: s-suppressed, x-deleted, S-stale, d-dampened, h-history, *-valid, >-best
