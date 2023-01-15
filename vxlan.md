@@ -134,7 +134,7 @@ For overlay neighbor we configure sending all communities, do not change next ho
 On  leafs we configure BGP as host reachability protocol and as ingress replication protocol 
 Also we configure for each VNI RD, RT in evpn section 
 
-Leaf
+**Leaf**
 ```
 #Enables EVPN Control-Plane in BGP
 nv overlay evpn
@@ -174,6 +174,39 @@ interface nve1
   member vni 200
 ```
 
+**Spine**
+```
+nv overlay evpn
+feature bgp
+feature vn-segment-vlan-based
+feature nv overlay
+
+route-map SET_NEXT_HOP_UNCHANGED permit 10
+  set ip next-hop unchanged
+  
+router bgp 64600
+address-family l2vpn evpn
+# Required for eBGP. Allows the spine to retain and advertise all EVPN routes when there are no local VNI configured with matching import route targets
+    retain route-target all
+    
+neighbor 10.10.2.3
+    remote-as 64701
+    update-source loopback1
+    ebgp-multihop 2
+    address-family l2vpn evpn
+      send-community
+      send-community extended
+      route-map SET_NEXT_HOP_UNCHANGED out
+  neighbor 10.10.2.4
+    remote-as 64702
+    update-source loopback1
+    ebgp-multihop 2
+    address-family l2vpn evpn
+      send-community
+      send-community extended
+      route-map SET_NEXT_HOP_UNCHANGED out
+```
+
 ## Verification
 Show all NVE neighboors, not very reliable data, because connections are connectionless :)  
 Peer is up just because it exists in routing table. It even mau not accept VxLAN packets.
@@ -186,6 +219,7 @@ nve1      10.10.2.4                               Up    DP        01:08:14 n/a
 nve1      10.10.2.5                               Down  DP        0.000000 n/a
 ```
 Show info about nve interface
+
 ```
 leaf-1(config)# show int nve1
 nve1 is up
@@ -197,6 +231,27 @@ admin state is up,  Hardware: NVE
     ucast: 71 pkts, 6890 bytes - mcast: 15 pkts, 960 bytes
   TX
     ucast: 92 pkts, 12834 bytes - mcast: 0 pkts, 0 bytes
+    
+**Show l2vpn routing table**  
+With 2 Route Type 2 routes (for host traffic) and 2 Route Type 3 routes (for BUM traffic)
+```
+leaf-2(config-if-nve)# show bgp l2vpn evpn
+BGP routing table information for VRF default, address family L2VPN EVPN
+BGP table version is 58, Local Router ID is 10.10.1.4
+Status: s-suppressed, x-deleted, S-stale, d-dampened, h-history, *-valid, >-best
+Path type: i-internal, e-external, c-confed, l-local, a-aggregate, r-redist, I-injected
+Origin codes: i - IGP, e - EGP, ? - incomplete, | - multipath, & - backup, 2 - best2
+
+   Network            Next Hop            Metric     LocPrf     Weight Path
+Route Distinguisher: 100:100    (L2VNI 100)
+*>l[2]:[0]:[0]:[48]:[0050.7966.682d]:[0]:[0.0.0.0]/216
+                      10.10.2.4                         100      32768 i
+*>e[2]:[0]:[0]:[48]:[0050.7966.683f]:[0]:[0.0.0.0]/216
+                      10.10.2.3                                      0 64600 64701 i
+*>e[3]:[0]:[32]:[10.10.2.3]/88
+                      10.10.2.3                                      0 64600 64701 i
+*>l[3]:[0]:[32]:[10.10.2.4]/88
+                      10.10.2.4                         100      32768 i
 ```
 
 ## EVPN
