@@ -1,4 +1,4 @@
-# VxLAN
+# VxLAN & EVPN
 
 Cisco Live:
 - BRKDCN-2450 - VXLAN EVPN Day-2 operation  
@@ -70,8 +70,8 @@ None of the other fields that flow-based ECMP normally uses are suitable for use
 That is why UDP is used, not IP for example.  
 All VxLAN packets from one Leaf to another have different UDP source ports for load balancing purposes.
 
-## Static configuration
-It is called ingress-replication. No control plane is used. First packet (ARP) and broadcast are sent to all peers, configured for this VNI. All next packets are sent only to particular VTEP. VxLAN packets between leafs are load balanced between spines.
+## Static configuration - Flood and learn
+It is called flood and learn. No control plane is used. First packet (ARP) and broadcast are sent to all peers, configured for this VNI. All next packets are sent only to particular VTEP. VxLAN packets between leafs are load balanced between spines
 
 ## Firewall injection
 - Connected to border leaf via TRUNK interface
@@ -90,19 +90,25 @@ It is called ingress-replication. No control plane is used. First packet (ARP) a
 - We add VLAN to MAC VRF instead of interface in IP VRF
 
 ## Configuration
+
 ### Static peers on Nexus
 Configuration overview  
-We create special Loopback for overlay, announce it to BGP Underlay.  
-For every VLAN where clients are connected we configure VNI.  
-Next we configure nve interface, where we configure peers for every VNI.  
+We create special Loopback for overlay, announce it to BGP Underlay    
+For every VLAN where clients are connected we configure VNI  
+Next we configure nve interface, where we configure peers for every VNI
+
 ```
+#
 feature vn-segment-vlan-based
+
+#Enables VTEP (only required on Leaf or Border)
 feature nv overlay
 
 vlan 100
   name PROD
   vn-segment 100
-  
+
+#Interface for clients  
 interface Ethernet1/3
   switchport access vlan 100
 
@@ -110,6 +116,7 @@ interface nve1
   no shutdown
   source-interface loopback1
   member vni 100
+  # Method of processing BUM traffic for this VLAN and how to learn where rewuired MACs are.
     ingress-replication protocol static
       peer-ip 10.10.2.4
       peer-ip 10.10.2.5
@@ -122,11 +129,49 @@ interface nve1
 
 ### BGP EVPN on Nexus
 Configuration overview  
-Special loopback for Overlay is created. From this overlay address we build l2vpn adjacency with Spines and send then only l2vpn route updates.  
-For overlay neighbor we configure sending all communities, do not change next hop and multihop.
-On  leafs we configure BGP as host reachability protocol and as ingress replication protocol.  
-Also we configure for each VNI RD, RT in evpn section.
+Special loopback for Overlay is created. From this overlay address we build l2vpn adjacency with Spines and send then only l2vpn route updates  
+For overlay neighbor we configure sending all communities, do not change next hop and multihop 
+On  leafs we configure BGP as host reachability protocol and as ingress replication protocol 
+Also we configure for each VNI RD, RT in evpn section 
+
+Leaf
 ```
+#Enables EVPN Control-Plane in BGP
+nv overlay evpn
+
+feature bgp
+
+feature vn-segment-vlan-based
+
+#Enables VTEP (only required on Leaf or Border)
+feature nv overlay
+
+router bgp 64701
+  address-family l2vpn evpn
+    retain route-target all
+  neighbor 10.10.2.1
+    remote-as 64600
+    update-source loopback1
+    ebgp-multihop 2
+    address-family l2vpn evpn
+      send-community
+      send-community extended
+      
+evpn
+  vni 100 l2
+    rd 100:100
+# Route targets for import and export are the same here
+    route-target import 100:100
+    route-target export 100:100
+    
+interface nve1
+  no shutdown
+  host-reachability protocol bgp - we find out MACs via BGP
+  source-interface loopback1
+  member vni 1
+  member vni 100
+    ingress-replication protocol bgp - we process BUM traffic via BGP - Route Types 3
+  member vni 200
 ```
 
 ## Verification
