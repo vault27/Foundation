@@ -174,7 +174,8 @@ interface nve1
   member vni 200
 ```
 
-**Spine**
+**Spine**  
+Here we configure only BGP EVPN, no VTEP, VNI, NVE...
 ```
 nv overlay evpn
 feature bgp
