@@ -16,6 +16,7 @@
 - Very slow convergance by design, Hello - 60 sec, Dead - 180 sec
 - ECMP to work: AS Path should be absolutely identical
 - The AD Values: eBGP - 20, iBGP - 200
+- eBGP changes next-hop to by default
 - Flow control, route manipulation, PBR - ???
 - What is happend when route is deleted??
 - Huge routing table
