@@ -216,16 +216,7 @@ Don't use or advertise the route/s learned via an iBGP neighbor to an eBG neighb
 - Term export to mean “redistribute out of the VRF into BGP” and the term import to mean “redistribute into the VRF from BGP.”
 - During import we may decrease routes priority by decreasing local preference or weight (these attributes are local and will not leave AS) with route map after import command
 
-## EVPN
-- Allows building l2vpn and l3vpn
-- Used as control plane for VxLAN fabric  
-5 route types:
-- Type 1 - Ethernet auto discovery route (A-D)
 - Type 2 - MAC/IP advertisment route
-- Type 3 - Inclusive multicast Ethernet tag route
-- Type 4 - Ethernet segemtn route
-- Type 5 - IP prefix route - for l3vpns
-
 ## Load Share with BGP in Single and Multihomed Environments
 
 ## Configuration
