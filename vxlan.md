@@ -212,7 +212,8 @@ Show all NVE neighboors, not very reliable data, because connections are connect
 Peer is up just because it exists in routing table. It even mau not accept VxLAN packets.
 
 ```
-show nve peers
+show nve peers  
+
 Interface Peer-IP                                 State LearnType Uptime   Router-Mac
 --------- --------------------------------------  ----- --------- -------- -----------------
 nve1      10.10.2.4                               Up    DP        01:08:14 n/a
@@ -222,7 +223,8 @@ nve1      10.10.2.5                               Down  DP        0.000000 n/a
 **Show info about nve interface**
 
 ```
-leaf-1(config)# show int nve1
+leaf-1(config)# show int nve1  
+
 nve1 is up
 admin state is up,  Hardware: NVE
   MTU 9216 bytes
