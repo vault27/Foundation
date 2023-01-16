@@ -285,7 +285,20 @@ Neighbor        V    AS MsgRcvd MsgSent   TblVer  InQ OutQ Up/Down  State/PfxRcd
  ```
  leaf-2(config-evpn-evi)# show bgp l2vpn evpn route-type 2
  ```
-We can also filter based on different parametres, for example RD
+We can also filter based on different parametres, for example RD  
+**Show MAC addresses: both local and from remote VTEP**
+```
+leaf-1(config-evpn-evi)# show mac address-table
+Legend:
+        * - primary entry, G - Gateway MAC, (R) - Routed MAC, O - Overlay MAC
+        age - seconds since last seen,+ - primary entry using vPC Peer-Link,
+        (T) - True, (F) - False, C - ControlPlane MAC, ~ - vsan
+   VLAN     MAC Address      Type      age     Secure NTFY Ports
+---------+-----------------+--------+---------+------+----+------------------
+C  100     0050.7966.682d   dynamic  0         F      F    nve1(10.10.2.4)
+*  100     0050.7966.683f   dynamic  0         F      F    Eth1/3
+G    -     5000.3e00.1b08   static   -         F      F    sup-eth1(R)
+```
 
 ## EVPN
 - Ethernet VPN (EVPN) is a technology for carrying layer 2 Ethernet traffic as a virtual private network using wide area network protocols. EVPN technologies include Ethernet over MPLS and Ethernet over VXLAN
