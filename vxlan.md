@@ -135,6 +135,7 @@ Configuration overview
 - On  leafs we configure BGP as host reachability protocol and as ingress replication protocol 
 - Also we configure for each VNI RD, RT in evpn section. RD can be any, it is better to use loopbackIP:VNI for it, for better understanding when we see it in routing table. RT can be any as well, but it should be correlated what we import and export on all VTEPS, so it is better to do it the same on all VTEPS for one VNI
 - This type of configuration will require configuration for every VLAN, if we have 1000 VLANs
+- Route Type 2 dissapears, when host does not send any traffic for some time and disspears from switch MAC table, after this withdrawl is sent
 
 **Leaf**
 ```
@@ -279,6 +280,12 @@ Neighbor        V    AS MsgRcvd MsgSent   TblVer  InQ OutQ Up/Down  State/PfxRcd
 10.10.2.3       4 64701      81      89       18    0    0 00:39:28 1
 10.10.2.4       4 64702      82      85       18    0    0 01:16:27 1
  ```
+ 
+ **Show details about particular route type**
+ ```
+ leaf-2(config-evpn-evi)# show bgp l2vpn evpn route-type 2
+ ```
+We can also filter based on different parametres, for example RD
 
 ## EVPN
 - Ethernet VPN (EVPN) is a technology for carrying layer 2 Ethernet traffic as a virtual private network using wide area network protocols. EVPN technologies include Ethernet over MPLS and Ethernet over VXLAN
