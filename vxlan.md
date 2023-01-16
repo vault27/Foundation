@@ -1,6 +1,7 @@
 # VxLAN & EVPN
+Everything I need to know about VxLAN/EVPN in an extremely structured, brief language, that I understand the most
 
-Cisco Live:
+## Cisco Live useful presentations regarding this topic
 - BRKDCN-2450 - VXLAN EVPN Day-2 operation  
 - BRKDCT-3378 - Building Data Center Networks with VXLAN BGP-EVPN - done
 - BRKDCT-2404 - VXLAN Deployment Models - A practical perspective  
