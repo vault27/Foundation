@@ -130,10 +130,11 @@ interface nve1
 
 ### BGP EVPN on Nexus
 Configuration overview  
-Special loopback for Overlay is created. From this overlay address we build l2vpn adjacency with Spines and send then only l2vpn route updates  
-For overlay neighbor we configure sending all communities, do not change next hop and multihop 
-On  leafs we configure BGP as host reachability protocol and as ingress replication protocol 
-Also we configure for each VNI RD, RT in evpn section 
+- Special loopback for Overlay is created. From this overlay address we build l2vpn adjacency with Spines and send then only l2vpn route updates   
+- For overlay neighbor we configure sending all communities, do not change next hop and multihop 
+- On  leafs we configure BGP as host reachability protocol and as ingress replication protocol 
+- Also we configure for each VNI RD, RT in evpn section. RD can be any, it is better to use loopbackIP:VNI for it, for better understanding when we see it in routing table. RT can be any as well, but it should be correlated what we import and export on all VTEPS, so it is better to do it the same on all VTEPS for one VNI
+- This type of configuration will require configuration for every VLAN, if we have 1000 VLANs
 
 **Leaf**
 ```
@@ -161,7 +162,7 @@ router bgp 64701
 # Enable MAC VRF and Type 2 routes
 evpn
   vni 100 l2
-    rd 100:100
+    rd 10.10.2.4:100
 # Route targets for import and export are the same here
     route-target import 100:100
     route-target export 100:100
