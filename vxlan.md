@@ -156,7 +156,8 @@ router bgp 64701
     address-family l2vpn evpn
       send-community
       send-community extended
-      
+
+# Enable MAC VRF and Type 2 routes
 evpn
   vni 100 l2
     rd 100:100
@@ -259,7 +260,23 @@ Route Distinguisher: 100:100    (L2VNI 100)
                       10.10.2.3                                      0 64600 64701 i
 *>l[3]:[0]:[32]:[10.10.2.4]/88
                       10.10.2.4                         100      32768 i
-```
+                      
+ ```
+ 
+ **Show EVPN neighboors**
+ ```
+ spine-1# show bgp l2vpn evpn summary
+BGP summary information for VRF default, address family L2VPN EVPN
+BGP router identifier 10.10.1.1, local AS number 64600
+BGP table version is 18, L2VPN EVPN config peers 2, capable peers 2
+2 network entries and 2 paths using 440 bytes of memory
+BGP attribute entries [2/328], BGP AS path entries [2/12]
+BGP community entries [0/0], BGP clusterlist entries [0/0]
+
+Neighbor        V    AS MsgRcvd MsgSent   TblVer  InQ OutQ Up/Down  State/PfxRcd
+10.10.2.3       4 64701      81      89       18    0    0 00:39:28 1
+10.10.2.4       4 64702      82      85       18    0    0 01:16:27 1
+ ```
 
 ## EVPN
 - Ethernet VPN (EVPN) is a technology for carrying layer 2 Ethernet traffic as a virtual private network using wide area network protocols. EVPN technologies include Ethernet over MPLS and Ethernet over VXLAN
@@ -298,7 +315,8 @@ Route Distinguisher: 100:100    (L2VNI 100)
   - Sequence number - the more the better, used when host moves from one VTEP to another, new VTEP increases this number and sends to everyone
 
 ## EVPN route types
-VTEP gets all BGP updates and stores them in global table, but installs them to VRF only if there is required VNI
+VTEP gets all BGP updates and stores them in global table, but installs them to VRF only if there is required VNI.  
+In the beginning just after configuration is finished only Type routes are sent to all l2vpn neighbors, announcing that VTEP is ready to process BUM traffic. Type 2 routes will appear only after client hosts will start to generate traffic.
 - L2 operations
   - Type 2 - Host Advertisment - advertising MACs - Generated when new MAC is discovered, is sento all VTEPs withis this VNI, VTEPs import it to required MAC VRF according to RT
   - Type 3 - Inclusive Multicast Ethernet Tag  - for BUM - Ingress Replication - VTEP with particular VNI and VLAN sends this update to inform everyone that it is ready to accept BUM traffic for this particular VNI. Attribute PMSI_TUNNEL_ATTRIBUTE is added to BGP update, it contains VNI and replication type: Ingress Replication (or Multicast). This route update is generated for every VNI configured.
