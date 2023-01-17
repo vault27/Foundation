@@ -398,3 +398,32 @@ Path Attribute - PMSI_TUNNEL_ATTRIBUTE
     Tunnel ID: tunnel end point -> 10.10.2.3
         Tunnel type ingress replication IP end point: 10.10.2.3
 ```
+### Route type 2
+- Everything is pretty much the same here as in Route Type 3
+- PMSI_TUNNEL_ATTRIBUTE path attribute
+- Only MP_REACH_NLRI differs - route type, MAC inside
+
+```
+Path Attribute - MP_REACH_NLRI
+    Flags: 0x90, Optional, Extended-Length, Non-transitive, Complete
+    Type Code: MP_REACH_NLRI (14)
+    Length: 44
+    Address family identifier (AFI): Layer-2 VPN (25)
+    Subsequent address family identifier (SAFI): EVPN (70)
+    Next hop network address (4 bytes)
+        Next Hop: IPv4=10.10.2.3 - loopback address, not changed while travelling via Spines
+    Number of Subnetwork points of attachment (SNPA): 0
+    Network layer reachability information (35 bytes)
+        EVPN NLRI: MAC Advertisement Route
+            Route Type: MAC Advertisement Route (2)
+            Length: 33
+            Route Distinguisher: 00010a0a02030064 (10.10.2.3:100)
+            ESI: 00:00:00:00:00:00:00:00:00:00
+            Ethernet Tag ID: 0
+            MAC Address Length: 48
+            MAC Address: Private_66:68:3f (00:50:79:66:68:3f)
+            IP Address Length: 0
+            IP Address: NOT INCLUDED
+            VNI: 100
+
+```
