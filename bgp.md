@@ -96,10 +96,22 @@
 - Keep alive
 - Route refresh - request all routes for particular AFI/SAFI
 
+### Update message
+- This is a bunch of Path Attributes, both for BGP and MP-BGP
+
 ## Neighbor states
 
 
 ## Attributes
+- MP_REACH_NLRI
+- ORIGIN
+- AS_PATH
+- COMMUNITIES
+- EXTENDED_COMMUNITIES
+- NEXT_HOP
+- Multi Exit Discriminator (MED)
+
+
 ```
 BGP Message
     Type: UPDATE Message
