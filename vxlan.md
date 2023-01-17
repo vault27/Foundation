@@ -386,3 +386,15 @@ Path Attribute - MP_REACH_NLRI
             IP Address Length: 32
             IPv4 address: 10.10.2.3
 ```
+PMSI_TUNNEL_ATTRIBUTE:
+```
+Path Attribute - PMSI_TUNNEL_ATTRIBUTE
+    Flags: 0xc0, Optional, Transitive, Complete
+    Type Code: PMSI_TUNNEL_ATTRIBUTE (22)
+    Length: 9
+    Flags: 0
+    Tunnel Type: Ingress Replication (6)
+    VNI: 100
+    Tunnel ID: tunnel end point -> 10.10.2.3
+        Tunnel type ingress replication IP end point: 10.10.2.3
+```
