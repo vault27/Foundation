@@ -128,8 +128,9 @@ interface nve1
       
 ```
 
-### BGP EVPN on Nexus
+### BGP EVPN on Nexus - VLAN based service
 Configuration overview  
+- MAC VRF for every VLAN, 
 - Special loopback for Overlay is created. From this overlay address we build l2vpn adjacency with Spines and send then only l2vpn route updates   
 - For overlay neighbor we configure sending all communities, do not change next hop and multihop 
 - On  leafs we configure BGP as host reachability protocol and as ingress replication protocol 
@@ -172,11 +173,9 @@ interface nve1
   no shutdown
   host-reachability protocol bgp - we find out MACs via BGP
   source-interface loopback1
-  member vni 1
   member vni 100
     ingress-replication protocol bgp - we process BUM traffic via BGP - Route Types 3
-  member vni 200
-```
+ ```
 
 **Spine**  
 Here we configure only BGP EVPN, no VTEP, VNI, NVE...
@@ -349,3 +348,22 @@ In the beginning just after configuration is finished only Type routes are sent 
   - Type 5 - IP prefix route advertisment
 - Multicast
   - Type 6,7,8 - PIM, IGMP Leave/Join
+
+### Route type 3
+In general route update message looks like typical BGP update:
+```
+Border Gateway Protocol - UPDATE Message
+    Marker: ffffffffffffffffffffffffffffffff
+    Length: 99
+    Type: UPDATE Message (2)
+    Withdrawn Routes Length: 0
+    Total Path Attribute Length: 76
+    Path attributes
+        Path Attribute - MP_REACH_NLRI - here we have a route itself with AFI/SAFI, route type, next hop
+        Path Attribute - ORIGIN: IGP
+        Path Attribute - AS_PATH: 64701 
+        Path Attribute - EXTENDED_COMMUNITIES - here we have route target, encapsulation type: VXLAN
+        Path Attribute - PMSI_TUNNEL_ATTRIBUTE - here we have tunnel type - ingress replication, VNI number
+```
+```
+
