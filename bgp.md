@@ -103,14 +103,13 @@
 
 
 ## Attributes
-- MP_REACH_NLRI
+- MP_REACH_NLRI - includes next hop
 - ORIGIN
 - AS_PATH
 - COMMUNITIES
 - EXTENDED_COMMUNITIES
 - NEXT_HOP
 - Multi Exit Discriminator (MED)
-
 
 ```
 BGP Message
