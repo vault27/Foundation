@@ -368,7 +368,8 @@ Border Gateway Protocol - UPDATE Message
 
 MP_REACH_NLRI:
 
-`Path Attribute - MP_REACH_NLRI
+```
+Path Attribute - MP_REACH_NLRI
     Flags: 0x90, Optional, Extended-Length, Non-transitive, Complete
     Type Code: MP_REACH_NLRI (14)
     Length: 28
@@ -384,4 +385,4 @@ MP_REACH_NLRI:
             Ethernet Tag ID: 0
             IP Address Length: 32
             IPv4 address: 10.10.2.3
-`
+```
