@@ -365,5 +365,23 @@ Border Gateway Protocol - UPDATE Message
         Path Attribute - EXTENDED_COMMUNITIES - here we have route target, encapsulation type: VXLAN
         Path Attribute - PMSI_TUNNEL_ATTRIBUTE - here we have tunnel type - ingress replication, VNI number
 ```
-```
 
+MP_REACH_NLRI:
+
+`Path Attribute - MP_REACH_NLRI
+    Flags: 0x90, Optional, Extended-Length, Non-transitive, Complete
+    Type Code: MP_REACH_NLRI (14)
+    Length: 28
+    Address family identifier (AFI): Layer-2 VPN (25)
+    Subsequent address family identifier (SAFI): EVPN (70)
+    Next hop network address (4 bytes)
+    Number of Subnetwork points of attachment (SNPA): 0
+    Network layer reachability information (19 bytes)
+        EVPN NLRI: Inclusive Multicast Route
+            Route Type: Inclusive Multicast Route (3)
+            Length: 17
+            Route Distinguisher: 00010a0a02030064 (10.10.2.3:100)
+            Ethernet Tag ID: 0
+            IP Address Length: 32
+            IPv4 address: 10.10.2.3
+`
