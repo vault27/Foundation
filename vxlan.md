@@ -400,7 +400,7 @@ Path Attribute - PMSI_TUNNEL_ATTRIBUTE
 ```
 ### Route type 2
 - Everything is pretty much the same here as in Route Type 3
-- PMSI_TUNNEL_ATTRIBUTE path attribute
+- No PMSI_TUNNEL_ATTRIBUTE path attribute
 - Only MP_REACH_NLRI differs - route type, MAC inside
 
 ```
