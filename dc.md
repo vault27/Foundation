@@ -6,14 +6,13 @@
 - Microsegmentation: Private VLAN, ACI
 - People switched from legacy tiered architechture to Clos Fabrics
 
-Alternatives to Clos fabrics:
+## Alternatives to Clos fabrics
 - JellyFish
 - Torus
 - Dring
 - DragonFly
 - HyperCube
 - HyperX
-- 
 
 ## Non virtualized/legacy data centers
 - Difficult to configure VLANs on all devices
