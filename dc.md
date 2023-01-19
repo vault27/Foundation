@@ -34,6 +34,19 @@ Alternatives to Clos fabrics:
 - Overlay rides on top of the fabric
 - The fabric itself, when paired with an overlay, is called the underlay
 
+## What is Fabric
+
+## Fabric pros
+- Equidistant endpoints
+- Non-blocking core
+- Low latency and high bandwidth for both East-West and North-South traffic
+
+## Fabric types
+- Ethernet fabric. Examples: QFabric, Virtual Chassis Fabric (VCF), and Junos Fusion. No STP. Multipath. Load balancing. Not OPen Standard. Not scalable.
+- MPLS fabric. MPLS as a transport for Underlay. FRR(fast rerouting). Traffic engineering. MPLS signaling protocols like LDP, RSVP, or BGP-LU can be used to provide MPLS underlay. Devices should support MPLS.
+- IP fabric. Underlay IP transport. Open standard, flat forwarding, horizontally scalable, and non-blocking spine/leaf architecture.
+
+
 ## Underlay best practices
 - Do not use LAG between leaf and Spine. If one LAG link fails, it will reduce IGP cost and disable the whole LAG. Use Spines and Super Spines instead
 - Maximum simple config for Spine, do not connect external devices to it, use Border Leafs for it
