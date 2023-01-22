@@ -36,7 +36,7 @@
 - Spine: Connect rows of racks providing reachability between leaf switches
 - 3 stage Clos: (1) Leaf > (2) Spine > (3) Leaf
 - 5 stage Clos: (1) Leaf > (2) Spine > (3) Super Spine > (4) Spine > (5) Leaf
-- 
+- Underlay may be based on IP or MPLS
 
 ## Fabric pros and cons
 - Equidistant endpoints
@@ -59,10 +59,18 @@
 
 
 ## Overlay
+- General structure: Transport headers (Underlay) | Tunnel Encapsulation (Overlay) | Tenant Data
 - The overlay network virtualizes the underlying physical infrastructure by creating logical networks over the physical underlay network
+- It is a logical/virtual tunnel
+- It can be based on Service Label (MPLS) or VNI (VxLAN)
 - It provies network virtualization, segmentation, stretched Ethernet segments, workload mobility, and other services
 - Network based: high requirements for MAC table on ToR switches
 - Host based: high load on host, open source, host has to support technology
+
+### MPLS types of Overlay
+- MPLSoMPLS: This data plane encapsulation employs an MPLS aware underlay. The label stack is comprosed of the inner service MPLS label and outer transport MPLS label
+- MPLSoGRE: Useful when the transit devices are not MPLS aware. Inner service MPLS label is encapsulated in GRE and transported over a physical IP infrastructure. Load balancing capabilities are limited since network device implementations need to understand GRE key field being used in a load-balancing context
+- MPLSoUDP: Similar to MPLSoGRE, this is an IP based encapsulation for MPLS packets that uses a UDP header instead. Most existing routers in IP networks are already capable of distributing IP traffic over ECMP and/or LAG, based on the hash of the five-tuple of UDP and TCP packets (therefore, source IP address, destination IP address, source port, destination port, and protocol). By encapsulating the MPLS packets into an UDP tunnel and using the source port of the UDP header as an entropy field (hash of the payload), the existing load-balancing capability can be leveraged to provide fine-grained ECMP load balancing of MPLS traffic over IP underlay networks
 
 ## Naming devices
 Type(Leaf/Spine) - Number - Rack number - Pod number - DC number
