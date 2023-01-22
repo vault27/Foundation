@@ -32,13 +32,20 @@
 - It provides a solid layer of connectivity in the physical network, tunnel endpoint reachability, equidistant endpoints, non-blocking core, low latency and high bandwidth for both East-West and North-South traffic, load balancing(multipath), use of all links, 
 - Overlay rides on top of the fabric
 - The fabric itself, when paired with an overlay, is called the underlay
+- Leaf: Rack switch (for example, Top of Rack or TOR) to which physical or virtual endpoints can connect to (for example, compute, storage or networking resources)
+- Spine: Connect rows of racks providing reachability between leaf switches
+- 3 stage Clos: (1) Leaf > (2) Spine > (3) Leaf
+- 5 stage Clos: (1) Leaf > (2) Spine > (3) Super Spine > (4) Spine > (5) Leaf
+- 
 
-## What is Fabric
-
-## Fabric pros
+## Fabric pros and cons
 - Equidistant endpoints
 - Non-blocking core
 - Low latency and high bandwidth for both East-West and North-South traffic
+- Multipath
+- No STP
+- Horizontal scalable: you can add spines and leafs without redesigns
+- No central mgmt
 
 ## Fabric types
 - Ethernet fabric. Examples: QFabric, Virtual Chassis Fabric (VCF), and Junos Fusion. No STP. Multipath. Load balancing. Not OPen Standard. Not scalable.
