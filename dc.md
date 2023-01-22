@@ -84,6 +84,12 @@ Type(Leaf/Spine) - Number - Rack number - Pod number - DC number
 - x - level: host-0 leaf-1 spine-2 superspine-3 fw-4
 
 ## IP addresses
+
+- p2p: /30 or /31 or unnumbered
+- loopback /32
+- Separate loopback for overlay MP-BGP connections
+- 
+### Example for whole DC
 - Net 10.0.0.0/10
 - 1x/12 - virtual DC
   - 1x/13 - clouds
@@ -96,6 +102,18 @@ Type(Leaf/Spine) - Number - Rack number - Pod number - DC number
   - 1x/17 - racks
   - 31x/22 - for every rack, 31 because there are 32 ports on Leaf
   - 1x/22 -reserve 
+
+### Example for switches only
+- IP=10.Dn.Sn.X/31
+  - Dn - DC number:
+    - 0 - loopback 1
+    - 1 - loopback 2
+    - 2 - p2p links
+    - 3 - reserved
+    - 4-7 - services 
+  - Sn - SPine number
+  - X - value in order
+
 
 ## Fabrics
 
