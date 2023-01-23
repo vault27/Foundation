@@ -9,7 +9,7 @@ Everything I need to know about VxLAN/EVPN in an extremely structured, brief lan
 - LTRDCN-2223 - Implementing VXLAN In a Data Center
 - DGTL-BRKDCN-1645 - Introduction to VXLAN - The future path of your datacenter  
   
-Juniper:
+## Juniper books
 - Data Center EVPN-VXLAN Fabric Architecture Guide
 - DAY ONE: DAtA CENtEr FUNDAMENtALS
 - DAY ONE: ROUTING IN FAT TREES (RIFT)
@@ -67,9 +67,10 @@ Host A in VLAN 1 SVI 1 sends ARP request for Host B in VLAN 2 svi 1. VTEP 1 enca
 - Problems may appear if MAC is configured staticly on port
 
 ## Service models
-- VLAN based service: one VLAN - one MAC VRF (RT, RD) - one bridge table, Ethernet Tag = 0 - one VNI - forwarding based on VNI - most popular - good for multi vendor
+- VLAN based service: one VLAN - one MAC VRF (RT, RD) - one bridge table, Ethernet Tag = 0 - one VNI - forwarding based on VNI - most popular - good for multi vendor - one subnet per EVI - EVPN route type 2
 - VLAN bundle service - one bridge table, MAC VRF with RT RD for all VLANs - frames are sent with 802.1Q - Ethernet Tag = 0, MACs in different VLANs should not match
 - VLAN aware bundle service - not supported by all vendors - all VLANs have one VRF(RT, RD) - every VLAN has its own bridge table with VNI and Ethernet tag = VNI
+- IP VRF to IP VRF
 
 ## Load balancing
 The Layer 3 routes that form VXLAN tunnels use per-packet load balancing by default, which means that load balancing is implemented if there are ECMP paths to the remote VTEP. This is different from normal routing behavior in which per-packet load balancing is not used by default. (Normal routing uses per-prefix load balancing by default.)  
