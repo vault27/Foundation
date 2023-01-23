@@ -66,6 +66,7 @@
 - It provies network virtualization, segmentation, stretched Ethernet segments, workload mobility, and other services
 - Network based: high requirements for MAC table on ToR switches
 - Host based: high load on host, open source, host has to support technology
+- Overlay control planes: EVPN, OVSDB
 
 ### MPLS types of Overlay
 - MPLSoMPLS: This data plane encapsulation employs an MPLS aware underlay. The label stack is comprosed of the inner service MPLS label and outer transport MPLS label
@@ -113,7 +114,6 @@ Type(Leaf/Spine) - Number - Rack number - Pod number - DC number
     - 4-7 - services 
   - Sn - SPine number
   - X - value in order
-
 
 ## Fabrics
 
