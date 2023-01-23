@@ -16,7 +16,7 @@
 - Certificate, Server Key Exchange, Server Hello Done - 5 packets - 4123 bytes
 - Client key Exchange, Change Cipher Spec, Encrypyed Handshake Message
 
-## TLS Hello
+## Client Hello
 A lot of extensions and fields:
 ```
 Handshake Protocol: Client Hello
@@ -87,6 +87,10 @@ Extension: server_name (len=13)
         Server Name length: 8
         Server Name: nasa.gov
 ```
+
+## Server Hello
+
+## Certificate
 
 ## Handshake
 - Client sends Hello: cipher suite, protocol version
