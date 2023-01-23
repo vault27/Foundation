@@ -29,6 +29,7 @@ Juniper:
 - VNID - Vxlan Network Identifier - defines broadcast segment - transfered in VxLAN header - 3 bytes
 - NVE - Network Virtualization Edge - interface where VXLAN ends - only 1 NVE interface is allowed on the switch.
 - VTEP - VXLAN Tunnel Endpoint - Nexus - Leaf
+- EVI - EVPN Virtual Instance
 
 ## Pros
 - Addresses the limitation of 4094 VLANs, allows 16M networks via VNI
