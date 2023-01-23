@@ -10,6 +10,7 @@
 - TLS 1.3
 
 ## TLS Hello
+583 bytes  
 A lot of extensions and fields:
 ```
 Handshake Protocol: Client Hello
