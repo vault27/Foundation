@@ -17,7 +17,8 @@ Juniper:
  
 ## Concepts   
 - RFC 7348
-- Virtual Extensible LAN, MAC in UDP encapsulation, port 4789, 50 bytes overhead
+- VXLAN (Virtual eXtensible Local Area Network) is a Layer 2 overlay technology over a Layer 3 underlay infrastructure. It provides a means to stretch the Layer 2 network by pro- viding a tunneling encapsulation using MAC addresses in UDP (MAC in UDP) over an IP underlay. It is used to carry the MAC traffic from the individual VMs in an encapsulated for- mat over a logical “tunnel”
+- UDP encapsulation, port 4789, 50 bytes overhead
 - MTU should be large
 - Only transport requirement is unicast IP
 - VLAN numbers can be different on all switches, but VNI number should be the same 
@@ -29,10 +30,17 @@ Juniper:
 - NVE - Network Virtualization Edge - interface where VXLAN ends - only 1 NVE interface is allowed on the switch.
 - VTEP - VXLAN Tunnel Endpoint - Nexus - Leaf
 
-## BUM traffic forwarding: data plane
+## Pros
+- Addresses the limitation of 4094 VLANs, allows 16M networks via VNI
+- All paths are used via ECMP, UDP source port entropy ensures efficient load balancing
+- Semaless moving VMs across DC
+
+## How they handle BUM traffic and MAC learning
 Can be processed in 2 ways:
-- Multicast replication - multicast is enabled on Underlay - BUM is not packed inside VxlAN - it is sent via Underlay - replication point is on rendezvous point - spine - it is difficult to configure multicast on Underlay - not used today
-- Ingress replication - packed to VxLAN - and sent to all in VNI - configured statically or with BGP EVPN
+- Multicast replication for BUM/Flood and learn for MAC - multicast is enabled on Underlay - BUM is not packed inside VxlAN - it is sent via Underlay - replication point is on rendezvous point - spine - it is difficult to configure multicast on Underlay - not used today
+- Ingress replication for BUM/Flood and learn for MAC - packed to VxLAN - and sent to all in VNI - configured statically: for every VNI we configure VTEPs IPs which have the same VNI
+- OVSDB for MAC learning and BUM
+- EVPN for both BUM and MAC learning
 
 ## Operations
 ### Without BGP, ingress replication of BUM traffic
