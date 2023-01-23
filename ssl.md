@@ -10,11 +10,12 @@
 - TLS 1.3
 
 ## Packet sequence
+Every TLS record (can be several in one packet) has its own Handshake Type (number), we can use it to filter in Wireshark.
 ### TLS 1.2
-- Client hello - 1 packet - 583 bytes
-- Server Hello - 1 packet - 1304 bytes
-- Certificate, Server Key Exchange, Server Hello Done - 5 packets - 4123 bytes
-- Client key Exchange, Change Cipher Spec, Encrypyed Handshake Message
+- Client hello - 1 packet - 583 bytes - Type 1
+- Server Hello - 1 packet - 1304 bytes - Type 2
+- Certificate (Type 11), Server Key Exchange, Server Hello Done - 3 separate TLS records - 5 IP (TCP) packets - 4123 bytes
+- Client key Exchange, Change Cipher Spec (This message notifies the server that all the future messages will be encrypted using the algorithm and keys that were just negotiated.), Encrypted Handshake Message
 
 ## Client Hello
 A lot of extensions and fields:
