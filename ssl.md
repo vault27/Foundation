@@ -9,8 +9,14 @@
 - TLS 1.2 - is the best option for now
 - TLS 1.3
 
+## Packet sequence
+### TLS 1.2
+- Client hello - 1 packet - 583 bytes
+- Server Hello - 1 packet - 1304 bytes
+- Certificate, Server Key Exchange, Server Hello Done - 5 packets - 4123 bytes
+- Client key Exchange, Change Cipher Spec, Encrypyed Handshake Message
+
 ## TLS Hello
-583 bytes  
 A lot of extensions and fields:
 ```
 Handshake Protocol: Client Hello
