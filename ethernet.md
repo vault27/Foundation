@@ -51,7 +51,8 @@ Auto MDI-X technology on adapters switch automatically to correct cable type
 The UTP cables differ in the following parameters:
 - Twists per centimeter - the more the better protection against EMI
 - Sheath thickness
-Categories:
+
+## UTP Categories
 - Cat 5 - 100 Mbs
 - Cat 5e - 1 Gbps
 - Cat 6 - 10 Gbps - 55 meters
@@ -69,10 +70,15 @@ STP - Shielded Twisted Pair - covered with foil
 - Enabled everywhere by default and very stable nowdays
 
 ## Frame
-- Preamble - 7 bits - to synch receiver
-- Start of frame
+- Destination MAC address
+- Source MAC address
+
+## MAC
+- 48 bits - 6 bytes - Media Access Controll address - MAC - how we access media
+- First 24 bits are OUI
+- Written in hexadecimal - 6 numbers - one for each byte
   
-FCS
+## FCS
 A frame check sequence (FCS) is an error-detecting code added to a frame in a communications protocol. Frames are used to send payload data from a source to a destination.  
 By far the most popular FCS algorithm is a cyclic redundancy check (CRC), used in Ethernet and other IEEE 802 protocols with 32 bits.  
 The FCS provides error detection only. Error recovery must be performed through separate means. Ethernet, for example, specifies that a damaged frame should be discarded and does not specify any action to cause the frame to be retransmitted. Other protocols, notably the Transmission Control Protocol (TCP), can notice the data loss and initiate retransmission and error recovery.
