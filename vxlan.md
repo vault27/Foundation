@@ -446,3 +446,21 @@ Path Attribute - MP_REACH_NLRI
             VNI: 100
 
 ```
+## Layer 3
+- Bridged overlay
+- Edge-Routed Bridging
+
+### Bridged overlay
+- Default gateway is outside fabric (firewall)
+- All routing and L3 termination is outside fabric
+- Fabric - is a large logic L2 switch
+- Pros: segmentation, simplicity
+- Cons: non-optimal traffic flow, no ARP suppression
+- VLAN based segmentation
+- Rarely used
+
+### Edge-Routed Bridging
+- Default Gateway - VTEP
+- VRF based segmentation
+- Pros: optimal traffic flow, ARP suppression
+- Cons: expensive equipment
