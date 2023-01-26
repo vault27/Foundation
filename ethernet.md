@@ -116,3 +116,7 @@ show interface counters
 ```
 ## Duplex mismatch
 In such conditions, the full-duplex end of the connection sends its packets while receiving other packets; this is exactly the point of a full-duplex connection. Meanwhile, the half-duplex end cannot accept the incoming data while it is sending – it will sense it as a collision.
+
+## ARP
+
+## DHCP
