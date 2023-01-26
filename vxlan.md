@@ -67,6 +67,7 @@ Host A in VLAN 1 SVI 1 sends ARP request for Host B in VLAN 2 svi 1. VTEP 1 enca
 - Problems may appear if MAC is configured staticly on port
 
 ## Service models
+When L2 services are configured: VTEP knows nothing about IP addresses, only MAC addresses and where they are located (VTEP IP address)
 - VLAN based service: one VLAN - one MAC VRF (RT, RD) - one bridge table, Ethernet Tag = 0 - one VNI - forwarding based on VNI - most popular - good for multi vendor - one subnet per EVI - EVPN route type 2
 - VLAN bundle service - one bridge table, MAC VRF with RT RD for all VLANs - frames are sent with 802.1Q - Ethernet Tag = 0, MACs in different VLANs should not match
 - VLAN aware bundle service - not supported by all vendors - all VLANs have one VRF(RT, RD) - every VLAN has its own bridge table with VNI and Ethernet tag = VNI
