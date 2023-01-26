@@ -444,7 +444,6 @@ Path Attribute - MP_REACH_NLRI
             IP Address Length: 0
             IP Address: NOT INCLUDED
             VNI: 100
-
 ```
 ## Layer 3
 - Bridged overlay
@@ -470,21 +469,15 @@ Path Attribute - MP_REACH_NLRI
 ## IRB - Integrated Routing and Bridging
 
 ### Assymetric
+
 - Routing on ingress VTEP: Leaf1 gets frame in VLAN/VNI 1, and puts it to MAC VRF 2 according to destination IP and this packet with new VNI goes to LEAF 2
 ```
-Host 1 > Leaf 1 > MAC VRF 1 VNI/VLAN 1 > MAC VRF 2 VNI/VLAN 2 > VXLAN > Leaf 2 > MAC VRF 2 > Host 2
-```
-```mermaid
-graph TD;
-    Host 1-->Leaf 1;
-    Leaf 1-->MAC VRF 1;
-    MAC VRF 1-->MAC VRF 2;
-    MAC VRF 2-->VXLAN;
+Host 1 (SRC MAC: Host 1; DST MAC: VLAN 1) > Leaf 1 > MAC VRF 1 VNI/VLAN 1 > MAC VRF 2 VNI/VLAN 2 (SRC MAC: VLAN 2; DST MAC: Host 2)> VXLAN > Leaf 2 > MAC VRF 2 > Host 2
 ```
 - On egress VTEP only switching
-- Assymetric: different VNIs on different directions of one flow
-- All VNI-VLANs should be configured on all VTEPs
+- Assymetric: different VNIs on different directions of one flow: From Leaf 1 to Leaf 2 traffic is VNI2, and from Leaf 2 to Leaf 1 traffic is VNI1
+- All VNI-VLANs should be configured on all VTEPs - Con
 - VRF-lite
 - Pros: low latency (TTL-1), siplicity
 - Cons: poor scalability
-```
+- Changing MAC: the same as in traditional routing
