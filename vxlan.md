@@ -464,3 +464,20 @@ Path Attribute - MP_REACH_NLRI
 - VRF based segmentation
 - Pros: optimal traffic flow, ARP suppression
 - Cons: expensive equipment
+- Fabric: big L3 Switch - MLS
+- Intra VRF traffic may go via Firewall
+
+## IRB - Integrated Routing and Bridging
+
+### Assymetric
+- Routing on ingress VTEP: Leaf1 gets frame in VLAN/VNI 1, and puts it to MAC VRF 2 according to destination IP and this packet with new VNI goes to LEAF 2
+```
+Host 1 > Leaf 1 > MAC VRF 1 VNI/VLAN 1 > MAC VRF 2 VNI/VLAN 2 > VXLAN > Leaf 2 > MAC VRF 2 > Host 2
+```
+- On egress VTEP only switching
+- Assymetric: different VNIs on different directions of one flow
+- All VNI-VLANs should be configured on all VTEPs
+- VRF-lite
+- Pros: low latency (TTL-1), siplicity
+- Cons: poor scalability
+
