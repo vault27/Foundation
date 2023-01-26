@@ -135,7 +135,6 @@ interface nve1
     ingress-replication protocol static
       peer-ip 10.10.2.4
       peer-ip 10.10.2.5
-      
 ```
 
 ### BGP EVPN on Nexus - VLAN based service
@@ -220,6 +219,11 @@ neighbor 10.10.2.3
       send-community extended
       route-map SET_NEXT_HOP_UNCHANGED out
 ```
+
+## VLAN aware
+Configuration overview  
+We create VLAN aware bundle with RD, RT and put all VLANS into it, for example 1-1000, this is a major pro.
+In this mode, in Route type 2, in NLRI path attribite in BGP update there will be Ethernet TAG ID - the same as VNI
 
 ## Verification
 Show all NVE neighboors, not very reliable data, because connections are connectionless :)  
