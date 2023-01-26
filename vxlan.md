@@ -329,6 +329,8 @@ G    -     5000.3e00.1b08   static   -         F      F    sup-eth1(R)
 - Providing host mobility
 - Providing multi-homing for active active connections - one host to several switches without any VPC
 - We establish eBGP or iBGP sessions between leafs and spines. If BGP session is used for underlay, than it will be the second session via separate Loopback interfaces. This new BGP session uses only l2vpn address family
+- It is recomended to use separate Loopbacks for l2vpn BGP adjecency and nve interface, vendors recomend
+- When l2vpn BGP update is sent, nve interface IP is used as nexthop
 - eBGP is better because if we have superspines we will have to configure hierarchical design for RR
 
 ## Inside EVPN packet
