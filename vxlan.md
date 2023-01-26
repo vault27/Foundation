@@ -467,6 +467,7 @@ Path Attribute - MP_REACH_NLRI
 - Intra VRF traffic may go via Firewall
 
 ## IRB - Integrated Routing and Bridging
+It means that 2 services are provided at the same time: Routing and switching
 
 ### Assymetric
 
