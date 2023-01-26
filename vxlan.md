@@ -474,6 +474,13 @@ Path Attribute - MP_REACH_NLRI
 ```
 Host 1 > Leaf 1 > MAC VRF 1 VNI/VLAN 1 > MAC VRF 2 VNI/VLAN 2 > VXLAN > Leaf 2 > MAC VRF 2 > Host 2
 ```
+```mermaid
+graph TD;
+    Host 1-->Leaf 1;
+    Leaf 1-->MAC VRF 1;
+    MAC VRF 1-->MAC VRF 2;
+    MAC VRF 2-->VXLAN;
+```
 - On egress VTEP only switching
 - Assymetric: different VNIs on different directions of one flow
 - All VNI-VLANs should be configured on all VTEPs
