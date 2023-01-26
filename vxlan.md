@@ -24,6 +24,8 @@ Everything I need to know about VxLAN/EVPN in an extremely structured, brief lan
 - VLAN numbers can be different on all switches, but VNI number should be the same 
 - Default gateway can be any device in a fabric
 - VxLAN does not encapsulate CDP, STP....
+- VxLAN cannot do traffic engineering, that is why MPLS is better
+- VxLAN L2 is the same as VPLS
 
 ## Components
 - VNID - Vxlan Network Identifier - defines broadcast segment - transfered in VxLAN header - 3 bytes
