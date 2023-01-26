@@ -487,4 +487,4 @@ graph TD;
 - VRF-lite
 - Pros: low latency (TTL-1), siplicity
 - Cons: poor scalability
-
+```
