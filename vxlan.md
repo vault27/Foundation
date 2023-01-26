@@ -476,8 +476,8 @@ Host 1 (SRC MAC: Host 1; DST MAC: VLAN 1) > Leaf 1 > MAC VRF 1 VNI/VLAN 1 > MAC 
 ```
 - On egress VTEP only switching
 - Assymetric: different VNIs on different directions of one flow: From Leaf 1 to Leaf 2 traffic is VNI2, and from Leaf 2 to Leaf 1 traffic is VNI1
-- All VNI-VLANs should be configured on all VTEPs - Con
-- VRF-lite
-- Pros: low latency (TTL-1), siplicity
-- Cons: poor scalability
-- Changing MAC: the same as in traditional routing
+- All VNI-VLANs should be configured on all VTEPs - Con - poor scalability
+- VRF-lite: Because info about VRFs is not spreaded across fabric
+- Pros: low latency - TTL-1 and routing decision happens only once on ingress VTEP , simplicity
+- Changing MAC: the same as in traditional routing: SRC MAC is changed VLAN SVI MAC and DST MAC is Changed to Destination Host Mac
+- Route Type 2 is used, besides MAC it also transfers IP/MAC bindings
