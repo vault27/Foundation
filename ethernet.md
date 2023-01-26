@@ -72,11 +72,13 @@ STP - Shielded Twisted Pair - covered with foil
 ## Frame
 - Destination MAC address
 - Source MAC address
+- Type: ARP, 
 
 ## MAC
 - 48 bits - 6 bytes - Media Access Controll address - MAC - how we access media
 - First 24 bits are OUI
 - Written in hexadecimal - 6 numbers - one for each byte
+- Broadcast MAC: ff:ff:ff:ff:ff:ff, all 1s, used in ARP, broadcast, DHCP...
   
 ## FCS
 A frame check sequence (FCS) is an error-detecting code added to a frame in a communications protocol. Frames are used to send payload data from a source to a destination.  
