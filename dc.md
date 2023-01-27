@@ -14,6 +14,11 @@
 - HyperCube
 - HyperX
 
+## Methods to stretch L2
+- Extend VLANs - Trunk
+- VPLS
+- VxLAN
+
 ## Non virtualized/legacy data centers
 - Difficult to configure VLANs on all devices
 - VLAN-ID field is 12 bits yielding a maximum of 4094 VLANs
