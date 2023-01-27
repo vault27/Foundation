@@ -26,6 +26,8 @@ Everything I need to know about VxLAN/EVPN in an extremely structured, brief lan
 - VxLAN does not encapsulate CDP, STP....
 - VxLAN cannot do traffic engineering, that is why MPLS is better
 - VxLAN L2 is the same as VPLS
+- VxLAN tunnels are not statefull - no keepalives
+- VxLAN producers - Huawei, Juniper, Nexus 9k and Arista
 
 ## Components
 - VNID - Vxlan Network Identifier - defines broadcast segment - transfered in VxLAN header - 3 bytes
