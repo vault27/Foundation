@@ -366,7 +366,7 @@ In the beginning just after configuration is finished only Type routes are sent 
   - Type 4 - Ethernet Segment Route - one LAN connected to two VTEPs - only one of them should process BUM
   - Type 1 - Ethernet Auto Discovery Route
 - External connections
-  - Type 5 - IP prefix route advertisment
+  - Type 5 - IP prefix route advertisment - when we peer IP VRF on VTEP with external router, routes from this router will be type 5
 - Multicast
   - Type 6,7,8 - PIM, IGMP Leave/Join
 
@@ -488,7 +488,7 @@ Host 1 (SRC MAC: Host 1; DST MAC: VLAN 1) > Leaf 1 > MAC VRF 1 VNI/VLAN 1 > MAC 
 ### Symmetric
 - Routing happends both on ingress and egress VTEP: Leaf1 gets frame in VLAN/VNI 1, puts it to IP VRF A, IP VRF sends it to Leaf 2 with VNI of this VRF, Leaf 2 puts it into proper MAC VRF
 ```
-Host 1 (SRC MAC: Host 1; DST MAC: VLAN 1) > Leaf 1 > MAC VRF 1 VNI/VLAN 1 > IP VRF A> VXLAN VNI 555 > Leaf 2 > IP VRF A > MAC VRF 2 > Host 2
+Host 1 (SRC MAC: Host 1; DST MAC: VLAN 1) > Leaf 1 > MAC VRF 1 VNI/VLAN 1 > IP VRF A (SRC MAC: VLAN 1; DST MAC: VLAN 2) > VXLAN VNI 555 > Leaf 2 > IP VRF A > MAC VRF 2 (SRC MAC: VLAN 2; DST MAC: HOST 2) > Host 2
 ```
 - Symmetric: one L3VNI for both directions of traffic flow
 - Routing through IP VRF, VNI configuration should not be the same on all VTEPs, we configure on VTEP only VLANS which are connected to it, we do not have to configure VLANS and VNIs for VLANS which are only on different VTEP
@@ -496,3 +496,8 @@ Host 1 (SRC MAC: Host 1; DST MAC: VLAN 1) > Leaf 1 > MAC VRF 1 VNI/VLAN 1 > IP V
 - Full VRF
 - Pros: scalability, integration with out networks - this is main pro, external router peers with IP VRF
 - Cons: 2 TTLs
+- Route Type 2 is used, besides MAC it also transfers IP/MAC bindings in the same NLRI, VNI is included in both routes. MAC update is imported into MAC table and IP/MAC update is imported into ARP table of destination MAC VRF + into routing table
+- MAC-IP routing update contains two RT: for MAC VRF (first one) and IP VRF; and 2 VNIs: the first one for switching and second one for routing
+- MAC-IP also contains Router MAC (as an extended community) for routing: MAC of VLAN 2 in our example, so VTEP-1 knows what change MAC to before sendong to VTEP-2
+
+## Anycast gateway
