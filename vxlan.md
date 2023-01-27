@@ -491,8 +491,8 @@ Host 1 (SRC MAC: Host 1; DST MAC: VLAN 1) > Leaf 1 > MAC VRF 1 VNI/VLAN 1 > MAC 
 Host 1 (SRC MAC: Host 1; DST MAC: VLAN 1) > Leaf 1 > MAC VRF 1 VNI/VLAN 1 > IP VRF A> VXLAN VNI 555 > Leaf 2 > IP VRF A > MAC VRF 2 > Host 2
 ```
 - Symmetric: one L3VNI for both directions of traffic flow
-- Routing through IP VRF, VNI configuration should not be the same on all VTEPs
+- Routing through IP VRF, VNI configuration should not be the same on all VTEPs, we configure on VTEP only VLANS which are connected to it, we do not have to configure VLANS and VNIs for VLANS which are only on different VTEP
 - One IP VRF may include several MAC VRFs
 - Full VRF
-- Pros: scalability, integration with out networks
+- Pros: scalability, integration with out networks - this is main pro, external router peers with IP VRF
 - Cons: 2 TTLs
