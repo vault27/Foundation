@@ -328,6 +328,7 @@ G    -     5000.3e00.1b08   static   -         F      F    sup-eth1(R)
 - Dynamic discover of new VTEPs
 - Dynamic learning of MAC and IP information
 - Decrease amount of BUM traffic
+- EVPN table contains: IP, MAC, L3 VNI, L2 VNI, Next hop
 - Providing host mobility
 - Providing multi-homing for active active connections - one host to several switches without any VPC
 - We establish eBGP or iBGP sessions between leafs and spines. If BGP session is used for underlay, than it will be the second session via separate Loopback interfaces. This new BGP session uses only l2vpn address family
@@ -469,21 +470,31 @@ Path Attribute - MP_REACH_NLRI
 - Intra VRF traffic may go via Firewall
 
 ## IRB - Integrated Routing and Bridging
-It means that 2 services are provided at the same time: Routing and switching
+It means that 2 services are provided at the same time: Routing and switching  
+One IP VRF - several VLANs in it  
+Several VRFs may be in a fabric  
+Inter VRF routing can be done via external firewall
 
-### Assymetric
 
+### Assymetriс
+- Only L2VNI is used
 - Routing on ingress VTEP: Leaf1 gets frame in VLAN/VNI 1, and puts it to MAC VRF 2 according to destination IP and this packet with new VNI goes to LEAF 2
 ```
 Host 1 (SRC MAC: Host 1; DST MAC: VLAN 1) > Leaf 1 > MAC VRF 1 VNI/VLAN 1 > MAC VRF 2 VNI/VLAN 2 (SRC MAC: VLAN 2; DST MAC: Host 2)> VXLAN > Leaf 2 > MAC VRF 2 > Host 2
 ```
 - On egress VTEP only switching
 - Assymetric: different VNIs on different directions of one flow: From Leaf 1 to Leaf 2 traffic is VNI2, and from Leaf 2 to Leaf 1 traffic is VNI1
-- All VNI-VLANs should be configured on all VTEPs - Con - poor scalability
+- All VNI-VLANs should be configured on all VTEPs - Con - poor scalability - if on one VTEP no conf of VLAN, it will be black holed
 - VRF-lite: Because info about VRFs is not spreaded across fabric
 - Pros: low latency - TTL-1 and routing decision happens only once on ingress VTEP , simplicity
 - Changing MAC: the same as in traditional routing: SRC MAC is changed VLAN SVI MAC and DST MAC is Changed to Destination Host Mac  
 - Route Type 2 is used, besides MAC it also transfers IP/MAC bindings in the same NLRI, VNI is included in both routes. MAC update is imported into MAC table and IP/MAC update is imported into ARP table of destination MAC VRF
+
+Configuration overview:
+- Configure underlay
+- On each VTEP we configure physical interfaces with required VLAN
+- We configure loopback for overlay and announce them via underlay
+- On clients we configure ip and default GW - the same on all clients on different VTEPs in one VLAN
 
 ### Symmetric
 - Routing happends both on ingress and egress VTEP: Leaf1 gets frame in VLAN/VNI 1, puts it to IP VRF A, IP VRF sends it to Leaf 2 with VNI of this VRF, Leaf 2 puts it into proper MAC VRF
@@ -500,4 +511,13 @@ Host 1 (SRC MAC: Host 1; DST MAC: VLAN 1) > Leaf 1 > MAC VRF 1 VNI/VLAN 1 > IP V
 - MAC-IP routing update contains two RT: for MAC VRF (first one) and IP VRF; and 2 VNIs: the first one for switching and second one for routing
 - MAC-IP also contains Router MAC (as an extended community) for routing: MAC of VLAN 2 in our example, so VTEP-1 knows what change MAC to before sendong to VTEP-2
 
-## Anycast gateway
+## Distributed anycast gateway
+- One default GW on all leafs for particular VLAN - Virtual IP
+- One MAC for default GW on all leafs - Virtual MAC
+- On all leafs we configure manually on Interface VLAN virtual IP and virtual MAC
+- In route updates type 2 which contains MAC/IP real router mac is sent, not virtual one
+
+## ARP suppression
+- Decrease BUM traffic
+- VTEP intercepts all ARP traffic, if it has Type 2 route for it, it replies - ARP spoofing
+- If no route for it, then it sends BUM traffic to fabric
