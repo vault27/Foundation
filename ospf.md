@@ -87,6 +87,11 @@ We have to think through the following:
 - Passive interface default
 - Configure RID explicitly
 
+## Configuration and operations overview
+- Enable OSPF process with particular ID and configure router ID for it
+- Enable OSPF on required interfaces and specify area
+- Enable OSPF on loopback to announce it
+
 ## Operations
 
 
