@@ -453,7 +453,7 @@ Path Attribute - MP_REACH_NLRI
 - Bridged overlay
 - Edge-Routed Bridging
 
-### Bridged overlay
+### Bridged overlay - no L3 functionality
 - Default gateway is outside fabric (firewall)
 - All routing and L3 termination is outside fabric
 - Fabric - is a large logic L2 switch
@@ -499,7 +499,9 @@ Configuration overview:
 - On VTEPS we configure MAC VRFs with RD and RT for every VLAN and with VNI number
 - Configure NVE interface with all VNIs, source interface, reachibility protocol and ingress replication fort BUM
 - Next we upgrade it to L3 Switch
-- We need just to configure IP interface: we create VRF and add interfaces to it and add virtual IP and virtual MAC for them
+- We need just to configure IP interface: we create VRF and add VLAN interfaces to it and add virtual IP and virtual MAC for them
+- Virtual MAC is configured one per switch
+- All VTEPs must have the same virtual MAC address
 
 ### Symmetric
 - Routing happends both on ingress and egress VTEP: Leaf1 gets frame in VLAN/VNI 1, puts it to IP VRF A, IP VRF sends it to Leaf 2 with VNI of this VRF, Leaf 2 puts it into proper MAC VRF
