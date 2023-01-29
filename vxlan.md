@@ -40,6 +40,14 @@ Everything I need to know about VxLAN/EVPN in an extremely structured, brief lan
 - All paths are used via ECMP, UDP source port entropy ensures efficient load balancing
 - Semaless moving VMs across DC
 
+## Service models
+When L2 services are configured: VTEP knows nothing about IP addresses, only MAC addresses and where they are located (VTEP IP address)  
+L2 Services - our fabric is a big L2 switch  
+- VLAN based service: one VLAN - one MAC VRF (RT, RD) - one bridge table, Ethernet Tag = 0 - one VNI - forwarding based on VNI - most popular - good for multi vendor - one subnet per EVI - EVPN route type 2
+- VLAN bundle service - one bridge table, MAC VRF with RT RD for all VLANs - frames are sent with 802.1Q - Ethernet Tag = 0, MACs in different VLANs should not match
+- VLAN aware bundle service - not supported by all vendors - all VLANs have one VRF(RT, RD) - every VLAN has its own bridge table with VNI and Ethernet tag = VNI
+- L3 - in addition to L2 (big switch) we add functionality of big L3 router (MLS - multi layered switch), with one VRF inside it or several...
+
 ## How they handle BUM traffic and MAC learning
 Can be processed in 2 ways:
 - Multicast replication for BUM/Flood and learn for MAC - multicast is enabled on Underlay - BUM is not packed inside VxlAN - it is sent via Underlay - replication point is on rendezvous point - spine - it is difficult to configure multicast on Underlay - not used today
@@ -69,13 +77,6 @@ Host A in VLAN 1 SVI 1 sends ARP request for Host B in VLAN 2 svi 1. VTEP 1 enca
 - All other VTEPs get a new route
 - Route with higher sequence number wins
 - Problems may appear if MAC is configured staticly on port
-
-## Service models
-When L2 services are configured: VTEP knows nothing about IP addresses, only MAC addresses and where they are located (VTEP IP address)
-- VLAN based service: one VLAN - one MAC VRF (RT, RD) - one bridge table, Ethernet Tag = 0 - one VNI - forwarding based on VNI - most popular - good for multi vendor - one subnet per EVI - EVPN route type 2
-- VLAN bundle service - one bridge table, MAC VRF with RT RD for all VLANs - frames are sent with 802.1Q - Ethernet Tag = 0, MACs in different VLANs should not match
-- VLAN aware bundle service - not supported by all vendors - all VLANs have one VRF(RT, RD) - every VLAN has its own bridge table with VNI and Ethernet tag = VNI
-- IP VRF to IP VRF
 
 ## Load balancing
 The Layer 3 routes that form VXLAN tunnels use per-packet load balancing by default, which means that load balancing is implemented if there are ECMP paths to the remote VTEP. This is different from normal routing behavior in which per-packet load balancing is not used by default. (Normal routing uses per-prefix load balancing by default.)  
@@ -469,12 +470,11 @@ Path Attribute - MP_REACH_NLRI
 - Fabric: big L3 Switch - MLS
 - Intra VRF traffic may go via Firewall
 
-## IRB - Integrated Routing and Bridging
-It means that 2 services are provided at the same time: Routing and switching  
-One IP VRF - several VLANs in it  
-Several VRFs may be in a fabric  
-Inter VRF routing can be done via external firewall
-
+### IRB - Integrated Routing and Bridging
+- It means that 2 services are provided at the same time: Routing and switching  
+- One IP VRF - several VLANs in it  
+- Several VRFs may be in a fabric  
+- Inter VRF routing can be done via external firewall
 
 ### Assymetriс
 - Only L2VNI is used
@@ -492,9 +492,14 @@ Host 1 (SRC MAC: Host 1; DST MAC: VLAN 1) > Leaf 1 > MAC VRF 1 VNI/VLAN 1 > MAC 
 
 Configuration overview:
 - Configure underlay
+- Next we create a big virtual switch from our fabric
 - On each VTEP we configure physical interfaces with required VLAN
 - We configure loopback for overlay and announce them via underlay
 - On clients we configure ip and default GW - the same on all clients on different VTEPs in one VLAN
+- On VTEPS we configure MAC VRFs with RD and RT for every VLAN and with VNI number
+- Configure NVE interface with all VNIs, source interface, reachibility protocol and ingress replication fort BUM
+- Next we upgrade it to L3 Switch
+- We need just to configure IP interface: we create VRF and add interfaces to it and add virtual IP and virtual MAC for them
 
 ### Symmetric
 - Routing happends both on ingress and egress VTEP: Leaf1 gets frame in VLAN/VNI 1, puts it to IP VRF A, IP VRF sends it to Leaf 2 with VNI of this VRF, Leaf 2 puts it into proper MAC VRF
