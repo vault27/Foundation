@@ -231,6 +231,18 @@ Don't use or advertise the route/s learned via an iBGP neighbor to an eBG neighb
 - Type 2 - MAC/IP advertisment route
 ## Load Share with BGP in Single and Multihomed Environments
 
+## iBGP
+
+Configuration overview
+- Enable router process with AS number - the same on all routers
+- Configure router id
+- Configure neighbors with specifiying their AS number - the same
+- Configure update source
+- Configure address families
+- Configure communities
+- Configure route reflector
+- Configure dynamic neighbors if necessary: listen range, if request arrives from it put it to specified group, which is already configured
+
 ## Configuration
 
 **Origin code IGP**
