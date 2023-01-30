@@ -85,7 +85,7 @@ Configuration overview
 - Use only when firewall is default gateway for end hosts
 - Everytime different firewall replies on ARP request with its own virtual MAC, IP is the same for both firewalls
 - ARP load sharing on LAN side and floating IP on the other
-- 
+
 ### Cluster
 
 #### Configuration overview
