@@ -21,3 +21,16 @@
 - Cortex XSOAR
 - Cortex Data Lake
 - AutoFocus
+
+## HA
+
+### Active/Passive
+Configuration overview
+
+### Active/Active
+
+### Cluster
+Configuration overview
+- 2 HA4 interfaces(primary and backup) with type HA, IP address, mask
+- On every device add all over devices with serial number, HA4 and HA4 backup IP addresses and sessions sync
+- Enable cluster on all devices with the same cluster ID
