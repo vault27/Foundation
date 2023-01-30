@@ -30,10 +30,19 @@ Configuration overview
 ### Active/Active
 
 ### Cluster
-Configuration overview
+
+#### Configuration overview
 - 2 HA4 interfaces(primary and backup) with type HA, IP address, mask
 - On every device add all over devices with serial number, HA4 and HA4 backup IP addresses and sessions sync
 - Enable cluster on all devices with the same cluster ID
+
+#### Concepts
+- Zone names should be identical
+- All appliances should be configured on all devices with HA4 IP addresses
+- Session is logged on that device, where it ended
+- On Passive devices cluster is inactive
+- TCP handshake should pass one firewall, otherwise asymmetric path bypass should enabled on internal zone
+- Security checks cannot be done with asymmetric
 
 #### Cluster Session Synchronization States  
 - Pending → Synchronization is not triggered yet
@@ -42,4 +51,8 @@ Configuration overview
 - Completed  → Full session synchronization is completed and new sessions will be synchronized in real time 
 - Disabled → Session synchronization is disabled to the member or for HA peer
 
+Show logs about HA4 sessions sync
+```
+show log system | match ha4
+```
 
