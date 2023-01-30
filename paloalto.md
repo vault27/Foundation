@@ -37,6 +37,31 @@
 - DoS
 - Data Filtering
 
+## Firewall components
+
+### Zones
+- Route based firewall - zones are simply an architectural or topological concept that helps identify which areas comprise the global network
+- Zone absed firewall - use zones as a means to internally classify the source and destination in its state table  
+  
+- One zone per interface
+- Intrazone traffic is allowed by default
+- Interzone traffic is denied by default
+- Rules can use these defined zones to allow or deny traffic, apply Quality of Service (QoS) policies, or perform network address translation (NAT)
+- If the source zone has a protection profile associated with it, the packet is evaluated against the profile configuration
+- Destination zone is determined by checking the Policy-Based Forwarding (PBF) rules and if no results are found, the routing table is consulted
+- Lastly, the NAT policy is evaluated as the destination IP may be changed by a NAT rule action, thereby changing the destination interface and zone in the routing table. This would require a secondary forwarding lookup to determine the post-NAT egress interface and zone
+
+### Security policy
+- GlobalProtect Host Information Profile (HIP)
+- Security zones
+- Source and destination IP addresses
+- Source and destination devices
+- App-ID
+- Source user (User-ID)
+- Service (port)
+- URL
+- Security Profiles (Content-ID) - use signatures to identify known threats. Unknown threats are identified by WildFire
+
 ## HA
 - Up to 16 firewalls as peer members of an HA cluster
 - Active firewall has less priority
