@@ -81,6 +81,11 @@ Configuration overview
 - No need to configure virtual MAC address/floating IP address, arp load sharing, failover conditions
 <img width="602" alt="image" src="https://user-images.githubusercontent.com/116812447/215494580-eeaed00c-52a0-479c-b8db-909f8cce27fc.png">
 
+#### ARP load sharing
+- Use only when firewall is default gateway for end hosts
+- Everytime different firewall replies on ARP request with its own virtual MAC, IP is the same for both firewalls
+- ARP load sharing on LAN side and floating IP on the other
+- 
 ### Cluster
 
 #### Configuration overview
