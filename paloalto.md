@@ -24,6 +24,7 @@
 
 ## HA
 - Up to 16 firewalls as peer members of an HA cluster
+- Active firewall has less priority
 - Firewall-specific configuration such as management interface IP address or administrator profiles, HA specific configuration, log data, and the Application Command Center (ACC) information is not shared between peers
 
 ### The conditions that trigger a failover are:
