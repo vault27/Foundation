@@ -34,3 +34,12 @@ Configuration overview
 - 2 HA4 interfaces(primary and backup) with type HA, IP address, mask
 - On every device add all over devices with serial number, HA4 and HA4 backup IP addresses and sessions sync
 - Enable cluster on all devices with the same cluster ID
+
+#### Cluster Session Synchronization States  
+- Pending → Synchronization is not triggered yet
+- Unknown. → Device Serial Number and Peer IP is configured but session synchronization process has not started yet
+- In-Progress  → Full session synchronization is running 
+- Completed  → Full session synchronization is completed and new sessions will be synchronized in real time 
+- Disabled → Session synchronization is disabled to the member or for HA peer
+
+
