@@ -22,6 +22,21 @@
 - Cortex Data Lake
 - AutoFocus
 
+### NGFW
+- App-ID
+- Content-ID
+- User-ID
+- Decryption
+- Antivirus
+- Anti-Spyware
+- Vulnerability Protection
+- URL filtering
+- File blocking
+- Wildfire
+- Traps
+- DoS
+- Data Filtering
+
 ## HA
 - Up to 16 firewalls as peer members of an HA cluster
 - Active firewall has less priority
