@@ -23,9 +23,13 @@
 - AutoFocus
 
 ### NGFW
-- App-ID
-- Content-ID
-- User-ID
+- The Palo Alto Networks firewall was designed to use an efficient system known as next-generation processing. Next-generation processing enables packet evaluation, application identification, policy decisions, and content scanning in a single, efficient processing pass
+- Zone based firewall
+
+#### Features
+- App-ID - Scans traffic to identify the application involved, regardless of the protocol or port number used
+- Content-ID - Scans traffic for security threats (e.g., data leak prevention and URL filtering, viruses, spyware, unwanted file transfers, specific data patterns, vulnerability attacks, and appropriate browsing access
+- User-ID - Matches a user to an IP address (or multiple IP addresses
 - Decryption
 - Antivirus
 - Anti-Spyware
@@ -40,16 +44,37 @@
 ## Firewall components
 
 ### Zones
+Firewall types
 - Route based firewall - zones are simply an architectural or topological concept that helps identify which areas comprise the global network
 - Zone absed firewall - use zones as a means to internally classify the source and destination in its state table  
   
+Concepts
 - One zone per interface
+- Zones are attached to a physical, virtual, or sub interface
 - Intrazone traffic is allowed by default
 - Interzone traffic is denied by default
 - Rules can use these defined zones to allow or deny traffic, apply Quality of Service (QoS) policies, or perform network address translation (NAT)
 - If the source zone has a protection profile associated with it, the packet is evaluated against the profile configuration
 - Destination zone is determined by checking the Policy-Based Forwarding (PBF) rules and if no results are found, the routing table is consulted
 - Lastly, the NAT policy is evaluated as the destination IP may be changed by a NAT rule action, thereby changing the destination interface and zone in the routing table. This would require a secondary forwarding lookup to determine the post-NAT egress interface and zone
+- Remember that NAT policy evaluation happens after the initial zones have been determined, but before the security policy is evaluated
+- Then Security Policy is checked
+- It is best practice to use zones in all security rules and leveraging a clear naming convention
+- Policy check relies on pre-NAT IP addresses
+
+The policy evaluation then uses the 'six tuple' (6-Tuple) to match establishing sessions to security rules:
+1. Source IP
+2. Source Port
+3. Destination IP
+4. Destination Port
+5. Source Zone
+6. Protocol
+
+### Packet Flow Sequence
+https://knowledgebase.paloaltonetworks.com/KCSArticleDetail?id=kA10g000000ClVHCA0
+
+<img width="1071" alt="image" src="https://user-images.githubusercontent.com/116812447/215520946-0255d873-1931-4799-b57e-4a62d4e48765.png">
+
 
 ### Security policy
 - GlobalProtect Host Information Profile (HIP)
@@ -61,6 +86,11 @@
 - Service (port)
 - URL
 - Security Profiles (Content-ID) - use signatures to identify known threats. Unknown threats are identified by WildFire
+
+### App-ID
+6-Tuple is checked against the security policy > known application signatures > check if it is SSH, TLS, or SSL > decryption policy (if exists) > checked again for a known application signature > the application has not been identified (a maximum of 4 packets after the handshake, or 2,000 bytes) > will use the base protocol to determine which decoder to use to analyze the packets more deeply > unknown-tcp > check policy if uknown is allowed  
+SSL > Web-Browsing > flickr > flickr-uploading  
+The application decoder will continuously scan the session for expected and deviant behavior, in case the application changes to a sub-application or a malicious actor is trying to tunnel a different application or protocol over the existing session
 
 ## HA
 - Up to 16 firewalls as peer members of an HA cluster
