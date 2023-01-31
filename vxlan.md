@@ -17,7 +17,7 @@ Everything I need to know about VxLAN/EVPN in an extremely structured, brief lan
  
 ## Concepts   
 - RFC 7348
-- VXLAN (Virtual eXtensible Local Area Network) is a Layer 2 overlay technology over a Layer 3 underlay infrastructure. It provides a means to stretch the Layer 2 network by pro- viding a tunneling encapsulation using MAC addresses in UDP (MAC in UDP) over an IP underlay. It is used to carry the MAC traffic from the individual VMs in an encapsulated for- mat over a logical “tunnel”
+- VXLAN (Virtual eXtensible Local Area Network) is a Layer 2 overlay technology over a Layer 3 underlay infrastructure. It provides a means to stretch the Layer 2 network by pro- viding a tunneling encapsulation using MAC addresses in UDP (MAC in UDP) over an IP underlay. It is used to carry the MAC traffic from the individual VMs in an encapsulated format over a logical “tunnel”
 - UDP encapsulation, port 4789, 50 bytes overhead
 - MTU should be large
 - Only transport requirement is unicast IP
@@ -40,13 +40,84 @@ Everything I need to know about VxLAN/EVPN in an extremely structured, brief lan
 - All paths are used via ECMP, UDP source port entropy ensures efficient load balancing
 - Semaless moving VMs across DC
 
-## Service models
-When L2 services are configured: VTEP knows nothing about IP addresses, only MAC addresses and where they are located (VTEP IP address)  
-L2 Services - our fabric is a big L2 switch  
+## Implementation types
+- L2 - our fabric is a big L2 switch - VTEP knows nothing about IP addresses, only MAC addresses and where they are located (VTEP IP address)
+- L2 + L3 - in addition to L2 (big switch) we add functionality of big L3 router (MLS - multi layered switch), with one VRF inside it or several...
+
+## L2 Service models
 - VLAN based service: one VLAN - one MAC VRF (RT, RD) - one bridge table, Ethernet Tag = 0 - one VNI - forwarding based on VNI - most popular - good for multi vendor - one subnet per EVI - EVPN route type 2
 - VLAN bundle service - one bridge table, MAC VRF with RT RD for all VLANs - frames are sent with 802.1Q - Ethernet Tag = 0, MACs in different VLANs should not match
 - VLAN aware bundle service - not supported by all vendors - all VLANs have one VRF(RT, RD) - every VLAN has its own bridge table with VNI and Ethernet tag = VNI
-- L3 - in addition to L2 (big switch) we add functionality of big L3 router (MLS - multi layered switch), with one VRF inside it or several...
+
+## L3 implementation types
+
+- Bridged overlay
+- Edge-Routed Bridging
+
+### Bridged overlay - no L3 functionality
+- Default gateway is outside fabric (firewall)
+- All routing and L3 termination is outside fabric
+- Fabric - is a large logic L2 switch
+- Pros: segmentation, simplicity
+- Cons: non-optimal traffic flow, no ARP suppression
+- VLAN based segmentation
+- Rarely used
+
+### Edge-Routed Bridging
+- Default Gateway - VTEP
+- VRF based segmentation
+- Pros: optimal traffic flow, ARP suppression
+- Cons: expensive equipment
+- Fabric: big L3 Switch - MLS
+- Intra VRF traffic may go via Firewall
+
+### IRB - Integrated Routing and Bridging
+- It means that 2 services are provided at the same time: Routing and switching  
+- One IP VRF - several VLANs in it  
+- Several VRFs may be in a fabric  
+- Inter VRF routing can be done via external firewall
+
+### Assymetriс IRB
+- Only L2VNI is used
+- Routing on ingress VTEP: Leaf1 gets frame in VLAN/VNI 1, and puts it to MAC VRF 2 according to destination IP and this packet with new VNI goes to LEAF 2
+```
+Host 1 (SRC MAC: Host 1; DST MAC: VLAN 1) > Leaf 1 > MAC VRF 1 VNI/VLAN 1 > MAC VRF 2 VNI/VLAN 2 (SRC MAC: VLAN 2; DST MAC: Host 2)> VXLAN > Leaf 2 > MAC VRF 2 > Host 2
+```
+- On egress VTEP only switching
+- Assymetric: different VNIs on different directions of one flow: From Leaf 1 to Leaf 2 traffic is VNI2, and from Leaf 2 to Leaf 1 traffic is VNI1
+- All VNI-VLANs should be configured on all VTEPs - Con - poor scalability - if on one VTEP no conf of VLAN, it will be black holed
+- VRF-lite: Because info about VRFs is not spreaded across fabric
+- Pros: low latency - TTL-1 and routing decision happens only once on ingress VTEP , simplicity
+- Changing MAC: the same as in traditional routing: SRC MAC is changed VLAN SVI MAC and DST MAC is Changed to Destination Host Mac  
+- Route Type 2 is used, besides MAC it also transfers IP/MAC bindings in the same NLRI, VNI is included in both routes. MAC update is imported into MAC table and IP/MAC update is imported into ARP table of destination MAC VRF
+
+Configuration overview:
+- Configure underlay
+- Next we create a big virtual switch from our fabric
+- On each VTEP we configure physical interfaces with required VLAN
+- We configure loopback for overlay and announce them via underlay
+- On clients we configure ip and default GW - the same on all clients on different VTEPs in one VLAN
+- On VTEPS we configure MAC VRFs with RD and RT for every VLAN and with VNI number
+- Configure NVE interface with all VNIs, source interface, reachibility protocol and ingress replication fort BUM
+- Next we upgrade it to L3 Switch
+- We need just to configure IP interface: we create VRF and add VLAN interfaces to it and add virtual IP and virtual MAC for them
+- Virtual MAC is configured one per switch
+- All VTEPs must have the same virtual MAC address
+
+### Symmetric IRB
+- Routing happends both on ingress and egress VTEP: Leaf1 gets frame in VLAN/VNI 1, puts it to IP VRF A, IP VRF sends it to Leaf 2 with VNI of this VRF, Leaf 2 puts it into proper MAC VRF
+```
+Host 1 (SRC MAC: Host 1; DST MAC: VLAN 1) > Leaf 1 > MAC VRF 1 VNI/VLAN 1 > IP VRF A (SRC MAC: VLAN 1; DST MAC: VLAN 2) > VXLAN VNI 555 > Leaf 2 > IP VRF A > MAC VRF 2 (SRC MAC: VLAN 2; DST MAC: HOST 2) > Host 2
+```
+- Symmetric: one L3VNI for both directions of traffic flow
+- Routing through IP VRF, VNI configuration should not be the same on all VTEPs, we configure on VTEP only VLANS which are connected to it, we do not have to configure VLANS and VNIs for VLANS which are only on different VTEP
+- One IP VRF may include several MAC VRFs
+- Full VRF
+- Pros: scalability, integration with out networks - this is main pro, external router peers with IP VRF
+- Cons: 2 TTLs
+- Route Type 2 is used, besides MAC it also transfers IP/MAC bindings in the same NLRI, VNI is included in both routes. MAC update is imported into MAC table and IP/MAC update is imported into ARP table of destination MAC VRF + into routing table
+- MAC-IP routing update contains two RT: for MAC VRF (first one) and IP VRF; and 2 VNIs: the first one for switching and second one for routing
+- MAC-IP also contains Router MAC (as an extended community) for routing: MAC of VLAN 2 in our example, so VTEP-1 knows what change MAC to before sendong to VTEP-2
 
 ## How they handle BUM traffic and MAC learning
 Can be processed in 2 ways:
@@ -449,74 +520,6 @@ Path Attribute - MP_REACH_NLRI
             IP Address: NOT INCLUDED
             VNI: 100
 ```
-## Layer 3
-- Bridged overlay
-- Edge-Routed Bridging
-
-### Bridged overlay - no L3 functionality
-- Default gateway is outside fabric (firewall)
-- All routing and L3 termination is outside fabric
-- Fabric - is a large logic L2 switch
-- Pros: segmentation, simplicity
-- Cons: non-optimal traffic flow, no ARP suppression
-- VLAN based segmentation
-- Rarely used
-
-### Edge-Routed Bridging
-- Default Gateway - VTEP
-- VRF based segmentation
-- Pros: optimal traffic flow, ARP suppression
-- Cons: expensive equipment
-- Fabric: big L3 Switch - MLS
-- Intra VRF traffic may go via Firewall
-
-### IRB - Integrated Routing and Bridging
-- It means that 2 services are provided at the same time: Routing and switching  
-- One IP VRF - several VLANs in it  
-- Several VRFs may be in a fabric  
-- Inter VRF routing can be done via external firewall
-
-### Assymetriс
-- Only L2VNI is used
-- Routing on ingress VTEP: Leaf1 gets frame in VLAN/VNI 1, and puts it to MAC VRF 2 according to destination IP and this packet with new VNI goes to LEAF 2
-```
-Host 1 (SRC MAC: Host 1; DST MAC: VLAN 1) > Leaf 1 > MAC VRF 1 VNI/VLAN 1 > MAC VRF 2 VNI/VLAN 2 (SRC MAC: VLAN 2; DST MAC: Host 2)> VXLAN > Leaf 2 > MAC VRF 2 > Host 2
-```
-- On egress VTEP only switching
-- Assymetric: different VNIs on different directions of one flow: From Leaf 1 to Leaf 2 traffic is VNI2, and from Leaf 2 to Leaf 1 traffic is VNI1
-- All VNI-VLANs should be configured on all VTEPs - Con - poor scalability - if on one VTEP no conf of VLAN, it will be black holed
-- VRF-lite: Because info about VRFs is not spreaded across fabric
-- Pros: low latency - TTL-1 and routing decision happens only once on ingress VTEP , simplicity
-- Changing MAC: the same as in traditional routing: SRC MAC is changed VLAN SVI MAC and DST MAC is Changed to Destination Host Mac  
-- Route Type 2 is used, besides MAC it also transfers IP/MAC bindings in the same NLRI, VNI is included in both routes. MAC update is imported into MAC table and IP/MAC update is imported into ARP table of destination MAC VRF
-
-Configuration overview:
-- Configure underlay
-- Next we create a big virtual switch from our fabric
-- On each VTEP we configure physical interfaces with required VLAN
-- We configure loopback for overlay and announce them via underlay
-- On clients we configure ip and default GW - the same on all clients on different VTEPs in one VLAN
-- On VTEPS we configure MAC VRFs with RD and RT for every VLAN and with VNI number
-- Configure NVE interface with all VNIs, source interface, reachibility protocol and ingress replication fort BUM
-- Next we upgrade it to L3 Switch
-- We need just to configure IP interface: we create VRF and add VLAN interfaces to it and add virtual IP and virtual MAC for them
-- Virtual MAC is configured one per switch
-- All VTEPs must have the same virtual MAC address
-
-### Symmetric
-- Routing happends both on ingress and egress VTEP: Leaf1 gets frame in VLAN/VNI 1, puts it to IP VRF A, IP VRF sends it to Leaf 2 with VNI of this VRF, Leaf 2 puts it into proper MAC VRF
-```
-Host 1 (SRC MAC: Host 1; DST MAC: VLAN 1) > Leaf 1 > MAC VRF 1 VNI/VLAN 1 > IP VRF A (SRC MAC: VLAN 1; DST MAC: VLAN 2) > VXLAN VNI 555 > Leaf 2 > IP VRF A > MAC VRF 2 (SRC MAC: VLAN 2; DST MAC: HOST 2) > Host 2
-```
-- Symmetric: one L3VNI for both directions of traffic flow
-- Routing through IP VRF, VNI configuration should not be the same on all VTEPs, we configure on VTEP only VLANS which are connected to it, we do not have to configure VLANS and VNIs for VLANS which are only on different VTEP
-- One IP VRF may include several MAC VRFs
-- Full VRF
-- Pros: scalability, integration with out networks - this is main pro, external router peers with IP VRF
-- Cons: 2 TTLs
-- Route Type 2 is used, besides MAC it also transfers IP/MAC bindings in the same NLRI, VNI is included in both routes. MAC update is imported into MAC table and IP/MAC update is imported into ARP table of destination MAC VRF + into routing table
-- MAC-IP routing update contains two RT: for MAC VRF (first one) and IP VRF; and 2 VNIs: the first one for switching and second one for routing
-- MAC-IP also contains Router MAC (as an extended community) for routing: MAC of VLAN 2 in our example, so VTEP-1 knows what change MAC to before sendong to VTEP-2
 
 ## Distributed anycast gateway
 - One default GW on all leafs for particular VLAN - Virtual IP
