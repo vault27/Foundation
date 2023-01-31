@@ -38,8 +38,8 @@ Everything I need to know about VxLAN/EVPN in an extremely structured, brief lan
 ## L3 implementation types
 It depends on where VXLAN routing happens.
 - Bridged overlay
-- Centrally-Routed Bridging (Spine Routed)
-- Edge-Routed Bridging (Leaf routed)
+- Centrally-Routed Bridging (Spine Routed) - not recomended
+- Edge-Routed Bridging (Leaf routed) - recomended
 
 ### Bridged overlay - no L3 functionality
 - Does not provide a mechanism for inter-VXLAN routing functionality within the fabric
