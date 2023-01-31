@@ -1,19 +1,5 @@
 # VxLAN & EVPN
 Everything I need to know about VxLAN/EVPN in an extremely structured, brief language, that I understand the most
-
-## Cisco Live useful presentations regarding this topic
-- BRKDCN-2450 - VXLAN EVPN Day-2 operation  
-- BRKDCT-3378 - Building Data Center Networks with VXLAN BGP-EVPN - done
-- BRKDCT-2404 - VXLAN Deployment Models - A practical perspective  
-- BRKDCN-2304 - L4-L7 Service Integration in Multi-Tenant VXLAN EVPN Data Center Fabrics
-- LTRDCN-2223 - Implementing VXLAN In a Data Center
-- DGTL-BRKDCN-1645 - Introduction to VXLAN - The future path of your datacenter  
-  
-## Juniper books
-- Data Center EVPN-VXLAN Fabric Architecture Guide
-- DAY ONE: DAtA CENtEr FUNDAMENtALS
-- DAY ONE: ROUTING IN FAT TREES (RIFT)
-- THIS WEEK: DATA CENTER DEPLOYMENT WITH EVPN/VXLAN
  
 ## Concepts   
 - RFC 7348
@@ -531,3 +517,20 @@ Path Attribute - MP_REACH_NLRI
 - Decrease BUM traffic
 - VTEP intercepts all ARP traffic, if it has Type 2 route for it, it replies - ARP spoofing
 - If no route for it, then it sends BUM traffic to fabric
+
+## Additional materials
+
+### Cisco Live
+- BRKDCN-2450 - VXLAN EVPN Day-2 operation  
+- BRKDCT-3378 - Building Data Center Networks with VXLAN BGP-EVPN - done
+- BRKDCT-2404 - VXLAN Deployment Models - A practical perspective  
+- BRKDCN-2304 - L4-L7 Service Integration in Multi-Tenant VXLAN EVPN Data Center Fabrics
+- LTRDCN-2223 - Implementing VXLAN In a Data Center
+- DGTL-BRKDCN-1645 - Introduction to VXLAN - The future path of your datacenter  
+  
+### Juniper books
+- Data Center EVPN-VXLAN Fabric Architecture Guide
+- DAY ONE: DAtA CENtEr FUNDAMENtALS
+- DAY ONE: ROUTING IN FAT TREES (RIFT)
+- THIS WEEK: DATA CENTER DEPLOYMENT WITH EVPN/VXLAN
+ 
