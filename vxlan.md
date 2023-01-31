@@ -36,11 +36,13 @@ Everything I need to know about VxLAN/EVPN in an extremely structured, brief lan
 - VLAN aware bundle service - not supported by all vendors - all VLANs have one VRF(RT, RD) - every VLAN has its own bridge table with VNI and Ethernet tag = VNI
 
 ## L3 implementation types
-
+It depends on where VXLAN routing happens.
 - Bridged overlay
-- Edge-Routed Bridging
+- Centrally-Routed Bridging (Spine Routed)
+- Edge-Routed Bridging (Leaf routed)
 
 ### Bridged overlay - no L3 functionality
+- Does not provide a mechanism for inter-VXLAN routing functionality within the fabric
 - Default gateway is outside fabric (firewall)
 - All routing and L3 termination is outside fabric
 - Fabric - is a large logic L2 switch
