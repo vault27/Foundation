@@ -1,5 +1,9 @@
 # Data Centers
-All I need to know about data centres in one place. Extremly brief and systematized
+All I need to know about data centres in one place. Extremly brief and systematized  
+Data Centers networks evolution in one string:
+```
+Three tier model > LAG > Fabric Experiments > IP Fabric/CLOS/Spine-Leaf > VxLAN + EVPN
+```
 
 ## Era 0 - legacy - non virtualized
 - Difficult to configure VLANs on all devices
