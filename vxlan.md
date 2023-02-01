@@ -1,7 +1,14 @@
 # VxLAN & EVPN
 Everything I need to know about VxLAN/EVPN in an extremely structured, brief language, that I understand the most
  
-## Concepts   
+## Prerequisites of new approach: VxLAN and EVPN
+- DC used Layer 2 technologies such as xSTP and MC-LAG
+- xSTP blocks ports
+- MC-LAG may not provide enough redundancy
+- Device outage is a significant event and larger modular-chassis devices use a lot of power
+- Amount of VLANs limit
+
+## VxLAN concepts   
 - RFC 7348
 - VXLAN (Virtual eXtensible Local Area Network) is a Layer 2 overlay technology over a Layer 3 underlay infrastructure. It provides a means to stretch the Layer 2 network by pro- viding a tunneling encapsulation using MAC addresses in UDP (MAC in UDP) over an IP underlay. It is used to carry the MAC traffic from the individual VMs in an encapsulated format over a logical “tunnel”
 - UDP encapsulation, port 4789, 50 bytes overhead
