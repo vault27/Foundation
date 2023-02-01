@@ -22,7 +22,7 @@ Everything I need to know about VxLAN/EVPN in an extremely structured, brief lan
 - VxLAN tunnels are not statefull - no keepalives
 - VxLAN producers - Huawei, Juniper, Nexus 9k and Arista
 
-## Components
+## VxLAN components
 - VNID - Vxlan Network Identifier - defines broadcast segment - transfered in VxLAN header - 3 bytes
 - NVE - Network Virtualization Edge - interface where VXLAN ends - only 1 NVE interface is allowed on the switch.
 - VTEP - VXLAN Tunnel Endpoint - Nexus - Leaf
