@@ -175,10 +175,12 @@ It is called flood and learn. No control plane is used. First packet (ARP) and b
 ## Configuration
 
 ### Static peers on Nexus
+
 Configuration overview  
-We create special Loopback for overlay, announce it to BGP Underlay    
-For every VLAN where clients are connected we configure VNI  
-Next we configure nve interface, where we configure peers for every VNI
+- We create special Loopback for overlay, announce it to BGP Underlay    
+- For every VLAN where clients are connected we configure VNI  
+- Next we configure nve interface, where we configure peers for every VNI
+- Only L2 for VxLAN traffic, no L3 and no BGP
 
 ```
 #
@@ -210,8 +212,10 @@ interface nve1
 ```
 
 ### BGP EVPN on Nexus - VLAN based service
+
 Configuration overview  
-- MAC VRF for every VLAN, 
+- Pure L2 configuration for VxLAN traffic, no L3, no routing
+- MAC VRF for every VLAN 
 - Special loopback for Overlay is created. From this overlay address we build l2vpn adjacency with Spines and send then only l2vpn route updates   
 - For overlay neighbor we configure sending all communities, do not change next hop and multihop 
 - On  leafs we configure BGP as host reachability protocol and as ingress replication protocol 
