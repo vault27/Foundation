@@ -1,4 +1,5 @@
 # Data Centers
+All I need to know about data centres in one place. Extremly brief and systematized
 
 ## Era 0 - legacy - non virtualized
 - Difficult to configure VLANs on all devices
