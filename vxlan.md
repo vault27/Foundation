@@ -211,7 +211,7 @@ interface nve1
       peer-ip 10.10.2.5
 ```
 
-### BGP EVPN on Nexus - VLAN based service
+### L2 BGP EVPN on Nexus - VLAN based service
 
 Configuration overview  
 - Pure L2 configuration for VxLAN traffic, no L3, no routing
@@ -296,10 +296,18 @@ neighbor 10.10.2.3
       route-map SET_NEXT_HOP_UNCHANGED out
 ```
 
-## VLAN aware
+### VLAN aware
 Configuration overview  
 We create VLAN aware bundle with RD, RT and put all VLANS into it, for example 1-1000, this is a major pro.
 In this mode, in Route type 2, in NLRI path attribite in BGP update there will be Ethernet TAG ID - the same as VNI
+
+### L3 assymetric
+
+Configuration overview (Add to the existing L2 configuration)
+- Add SVI interfaces for every VLAN
+- Put VLAN interfaces into VRF in order to isolate them from Underlay routing table
+- Create a virtual MAC - one per switch - it should be the same on all switches
+- Enable anycast gateway on VLAN interfaces
 
 ## Verification
 Show all NVE neighboors, not very reliable data, because connections are connectionless :)  
