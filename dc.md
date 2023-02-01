@@ -1,5 +1,25 @@
 # Data Centers
 
+## Era 0 - legacy - non virtualized
+- Difficult to configure VLANs on all devices
+- VLAN-ID field is 12 bits yielding a maximum of 4094 VLANs
+- MAC scalability is affected due to limits on the number of MAC addresses that can be learned per device. Unpredictable amounts of BUM traffic when the MAC scale limit is surpassed, further impacts resiliency
+- Due to STP, many unused links, no load balancing
+- It is difficult connect two DC and stretch Layer 2 detween them
+- No Host mobility
+- No Microsegmentation
+
+## Era 1 - Fabrics
+
+### Fabric types
+- Ethernet fabric. Examples: QFabric, Virtual Chassis Fabric (VCF), and Junos Fusion. No STP. Multipath. Load balancing. Not OPen Standard. Not scalable.
+- MPLS fabric. MPLS as a transport for Underlay. FRR(fast rerouting). Traffic engineering. MPLS signaling protocols like LDP, RSVP, or BGP-LU can be used to provide MPLS underlay. Devices should support MPLS.
+- IP fabric. Underlay IP transport. Open standard, flat forwarding, horizontally scalable, and non-blocking spine/leaf architecture.
+
+## Era 2 - IP fabric - Clos - Underlay
+
+## Era 3 - VxLAN - EVPN
+
 - Multi tenancy - several customers use one something(Data center, firewall, software) and they are called tenants.  
 - In DC tenants share Compute, Storage and Network. All these are orchestarted by service orchestration.  
 - Segmentation is done via VRF, VLAN, VNI...  
@@ -19,14 +39,8 @@
 - VPLS
 - VxLAN
 
-## Non virtualized/legacy data centers
-- Difficult to configure VLANs on all devices
-- VLAN-ID field is 12 bits yielding a maximum of 4094 VLANs
-- MAC scalability is affected due to limits on the number of MAC addresses that can be learned per device. Unpredictable amounts of BUM traffic when the MAC scale limit is surpassed, further impacts resiliency
-- Due to STP, many unused links, no load balancing
-- It is difficult connect two DC and stretch Layer 2 detween them
-- Host mobility
-- Microsegmentation
+
+
 
 ## Data Center Fabric / Underlay
 - The term “fabric” describes how switch, server, and storage nodes connect to all other nodes in a mesh configuration, evoking the image of tightly woven fabric. These links provide multiple redundant communications paths and deliver higher total throughput than traditional networks
