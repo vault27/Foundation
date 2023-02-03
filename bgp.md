@@ -289,6 +289,13 @@ Additional features:
 - One BGP process serves for all VRFS and can have different neighbors for different address families
 - Dynamic neighbors can be configured
 
+Minimal configuration for EVPN adjacency:
+- Define neighbor using its loopback interface with remote as number
+- Configure address family for neighbor: l2vpn evpn
+- Define loopback as update source
+- Configure multihop 2
+- Enable both types of community
+
 One large configuration file on Nexus with comments, based on my experience
 ```
 feature bgp
@@ -332,9 +339,11 @@ router bgp 64701
  
  #Neighboor config for EVPN overlay
   neighbor 10.10.2.1
+    remote-as 64600
     address-family l2vpn evpn
         send-community both
     update-source loopback 1
+    ebgp-multihop 2
  
  #VRF config in BGP
   vrf GOOGLE
