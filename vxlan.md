@@ -174,9 +174,13 @@ It is called flood and learn. No control plane is used. First packet (ARP) and b
 
 ## Configuration
 
-High level configuration steps
+High level configuration steps of full fabric with L2/L3 functionality
 - Configure Underlay: OSPF, IS-IS, eBGP, iBGP
-- Configure Overlay: MP-BGP EVPN using loopback interfaces on each switch and l2vpn address family
+- Configure Overlay: MP-BGP EVPN using loopback interfaces on each switch and l2vpn address family + retain route-target all and not changing next hop on spines
+- Assosiate VNI numbers with VLAN numbers
+- Configure nve interface with all VNIs, ingress replication and BGP as host reachability and source interface
+- Configure MAC VRFs with RD and RT for each VNI
+- 
 
 ### Static peers on Nexus
 
