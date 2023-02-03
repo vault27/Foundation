@@ -277,13 +277,19 @@ aggregate-address 10.99.0.0/31 summary-only
 ```
 
 ## Configuration
-General approach:
-- Enable BGP process and specify AS number
-- Configure what to send in IPv4 address family via network command or via redistribute
-- Configure neighbors configuring their AS number, address family, filters via route maps and additonal options like timers or allow-as-in
+
+Minimum required configuration
+- Router process with AS number
+- Router-ID - not required, but prefered
+- Neighbor with its AS number and address family
+- Advertise something if needed via redistribute or network commands
+
+Additional features:
+- Filters via route maps and additonal options like timers or allow-as-in
 - One BGP process serves for all VRFS and can have different neighbors for different address families
 - Dynamic neighbors can be configured
-One large configuration file on Nexus with comments, base on my experience
+
+One large configuration file on Nexus with comments, based on my experience
 ```
 feature bgp
 
@@ -339,8 +345,8 @@ router bgp 64701
       address-family ipv4 unicast - mandatory command
         allowas-in 1 - Accept as-path with my AS present in it
         disable-peer-as-check - allow forward updates between two routers in the same AS
-
 ```
+
 ## Verification
 **Show BGP table for global VRF or VRF**  
 It shows all BGP routes both best and secondary with all the options: Path,Weight, Local Pref, Next Hop, Status, Path type, Origin Code
