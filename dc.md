@@ -15,23 +15,30 @@ Three tier model > LAG > Fabric Experiments > IP Fabric/CLOS/Spine-Leaf > VxLAN 
 - No Microsegmentation
 
 ## Era 1 - Fabrics
+- The term “fabric” describes how switch, server, and storage nodes connect to all other nodes in a mesh configuration, evoking the image of tightly woven fabric. These links provide multiple redundant communications paths and deliver higher total throughput than traditional networks
+- There are both proprietary architectures and open, standards-based fabrics, such as EVPN-VXLAN
+- It is a network architechture, it is used instead of traditional multitier architectures
+- It effectively flattens the network architecture, thereby reducing the distance between endpoints within the data center
+- Overlay rides on top of the fabric
+- The fabric itself, when paired with an overlay, is called the underlay
 
 ### Fabric types
 - Ethernet fabric. Examples: QFabric, Virtual Chassis Fabric (VCF), and Junos Fusion. No STP. Multipath. Load balancing. Not OPen Standard. Not scalable.
 - MPLS fabric. MPLS as a transport for Underlay. FRR(fast rerouting). Traffic engineering. MPLS signaling protocols like LDP, RSVP, or BGP-LU can be used to provide MPLS underlay. Devices should support MPLS.
 - IP fabric. Underlay IP transport. Open standard, flat forwarding, horizontally scalable, and non-blocking spine/leaf architecture.
 
-## Era 2 - IP fabric - Clos - Underlay
+## Era 2 - IP fabric - Clos - Underlay - Spine/Leaf
+- Equidistant endpoints
+- Non-blocking core
+- Low latency and high bandwidth for both East-West and North-South traffic
+- Multipath - load balancing - all links are used
+- No STP
+- Horizontal scalable: you can add spines and leafs without redesigns
+- No central mgmt
+- Easy to add ports: just add a Leaf
+- Easy to repair: replace one Spine
 
-## Era 3 - VxLAN - EVPN
-
-- Multi tenancy - several customers use one something(Data center, firewall, software) and they are called tenants.  
-- In DC tenants share Compute, Storage and Network. All these are orchestarted by service orchestration.  
-- Segmentation is done via VRF, VLAN, VNI...  
-- Microsegmentation: Private VLAN, ACI
-- People switched from legacy tiered architechture to Clos Fabrics
-
-## Alternatives to Clos fabrics
+### Alternatives to Clos network
 - JellyFish
 - Torus
 - Dring
@@ -39,21 +46,22 @@ Three tier model > LAG > Fabric Experiments > IP Fabric/CLOS/Spine-Leaf > VxLAN 
 - HyperCube
 - HyperX
 
+## Era 3 - VxLAN - EVPN
+- Multi tenancy - several customers use one something(Data center, firewall, software) and they are called tenants.  
+- In DC tenants share Compute, Storage and Network. All these are orchestarted by service orchestration.  
+- Segmentation is done via VRF, VLAN, VNI...  
+- Microsegmentation: Private VLAN, ACI
+- People switched from legacy tiered architechture to Clos Fabrics
+
 ## Methods to stretch L2
 - Extend VLANs - Trunk
 - VPLS
 - VxLAN
 
-
-
-
 ## Data Center Fabric / Underlay
-- The term “fabric” describes how switch, server, and storage nodes connect to all other nodes in a mesh configuration, evoking the image of tightly woven fabric. These links provide multiple redundant communications paths and deliver higher total throughput than traditional networks
-- There are both proprietary architectures and open, standards-based fabrics, such as EVPN-VXLAN
-- It is a network architechture, it is used instead of traditional multitier architectures
-- It effectively flattens the network architecture, thereby reducing the distance between endpoints within the data center
-- It is based on Clos topology
-- It provides a solid layer of connectivity in the physical network, tunnel endpoint reachability, equidistant endpoints, non-blocking core, low latency and high bandwidth for both East-West and North-South traffic, load balancing(multipath), use of all links, 
+
+
+ 
 - Overlay rides on top of the fabric
 - The fabric itself, when paired with an overlay, is called the underlay
 - Leaf: Rack switch (for example, Top of Rack or TOR) to which physical or virtual endpoints can connect to (for example, compute, storage or networking resources)
@@ -61,21 +69,6 @@ Three tier model > LAG > Fabric Experiments > IP Fabric/CLOS/Spine-Leaf > VxLAN 
 - 3 stage Clos: (1) Leaf > (2) Spine > (3) Leaf
 - 5 stage Clos: (1) Leaf > (2) Spine > (3) Super Spine > (4) Spine > (5) Leaf
 - Underlay may be based on IP or MPLS
-
-## Fabric pros and cons
-- Equidistant endpoints
-- Non-blocking core
-- Low latency and high bandwidth for both East-West and North-South traffic
-- Multipath
-- No STP
-- Horizontal scalable: you can add spines and leafs without redesigns
-- No central mgmt
-
-## Fabric types
-- Ethernet fabric. Examples: QFabric, Virtual Chassis Fabric (VCF), and Junos Fusion. No STP. Multipath. Load balancing. Not OPen Standard. Not scalable.
-- MPLS fabric. MPLS as a transport for Underlay. FRR(fast rerouting). Traffic engineering. MPLS signaling protocols like LDP, RSVP, or BGP-LU can be used to provide MPLS underlay. Devices should support MPLS.
-- IP fabric. Underlay IP transport. Open standard, flat forwarding, horizontally scalable, and non-blocking spine/leaf architecture.
-
 
 ## Underlay best practices
 - Do not use LAG between leaf and Spine. If one LAG link fails, it will reduce IGP cost and disable the whole LAG. Use Spines and Super Spines instead
