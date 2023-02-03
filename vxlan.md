@@ -174,6 +174,10 @@ It is called flood and learn. No control plane is used. First packet (ARP) and b
 
 ## Configuration
 
+High level configuration steps
+- Configure Underlay: OSPF, IS-IS, eBGP, iBGP
+- Configure Overlay: MP-BGP EVPN using loopback interfaces on each switch and l2vpn address family
+
 ### Static peers on Nexus
 
 Configuration overview  
