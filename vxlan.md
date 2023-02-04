@@ -98,6 +98,8 @@ Configuration overview:
 - We need just to configure IP interface: we create VRF and add VLAN interfaces to it and add virtual IP and virtual MAC for them
 - Virtual MAC is configured one per switch
 - All VTEPs must have the same virtual MAC address
+- Enable ARP suppression for every vni in nve interface
+- Enable anycast distributed gateway on all VLAN interfaces
 
 ### Symmetric IRB
 - Routing happends both on ingress and egress VTEP: Leaf1 gets frame in VLAN/VNI 1, puts it to IP VRF A, IP VRF sends it to Leaf 2 with VNI of this VRF, Leaf 2 puts it into proper MAC VRF
@@ -219,9 +221,9 @@ interface nve1
       peer-ip 10.10.2.5
 ```
 
-### L2 BGP EVPN on Nexus - VLAN based service
+### L2/L3 BGP EVPN on Nexus - VLAN based service
 
-Configuration overview  
+Configuration overview for L2
 - Pure L2 configuration for VxLAN traffic, no L3, no routing
 - MAC VRF for every VLAN 
 - Special loopback for Overlay is created. From this overlay address we build l2vpn adjacency with Spines and send then only l2vpn route updates   
@@ -240,8 +242,36 @@ feature bgp
 
 feature vn-segment-vlan-based
 
+#For enabling ARP suppression
+hardware access-list tcam region racl 512
+hardware access-list tcam region arp-ether 256 double-wide
+
 #Enables VTEP (only required on Leaf or Border)
 feature nv overlay
+
+#Enable SVI interfaces
+feature interface-vlan
+
+fabric forwarding anycast-gateway-mac 0001.0002.0003
+
+vlan 100
+  vn-segment 100
+vlan 200
+  vn-segment 200
+vrf context OTUS
+  address-family ipv4 unicast
+  
+interface Vlan100
+  no shutdown
+  vrf member OTUS
+  ip address 192.168.1.1/24
+  fabric forwarding mode anycast-gateway
+
+interface Vlan200
+  no shutdown
+  vrf member OTUS
+  ip address 192.168.2.1/24
+  fabric forwarding mode anycast-gateway
 
 router bgp 64701
   address-family l2vpn evpn
@@ -268,6 +298,8 @@ interface nve1
   source-interface loopback1
   member vni 100
     ingress-replication protocol bgp - we process BUM traffic via BGP - Route Types 3
+    suppress-arp
+    
  ```
 
 **Spine**  
