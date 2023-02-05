@@ -350,7 +350,9 @@ Configuration overview (Add to the existing L2 configuration)
 - Enable anycast gateway on VLAN interfaces
 
 ## Verification
-Show all NVE neighboors, not very reliable data, because connections are connectionless :)  
+
+**Show all NVE neighboors**
+not very reliable data, because connections are connectionless :)  
 Peer is up just because it exists in routing table. It even mau not accept VxLAN packets.
 
 ```
@@ -379,7 +381,7 @@ admin state is up,  Hardware: NVE
  ```
  
 **Show l2vpn routing table**  
-With 2 Route Type 2 routes (for host traffic) and 2 Route Type 3 routes (for BUM traffic)
+Shows type 3 routes, type 2 routes (both MAC and MAC-IP), shows route type, next hop, route distinguisher
 
 ```
 leaf-2(config-if-nve)# show bgp l2vpn evpn  
@@ -400,7 +402,6 @@ Route Distinguisher: 100:100    (L2VNI 100)
                       10.10.2.3                                      0 64600 64701 i
 *>l[3]:[0]:[32]:[10.10.2.4]/88
                       10.10.2.4                         100      32768 i
-                      
  ```
  
  **Show EVPN neighboors**
@@ -423,6 +424,7 @@ Neighbor        V    AS MsgRcvd MsgSent   TblVer  InQ OutQ Up/Down  State/PfxRcd
  leaf-2(config-evpn-evi)# show bgp l2vpn evpn route-type 2
  ```
 We can also filter based on different parametres, for example RD  
+
 **Show MAC addresses: both local and from remote VTEP**
 ```
 leaf-1(config-evpn-evi)# show mac address-table
@@ -435,6 +437,21 @@ Legend:
 C  100     0050.7966.682d   dynamic  0         F      F    nve1(10.10.2.4)
 *  100     0050.7966.683f   dynamic  0         F      F    Eth1/3
 G    -     5000.3e00.1b08   static   -         F      F    sup-eth1(R)
+```
+
+**Show all routes for particular IP**
+```
+show bgp l2vpn evpn 192.168.2.3
+```
+
+**Show all MAC-IP records**
+```
+show l2route evpn mac-ip evi 40
+```
+
+**Show info about arp-suppression**
+```
+show ip arp suppression-cache detail
 ```
 
 ## EVPN
