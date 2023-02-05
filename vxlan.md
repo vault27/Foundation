@@ -594,4 +594,9 @@ Path Attribute - MP_REACH_NLRI
 - DAY ONE: DAtA CENtEr FUNDAMENtALS
 - DAY ONE: ROUTING IN FAT TREES (RIFT)
 - THIS WEEK: DATA CENTER DEPLOYMENT WITH EVPN/VXLAN
+- IP Fabric EVPN-VXLAN Reference Architecture
+- Juniper Networks EVPN Implementation for Next-Generation Data Center Architectures
+- EVPN-VXLAN User Guide
  
+### Cisco books
+- Building Data Centers with VXLAN BGP EVPN - A Cisco NX-OS Perspective
