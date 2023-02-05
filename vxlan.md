@@ -34,6 +34,10 @@ Everything I need to know about VxLAN/EVPN in an extremely structured, brief lan
 - VLAN bundle service - one bridge table, MAC VRF with RT RD for all VLANs - frames are sent with 802.1Q - Ethernet Tag = 0, MACs in different VLANs should not match
 - VLAN aware bundle service - not supported by all vendors - all VLANs have one VRF(RT, RD) - every VLAN has its own bridge table with VNI and Ethernet tag = VNI
 
+## Modes of learning MACs
+- Flood and learn - no control plane - VTEP sends BUM traffic everywhere it is configured and then listens for reply, based on this learns where which MAC is located. First packet (ARP) and broadcast are sent to all peers, configured for this VNI. All next packets are sent only to particular VTEP. VxLAN packets between leafs are load balanced between spines.
+- EVPN - VTEPs exchange data about MACs and IP addresses
+
 ## L3 implementation types
 It depends on where VXLAN routing happens.
 - Bridged overlay
@@ -108,7 +112,7 @@ Host 1 (SRC MAC: Host 1; DST MAC: VLAN 1) > Leaf 1 > MAC VRF 1 VNI/VLAN 1 > IP V
 - MAC-IP routing update contains two RT: for MAC VRF (first one) and IP VRF; and 2 VNIs: the first one for switching and second one for routing
 - MAC-IP also contains Router MAC (as an extended community) for routing: MAC of VLAN 2 in our example, so VTEP-1 knows what change MAC to before sendong to VTEP-2
 
-## How they handle BUM traffic and MAC learning
+## BUM traffic and MAC learning
 Can be processed in 2 ways:
 - Multicast replication for BUM/Flood and learn for MAC - multicast is enabled on Underlay - BUM is not packed inside VxlAN - it is sent via Underlay - replication point is on rendezvous point - spine - it is difficult to configure multicast on Underlay - not used today
 - Ingress replication for BUM/Flood and learn for MAC - packed to VxLAN - and sent to all in VNI - configured statically: for every VNI we configure VTEPs IPs which have the same VNI
@@ -147,8 +151,12 @@ None of the other fields that flow-based ECMP normally uses are suitable for use
 That is why UDP is used, not IP for example.  
 All VxLAN packets from one Leaf to another have different UDP source ports for load balancing purposes.
 
-## Static configuration - Flood and learn
-It is called flood and learn. No control plane is used. First packet (ARP) and broadcast are sent to all peers, configured for this VNI. All next packets are sent only to particular VTEP. VxLAN packets between leafs are load balanced between spines
+## MAC VRF
+- RD:MAC-PREFIX:ETI
+- RD:IP-PREFIX:ETI
+- MAC-PREFIX = MAC/48
+- Ethernet Tag ID = 0 - in most cases - defines bridge table inside VRF - several bridge tables can be in one vrf - in most cases we add 1 vlan to one MAC VRF, this is required only when several VLANs are in 1 MAC VRF
+- We add VLAN to MAC VRF instead of interface in IP VRF
 
 ## Firewall injection
 - Connected to border leaf via TRUNK interface
@@ -158,13 +166,6 @@ It is called flood and learn. No control plane is used. First packet (ARP) and b
 - Bottle neck for the entire network
 - High load on border leaf
 - ePBR can be also used
-
-## MAC VRF
-- RD:MAC-PREFIX:ETI
-- RD:IP-PREFIX:ETI
-- MAC-PREFIX = MAC/48
-- Ethernet Tag ID = 0 - in most cases - defines bridge table inside VRF - several bridge tables can be in one vrf - in most cases we add 1 vlan to one MAC VRF, this is required only when several VLANs are in 1 MAC VRF
-- We add VLAN to MAC VRF instead of interface in IP VRF
 
 ## Configuration
 
