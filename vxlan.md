@@ -12,7 +12,7 @@ Everything I need to know about VxLAN/EVPN in an extremely structured, brief lan
 - RFC 7348
 - VXLAN (Virtual eXtensible Local Area Network) is a Layer 2 overlay technology over a Layer 3 underlay infrastructure. It provides a means to stretch the Layer 2 network by pro- viding a tunneling encapsulation using MAC addresses in UDP (MAC in UDP) over an IP underlay. It is used to carry the MAC traffic from the individual VMs in an encapsulated format over a logical “tunnel”
 - UDP encapsulation, port 4789, 50 bytes overhead
-- MTU should be large
+- MTU for transport underlay network should be large - 1550 bytes minimum, maybe even Jumbo Frames
 - Only transport requirement is unicast IP
 - VLAN numbers can be different on all switches, but VNI number should be the same 
 - Default gateway can be any device in a fabric
