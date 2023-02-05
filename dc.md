@@ -4,6 +4,14 @@ Data Centers networks evolution in one string:
 ```
 Three tier model > LAG > Fabric Experiments > IP Fabric/CLOS/Spine-Leaf > VxLAN + EVPN
 ```
+## Data Center network evolution
+- Three tier model - only in big companies, collapsed core - mostly, we also can connect 2 collapsed cores , if there are many collapsed cores then we should switch to 3 tier. STP + HSRP/VRRP
+- LACP + VSS stack, VSS is unstable, many problems - mostly in campuses, Cisco 6500
+- After 2005 - Nexus: VDC( Virtual Device Context - several virtual switches on one physical), MCLAG (vPC in Cisco terms), FEX - fabric extender - many small switches are connected to a big main one and they send all traffic to it, they have no brains or control plane
+- MLAG in Core - may be not very good to much control plane
+- Trill, FabricPath, 
+- VxLAN flood to everyone
+- VXLAN + EVPN
 
 ## Era 0 - legacy - non virtualized
 - Difficult to configure VLANs on all devices
@@ -13,6 +21,15 @@ Three tier model > LAG > Fabric Experiments > IP Fabric/CLOS/Spine-Leaf > VxLAN 
 - It is difficult connect two DC and stretch Layer 2 detween them
 - No Host mobility
 - No Microsegmentation
+- Bad for east-west traffic
+- It is difficult to repair devices higher than access layer
+
+Connections:
+- All end devices are connected to top of rack switch (ToR)
+- Tor switches are connected to end of row switches (EoR) or to other uplink switches
+- Also all network switches maybe in one rack
+- The next is aggregation switches, which are L3 border
+- Aggregation switches > Core routers > edge routers
 
 ## Era 1 - Fabrics
 - The term “fabric” describes how switch, server, and storage nodes connect to all other nodes in a mesh configuration, evoking the image of tightly woven fabric. These links provide multiple redundant communications paths and deliver higher total throughput than traditional networks
@@ -25,7 +42,9 @@ Three tier model > LAG > Fabric Experiments > IP Fabric/CLOS/Spine-Leaf > VxLAN 
 ### Fabric types
 - Ethernet fabric. Examples: QFabric, Virtual Chassis Fabric (VCF), and Junos Fusion. No STP. Multipath. Load balancing. Not OPen Standard. Not scalable.
 - MPLS fabric. MPLS as a transport for Underlay. FRR(fast rerouting). Traffic engineering. MPLS signaling protocols like LDP, RSVP, or BGP-LU can be used to provide MPLS underlay. Devices should support MPLS.
-- IP fabric. Underlay IP transport. Open standard, flat forwarding, horizontally scalable, and non-blocking spine/leaf architecture.
+- IP fabric. Underlay IP transport. Open standard, flat forwarding, horizontally scalable, and non-blocking spine/leaf architecture
+
+Fabric path - Cisco's version of TRILL - eliminates STP
 
 ## Era 2 - IP fabric - Clos - Underlay - Spine/Leaf
 - Equidistant endpoints
@@ -58,10 +77,7 @@ Three tier model > LAG > Fabric Experiments > IP Fabric/CLOS/Spine-Leaf > VxLAN 
 - VPLS
 - VxLAN
 
-## Data Center Fabric / Underlay
-
-
- 
+## Data Center Fabric / Underlay 
 - Overlay rides on top of the fabric
 - The fabric itself, when paired with an overlay, is called the underlay
 - Leaf: Rack switch (for example, Top of Rack or TOR) to which physical or virtual endpoints can connect to (for example, compute, storage or networking resources)
