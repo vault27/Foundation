@@ -35,8 +35,13 @@ Everything I need to know about VxLAN/EVPN in an extremely structured, brief lan
 - VLAN aware bundle service - not supported by all vendors - all VLANs have one VRF(RT, RD) - every VLAN has its own bridge table with VNI and Ethernet tag = VNI
 
 ## Modes of learning MACs
-- Flood and learn - no control plane - VTEP sends BUM traffic everywhere it is configured and then listens for reply, based on this learns where which MAC is located. First packet (ARP) and broadcast are sent to all peers, configured for this VNI. All next packets are sent only to particular VTEP. VxLAN packets between leafs are load balanced between spines.
+- Flood and learn - no control plane - VTEP sends BUM traffic everywhere it is configured and then listens for reply, based on this learns where which MAC is located. First packet (ARP) and broadcast are sent to all peers, configured for this VNI. All next packets are sent only to particular VTEP. VxLAN packets between leafs are load balanced between spines. Host A in VLAN 1 SVI 1 sends ARP request for Host B in VLAN 2 svi 1. VTEP 1 encapsulates this ARP request to VXLAN and sends it to peer VTEPs for this SVI. VTEP 2 replies, and then all other traffic goes between these 2 VTEPs
 - EVPN - VTEPs exchange data about MACs and IP addresses
+
+## BUM traffic
+Can be processed in 2 ways:
+- Multicast replication for BUM/Flood and learn for MAC - multicast is enabled on Underlay - BUM is not packed inside VxlAN - it is sent via Underlay - replication point is on rendezvous point - spine - it is difficult to configure multicast on Underlay - not used today. Host sends broadcast. Leaf forwards it without VXLAN as a multicast to 225.2.2.1. We configure a match between VNI and multicast address - only one multicast packet - Spines will propogate it to all subscribers - load is much less then ingress replication
+- Ingress replication for BUM- packed to VxLAN - and sent to all in VNI - configured statically: for every VNI we configure VTEPs IPs which have the same VNI - or we chaeck for BUM subscribtion (Route Type 3) in EVPN table
 
 ## L3 implementation types
 It depends on where VXLAN routing happens.
@@ -112,28 +117,12 @@ Host 1 (SRC MAC: Host 1; DST MAC: VLAN 1) > Leaf 1 > MAC VRF 1 VNI/VLAN 1 > IP V
 - MAC-IP routing update contains two RT: for MAC VRF (first one) and IP VRF; and 2 VNIs: the first one for switching and second one for routing
 - MAC-IP also contains Router MAC (as an extended community) for routing: MAC of VLAN 2 in our example, so VTEP-1 knows what change MAC to before sendong to VTEP-2
 
-## BUM traffic and MAC learning
-Can be processed in 2 ways:
-- Multicast replication for BUM/Flood and learn for MAC - multicast is enabled on Underlay - BUM is not packed inside VxlAN - it is sent via Underlay - replication point is on rendezvous point - spine - it is difficult to configure multicast on Underlay - not used today
-- Ingress replication for BUM/Flood and learn for MAC - packed to VxLAN - and sent to all in VNI - configured statically: for every VNI we configure VTEPs IPs which have the same VNI
-- OVSDB for MAC learning and BUM
-- EVPN for both BUM and MAC learning
-
-## Operations
-### Without BGP, ingress replication of BUM traffic
-Host A in VLAN 1 SVI 1 sends ARP request for Host B in VLAN 2 svi 1. VTEP 1 encapsulates this ARP request to VXLAN and sends it to peer VTEPs for this SVI. VTEP 2 replies, and then all other traffic goes between these 2 VTEPs
-
 ### With BGP, ingress replication traffic
 - Host A is online, Leaf-1 sees its MAC and forwards Route Type 2 to all other VTEPS, and now all VTEPs know that Host A is behind Leaf-1
 - Host A in VLAN 1 SVI 1 sends ARP request for Host B in VLAN 2 svi 1
 - Leaf 1 sends this ARP request in VXLAN to all VTEPs from which it got Route Type 3 - Inclusive Multicast Ethernet Tag with SNI 1
 - All VTEPs which got ARP, forward it to all physical ports in this SVI
 - Host B replies and Leaf 2 sends reply in VXLAN to Leaf 1
-
-### BUM traffic via Multicast
-- Host sends broadcast
-- Leaf forwards it without VXLAN as a multicast to 225.2.2.1
-- We configure a match between VNI and multicast address - only one multicast packet - Spines will propogate it to all subscribers - load is much less then ingress replication
 
 ## Host mobility
 - VM moves from one VTEP to another and continue
