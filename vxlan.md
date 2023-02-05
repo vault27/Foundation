@@ -573,8 +573,6 @@ show l2route evpn mac-ip evi 40
 show ip arp suppression-cache detail
 ```
 
-```
-
 ## Distributed anycast gateway
 - One default GW on all leafs for particular VLAN - Virtual IP
 - One MAC for default GW on all leafs - Virtual MAC
