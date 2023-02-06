@@ -77,6 +77,7 @@ https://knowledgebase.paloaltonetworks.com/KCSArticleDetail?id=kA10g000000ClVHCA
 
 
 ### Security policy
+Options
 - GlobalProtect Host Information Profile (HIP)
 - Security zones
 - Source and destination IP addresses
@@ -87,6 +88,17 @@ https://knowledgebase.paloaltonetworks.com/KCSArticleDetail?id=kA10g000000ClVHCA
 - URL
 - Security Profiles (Content-ID) - use signatures to identify known threats. Unknown threats are identified by WildFire
 
+Concepts
+- Top to down
+- Left to right
+- More specific rules first
+- Step 1: check security policy
+- Step 2: apply Security Profiles: only if traffic is allowed
+- Intrazone allow
+- Interzone deny
+- Three types: universal, intrazone, interzone: selects the type of traffic to be checked
+- Use App-Id, not ports
+- 
 ### App-ID
 6-Tuple is checked against the security policy > known application signatures > check if it is SSH, TLS, or SSL > decryption policy (if exists) > checked again for a known application signature > the application has not been identified (a maximum of 4 packets after the handshake, or 2,000 bytes) > will use the base protocol to determine which decoder to use to analyze the packets more deeply > unknown-tcp > check policy if uknown is allowed  
 SSL > Web-Browsing > flickr > flickr-uploading  
