@@ -78,14 +78,19 @@ https://knowledgebase.paloaltonetworks.com/KCSArticleDetail?id=kA10g000000ClVHCA
 
 ### Security policy
 Options
-- GlobalProtect Host Information Profile (HIP)
-- Security zones
-- Source and destination IP addresses
-- Source and destination devices
+- Source
+  - Zone
+  - Address
+  - User
+  - Device
+- Destination
+  - Zone
+  - Address
+  - Device
+  - Service
+  - URL Category
 - App-ID
-- Source user (User-ID)
-- Service (port)
-- URL
+- GlobalProtect Host Information Profile (HIP)
 - Security Profiles (Content-ID) - use signatures to identify known threats. Unknown threats are identified by WildFire
 
 Concepts
@@ -100,9 +105,10 @@ Concepts
 - Use App-Id, not ports
 - 
 ### App-ID
-6-Tuple is checked against the security policy > known application signatures > check if it is SSH, TLS, or SSL > decryption policy (if exists) > checked again for a known application signature > the application has not been identified (a maximum of 4 packets after the handshake, or 2,000 bytes) > will use the base protocol to determine which decoder to use to analyze the packets more deeply > unknown-tcp > check policy if uknown is allowed  
-SSL > Web-Browsing > flickr > flickr-uploading  
-The application decoder will continuously scan the session for expected and deviant behavior, in case the application changes to a sub-application or a malicious actor is trying to tunnel a different application or protocol over the existing session
+- 6-Tuple is checked against the security policy > known application signatures > check if it is SSH, TLS, or SSL > decryption policy (if exists) > checked again for a known application signature inside TLS > the application has not been identified (a maximum of 4 packets after the handshake, or 2,000 bytes) > will use the base protocol to determine which decoder to use to analyze the packets more deeply > unknown-tcp > check policy if unknown is allowed  
+- SSL > Web-Browsing > flickr > flickr-uploading  
+- The application decoder will continuously scan the session for expected and deviant behavior, in case the application changes to a sub-application or a malicious actor is trying to tunnel a different application or protocol over the existing session
+- If the protocol is unknown, App-ID will apply heuristics
 
 ## HA
 - Up to 16 firewalls as peer members of an HA cluster
