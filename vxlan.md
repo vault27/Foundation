@@ -246,6 +246,7 @@ It depends on where VXLAN routing happens:
 
 ### Assymetriс IRB
 - Only L2VNI is used
+- Does not require any specific configuratio: just add VRF and SVI interfaces, maybe if you want, add virtual MAC, that's all
 - Routing on ingress VTEP: Leaf1 gets frame in VLAN/VNI 1, and puts it to MAC VRF 2 according to destination IP and this packet with new VNI goes to LEAF 2
 ```
 Host 1 (SRC MAC: Host 1; DST MAC: VLAN 1) > Leaf 1 > MAC VRF 1 VNI/VLAN 1 > MAC VRF 2 VNI/VLAN 2 (SRC MAC: VLAN 2; DST MAC: Host 2)> VXLAN > Leaf 2 > MAC VRF 2 > Host 2
