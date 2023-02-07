@@ -32,15 +32,16 @@
 - Content-ID - Scans traffic for security threats (e.g., data leak prevention and URL filtering, viruses, spyware, unwanted file transfers, specific data patterns, vulnerability attacks, and appropriate browsing access
 - User-ID - Matches a user to an IP address (or multiple IP addresses
 - Decryption
-- Antivirus
-- Anti-Spyware
-- Vulnerability Protection
-- URL filtering
-- File blocking
-- Wildfire
+- Security profiles
+  - Antivirus
+  - Anti-Spyware
+  - Vulnerability Protection
+  - URL filtering
+  - File blocking
+  - Wildfire
+  - Data Filtering
 - Traps
 - DoS
-- Data Filtering
 
 ## Firewall components
 
