@@ -28,6 +28,7 @@
 - Full hardware separate mgmt
 
 #### Features
+- 6 Tulip stateful firewall
 - App-ID - Scans traffic to identify the application involved, regardless of the protocol or port number used
 - Content-ID - Scans traffic for security threats (e.g., data leak prevention and URL filtering, viruses, spyware, unwanted file transfers, specific data patterns, vulnerability attacks, and appropriate browsing access
 - User-ID - Matches a user to an IP address (or multiple IP addresses
@@ -42,6 +43,13 @@
   - Data Filtering
 - Traps
 - DoS
+- NAT
+- VPN
+- QoS
+- SD-WAN
+- DHCP
+- DNS-Proxy
+- Routing
 
 ## Firewall components
 
@@ -77,9 +85,8 @@ https://knowledgebase.paloaltonetworks.com/KCSArticleDetail?id=kA10g000000ClVHCA
 
 <img width="1071" alt="image" src="https://user-images.githubusercontent.com/116812447/215520946-0255d873-1931-4799-b57e-4a62d4e48765.png">
 
-
 ### Security policy
-Options
+**Options**
 - Source
   - Zone
   - Address
@@ -95,7 +102,7 @@ Options
 - GlobalProtect Host Information Profile (HIP)
 - Security Profiles (Content-ID) - use signatures to identify known threats. Unknown threats are identified by WildFire
 
-Concepts
+**Concepts**
 - Top to down
 - Left to right
 - More specific rules first
@@ -105,7 +112,8 @@ Concepts
 - Interzone deny
 - Three types: universal, intrazone, interzone: selects the type of traffic to be checked
 - Use App-Id, not ports
-- 
+- Separate rule for loging blocks
+ 
 ### App-ID
 - 6-Tuple is checked against the security policy > known application signatures > check if it is SSH, TLS, or SSL > decryption policy (if exists) > checked again for a known application signature inside TLS > the application has not been identified (a maximum of 4 packets after the handshake, or 2,000 bytes) > will use the base protocol to determine which decoder to use to analyze the packets more deeply > unknown-tcp > check policy if unknown is allowed  
 - SSL > Web-Browsing > flickr > flickr-uploading  
