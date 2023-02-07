@@ -500,7 +500,8 @@ admin state is up,  Hardware: NVE
  ```
  
 **Show l2vpn routing table**  
-Shows type 3 routes, type 2 routes (both MAC and MAC-IP), shows route type, next hop, route distinguisher
+Shows type 3 routes, type 2 routes (both MAC and MAC-IP), shows route type, next hop, route distinguisher  
+Here we can see all MAC routes and 1 Type 3 route which were exported from partucular MAC vrf with particular RD
 
 ```
 leaf-2(config-if-nve)# show bgp l2vpn evpn  
