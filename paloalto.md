@@ -25,6 +25,7 @@
 ### NGFW
 - The Palo Alto Networks firewall was designed to use an efficient system known as next-generation processing. Next-generation processing enables packet evaluation, application identification, policy decisions, and content scanning in a single, efficient processing pass
 - Zone based firewall
+- Full hardware separate mgmt
 
 #### Features
 - App-ID - Scans traffic to identify the application involved, regardless of the protocol or port number used
