@@ -75,7 +75,7 @@ Can be processed in 2 ways:
 VTEP gets all BGP updates and stores them in global table, but installs them to VRF only if there is required VNI.  
 In the beginning just after configuration is finished only Type 3 routes are sent to all l2vpn neighbors, announcing that VTEP is ready to process BUM traffic. Type 2 routes will appear only after client hosts will start to generate traffic.
 - L2 operations
-  - Type 2 - Host Advertisment - advertising MACs - Generated when new MAC is discovered, is sent to all VTEPs within this VNI, VTEPs import it to required MAC VRF according to RT
+  - Type 2 - Host Advertisment - advertising MACs - Generated when new MAC is discovered, is sent to all VTEPs within this VNI, VTEPs import it to required MAC VRF according to RT - also advertise IP together with MAC - this is a separate update called MAC/IP it is sent when new record appears in ARP table of VRF where VLAN interface is and this record ic connected with this VLAN interface - this MAC/IP update is used for assymetric routing of VxLAN traffic
   - Type 3 - Inclusive Multicast Ethernet Tag  - for BUM - Ingress Replication - VTEP with particular VNI and VLAN sends this update to inform everyone that it is ready to accept BUM traffic for this particular VNI. Attribute PMSI_TUNNEL_ATTRIBUTE is added to BGP update, it contains VNI and replication type: Ingress Replication (or Multicast). This route update is generated for every VNI configured.
 - L3 operations
   - Type 4 - Ethernet Segment Route - one LAN connected to two VTEPs - only one of them should process BUM
