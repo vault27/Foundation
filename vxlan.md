@@ -293,22 +293,9 @@ Host 1 (SRC MAC: Host 1; DST MAC: VLAN 1) > Leaf 1 > MAC VRF 1 VNI/VLAN 1 > IP V
 - MAC-IP routing update contains two RT: for MAC VRF (first one) and IP VRF; and 2 VNIs: the first one for switching and second one for routing
 - MAC-IP also contains Router MAC (as an extended community) for routing: MAC of VLAN 2 in our example, so VTEP-1 knows what change MAC to before sendong to VTEP-2
 
-**Operations overview**
-- Host A is online, Leaf-1 sees its MAC and forwards Route Type 2 to all other VTEPS, and now all VTEPs know that Host A is behind Leaf-1
-- Host A in VLAN 1 SVI 1 sends ARP request for Host B in VLAN 2 svi 1
-- Leaf 1 sends this ARP request in VXLAN to all VTEPs from which it got Route Type 3 - Inclusive Multicast Ethernet Tag with SNI 1
-- All VTEPs which got ARP, forward it to all physical ports in this SVI
-- Host B replies and Leaf 2 sends reply in VXLAN to Leaf 1
-
 ## Configuration
-High level configuration steps of full fabric with L2/L3 functionality
-- Configure Underlay: OSPF, IS-IS, eBGP, iBGP
-- Configure Overlay: MP-BGP EVPN using loopback interfaces on each switch and l2vpn address family + retain route-target all and not changing next hop on spines
-- Assosiate VNI numbers with VLAN numbers
-- Configure nve interface with all VNIs, ingress replication and BGP as host reachability and source interface
-- Configure MAC VRFs with RD and RT for each VNI
 
-### Static peers on Nexus
+### Static peers on Nexus - flood and learn, no EVPN
 Configuration overview  
 - We create special Loopback for overlay, announce it to BGP Underlay    
 - For every VLAN where clients are connected we configure VNI  
@@ -346,6 +333,13 @@ interface nve1
 
 ### L2/L3 BGP EVPN on Nexus - VLAN based service
 
+High level configuration steps of full fabric with L2/L3 functionality
+- Configure Underlay: OSPF, IS-IS, eBGP, iBGP
+- Configure Overlay: MP-BGP EVPN using loopback interfaces on each switch and l2vpn address family + retain route-target all and not changing next hop on spines
+- Assosiate VNI numbers with VLAN numbers
+- Configure nve interface with all VNIs, ingress replication and BGP as host reachability and source interface
+- Configure MAC VRFs with RD and RT for each VNI
+
 Configuration overview for L2
 - Pure L2 configuration for VxLAN traffic, no L3, no routing
 - MAC VRF for every VLAN 
@@ -375,15 +369,20 @@ feature nv overlay
 #Enable SVI interfaces
 feature interface-vlan
 
+#Enable virtual MAC - the same for all interfaces and VTEPs
 fabric forwarding anycast-gateway-mac 0001.0002.0003
 
+#Assign VNIs to each VLAN
 vlan 100
   vn-segment 100
 vlan 200
   vn-segment 200
+
+#Create VRF for L3, to isolate VxLAN traffic from Underlay
 vrf context OTUS
   address-family ipv4 unicast
   
+#Create SVI interfaces for L3 and make them anycast gateway and insert them into required VRF
 interface Vlan100
   no shutdown
   vrf member OTUS
@@ -426,19 +425,21 @@ interface nve1
  ```
 
 **Spine**  
-Here we configure only BGP EVPN, no VTEP, VNI, NVE...
+Here we configure only BGP EVPN, no VTEP, VNI, NVE... One configuration is the same for L2 and L3. It just transits routes and traffic.
 ```
+#Enable all required features
 nv overlay evpn
 feature bgp
 feature vn-segment-vlan-based
 feature nv overlay
 
+#Route map - not to change next ho address for routes which are sent to leafs
 route-map SET_NEXT_HOP_UNCHANGED permit 10
   set ip next-hop unchanged
   
 router bgp 64600
 address-family l2vpn evpn
-# Required for eBGP. Allows the spine to retain and advertise all EVPN routes when there are no local VNI configured with matching import route targets
+# Required for BGP EVPN. Allows the spine to retain and advertise all EVPN routes when there are no local VNI configured with matching import route targets
     retain route-target all
     
 neighbor 10.10.2.3
