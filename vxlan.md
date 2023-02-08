@@ -398,7 +398,7 @@ interface Vlan100
   no shutdown
   vrf member OTUS
   ip address 192.168.1.1/24
-  fabric forwarding mode anycast-gateway
+  fabric forwarding mode anycast-gateway - without this command VTEP will not send MAC-IP type routes, only MACs
 
 interface Vlan200
   no shutdown
