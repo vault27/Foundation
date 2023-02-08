@@ -14,6 +14,7 @@ Everything I need to know about VxLAN/EVPN in an extremely structured, brief lan
 - UDP encapsulation, port 4789, 50 bytes overhead
 - MTU for transport underlay network should be large - 1550 bytes minimum, maybe even Jumbo Frames
 - Only transport requirement is unicast IP
+- There is nothing interesting inside VxLAN packet: only VNI number - that's all
 - VLAN numbers can be different on all switches, but VNI number should be the same 
 - Default gateway can be any device in a fabric
 - VxLAN does not encapsulate CDP, STP....
@@ -64,6 +65,7 @@ Can be processed in 2 ways:
 - Providing host mobility
 - Providing multi-homing for active active connections - one host to several switches without any VPC
 - We establish eBGP or iBGP sessions between leafs and spines. If BGP session is used for underlay, than it will be the second session via separate Loopback interfaces. This new BGP session uses only l2vpn address family
+- When everything is stable, there are only BGP keep alives, nothing more
 - It is recomended to use separate Loopbacks for l2vpn BGP adjecency and nve interface, vendors recomend
 - When l2vpn BGP update is sent, nve interface IP is used as nexthop
 - eBGP is better because if we have superspines we will have to configure hierarchical design for RR
@@ -302,7 +304,7 @@ Host 1 (SRC MAC: Host 1; DST MAC: VLAN 1) > Leaf 1 > MAC VRF 1 VNI/VLAN 1 > IP V
 
 **Configuration overview (in addition to Assymetric)**
 - Add route target and RD to IP VRF
-- Add L3 VNI to each VRF - Create fake VLAN and fake SVI for it
+- Add L3 VNI to each VRF - Create fake VLAN+assign VNI and fake SVI for it
 - Add anycast gateway to each SVI
 - Add L3 VNI to NVE interface
 
@@ -374,9 +376,19 @@ vlan 100
 vlan 200
   vn-segment 200
 
+#Fake VLAN for L3 SVI
+vlan 300
+vn-segment 300
+
 #Create VRF for L3, to isolate VxLAN traffic from Underlay
+##For L3 symmetric add RD, RT and L3 VNI
 vrf context OTUS
-  address-family ipv4 unicast
+ vni 300
+ rd 10.10.2.3:300
+ address-family ipv4 unicast
+  route-target both 300:300
+  route-target both 300:300 evpn
+
   
 #Create SVI interfaces for L3 and make them anycast gateway and insert them into required VRF
 interface Vlan100
@@ -390,6 +402,12 @@ interface Vlan200
   vrf member OTUS
   ip address 192.168.2.1/24
   fabric forwarding mode anycast-gateway
+  
+#Fake SVI for L3 VNI
+interface vlan 300
+no shutdown
+vrf member OTUS
+ip forward
 
 #Configure BGP EVPN in addition to underlay BGP
 router bgp 64701
@@ -413,6 +431,7 @@ evpn
     
 interface nve1
   no shutdown
+  member vni 300 associate-vrf - add all needed L3 VNIs
   host-reachability protocol bgp - we find out MACs via BGP
   source-interface loopback1
   member vni 100
