@@ -300,6 +300,12 @@ Host 1 (SRC MAC: Host 1; DST MAC: VLAN 1) > Leaf 1 > MAC VRF 1 VNI/VLAN 1 > IP V
 - MAC-IP routing update contains two RT: for MAC VRF (first one) and IP VRF; and 2 VNIs: the first one for switching and second one for routing
 - MAC-IP also contains Router MAC (as an extended community) for routing: MAC of VLAN 2 in our example, so VTEP-1 knows what change MAC to before sendong to VTEP-2
 
+**Configuration overview (in addition to Assymetric)**
+- Add route target and RD to IP VRF
+- Add L3 VNI to each VRF - Create fake VLAN and fake SVI for it
+- Add anycast gateway to each SVI
+- Add L3 VNI to NVE interface
+
 ## Configuration
 
 ### Static peers on Nexus - flood and learn, no EVPN
