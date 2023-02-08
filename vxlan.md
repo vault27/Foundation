@@ -214,9 +214,11 @@ Path Attribute - MP_REACH_NLRI
 - ePBR can be also used
 
 ## L3
-Implementation types
-It depends on where VXLAN routing happens:
-- Bridged overlay
+- IRB - Integrated Routing and Bridging - It means that 2 services are provided at the same time: Routing and switching
+- To isolate from Underlay we use VRfs for VxLAN routing
+
+Implementation types - where VXLAN routing happens:
+- Bridged overlay - routing on external device
 - Centrally-Routed Bridging (Spine Routed) - not recomended
 - Edge-Routed Bridging (Leaf routed) - recomended
 
@@ -238,15 +240,9 @@ It depends on where VXLAN routing happens:
 - Fabric: big L3 Switch - MLS
 - Intra VRF traffic may go via Firewall
 
-### IRB - Integrated Routing and Bridging
-- It means that 2 services are provided at the same time: Routing and switching  
-- One IP VRF - several VLANs in it  
-- Several VRFs may be in a fabric  
-- Inter VRF routing can be done via external firewall
-
-### Assymetriс IRB
+#### Edge-Routed Bridging - Assymetric
 - Only L2VNI is used
-- Does not require any specific configuratio: just add VRF and SVI interfaces, maybe if you want, add virtual MAC, that's all
+- Does not require any specific configuration: just add VRF and SVI interfaces, maybe if you want, add virtual MAC, that's all
 - Routing on ingress VTEP: Leaf1 gets frame in VLAN/VNI 1, and puts it to MAC VRF 2 according to destination IP and this packet with new VNI goes to LEAF 2
 ```
 Host 1 (SRC MAC: Host 1; DST MAC: VLAN 1) > Leaf 1 > MAC VRF 1 VNI/VLAN 1 > MAC VRF 2 VNI/VLAN 2 (SRC MAC: VLAN 2; DST MAC: Host 2)> VXLAN > Leaf 2 > MAC VRF 2 > Host 2
@@ -259,7 +255,7 @@ Host 1 (SRC MAC: Host 1; DST MAC: VLAN 1) > Leaf 1 > MAC VRF 1 VNI/VLAN 1 > MAC 
 - Changing MAC: the same as in traditional routing: SRC MAC is changed VLAN SVI MAC and DST MAC is Changed to Destination Host Mac  
 - Route Type 2 is used, besides MAC it also transfers IP/MAC bindings in the same NLRI, VNI is included in both routes. MAC update is imported into MAC table and IP/MAC update is imported into ARP table of destination MAC VRF
 
-Configuration overview:
+Configuration overview (in addition to L2):
 - Configure underlay
 - Next we create a big virtual switch from our fabric
 - On each VTEP we configure physical interfaces with required VLAN
@@ -273,6 +269,12 @@ Configuration overview:
 - All VTEPs must have the same virtual MAC address
 - Enable ARP suppression for every vni in nve interface
 - Enable anycast distributed gateway on all VLAN interfaces
+
+Configuration overview (Add to the existing L2 configuration)
+- Add SVI interfaces for every VLAN
+- Put VLAN interfaces into VRF in order to isolate them from Underlay routing table
+- Create a virtual MAC - one per switch - it should be the same on all switches
+- Enable anycast gateway on VLAN interfaces
 
 ### Symmetric IRB
 - Routing happends both on ingress and egress VTEP: Leaf1 gets frame in VLAN/VNI 1, puts it to IP VRF A, IP VRF sends it to Leaf 2 with VNI of this VRF, Leaf 2 puts it into proper MAC VRF
