@@ -395,21 +395,22 @@ interface Vlan200
   ip address 192.168.2.1/24
   fabric forwarding mode anycast-gateway
 
+#Configure BGP EVPN in addition to underlay BGP
 router bgp 64701
   address-family l2vpn evpn
     retain route-target all
   neighbor 10.10.2.1
     remote-as 64600
-    update-source loopback1
-    ebgp-multihop 2
+    update-source loopback1 - it is best practive to use different loopbacks for EVPN and nve interfaces
+    ebgp-multihop 2 - required because we establish peeering from loopback
     address-family l2vpn evpn
       send-community
       send-community extended
 
-# Enable MAC VRF and Type 2 routes
+# Enable MAC VRF for every VNI and for Type 2-3 routes
 evpn
   vni 100 l2
-    rd 10.10.2.4:100
+    rd 10.10.2.4:100 - it is better to use EVPN loopback here to better understand from where route arrived
 # Route targets for import and export are the same here
     route-target import 100:100
     route-target export 100:100
