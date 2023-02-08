@@ -271,7 +271,7 @@ Host 1 (SRC MAC: Host 1; DST MAC: VLAN 1) > Leaf 1 > MAC VRF 1 VNI/VLAN 1 > MAC 
 - Changing MAC: the same as in traditional routing: SRC MAC is changed VLAN SVI MAC and DST MAC is Changed to Destination Host Mac  
 - Route Type 2 is used, besides MAC it also transfers IP/MAC bindings in the same NLRI, VNI is included in both routes. MAC update is imported into MAC table and IP/MAC update is imported into ARP table of destination MAC VRF
 
-Configuration overview (in addition to L2):
+**Configuration overview (in addition to L2):**
 - We need just to configure IP interface: we create VRF and add VLAN interfaces to it and add virtual IP and virtual MAC for them
 - Virtual MAC is configured one per switch
 - All VTEPs must have the same virtual MAC address
