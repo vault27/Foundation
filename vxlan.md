@@ -30,9 +30,6 @@ Everything I need to know about VxLAN/EVPN in an extremely structured, brief lan
 - Semaless moving VMs across DC
 - L2 implementation - our fabric is a big L2 switch - VTEP knows nothing about IP addresses, only MAC addresses and where they are located (VTEP IP address)
 - L2 + L3 - in addition to L2 (big switch) we add functionality of big L3 router (MLS - multi layered switch), with one VRF inside it or several...
-- VLAN based service: one VLAN - one MAC VRF (RT, RD) - one bridge table, Ethernet Tag = 0 - one VNI - forwarding based on VNI - most popular - good for multi vendor - one subnet per EVI - EVPN route type 2
-- VLAN bundle service - one bridge table, MAC VRF with RT RD for all VLANs - frames are sent with 802.1Q - Ethernet Tag = 0, MACs in different VLANs should not match
-- VLAN aware bundle service - not supported by all vendors - all VLANs have one VRF(RT, RD) - every VLAN has its own bridge table with VNI and Ethernet tag = VNI
 - Load balancing: Nexus uses hash of (src ip, dst ip, protocol, src port, dst port) for ECMP load balancing underlay traffic, in VxLAN packets all these fields are the same, except UDP source port which is based on hash of inside VxLAN packet, thanks to this load balancing works good, that is why UDP is used, not direct IP for example
 
 ### Modes of learning MACs
@@ -190,6 +187,11 @@ Path Attribute - MP_REACH_NLRI
 - Default Gateway for host is outside fabric
 - We configure NVE interface with all VNIs, BUM traffic configuration, and hosts learning type
 
+### Implementation types
+- VLAN based service: one VLAN - one MAC VRF (RT, RD) - one bridge table, Ethernet Tag = 0 - one VNI - forwarding based on VNI - most popular - good for multi vendor - one subnet per EVI - EVPN route type 2
+- VLAN bundle service - one bridge table, MAC VRF with RT RD for all VLANs - frames are sent with 802.1Q - Ethernet Tag = 0, MACs in different VLANs should not match
+- VLAN aware bundle service - not supported by all vendors - all VLANs have one VRF(RT, RD) - every VLAN has its own bridge table with VNI and Ethernet tag = VNI. We create VLAN aware bundle with RD, RT and put all VLANS into it, for example 1-1000, this is a major pro. In this mode, in Route type 2, in NLRI path attribite in BGP update there will be Ethernet TAG ID - the same as VNI.
+
 ### Operations overview - VLAN based
 - Host A is online, Leaf-1 sees its MAC and forwards Route Type 2 to all other VTEPS, and now all VTEPs know that Host A is behind Leaf-1
 - Host A in VLAN 1 VNI 1 sends ARP request for Host B in VLAN 1 VNI 1
@@ -213,10 +215,15 @@ Path Attribute - MP_REACH_NLRI
 - High load on border leaf
 - ePBR can be also used
 
-### VLAN aware
-Configuration overview  
-We create VLAN aware bundle with RD, RT and put all VLANS into it, for example 1-1000, this is a major pro.
-In this mode, in Route type 2, in NLRI path attribite in BGP update there will be Ethernet TAG ID - the same as VNI
+### Configuration overview for L2
+- Pure L2 configuration for VxLAN traffic, no L3, no routing
+- MAC VRF for every VLAN 
+- Special loopback for Overlay is created. From this overlay address we build l2vpn adjacency with Spines and send then only l2vpn route updates   
+- For overlay neighbor we configure sending all communities, do not change next hop and multihop 
+- On  leafs we configure BGP as host reachability protocol and as ingress replication protocol 
+- Also we configure for each VNI RD, RT in evpn section. RD can be any, it is better to use loopbackIP:VNI for it, for better understanding when we see it in routing table. RT can be any as well, but it should be correlated what we import and export on all VTEPS, so it is better to do it the same on all VTEPS for one VNI
+- This type of configuration will require configuration for every VLAN, if we have 1000 VLANs
+- Route Type 2 dissapears, when host does not send any traffic for some time and disspears from switch MAC table, after this withdrawl is sent
 
 ## L3
 - IRB - Integrated Routing and Bridging - It means that 2 services are provided at the same time: Routing and switching
@@ -331,7 +338,7 @@ interface nve1
       peer-ip 10.10.2.5
 ```
 
-### L2/L3 BGP EVPN on Nexus - VLAN based service
+### L2/L3 BGP EVPN on Nexus - VLAN based service - Symmetric L3
 
 High level configuration steps of full fabric with L2/L3 functionality
 - Configure Underlay: OSPF, IS-IS, eBGP, iBGP
