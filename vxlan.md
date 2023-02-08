@@ -297,6 +297,7 @@ Host 1 (SRC MAC: Host 1; DST MAC: VLAN 1) > Leaf 1 > MAC VRF 1 VNI/VLAN 1 > IP V
 - Symmetric: one L3VNI for both directions of traffic flow
 - Routing through IP VRF, VNI configuration should not be the same on all VTEPs, we configure on VTEP only VLANS which are connected to it, we do not have to configure VLANS and VNIs for VLANS which are only on different VTEP
 - One IP VRF may include several MAC VRFs
+- Routes are installed directly to routing table of VRF
 - Full VRF
 - Pros: scalability, integration with out networks - this is main pro, external router peers with IP VRF
 - Cons: 2 TTLs
@@ -584,6 +585,33 @@ show l2route evpn mac-ip evi 40
 show ip arp suppression-cache detail
 ```
 
+**Show ip routes with installed VxLAn routes in symmetric mode**
+```
+leaf-1(config-if)# show ip route vrf OTUS
+IP Route Table for VRF "OTUS"
+'*' denotes best ucast next-hop
+'**' denotes best mcast next-hop
+'[x/y]' denotes [preference/metric]
+'%<string>' in via output denotes VRF <string>
+
+192.168.1.0/24, ubest/mbest: 1/0, attached
+    *via 192.168.1.1, Vlan100, [0/0], 4d01h, direct
+192.168.1.1/32, ubest/mbest: 1/0, attached
+    *via 192.168.1.1, Vlan100, [0/0], 4d01h, local
+192.168.1.2/32, ubest/mbest: 1/0, attached
+    *via 192.168.1.2, Vlan100, [190/0], 00:41:38, hmm
+192.168.1.3/32, ubest/mbest: 1/0
+    *via 10.10.2.4%default, [20/0], 00:41:38, bgp-64701, external, tag 64600, segid: 300 tunnelid: 0xa0a0204 encap: VXLAN
+
+192.168.2.0/24, ubest/mbest: 1/0, attached
+    *via 192.168.2.1, Vlan200, [0/0], 3d01h, direct
+192.168.2.1/32, ubest/mbest: 1/0, attached
+    *via 192.168.2.1, Vlan200, [0/0], 3d01h, local
+192.168.2.2/32, ubest/mbest: 1/0, attached
+    *via 192.168.2.2, Vlan200, [190/0], 00:41:31, hmm
+192.168.2.3/32, ubest/mbest: 1/0
+    *via 10.10.2.4%default, [20/0], 00:41:31, bgp-64701, external, tag 64600, segid: 300 tunnelid: 0xa0a0204 encap: VXLAN
+```
 ## Additional materials
 
 ### Cisco Live
