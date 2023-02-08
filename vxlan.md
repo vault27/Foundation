@@ -230,6 +230,8 @@ Path Attribute - MP_REACH_NLRI
 ## L3
 - IRB - Integrated Routing and Bridging - It means that 2 services are provided at the same time: Routing and switching
 - To isolate from Underlay we use VRfs for VxLAN routing
+- During L3 routing of VxLAN traffic MACs of source and destination are changed the same as in regular routing
+- TTL is decreamented as well
 
 **Distributed anycast gateway**
 - One default GW on all leafs for particular VLAN - Virtual IP
