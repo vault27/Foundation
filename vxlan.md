@@ -340,23 +340,6 @@ interface nve1
 
 ### L2/L3 BGP EVPN on Nexus - VLAN based service - Symmetric L3
 
-High level configuration steps of full fabric with L2/L3 functionality
-- Configure Underlay: OSPF, IS-IS, eBGP, iBGP
-- Configure Overlay: MP-BGP EVPN using loopback interfaces on each switch and l2vpn address family + retain route-target all and not changing next hop on spines
-- Assosiate VNI numbers with VLAN numbers
-- Configure nve interface with all VNIs, ingress replication and BGP as host reachability and source interface
-- Configure MAC VRFs with RD and RT for each VNI
-
-Configuration overview for L2
-- Pure L2 configuration for VxLAN traffic, no L3, no routing
-- MAC VRF for every VLAN 
-- Special loopback for Overlay is created. From this overlay address we build l2vpn adjacency with Spines and send then only l2vpn route updates   
-- For overlay neighbor we configure sending all communities, do not change next hop and multihop 
-- On  leafs we configure BGP as host reachability protocol and as ingress replication protocol 
-- Also we configure for each VNI RD, RT in evpn section. RD can be any, it is better to use loopbackIP:VNI for it, for better understanding when we see it in routing table. RT can be any as well, but it should be correlated what we import and export on all VTEPS, so it is better to do it the same on all VTEPS for one VNI
-- This type of configuration will require configuration for every VLAN, if we have 1000 VLANs
-- Route Type 2 dissapears, when host does not send any traffic for some time and disspears from switch MAC table, after this withdrawl is sent
-
 **Leaf**
 ```
 #Enables EVPN Control-Plane in BGP
