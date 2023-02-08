@@ -190,7 +190,7 @@ Path Attribute - MP_REACH_NLRI
 - Default Gateway for host is outside fabric
 - We configure NVE interface with all VNIs, BUM traffic configuration, and hosts learning type
 
-### Operations overview
+### Operations overview - VLAN based
 - Host A is online, Leaf-1 sees its MAC and forwards Route Type 2 to all other VTEPS, and now all VTEPs know that Host A is behind Leaf-1
 - Host A in VLAN 1 VNI 1 sends ARP request for Host B in VLAN 1 VNI 1
 - Leaf 1 sends this ARP request in VXLAN to all VTEPs from which it got Route Type 3 - Inclusive Multicast Ethernet Tag with VNI 1
@@ -213,11 +213,27 @@ Path Attribute - MP_REACH_NLRI
 - High load on border leaf
 - ePBR can be also used
 
+### VLAN aware
+Configuration overview  
+We create VLAN aware bundle with RD, RT and put all VLANS into it, for example 1-1000, this is a major pro.
+In this mode, in Route type 2, in NLRI path attribite in BGP update there will be Ethernet TAG ID - the same as VNI
+
 ## L3
 - IRB - Integrated Routing and Bridging - It means that 2 services are provided at the same time: Routing and switching
 - To isolate from Underlay we use VRfs for VxLAN routing
 
-Implementation types - where VXLAN routing happens:
+**Distributed anycast gateway**
+- One default GW on all leafs for particular VLAN - Virtual IP
+- One MAC for default GW on all leafs - Virtual MAC
+- On all leafs we configure manually on Interface VLAN virtual IP and virtual MAC
+- In route updates type 2 which contains MAC/IP real router mac is sent, not virtual one
+
+**ARP suppression**
+- Decrease BUM traffic
+- VTEP intercepts all ARP traffic, if it has Type 2 route for it, it replies - ARP spoofing
+- If no route for it, then it sends BUM traffic to fabric
+
+**Implementation types - where VXLAN routing happens:**
 - Bridged overlay - routing on external device
 - Centrally-Routed Bridging (Spine Routed) - not recomended
 - Edge-Routed Bridging (Leaf routed) - recomended
@@ -256,27 +272,13 @@ Host 1 (SRC MAC: Host 1; DST MAC: VLAN 1) > Leaf 1 > MAC VRF 1 VNI/VLAN 1 > MAC 
 - Route Type 2 is used, besides MAC it also transfers IP/MAC bindings in the same NLRI, VNI is included in both routes. MAC update is imported into MAC table and IP/MAC update is imported into ARP table of destination MAC VRF
 
 Configuration overview (in addition to L2):
-- Configure underlay
-- Next we create a big virtual switch from our fabric
-- On each VTEP we configure physical interfaces with required VLAN
-- We configure loopback for overlay and announce them via underlay
-- On clients we configure ip and default GW - the same on all clients on different VTEPs in one VLAN
-- On VTEPS we configure MAC VRFs with RD and RT for every VLAN and with VNI number
-- Configure NVE interface with all VNIs, source interface, reachibility protocol and ingress replication fort BUM
-- Next we upgrade it to L3 Switch
 - We need just to configure IP interface: we create VRF and add VLAN interfaces to it and add virtual IP and virtual MAC for them
 - Virtual MAC is configured one per switch
 - All VTEPs must have the same virtual MAC address
-- Enable ARP suppression for every vni in nve interface
-- Enable anycast distributed gateway on all VLAN interfaces
+- Enable ARP suppression for every vni in nve interface - maybe not needed on Nexus
+- Enable anycast distributed gateway on all VLAN interfaces - maybe no needed on Nexus
 
-Configuration overview (Add to the existing L2 configuration)
-- Add SVI interfaces for every VLAN
-- Put VLAN interfaces into VRF in order to isolate them from Underlay routing table
-- Create a virtual MAC - one per switch - it should be the same on all switches
-- Enable anycast gateway on VLAN interfaces
-
-### Symmetric IRB
+#### Edge-Routed Bridging - Symmetric
 - Routing happends both on ingress and egress VTEP: Leaf1 gets frame in VLAN/VNI 1, puts it to IP VRF A, IP VRF sends it to Leaf 2 with VNI of this VRF, Leaf 2 puts it into proper MAC VRF
 ```
 Host 1 (SRC MAC: Host 1; DST MAC: VLAN 1) > Leaf 1 > MAC VRF 1 VNI/VLAN 1 > IP VRF A (SRC MAC: VLAN 1; DST MAC: VLAN 2) > VXLAN VNI 555 > Leaf 2 > IP VRF A > MAC VRF 2 (SRC MAC: VLAN 2; DST MAC: HOST 2) > Host 2
@@ -291,7 +293,7 @@ Host 1 (SRC MAC: Host 1; DST MAC: VLAN 1) > Leaf 1 > MAC VRF 1 VNI/VLAN 1 > IP V
 - MAC-IP routing update contains two RT: for MAC VRF (first one) and IP VRF; and 2 VNIs: the first one for switching and second one for routing
 - MAC-IP also contains Router MAC (as an extended community) for routing: MAC of VLAN 2 in our example, so VTEP-1 knows what change MAC to before sendong to VTEP-2
 
-### Operations overview
+**Operations overview**
 - Host A is online, Leaf-1 sees its MAC and forwards Route Type 2 to all other VTEPS, and now all VTEPs know that Host A is behind Leaf-1
 - Host A in VLAN 1 SVI 1 sends ARP request for Host B in VLAN 2 svi 1
 - Leaf 1 sends this ARP request in VXLAN to all VTEPs from which it got Route Type 3 - Inclusive Multicast Ethernet Tag with SNI 1
@@ -305,7 +307,6 @@ High level configuration steps of full fabric with L2/L3 functionality
 - Assosiate VNI numbers with VLAN numbers
 - Configure nve interface with all VNIs, ingress replication and BGP as host reachability and source interface
 - Configure MAC VRFs with RD and RT for each VNI
-- 
 
 ### Static peers on Nexus
 Configuration overview  
@@ -458,19 +459,6 @@ neighbor 10.10.2.3
       route-map SET_NEXT_HOP_UNCHANGED out
 ```
 
-### VLAN aware
-Configuration overview  
-We create VLAN aware bundle with RD, RT and put all VLANS into it, for example 1-1000, this is a major pro.
-In this mode, in Route type 2, in NLRI path attribite in BGP update there will be Ethernet TAG ID - the same as VNI
-
-### L3 assymetric
-
-Configuration overview (Add to the existing L2 configuration)
-- Add SVI interfaces for every VLAN
-- Put VLAN interfaces into VRF in order to isolate them from Underlay routing table
-- Create a virtual MAC - one per switch - it should be the same on all switches
-- Enable anycast gateway on VLAN interfaces
-
 ## Verification
 
 **Show all NVE neighboors**
@@ -576,17 +564,6 @@ show l2route evpn mac-ip evi 40
 ```
 show ip arp suppression-cache detail
 ```
-
-## Distributed anycast gateway
-- One default GW on all leafs for particular VLAN - Virtual IP
-- One MAC for default GW on all leafs - Virtual MAC
-- On all leafs we configure manually on Interface VLAN virtual IP and virtual MAC
-- In route updates type 2 which contains MAC/IP real router mac is sent, not virtual one
-
-## ARP suppression
-- Decrease BUM traffic
-- VTEP intercepts all ARP traffic, if it has Type 2 route for it, it replies - ARP spoofing
-- If no route for it, then it sends BUM traffic to fabric
 
 ## Additional materials
 
