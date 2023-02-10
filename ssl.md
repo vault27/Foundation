@@ -1,4 +1,4 @@
-# SSL
+# TLS/SSL
 
 ## Protocols  
 - SSLv1(out of date, vulnerable)
@@ -133,3 +133,9 @@ ECDHE - RSA - AES128 - GCM - SHA256
 
 - There is hexadecimal representation for every possible cipher suite
 - Different protocols support different cipher suites
+
+## Wireshark
+SNI filtering
+```
+tls.handshake.extensions_server_name contains "dlp"
+```
