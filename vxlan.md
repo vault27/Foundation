@@ -319,6 +319,14 @@ Host 1 (SRC MAC: Host 1; DST MAC: VLAN 1) > Leaf 1 > MAC VRF 1 VNI/VLAN 1 > IP V
 - If 2 hosts are in the same subnet - no problems - DMAC is a host MAC which is behind vPC VTEP
 - If 2 hosts are in different subnets, then DMAC of VxLAN packet is Router MAC of paricular VTEP in vPC
 - For Underlay these 2 leafs - are 2 different boxes
+- It is possible to configure peer link via Fabric - еi will save High Speed links
+
+**VPC consistency check in VXLAN requires:**
+- The same VLAN-to-VNI mapping on both VPC peers
+- SVI present for VLANs mapped to VNI on both vPC peers
+- The same VNI needs to use the same BUM traffic transport mechanism on both VTEPs
+- When a VNI uses multicast replication, both VTEPs need to use the same multicast group for this VNI
+- When PC VTEP consistency check failed: The NVE loopback interface will be admin shutdown on the VPC secondary VTEP
 
 ## Configuration
 
@@ -494,6 +502,34 @@ router bgp 65536
 address-family 12vp evpn advertise-pip
 Interface nve 1
 advertise virtual-rmac
+```
+**vPC configuration on Leafs**
+```
+Interface 1
+switchport
+switchport access vlan 893 
+channel-group 101 mode active
+no shutdown
+
+interface port-channe1101
+switchport
+switchport access vlan 893
+spanning-tree port type edge
+vpc 101
+
+feature vpc
+vpc domain 8
+ peer-switch
+ role priority 10
+ peer-keepalive destination 172.16.5.17 source 172.16.5.13
+ delay restore 10
+ peer-gateway
+ layer3 peer-router
+ ip arp synchronize
+ 
+interface port-channel1
+ vpc peer-link
+ 
 ```
 
 ## Verification
