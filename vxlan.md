@@ -488,6 +488,14 @@ neighbor 10.10.2.3
       route-map SET_NEXT_HOP_UNCHANGED out
 ```
 
+**Advertise Primary IP Address in case of vPC**
+```
+router bgp 65536
+address-family 12vp evpn advertise-pip
+Interface nve 1
+advertise virtual-rmac
+```
+
 ## Verification
 
 **Show all NVE neighboors**
@@ -630,6 +638,7 @@ IP Route Table for VRF "OTUS"
 - BRKDCN-2304 - L4-L7 Service Integration in Multi-Tenant VXLAN EVPN Data Center Fabrics
 - LTRDCN-2223 - Implementing VXLAN In a Data Center
 - DGTL-BRKDCN-1645 - Introduction to VXLAN - The future path of your datacenter  
+- BRKDCN-2012 - VXLAN vPC: Design and Best Practices
   
 ### Juniper books
 - Data Center EVPN-VXLAN Fabric Architecture Guide
