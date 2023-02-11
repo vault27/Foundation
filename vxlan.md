@@ -314,12 +314,14 @@ Host 1 (SRC MAC: Host 1; DST MAC: VLAN 1) > Leaf 1 > MAC VRF 1 VNI/VLAN 1 > IP V
 ## vPC
 - On NVE interfaces on both leafs we configure secondary IP as a virtual VTEP ID - Anycast VTEP - this secondary IP is configured on Loopback interface, which is used on NVE
 - Orphan interfaces hosts are not announced from Anycast VTEP
-- Hosts which are connected to vPC are announced via BGP with Next hop - Anycast VTEP
+- Virtual mac is generated from vpc number, this virtual MAC is used for hosts and as Router MAC in EVPN routes
+- Hosts which are connected to vPC are announced via BGP with Next hop - Anycast VTEP - shared VTEP
 - At that Spine will get 2 same updates from both Leafs with the same next hop and different RD and different router mac in extended communities
 - If 2 hosts are in the same subnet - no problems - DMAC is a host MAC which is behind vPC VTEP
 - If 2 hosts are in different subnets, then DMAC of VxLAN packet is Router MAC of paricular VTEP in vPC
 - For Underlay these 2 leafs - are 2 different boxes
 - It is possible to configure peer link via Fabric - еi will save High Speed links
+- If peerlink is down, Secondary node will shut down nve interface!
 
 **VPC consistency check in VXLAN requires:**
 - The same VLAN-to-VNI mapping on both VPC peers
@@ -518,18 +520,19 @@ spanning-tree port type edge
 vpc 101
 
 feature vpc
-vpc domain 8
+vpc domain 8 - influence virtual MAC
  peer-switch
- role priority 10
+ role priority 10 - the less the better
  peer-keepalive destination 172.16.5.17 source 172.16.5.13
  delay restore 10
  peer-gateway
- layer3 peer-router
+ layer3 peer-router - recomended config for VxLAN
  ip arp synchronize
  
 interface port-channel1
  vpc peer-link
  
+Secondary IP on loopback
 ```
 
 ## Verification
