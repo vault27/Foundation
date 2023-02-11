@@ -1,5 +1,12 @@
 # Switching
 
+## M-LAG
+- Different a little bit on different vendors
+
+## ESI
+- Works above VxLAN EVPN
+- Host may be connected to more than 2 switches - multiple home active/active
+
 ## vPC
 - Virtual port channel
 - Active-active dual homed host connection
@@ -9,10 +16,12 @@
 - Two switches maximum the same as in MLAG
 - BUM traffic is replicated via peer link
 - Configs on both switches should be consistent
+- 16 links and even more
+- LACP is used - not optimal load balance algorithm is used - it is better to use 5 tuple - MACs, Ports, Protocol
 
 ### Components
-- Peer link - LAG - no traffic - CFS Cisco protocol - sync vPC config + MAC table + ARP table - 2 High speed links are used - 40/100 Gbits
-- Peer keep alive link - maybe virtual - used only for heartbeat - recomended to use physical in separate VRF - mgmt0 interface can be used - every second - UDP 3200 - SVI interface and loopback are not recomended - IPs are used
+- Peer link - LAG - no traffic - CFS Cisco protocol - sync vPC config + MAC table + ARP table - 2 High speed links are used - 40/100 Gbits - can be connected via switch
+- Peer keep alive link - maybe virtual - used only for heartbeat - recomended to use physical in separate VRF - mgmt0 interface can be used - every second - UDP 3200 - SVI interface and loopback are not recomended - IPs are used - can be connected via switch
 - vPC domain - all about 2 switches - has a number - it influences virtual MAC
 - Peer - praimary and secondary role according to priority - configured manually or 32000+MAC - manual is recomended. Operational status - primary or secondary, it can be different from role - transfers VLANs, CFS messages, BUM. VLANS on vPC should be allowed on this link
 - Member port - vPC port
