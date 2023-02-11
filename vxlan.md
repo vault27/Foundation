@@ -311,6 +311,15 @@ Host 1 (SRC MAC: Host 1; DST MAC: VLAN 1) > Leaf 1 > MAC VRF 1 VNI/VLAN 1 > IP V
 - Add anycast gateway to each SVI
 - Add L3 VNI to NVE interface
 
+## vPC
+- On NVE interfaces on both leafs we configure secondary IP as a virtual VTEP ID - Anycast VTEP - this secondary IP is configured on Loopback interface, which is used on NVE
+- Orphan interfaces hosts are not announced from Anycast VTEP
+- Hosts which are connected to vPC are announced via BGP with Next hop - Anycast VTEP
+- At that Spine will get 2 same updates from both Leafs with the same next hop and different RD and different router mac in extended communities
+- If 2 hosts are in the same subnet - no problems - DMAC is a host MAC which is behind vPC VTEP
+- If 2 hosts are in different subnets, then DMAC of VxLAN packet is Router MAC of paricular VTEP in vPC
+- For Underlay these 2 leafs - are 2 different boxes
+
 ## Configuration
 
 ### Static peers on Nexus - flood and learn, no EVPN
