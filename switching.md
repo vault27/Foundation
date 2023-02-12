@@ -3,6 +3,27 @@
 ## M-LAG
 - Different a little bit on different vendors
 
+## Port Channel
+- It may be Layer 2 or Layer 3
+- You can use static port channels, with no associated aggregation protocol, for a simplified configuration
+- For more flexibility, you can use the Link Aggregation Control Protocol (LACP)
+- Up to 32 physical links
+- Nexus does not support Port Aggregation Protocol (PAgP) for port channels
+- Each port can be in only one port channel
+- The same speed and duplex mode
+- Layer 2 port channels in either access or trunk mode
+- You can configure a Layer 3 port channel with a static MAC address. If you do not configure this value, the Layer 3 port channel uses the router MAC of the first channel member to come up
+- Port-channel load balancing uses MAC addresses, IP addresses, or Layer 4 port numbers to select the link
+- The default load-balancing mode for Layer 3 interfaces is the source and destination IP L4 ports, and the default load-balancing mode for non-IP traffic is the source and destination MAC address
+- The default method for Layer 2 packets is src-dst-mac
+- Symmetric hashing is supported
+- LACP allows you to configure up to 16 interfaces into a port channel
+
+**Configuration**
+```
+switch(config)# port-channel load-balance
+```
+
 ## ESI
 - Works above VxLAN EVPN
 - Host may be connected to more than 2 switches - multiple home active/active
