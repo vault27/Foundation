@@ -30,6 +30,7 @@ switch(config)# port-channel load-balance
 
 ## vPC
 - Virtual port channel
+- We create vPC domain on switch, then we create port-channel interfaces with one port inside and configure vpc domain number in them, access or trunk we configure in port-channel interfaces as well
 - Active-active dual homed host connection
 - Cisco technology for Nexus = MLAG, MCLAG
 - The same models and soft
