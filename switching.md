@@ -4,6 +4,8 @@
 - Different a little bit on different vendors
 
 ## Port Channel
+- "EtherChannel" or "Link Aggregation" is the particular technology that allows you to bundle several links between two devices and use them simultaneously as a single interface. The "Port-channel" is the name of this virtual interface in IOS
+- Port-Channel=Etherchannel=Link Aggregation
 - It may be Layer 2 or Layer 3
 - You can use static port channels, with no associated aggregation protocol, for a simplified configuration
 - For more flexibility, you can use the Link Aggregation Control Protocol (LACP)
@@ -18,6 +20,10 @@
 - The default method for Layer 2 packets is src-dst-mac
 - Symmetric hashing is supported
 - LACP allows you to configure up to 16 interfaces into a port channel
+- Active mode - LACP is enabled and actively negotiate
+- Passive mode - LACP is enabled and waits for negotiation
+- On mode - no LACP - static configuration
+- Mode is configured on each physical interface
 
 **Configuration**
 ```
