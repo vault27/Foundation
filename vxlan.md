@@ -312,7 +312,7 @@ Host 1 (SRC MAC: Host 1; DST MAC: VLAN 1) > Leaf 1 > MAC VRF 1 VNI/VLAN 1 > IP V
 - Add L3 VNI to NVE interface
 
 ## vPC
-- On NVE interfaces on both leafs we configure secondary IP as a virtual VTEP ID - Anycast VTEP - this secondary IP is configured on Loopback interface, which is used on NVE
+- On NVE interfaces on both leafs we configure secondary IP as a virtual VTEP ID - Anycast VTEP - this secondary IP is configured on Loopback interface, which is used on NVE - all routes about vPC hosts are announced from this Anycast VTEP - both Leafs will advertise the same routes to Spines via BGP
 - Orphan interfaces hosts are not announced from Anycast VTEP
 - Virtual mac is generated from vpc number, this virtual MAC is used for hosts and as Router MAC in EVPN routes
 - Hosts which are connected to vPC are announced via BGP with Next hop - Anycast VTEP - shared VTEP
@@ -639,6 +639,24 @@ show l2route evpn mac-ip evi 40
 **Show info about arp-suppression**
 ```
 show ip arp suppression-cache detail
+```
+
+**Show all next hops for all MACs**
+```
+switch# show l2route mac all
+
+Flags -(Rmac):Router MAC (Stt):Static (L):Local (R):Remote (V):vPC link
+(Dup):Duplicate (Spl):Split (Rcv):Recv (AD):Auto-Delete (D):Del Pending
+(S):Stale (C):Clear, (Ps):Peer Sync (O):Re-Originated (Nho):NH-Override
+(Pf):Permanently-Frozen, (Orp): Orphan
+
+Topology    Mac Address    Prod   Flags         Seq No     Next-Hops
+----------- -------------- ------ ------------- ---------- ---------------------------------------
+100         5009.0000.1b08 BGP    SplRcv        0          10.10.2.6 (Label: 100)
+100         aabb.cc00.6000 Local  L,            0          Eth1/2
+200         aabb.cc00.4000 BGP    SplRcv        0          10.10.2.6 (Label: 200)
+200         aabb.cc00.7000 Local  L,            0          Eth1/3
+300         5002.0000.1b08 VXLAN  Rmac          0          10.10.2.6
 ```
 
 **Show ip routes with installed VxLAn routes in symmetric mode**
