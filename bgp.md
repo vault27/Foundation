@@ -245,8 +245,8 @@ Configuration overview
 
 ## Incindents
 - Leaks
-- Hijacks
-- Bogons
+- Hijacks - bad guy announces prefixes, which are not theirs, and traffic goes to them instead of legitimate user.
+- Bogons - bogon prefixes are leaked to public internet and hosts in LAN become available from th Internet. The same with bogon AS numbers - may be dropped by other provider.
 
 ### Bogon ASNs
 - 0 - RFC 7607
