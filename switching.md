@@ -105,7 +105,7 @@ Type 2
 - Keep-alive fails - nothing happens
 
 ### Configuration
-Nexus
+Nexus - configs on tboth switches should be identical!!!
 ```
 feature vpc
 
@@ -176,6 +176,44 @@ interface Ethernet1/5
 Suspend orphan ports when peer link is down - on every orphan interface
 ```
 Nexus(config-if)# vpc orphan-ports suspend
+```
+
+### Verification
+Show all we need about vPC
+```
+leaf-1# show vpc
+Legend:
+                (*) - local vPC is down, forwarding via vPC peer-link
+
+vPC domain id                     : 8
+Peer status                       : peer adjacency formed ok
+vPC keep-alive status             : peer is alive
+Configuration consistency status  : success
+Per-vlan consistency status       : success
+Type-2 consistency status         : success
+vPC role                          : primary, operational secondary
+Number of vPCs configured         : 1
+Peer Gateway                      : Enabled
+Dual-active excluded VLANs        : -
+Graceful Consistency Check        : Enabled
+Auto-recovery status              : Disabled
+Delay-restore status              : Timer is off.(timeout = 10s)
+Delay-restore SVI status          : Timer is off.(timeout = 10s)
+Operational Layer3 Peer-router    : Enabled
+Virtual-peerlink mode             : Disabled
+
+vPC Peer-link status
+---------------------------------------------------------------------
+id    Port   Status Active vlans
+--    ----   ------ -------------------------------------------------
+1     Po1    up     1,100,200,300
+
+
+vPC status
+----------------------------------------------------------------------------
+Id    Port          Status Consistency Reason                Active vlans
+--    ------------  ------ ----------- ------                ---------------
+8     Po101         up     success     success               100
 ```
 
 ## VSS
