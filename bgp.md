@@ -243,6 +243,11 @@ Configuration overview
 - Configure route reflector
 - Configure dynamic neighbors if necessary: listen range, if request arrives from it put it to specified group, which is already configured
 
+## Incindents
+- Leaks
+- Hijacks
+- Bogons
+- 
 ## Configuration
 
 **Origin code IGP**
