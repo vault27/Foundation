@@ -1,5 +1,7 @@
 # Switching
 
+## Native VLAN
+
 ## M-LAG
 - Different a little bit on different vendors
 
