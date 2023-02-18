@@ -4,6 +4,12 @@
 - Different a little bit on different vendors
 
 ## Port Channel
+Port-channels provide three important benefits:
+- Redundancy. If one of the member interfaces fails, traffic is redirected over the remaining links.
+- Bandwidth. Increase in transmission capacity due to bundling multiple interfaces together. All interfaces are active transmission channels.
+- Spanning Tree. Port-channels are seen as a single interface by Spanning-Tree protocols
+
+### Concepts
 - "EtherChannel" or "Link Aggregation" is the particular technology that allows you to bundle several links between two devices and use them simultaneously as a single interface. The "Port-channel" is the name of this virtual interface in IOS
 - Port-Channel=Etherchannel=Link Aggregation
 - It may be Layer 2 or Layer 3
@@ -25,7 +31,7 @@
 - On mode - no LACP - static configuration
 - Mode is configured on each physical interface
 
-**Configuration**
+### Configuration
 ```
 switch(config)# port-channel load-balance
 ```
@@ -35,10 +41,11 @@ switch(config)# port-channel load-balance
 - Host may be connected to more than 2 switches - multiple home active/active
 
 ## vPC
-- Virtual port channel
+- Virtual port channel - feature on Nexus switches which provides the ability to configure a Port-Channel across multiple switches
 - We create vPC domain on switch, then we create port-channel interfaces with one port inside and configure vpc domain number in them, access or trunk we configure in port-channel interfaces as well
-- Active-active dual homed host connection
-- Cisco technology for Nexus = MLAG, MCLAG
+- Provides active-active dual homed host connection
+- Also known as Multichassis EtherChannel (MEC)
+- The same as MLAG, MCLAG
 - The same models and soft
 - The same as VSS on Catalyst, but more reliable
 - Two switches maximum the same as in MLAG
@@ -81,3 +88,7 @@ Suspend orphan ports when peer link is down - on every orphan interface
 ```
 Nexus(config-if)# vpc orphan-ports suspend
 ```
+
+## VSS
+
+## Stackwise
