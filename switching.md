@@ -68,6 +68,8 @@ switch(config)# port-channel load-balance
 - Peer gateway - feature - when it is enabled  - one vPC peer to locally route packets destined to the MAC address of the other vPC peer such that packets destined to the remote vPC peer do not need to egress the vPC Peer-Link in order to be routed - so secondary routes packets intended to primary
 - ARP/ND - synchronise - by default ARP tables are not synced - to avoid small traffic black holing
 
+### Packet flow
+
 ### Consistency checks
 Type 1
 - Interface parametres - Secondary switch shuts down vPC ports
