@@ -105,6 +105,74 @@ Type 2
 - Keep-alive fails - nothing happens
 
 ### Configuration
+Nexus
+```
+feature vpc
+
+vpc domain 8
+  #Peer switch activation - both nodes reply on BPDU
+  peer-switch
+  
+  #Priority for primary node - the less the better
+  role priority 5
+  
+  #Configuration of peer keep alive link - with separate VRF according to best practice
+  peer-keepalive destination 172.16.16.1 source 172.16.16.2 vrf VPC
+  
+  #Delay of vPC on after reboot
+  delay restore 10
+  
+  #Enable Peer gateway - secondary node may route packets destined for primary node
+  peer-gateway
+  
+  #If router is connected to secondary node, its traffic will pass correctly
+  layer3 peer-router
+  
+  #ARP table sync between nodes
+  ip arp synchronize
+
+#LAG for peer link
+interface port-channel1
+  switchport mode trunk
+  spanning-tree port type network- This command explicitly configures the port as a network port
+  vpc peer-link
+
+#LAG for end host
+interface port-channel101
+  switchport access vlan 100
+  vpc 8
+  
+ interface loopback0
+  ip address 10.10.2.3/32
+  ## Virtual VTEP ID - Anycast VTEP
+  ip address 10.10.2.6/32 secondary
+  
+ #Peer keep alive inteface
+ interface Ethernet1/4
+  no switchport
+  vrf member VPC
+  ip address 172.16.16.2/30
+  no shutdown
+
+#Special VRF for peer keep alive
+vrf context VPC
+
+#Physical interface to end host
+interface Ethernet1/2
+  switchport access vlan 100
+  channel-group 101 mode active
+  
+ #Physical interface for peer link
+ interface Ethernet1/6
+  switchport mode trunk
+  channel-group 1 mode active
+  
+#Second physical interface for peer link
+interface Ethernet1/5
+  switchport mode trunk
+  channel-group 1 mode active
+```
+
 Suspend orphan ports when peer link is down - on every orphan interface
 ```
 Nexus(config-if)# vpc orphan-ports suspend
@@ -113,3 +181,9 @@ Nexus(config-if)# vpc orphan-ports suspend
 ## VSS
 
 ## Stackwise
+
+## STP
+Port types:
+- Network - goes immediately to Blocking state - for connecting switches
+- Edge - goes immediately to Forwarding state - for connecting end hosts
+- Normal
