@@ -1,6 +1,9 @@
 # Switching
 
 ## Native VLAN
+- The native VLAN should match on both trunk ports, or traffic can change VLANs unintentionally
+- A native VLAN is a port-specific configuration and is changed with the interface command switchport trunk native vlan vlan-id
+- All switch control plane traffic is advertised using VLAN 1. The Cisco security hardening guidelines recommend changing the native VLAN to something other than VLAN 1. More specifically, it should be set to a VLAN that is not used at all (that is, has no hosts attached to it)
 
 ## M-LAG
 - Different a little bit on different vendors
