@@ -34,7 +34,24 @@ Port-channels provide three important benefits:
 - Mode is configured on each physical interface
 
 ### Configuration
+Nexus
 ```
+interface Vlan2
+  no shutdown
+  ip address 192.168.1.2/24
+
+interface port-channel1
+  switchport access vlan 2
+
+interface Ethernet1/1
+  switchport access vlan 2
+  channel-group 1 mode active - means LACP is enabled in active mode
+
+interface Ethernet1/2
+  switchport access vlan 2
+  channel-group 1 mode active
+
+#Configure load balance
 switch(config)# port-channel load-balance
 ```
 
