@@ -90,6 +90,8 @@ switch(config)# port-channel load-balance
 
 ### Packet flow
 
+### Infra VLANS - ???
+
 ### Consistency checks
 Type 1
 - Interface parametres - Secondary switch shuts down vPC ports
