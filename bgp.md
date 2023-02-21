@@ -244,7 +244,7 @@ Configuration overview
 - Configure dynamic neighbors if necessary: listen range, if request arrives from it put it to specified group, which is already configured
 
 ## Incindents
-- Leaks
+- Leaks - Customer gets prefixes from one provider and anounces them to other provider. This leads to traffic spikes via customer. Amount of hops rises. MITM is possible. RTT is rising. How to fight with it? If you are the leaker and you are not the transit AS, then just configure filtering: allow announces only for routes with 0 AS PATH - our own routes
 - Hijacks - bad guy announces prefixes, which are not theirs, and traffic goes to them instead of legitimate user.
 - Bogons - bogon prefixes are leaked to public internet and hosts in LAN become available from th Internet. The same with bogon AS numbers - may be dropped by other provider.
 
@@ -259,6 +259,27 @@ Configuration overview
 - 4200000000..4294967294 - RFC 6996 Private ASNs
 - 4294967295 - RFC 7300 Last 32 bit ASN
 
+## Filtering
+- https://bgpfilterguide.nlnog.net  
+- The bgpq4 utility is used to generate configurations (prefix-lists, extended access-lists, policy-statement terms and as-path lists) based on IRR data 
+- https://github.com/bgp/bgpq4
+
+## BGP Security
+- RPKI
+- ASPA
+- Open Roles
+- Peer Lock
+- BGP Sec
+
+## Monitoring
+- Looking glasses - located in different parts of the world, it provides web access to router routing table, and you can BGP records for particular prefix
+    - https://lg.he.net/
+    - https://lookingglass.centurylink.com/
+    - https://g.retn.net/
+- BGP collectors - collects data from many locations by establishing BGP sessions with many routers around the world. Collectors make dumps periodically: full view and updates, we can download them as gzip archives and open with bgpdump - int his dump we see date, time, router IP, AS_PATH - we can grep prefix
+    - RIPEstat - you enter prefix - and get detailed data
+- Real time BGP monitoring - many open source projects
+
 ## Configuration
 
 **Origin code IGP**
@@ -269,7 +290,25 @@ aggregate-address only when:
 as-set is not set
 as-set is et and all components of summarized route use IGP (i)
 ```
+**Allow announcing only empty AS path prefixes ( our own prefixes ), no transit prefixes**
+To fight with route leaks, when you are connected to 2 providers
+```
+Leaker-R7(config)#ip as-path access-list 1 permit ^$
+Leaker-R7(config)#ip as-path access-list 1 deny *
 
+router bgp 777
+    Leaker-R7(config-router)#neighbor 10.0.1.1 filter-list 1 out
+```
+
+**Allow announcing only prefixes that are behind you, if you a transit AS and dual homed to 2 providers**
+```
+Leaker-R7(config)#
+ip prefix-list PL-NO-TRANSIT seq 5 permit 30.30.30.0/24
+Leaker-R7(config)#router bgp 777
+Leaker-R7(config-router)#neighbor 10.0.1.1 prefix-list PL-NO-TRANSIT out
+Leaker-R7(config-router)#neighbor 20.0.1.2 prefix-list PL-NO-TRANSIT out
+Leaker-R7(config-router)#end
+```
 **Origin code Incomplete**
 ```
 redistribute
