@@ -204,7 +204,6 @@ Don't use or advertise the route/s learned via an iBGP neighbor to an eBG neighb
 -  Unicast and multicast are stored in different tables
 -  When MP-BGP is configured, BGP installs the MP-BGP routes into different routing tables. Each routing table is identified by the protocol family or address family indicator (AFI) and a subsequent address family identifier (SAFI).
 -  EVPN AFI/SAFI - 25/70 - RFC 7209, 7432, 8365
--  
 
 ## Route Distinguisher
 - Used to distinguish different routes for different VRFs in BGP routing table, the routes are different from Best Path Algorithm point of view
@@ -245,7 +244,7 @@ Configuration overview
 
 ## Incindents
 - Leaks - Customer gets prefixes from one provider and anounces them to other provider. This leads to traffic spikes via customer. Amount of hops rises. MITM is possible. RTT is rising. How to fight with it? If you are the leaker and you are not the transit AS, then just configure filtering: allow announces only for routes with 0 AS PATH - our own routes
-- Hijacks - bad guy announces prefixes, which are not theirs, and traffic goes to them instead of legitimate user.
+- Hijacks - bad guy announces prefixes, which are not theirs, and traffic goes to them instead of legitimate user. Nobody is protected from hijacking, because BGP is not secure
 - Bogons - bogon prefixes are leaked to public internet and hosts in LAN become available from th Internet. The same with bogon AS numbers - may be dropped by other provider.
 
 ### Bogon ASNs
