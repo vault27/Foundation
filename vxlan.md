@@ -8,7 +8,9 @@ Everything I need to know about VxLAN/EVPN in an extremely structured, brief lan
 - Device outage is a significant event and larger modular-chassis devices use a lot of power
 - Amount of VLANs limit
 
-## VxLAN concepts   
+## VxLAN 
+
+### Concepts   
 - RFC 7348
 - VXLAN (Virtual eXtensible Local Area Network) is a Layer 2 overlay technology over a Layer 3 underlay infrastructure. It provides a means to stretch the Layer 2 network by pro- viding a tunneling encapsulation using MAC addresses in UDP (MAC in UDP) over an IP underlay. It is used to carry the MAC traffic from the individual VMs in an encapsulated format over a logical “tunnel”
 - UDP encapsulation, port 4789, 50 bytes overhead
@@ -70,20 +72,6 @@ Can be processed in 2 ways:
 - When l2vpn BGP update is sent, nve interface IP is used as nexthop
 - eBGP is better because if we have superspines we will have to configure hierarchical design for RR
 
-### EVPN route types
-VTEP gets all BGP updates and stores them in global table, but installs them to VRF only if there is required VNI.  
-In the beginning just after configuration is finished only Type 3 routes are sent to all l2vpn neighbors, announcing that VTEP is ready to process BUM traffic. Type 2 routes will appear only after client hosts will start to generate traffic.
-- L2 operations
-  - Type 2 - Host Advertisment - advertising MACs - Generated when new MAC is discovered, is sent to all VTEPs within this VNI, VTEPs import it to required MAC VRF according to RT - also advertise IP together with MAC - this is a separate update called MAC/IP it is sent when new record appears in ARP table of VRF where VLAN interface is and this record ic connected with this VLAN interface - this MAC/IP update is used for assymetric routing of VxLAN traffic. Also in case of symmetric routing there are L3 VNI (in addition to L2 VNI) and router MAC address inside MAC-IP route
-  - Type 3 - Inclusive Multicast Ethernet Tag  - for BUM - Ingress Replication - VTEP with particular VNI and VLAN sends this update to inform everyone that it is ready to accept BUM traffic for this particular VNI. Attribute PMSI_TUNNEL_ATTRIBUTE is added to BGP update, it contains VNI and replication type: Ingress Replication (or Multicast). This route update is generated for every VNI configured.
-- L3 operations
-  - Type 4 - Ethernet Segment Route - one LAN connected to two VTEPs - only one of them should process BUM
-  - Type 1 - Ethernet Auto Discovery Route
-- External connections
-  - Type 5 - IP prefix route advertisment - when we peer IP VRF on VTEP with external router, routes from this router will be type 5
-- Multicast
-  - Type 6,7,8 - PIM, IGMP Leave/Join
-
 ### Inside EVPN packet
 - Type: Update message (2)
 - Path attributes:
@@ -105,7 +93,56 @@ In the beginning just after configuration is finished only Type 3 routes are sen
   - Encapsulation - VXLAN - because it can work via MPLS as well
   - Sequence number - the more the better, used when host moves from one VTEP to another, new VTEP increases this number and sends to everyone
 
-### Route type 3
+### EVPN route types
+VTEP gets all BGP updates and stores them in global table, but installs them to VRF only if there is required VNI.  
+In the beginning just after configuration is finished only Type 3 routes are sent to all l2vpn neighbors, announcing that VTEP is ready to process BUM traffic. Type 2 routes will appear only after client hosts will start to generate traffic.
+- L2 operations
+  - Type 2 - Host Advertisment - advertising MACs - Generated when new MAC is discovered, is sent to all VTEPs within this VNI, VTEPs import it to required MAC VRF according to RT - also advertise IP together with MAC - this is a separate update called MAC/IP it is sent when new record appears in ARP table of VRF where VLAN interface is and this record ic connected with this VLAN interface - this MAC/IP update is used for assymetric routing of VxLAN traffic. Also in case of symmetric routing there are L3 VNI (in addition to L2 VNI) and router MAC address inside MAC-IP route
+  - Type 3 - Inclusive Multicast Ethernet Tag  - for BUM - Ingress Replication - VTEP with particular VNI and VLAN sends this update to inform everyone that it is ready to accept BUM traffic for this particular VNI. Attribute PMSI_TUNNEL_ATTRIBUTE is added to BGP update, it contains VNI and replication type: Ingress Replication (or Multicast). This route update is generated for every VNI configured.
+- L3 operations
+  - Type 4 - Ethernet Segment Route - one LAN connected to two VTEPs - only one of them should process BUM - this is MLAG based on EVPN, without vPC
+  - Type 1 - Ethernet Auto Discovery Route
+- External connections
+  - Type 5 - IP prefix route advertisment - when we peer IP VRF on VTEP with external router, routes from this router will be type 5
+- Multicast
+  - Type 6,7,8 - PIM, IGMP Leave/Join
+ 
+#### Route type 1
+- Used for quick convergence and load balancing, when we build MLAG without vPC
+- One Route Type 1 is generated for all EVIs right after we enable Ethernet Segment
+- One Route Type 1 is generated for each EVI for load balancing right after we enable Ethernet Segment - it is used for load balancing - every Leaf in a Fabric gets 2 Type 2 Routes for MACs which are behind 2 Leafs in MLAG
+- When link is broken between Leaf and Host, Leaf sends Route Type 1 withdrawl and all Leafs delete this Leaf as next hop for specified Ethernet Segment - and all Type 2 Routes(Maybe thousands) are automatically withdrawn - as a result quick convergence
+
+#### Route type 2
+- Everything is pretty much the same here as in Route Type 3
+- No PMSI_TUNNEL_ATTRIBUTE path attribute
+- Only MP_REACH_NLRI differs - route type, MAC inside
+
+```
+Path Attribute - MP_REACH_NLRI
+    Flags: 0x90, Optional, Extended-Length, Non-transitive, Complete
+    Type Code: MP_REACH_NLRI (14)
+    Length: 44
+    Address family identifier (AFI): Layer-2 VPN (25)
+    Subsequent address family identifier (SAFI): EVPN (70)
+    Next hop network address (4 bytes)
+        Next Hop: IPv4=10.10.2.3 - loopback address, not changed while travelling via Spines
+    Number of Subnetwork points of attachment (SNPA): 0
+    Network layer reachability information (35 bytes)
+        EVPN NLRI: MAC Advertisement Route
+            Route Type: MAC Advertisement Route (2)
+            Length: 33
+            Route Distinguisher: 00010a0a02030064 (10.10.2.3:100)
+            ESI: 00:00:00:00:00:00:00:00:00:00
+            Ethernet Tag ID: 0
+            MAC Address Length: 48
+            MAC Address: Private_66:68:3f (00:50:79:66:68:3f)
+            IP Address Length: 0
+            IP Address: NOT INCLUDED
+            VNI: 100
+```
+
+#### Route type 3
 In general route update message looks like typical BGP update:
 ```
 Border Gateway Protocol - UPDATE Message
@@ -121,9 +158,7 @@ Border Gateway Protocol - UPDATE Message
         Path Attribute - EXTENDED_COMMUNITIES - here we have route target, encapsulation type: VXLAN
         Path Attribute - PMSI_TUNNEL_ATTRIBUTE - here we have tunnel type - ingress replication, VNI number
 ```
-
 **MP_REACH_NLRI:**
-
 ```
 Path Attribute - MP_REACH_NLRI
     Flags: 0x90, Optional, Extended-Length, Non-transitive, Complete
@@ -154,33 +189,61 @@ Path Attribute - PMSI_TUNNEL_ATTRIBUTE
     Tunnel ID: tunnel end point -> 10.10.2.3
         Tunnel type ingress replication IP end point: 10.10.2.3
 ```
-### Route type 2
-- Everything is pretty much the same here as in Route Type 3
-- No PMSI_TUNNEL_ATTRIBUTE path attribute
-- Only MP_REACH_NLRI differs - route type, MAC inside
 
+#### Route type 4
+- This route type is created 1 for all EVIs on a switch
+- It is used to discover all VTEPs, connected to one Ethernet segment
+- It is used to choose Designated Forwarder - DF
+- DF is responsible for BUM
+- DF is chosen per EVI
+- Right after you configure Ethernet Segment on a switch - it sends Route Type 4 to a fabric
+- This update is accepted only by switches which have this Ethernet Segment
+- How DF is chosen: every Leaf gets Index, based on Loopback IP, Leaf with bigger IP gets index 1, and other gets index 0
+- VNI number is devided on amount of Leafs in Ethernet segment and remainder of division is calculated if it is zero, then switch with index zero is main
+- Loop prevention: 2 Leafs connected to one Host receive BUM traffic for Host from Fabric, and ONLY DF will forward BUM to HOST, not DF Leaf will drop it
+- If non DF Leaf gets BUM traffic from HOST, it will forward BUM to local ports in the same segment, and also send BUM to the Fabric, DF will get this BUM, but will not send it to HOSTs because other Leaf allready done it
+
+
+Route Type 4 Update example
 ```
-Path Attribute - MP_REACH_NLRI
-    Flags: 0x90, Optional, Extended-Length, Non-transitive, Complete
-    Type Code: MP_REACH_NLRI (14)
-    Length: 44
-    Address family identifier (AFI): Layer-2 VPN (25)
-    Subsequent address family identifier (SAFI): EVPN (70)
-    Next hop network address (4 bytes)
-        Next Hop: IPv4=10.10.2.3 - loopback address, not changed while travelling via Spines
-    Number of Subnetwork points of attachment (SNPA): 0
-    Network layer reachability information (35 bytes)
-        EVPN NLRI: MAC Advertisement Route
-            Route Type: MAC Advertisement Route (2)
-            Length: 33
-            Route Distinguisher: 00010a0a02030064 (10.10.2.3:100)
-            ESI: 00:00:00:00:00:00:00:00:00:00
-            Ethernet Tag ID: 0
-            MAC Address Length: 48
-            MAC Address: Private_66:68:3f (00:50:79:66:68:3f)
-            IP Address Length: 0
-            IP Address: NOT INCLUDED
-            VNI: 100
+Border Gateway Protocol - UPDATE Message
+Marker: ffffffffffffffffffffffffffffffff
+Length: 94
+Type: UPDATE Message (2)
+Withdrawn Routes Length: 0
+Total Path Attribute Length: 71
+~ Path attributes
+> Path Attribute - ORIGIN: IG
+› Path Attribute - AS PATH: empty
+> Path Attribute - LOCAL PREF: 100
+~ Path Attribute
+- MP_REACH_NLRI
+> Flags: 0x90, Optional, Extended-Length, Non-transitive, Complete Type Code: MP_REACH_NLRI (14)
+Length: 34
+Address family identifier (AFI): Layer-2 VPN (25)
+Subsequent address family identifier (SAFI): EVPN (70)
+› Next hop: 10.16.0.2
+Number of Subnetwork points of attachment (SNPA): 0
+• Network Layer Reachability Information (NLRI)
+~ EVPN NLRI: Ethernet Segment Route
+Route Type: Ethernet Segment Route (4)
+Length: 25
+Route Distinguisher: 00010a1000020001 (10.16.0.2:1)
+~ ESI: 00:00:11:11:11:11:11:11:00:00
+ESI Type: ESI 9 bytes value (0)
+ESI Que: 00 11 11 11 11 11 11 00 00
+ESI 9 bytes value: 00 11 11 11 11 11 11 00 00
+IP Address Length: 32
+IPv4 address: 10.16.0.2
+~ Path Attribute - EXTENDED COMMUNITIES
+> Flags: Oxc0, Optional, Transitive, Complete Type Code: EXTENDED_COMMUNITIES (16)
+Length: 16
+Carried extended communities: (2 communities)
+› Encapsulation: VLAN Encapsulation [Transitive Opaque]
+~ ES Import: RT: 11:11:11:11:11:11 [Transitive EVPN1
+› Type: Transitive EVPN (0x06)
+Subtype (EVPN) : ES Import (0x02)
+ES-Import Route Target: Private 11:11:11 (11:11:11:11:11:11)
 ```
 
 ## L2
@@ -311,7 +374,9 @@ Host 1 (SRC MAC: Host 1; DST MAC: VLAN 1) > Leaf 1 > MAC VRF 1 VNI/VLAN 1 > IP V
 - Add anycast gateway to each SVI
 - Add L3 VNI to NVE interface
 
-## vPC
+## Multihoming/LAG for hosts
+
+### vPC
 Cisco Live BRKDCN-2012 - VXLAN vPC: Design and Best Practices  
 
 - On NVE interfaces on both leafs we configure secondary IP as a virtual VTEP ID - Anycast VTEP - this secondary IP is configured on Loopback interface, which is used on NVE - all routes about vPC hosts are announced from this Anycast VTEP - both Leafs will advertise the same routes to Spines via BGP
@@ -332,7 +397,13 @@ Cisco Live BRKDCN-2012 - VXLAN vPC: Design and Best Practices
 - When a VNI uses multicast replication, both VTEPs need to use the same multicast group for this VNI
 - When PC VTEP consistency check failed: The NVE loopback interface will be admin shutdown on the VPC secondary VTEP
 
-## MC-LAG EVPN
+### MC-LAG EVPN Active/Active Multihoming
+- RFC 7432
+- N switches can be used, it is better then vPC with only 2
+- No need in peer link
+- Sophisticated convergence via Type 1/2 routes, in vPC it is easy
+- Load balancing (ECMP) is done in Overlay, for vPC it is done in Underlay (VTEPs are seen as one logical VTEP by other VTEPs)
+- Many problems if uplink from Leaf to SPine is down - because there is no Peer Link
 - It allows to configure LAG to 2 leafs without vPC
 - Ethernet Segment ID - ESI - describes ports on Leafs which are connected to the same Host - 10 bytes - 1 byte for type - 9 bytes for value - 5 types in total - type does not matter
 - ESI is transfered in Route Type 2 - Path Attribute NLRI - it is always present int type 2 routes - in single-home case it is 00:00:00:00:00:00:00:00:00:00
@@ -343,6 +414,10 @@ Cisco Live BRKDCN-2012 - VXLAN vPC: Design and Best Practices
     - For Port Channel interface we configure route target import 11:11:11:11:11:11
     - For Port Channel we configure LACP system ID 1111.1111.1111 - the same on both leafs so host can see them as one switch
     - Then we add physical interface to Port Channel with LACP active mode
+- Problems which EVPN will face with building MLAG:
+    - Load balancing
+    - Loops for broadcast traffic - it is solved with route types 4
+    - Convergence - changing routes if something fails
 
 ## Configuration
 
@@ -700,6 +775,7 @@ IP Route Table for VRF "OTUS"
 192.168.2.3/32, ubest/mbest: 1/0
     *via 10.10.2.4%default, [20/0], 00:41:31, bgp-64701, external, tag 64600, segid: 300 tunnelid: 0xa0a0204 encap: VXLAN
 ```
+
 ## Additional materials
 
 ### Cisco Live
