@@ -312,6 +312,8 @@ Host 1 (SRC MAC: Host 1; DST MAC: VLAN 1) > Leaf 1 > MAC VRF 1 VNI/VLAN 1 > IP V
 - Add L3 VNI to NVE interface
 
 ## vPC
+Cisco Live BRKDCN-2012 - VXLAN vPC: Design and Best Practices  
+
 - On NVE interfaces on both leafs we configure secondary IP as a virtual VTEP ID - Anycast VTEP - this secondary IP is configured on Loopback interface, which is used on NVE - all routes about vPC hosts are announced from this Anycast VTEP - both Leafs will advertise the same routes to Spines via BGP
 - Orphan interfaces hosts are not announced from Anycast VTEP
 - Virtual mac is generated from vpc number, this virtual MAC is used for hosts and as Router MAC in EVPN routes
