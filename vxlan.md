@@ -332,6 +332,18 @@ Cisco Live BRKDCN-2012 - VXLAN vPC: Design and Best Practices
 - When a VNI uses multicast replication, both VTEPs need to use the same multicast group for this VNI
 - When PC VTEP consistency check failed: The NVE loopback interface will be admin shutdown on the VPC secondary VTEP
 
+## MC-LAG EVPN
+- It allows to configure LAG to 2 leafs without vPC
+- Ethernet Segment ID - ESI - describes ports on Leafs which are connected to the same Host - 10 bytes - 1 byte for type - 9 bytes for value - 5 types in total - type does not matter
+- ESI is transfered in Route Type 2 - Path Attribute NLRI - it is always present int type 2 routes - in single-home case it is 00:00:00:00:00:00:00:00:00:00
+- If there is ESI value in an update - it means that this host is behind 2 switches
+- On Leafs we configure 
+    - Port Channel interface with trunk and allowed VLANs
+    - For Port Channel interface we configure ESI: 0000:1111:1111:1111:0000
+    - For Port Channel interface we configure route target import 11:11:11:11:11:11
+    - For Port Channel we configure LACP system ID 1111.1111.1111 - the same on both leafs so host can see them as one switch
+    - Then we add physical interface to Port Channel with LACP active mode
+
 ## Configuration
 
 ### Static peers on Nexus - flood and learn, no EVPN
