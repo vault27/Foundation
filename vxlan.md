@@ -94,12 +94,13 @@ Can be processed in 2 ways:
   - Sequence number - the more the better, used when host moves from one VTEP to another, new VTEP increases this number and sends to everyone
 
 ### EVPN route types
+All routes inside a fabric are in fact host /32 routes with MAC or MAC/IP.  
 VTEP gets all BGP updates and stores them in global table, but installs them to VRF only if there is required VNI.  
 In the beginning just after configuration is finished only Type 3 routes are sent to all l2vpn neighbors, announcing that VTEP is ready to process BUM traffic. Type 2 routes will appear only after client hosts will start to generate traffic.
-- L2 operations
+- L2/L3 operations
   - Type 2 - Host Advertisment - advertising MACs - Generated when new MAC is discovered, is sent to all VTEPs within this VNI, VTEPs import it to required MAC VRF according to RT - also advertise IP together with MAC - this is a separate update called MAC/IP it is sent when new record appears in ARP table of VRF where VLAN interface is and this record ic connected with this VLAN interface - this MAC/IP update is used for assymetric routing of VxLAN traffic. Also in case of symmetric routing there are L3 VNI (in addition to L2 VNI) and router MAC address inside MAC-IP route
   - Type 3 - Inclusive Multicast Ethernet Tag  - for BUM - Ingress Replication - VTEP with particular VNI and VLAN sends this update to inform everyone that it is ready to accept BUM traffic for this particular VNI. Attribute PMSI_TUNNEL_ATTRIBUTE is added to BGP update, it contains VNI and replication type: Ingress Replication (or Multicast). This route update is generated for every VNI configured.
-- L3 operations
+- M-LAG operations
   - Type 4 - Ethernet Segment Route - one LAN connected to two VTEPs - only one of them should process BUM - this is MLAG based on EVPN, without vPC
   - Type 1 - Ethernet Auto Discovery Route
 - External connections
@@ -245,6 +246,19 @@ Carried extended communities: (2 communities)
 Subtype (EVPN) : ES Import (0x02)
 ES-Import Route Target: Private 11:11:11 (11:11:11:11:11:11)
 ```
+
+#### Route type 5
+- The only type, which transfers prefixes with different masks and not host routes with /32 mask
+- External router is peered with IP interface inside VRF on Border Leaf
+- Symmetric IRB is used
+- What is transfered inside Route Type 5 from Border Leaf to all VTEPs?
+  - Prefix
+  - RD and RT from IP VRF
+  - L3 VNI
+  - Router's MAC
+- Possible problem: too many Type-5 routes and TCAM overload
+- Possible solution: reconfigure TCAM: increase for Type 5 or Type 2. For example on Arista you may choose one of 5 profiles with different amounts of supoorted routes: for example: 288k 12 entries, 16k l3 host, 32k lpm(prefixes) entries
+- Possible solution: summarize as much as possible
 
 ## L2
 - Fabric is a big Switch
