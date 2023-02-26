@@ -68,7 +68,6 @@
 
 ## Capabilities
 
-
 ## ASN
 - Can be 16 bit (2 bytes) and 32 bit (4 bytes)
 - 0 to 65535
@@ -76,6 +75,7 @@
 - Public: 1 - 64495, 65552 - 4 199 999 999
 - Private: 64512 - 65534, 4 200 000 000 - 4 294 967 294
 - Notation options: ASPLAIN 0 - 4 294 967 294, ASDOT 0 - 65535.65535
+- We can substitute AS number for particular neighbor. For example we can do it, when we connect VRFs in fabric via external Firewall and to avoid "allow as in" option we configure different ASNs for different VRFs to peer with firewall 
 
 ## Injecting Routes/Prefixes,Summarization, Redistribution
 - If we configure summarization, for example two LANs connected to Leaf, and then if we disconnect one LAN, summerized route will continue propogating and everyone will consider this LAN available. Especially summarization is unacceptable on Spines. This is relevant only with "summer only" option.  
@@ -281,6 +281,22 @@ Configuration overview
 
 ## Configuration
 
+**Configure different AS number for particular neighbor on Nexus**  
+Peering will be made using 64704 ASN instead of 64703  
+It is very usefull when we connect VRFs in Fabric via external firewall
+```
+router bgp 64703
+  router-id 10.10.2.7
+  address-family ipv4 unicast
+    network 10.10.2.7/32
+
+vrf OTUS2
+    neighbor 192.168.6.2
+      remote-as 64800
+      local-as 64704 no-prepend replace-as
+      address-family ipv4 unicast
+```
+
 **Origin code IGP**
 ```
 network
@@ -329,8 +345,6 @@ Traffic specified here will be available, while at least one network exists, whi
 ```
 aggregate-address 10.99.0.0/31 summary-only
 ```
-
-## Configuration
 
 Minimum required configuration
 - Router process with AS number

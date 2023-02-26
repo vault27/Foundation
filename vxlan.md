@@ -259,6 +259,8 @@ ES-Import Route Target: Private 11:11:11 (11:11:11:11:11:11)
 - Possible problem: too many Type-5 routes and TCAM overload
 - Possible solution: reconfigure TCAM: increase for Type 5 or Type 2. For example on Arista you may choose one of 5 profiles with different amounts of supoorted routes: for example: 288k 12 entries, 16k l3 host, 32k lpm(prefixes) entries
 - Possible solution: summarize as much as possible
+- When Border leaf is peered with external firewall it sends /32 routes to it from whole fabric
+- Summarization: before sending to firewall all fabric /32 routes we summarize them and send for example 192.168.1.0/24
 
 ## L2
 - Fabric is a big Switch
@@ -305,10 +307,15 @@ ES-Import Route Target: Private 11:11:11 (11:11:11:11:11:11)
 - Route Type 2 dissapears, when host does not send any traffic for some time and disspears from switch MAC table, after this withdrawl is sent
 
 ## L3
+
+### Concepts
 - IRB - Integrated Routing and Bridging - It means that 2 services are provided at the same time: Routing and switching
 - To isolate from Underlay we use VRfs for VxLAN routing
 - During L3 routing of VxLAN traffic MACs of source and destination are changed the same as in regular routing
 - TTL is decreamented as well
+- Route Leaking between different VRFs is configured very simple: we just import to our VRF routes with route target of different VRF. But it works only for routes, which we got via EVPN, if route is local(connected to this leaf) it will not be leaked. VPNv4 route leaking can be used instead in this case
+- Fabric is devided on VRFs, each VRF is a tenant, several VLANs (VNIs) in each VRF, L3 VNI for each VRF, RT and RD for each VRFs, if VRFs need connection between each over - external firewall is used, or route leaking
+- Hosts may even not used in Fabric, it can be used just for stretching VRFs, to work as VPN
 
 **Distributed anycast gateway**
 - One default GW on all leafs for particular VLAN - Virtual IP
