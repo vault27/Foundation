@@ -78,8 +78,9 @@
 - We can substitute AS number for particular neighbor. For example we can do it, when we connect VRFs in fabric via external Firewall and to avoid "allow as in" option we configure different ASNs for different VRFs to peer with firewall 
 
 ## Injecting Routes/Prefixes,Summarization, Redistribution
-- If we configure summarization, for example two LANs connected to Leaf, and then if we disconnect one LAN, summerized route will continue propogating and everyone will consider this LAN available. Especially summarization is unacceptable on Spines. This is relevant only with "summer only" option.  
-- no auto-summary is the default
+- If we configure summarization, for example two LANs connected to Leaf, and then if we disconnect one LAN, summerized route will continue propogating and everyone will consider this LAN available. Especially summarization is unacceptable on Spines. This is relevant only with "summer only" option
+- We configure summarization in address family section for Nexus and it works for all neighbors, we specify summarized prefix there wit as-set option and summer only, without summer only option it will advertise all prefixes plus summer
+- No auto-summary is the default
 - What networks are advertised by default? - none - only received via BGP
 - Network command: Look for a route in the router’s current IP routing table that **exactly** matches the parameters of the network command; if the IP route exists, put the equivalent NLRI into the local BGP table. With this logic, connected routes, static routes, or IGP routes could be taken from the IP routing table and placed into the BGP table for later advertisement. When the router removes that route from its IP routing table, BGP then removes the NLRI from the BGP table, and notifies neighbors that the route has been withdrawn. If auto-summary is enabled, then it matched all of its subnets
 - route-map can be used in network command to manipulate path attributes, including next hop
@@ -296,6 +297,13 @@ vrf OTUS2
       local-as 64704 no-prepend replace-as
       address-family ipv4 unicast
 ```
+
+**Configure routes summarization/aggregation: all /32 routes to /24 route in address family section**
+```
+border-leaf(config-router-vrf-af)# aggregate-address 192.168.1.0/24 as-set summary-only
+```
+Now only one /24 prefix will be sent
+
 
 **Origin code IGP**
 ```
