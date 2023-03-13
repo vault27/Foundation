@@ -44,19 +44,16 @@ The first version of OSPF was described in RFC 1131, published in October 1989. 
 - Complicated > high load
 - One area - 500 routers
 - Process id can be different
-- 
 - Metric is based on cumulitive cost of all outgoing interfaces, the lower the mitric the better, it is a price of the route
 - Supports VLSM and CIDR
 - No hop limit
-- - All networks are connected via backbone areas to avoid loops
-- 
+- All networks are connected via backbone areas to avoid loops
 - Hello interval - router sends Hello messages
 - Dead timer - after it neighboor is considered dead
 - Route tags- tag routes as theay are redistributed into OSPF
 - Next-hop field - supports the advertisment of routes with a different next-hop router than the advertising router
 - Manual route summarization - summarization is supported on ABR only
 - If there is an topology change - router sends LSA, if no changes LSAs are sent every 30 mins
-- 
 Each router stores the data, composed of individual link-state advertisements (LSA) , in its own copy of the link-state database (LSDB) . Then, the router applies the Shortest Path First (SPF) algorithm to the LSDB to determine the best (lowest-cost) route for each reachable subnet (prefix/length).  
 
 **Three fundamental concepts of link state protocols**
@@ -88,8 +85,9 @@ We have to think through the following:
 - Configure RID explicitly
 
 ## Configuration and operations overview
-- Enable OSPF process with particular ID and configure router ID for it
-- Enable OSPF on required interfaces and specify area
+- Enable OSPF process with particular ID (number in IOS and word in Nexus) and configure router ID for it, or loopback is used
+- Iclude interfaces into OSPF using network command in IOS, we should include interfaces on which we peer and which we want to announce - and specify area
+- Enable OSPF on required interfaces and specify area - on Nexus
 - Enable OSPF on loopback to announce it
 
 ## Operations
