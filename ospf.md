@@ -371,3 +371,5 @@ show ip ospf virtual-links
 
 Why does OSPF require all traffic between non-backbone areas to pass through a backbone area (area 0)?  
 > Because inter-area OSPF is distance vector, it is vulnerable to routing loops. It avoids loops by mandating a loop-free inter-area topology, in which traffic from one area can only reach another area through area 0. 
+
+## Cisco Live Sessions
