@@ -1,5 +1,18 @@
 # TLS/SSL
 
+## Cryptography
+
+### Hash functions
+=fingerprints=message digests=digests  
+A hash function is an algorithm that converts input of arbitrary length into fixed-size out- put.  
+This is a very good way to compare two large files.  
+The strength of a hash function doesn’t equal the hash length.
+
+Cryptographic hash functions have to have the following properties:
+- Preimage resistance - Given a hash, it’s computationally unfeasible to find or construct a message that pro- duces it
+- Second preimage resistance - Given a message and its hash, it’s computationally unfeasible to find a different mes- sage with the same hash
+- Collision resistance - It’s computationally unfeasible to find two messages that have the same hash
+
 ## Protocols  
 - SSLv1(out of date, vulnerable)
 - SSLv2(do not use)
@@ -196,12 +209,28 @@ In practice, block ciphers are used via encryption schemes called block cipher m
 <img width="502" alt="image" src="https://user-images.githubusercontent.com/116812447/225607064-bff68c8f-069f-4921-a521-4ee8a0c8b193.png">
 - To discard the padding after decryption, the receiver examines the last byte in the data block and removes it. After that, he removes the indicated number of bytes while checking that they all have the same value
 
-
+**Block Cipher Modes**  
+- Block cipher modes are cryptographic schemes designed to extend block ciphers to encrypt data of arbitrary length
+- All block cipher modes support confidentiality
+- Some combine confidetiality with authentication
+- Some modes transform block ciphers to produce stream ciphers
+- ECB, CBC, CFB, OFB, CTR, GCM, and so forth
+- CBC - main mode for TLS/SSL
+- GCM - best mode available
 
 ### MAC
-- SHA 256 - good
-- SHA384 - good
-- SHA1 - not good
+A pure hash function could be used to verify data integrity, but only if the hash of the data is transported separately from the data itself. Otherwise, an attacker could modify both the message and the hash, easily avoiding detection.
+- Message authentication code (MAC) or a keyed-hash is a cryptographic function that extends hashing with authentication
+- Only those in possession of the hashing key can produce a valid MAC
+- If there is no MAC, encrypted message can be altered
+- Any hash function can be used as the basis for a MAC using a construction known as HMAC (short for hash-based message authentication code)
+- RFC 2104: HMAC: Keyed-Hashing for Message Authentication (Krawczyk et al., February 1997)
+- HMAC works by interleaving the hashing key with the message in a secure way
+
+MACs in TLS/SSL:
+- SHA 256 - good - 256 bits
+- SHA384 - good - 384 bits
+- SHA1 - not good - 160 bits
 - MD5  - not good
 SHA1 and SHA256 are used everywhere
 
