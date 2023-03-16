@@ -125,11 +125,24 @@ ECDHE - RSA - AES128 - GCM - SHA256
 - Most used: TLS13-AES128-GCM-SHA256
 - There is hexadecimal representation for every possible cipher suite
 - Different protocols support different cipher suites
-- To establish SSL session client an server must negotiate how they will exchange keys,  how client will authenticate server, how they will make bulk encryption.
-- Auth is checked by verifying  server certificate signature by CA + that server indeed has the private key: server sends something encrypted with private key, and client decrypts it with public key.
-- Auth is always a public key cryptography. Most commonly RSA, but sometimes ECDSA.
-- Auth is dependent on which key exchange algorithm is used.
-- During the RSA key exchange, the client generates a random value as the premaster secret  and sends it encrypted with the server’s public key. The server, which is in possession of the corresponding private key, decrypts the message to obtain the premaster secret. The authentication is implicit: it is assumed that only the server in possession of the corresponding private key can retrieve the premaster secret, construct the correct session keys, and producethe correct Finished message.
+
+### Key Exchange
+- Diffie Hellman(more and more used today)
+  - Diffie Hellman
+  - DHE(ethemeral, short lived) - secret numbers generated on server and client are generated again for every session
+  - ECDH(ecliptic curve)
+  - ECDHE(becoming the primary)  - best
+- RSA(used from 1970s) - deprecated, large key size, no PFS, slow
+     
+Ephemeral ECDH w/ RSA Certs - is used everywhere  
+Ecliptic Curve allows much smaller keys  
+DH provides forward secrecy and perfect(DHE) forward secrecy, which are required for TLS 1.3
+
+### Auth
+- Auth is checked by verifying  server certificate signature by CA + that server indeed has the private key: server sends something encrypted with private key, and client decrypts it with public key
+- Auth is always a public key cryptography. Most commonly RSA, but sometimes ECDSA
+- Auth is dependent on which key exchange algorithm is used
+- During the RSA key exchange, the client generates a random value as the premaster secret  and sends it encrypted with the server’s public key. The server, which is in possession of the corresponding private key, decrypts the message to obtain the premaster secret. The authentication is implicit: it is assumed that only the server in possession of the corresponding private key can retrieve the premaster secret, construct the correct session keys, and producethe correct Finished message
 - During the DHE and ECDHE exchanges, the server contributes to the key exchange with its parameters. The parameters are signed with its private key. The client, which is in possession of the corresponding public key (obtained from the validated certificate), can verify that the parameters genuinely arrived from the intended server
 
 ## Wireshark
