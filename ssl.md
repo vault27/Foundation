@@ -165,6 +165,25 @@ DH provides forward secrecy and perfect(DHE) forward secrecy, which are required
 - MD5  - not good
 SHA1 and SHA256 are used everywhere
 
+## (Perfect) Forward Secrecy
+- Forward because it avoids: if attacker captures encrypted traffic and then later he gets private key and can decrypt everything
+- If SSL RSA is used for key exchange, however if you have server’s private key you can decrypt session keys and then decrypt all traffic.
+- Instead of RSA DiffieHelman can be used, then even if you have access to private key, you cannot get session keys - this feature is called forward secrecy
+- And if you choose Ethemeral Diffie-Hellman then you achieve Perfect Forward Secrecy
+
+## SNI
+ServerName encryption  
+Server Name (the domain part of the URL) is presented in the ClientHello packet, in plain text.  
+From RFC:  
+3.1. Server Name Indication
+[TLS] does not provide a mechanism for a client to tell a server the name of the server it is contacting. It may be desirable for clients to provide this information to facilitate secure connections to servers that host multiple 'virtual' servers at a single underlying network address.
+In order to provide the server name, clients MAY include an extension of type "server_name" in the (extended) client hello.  
+- The payload in the SNI extension can now be encrypted in TLS1.3
+- **SNI can be changed by client to bypass security policies, so it is very important to check server certificate not only SNI**
+- All policies on NGWF and SSL decryptors are based on SNI or Server certificate, Server certificate is more accurate source. In TLS 1.3 it is encrypted. So it is more difficult to understand what to decrypt and what not.
+- Also, reverse DNS lookup may help 
+- Correct application identification is only possible with decryption: gmail site is signed by Google cert and you will not be able to understand what it is exactly without decryption
+
 ## Wireshark
 SNI filtering
 ```
