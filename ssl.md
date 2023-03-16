@@ -151,6 +151,8 @@ Attributes:
  
 TLS suites use the TLS_ prefix, SSL 3 suites use the SSL_ prefix, and SSL 2 suites use the SSL_CK_ prefix. In all cases, the approach to naming is roughly the same. However, not all vendors use the standard suite names. OpenSSL and GnuTLS use different names. Microsoft large- ly uses the standard names but sometimes extends them with suffixes that are used to indicate the strength of the ECDHE key exchange.
  
+ <img width="378" alt="image" src="https://user-images.githubusercontent.com/116812447/225616598-da92587a-847d-4c23-95c3-9f963a13edc4.png">
+
 **Key exchange - Auth - Bulk encryption - MAC**  
 ECDHE - RSA - AES128 - GCM - SHA256
 
