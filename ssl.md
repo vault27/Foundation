@@ -2,6 +2,14 @@
 
 ## Cryptography
 
+### Encoding
+Encoding data is a process involving changing data into a new format using a scheme. Encoding is a reversible process and data can be encoded to a new format and decoded to its original format. Encoding typically involves a publicly available scheme that is easily reversed. Encoding data is typically used to ensure the integrity and usability of data and is commonly used when data cannot be transferred in its current format between systems or applications. Encoding is not used to protect or secure data because it is easy to reverse.  
+An example of encoding is: Base64
+
+### Encryption
+Encryption is the process of securely encoding data in such a way that only authorized users with a key or password can decrypt the data to reveal the original.
+
+
 ### Hash functions
 =fingerprints=message digests=digests  
 A hash function is an algorithm that converts input of arbitrary length into fixed-size out- put.  
@@ -12,6 +20,23 @@ Cryptographic hash functions have to have the following properties:
 - Preimage resistance - Given a hash, it’s computationally unfeasible to find or construct a message that pro- duces it
 - Second preimage resistance - Given a message and its hash, it’s computationally unfeasible to find a different mes- sage with the same hash
 - Collision resistance - It’s computationally unfeasible to find two messages that have the same hash
+
+### Assymetric encryption
+- If you encrypt data using someone’s public key, only their corresponding private key can decrypt it. On the other hand, if data is encrypted with the private key anyone can use the public key to unlock the message
+- First is used for encryption
+- Second is used for digital signature
+- Rather slow and unsuitable for use with large quantities of data
+- It’s usually deployed for authentication and negotiation of shared secrets, which are then used for fast symmetric encryption
+- RSA (named from the initials of Ron Rivest, Adi Shamir, and Leonard Adleman) - most popular
+- The recommended strength for RSA today is 2,048 bits, which is equivalent to about 112 symmetric bits
+- Not all digital signature algorithms function in the same way as RSA. In fact, RSA is an exception, because it can be used for both encryption and digital signing. Other popular public key algorithms, such as DSA and ECDSA, can’t be used for encryption and rely on different approaches for signing
+
+### Digital signature
+- Calculate a hash of the document you wish to sign; no matter the size of the input doc- ument, the output will always be fixed, for example, 256 bits for SHA256
+- Encode the resulting hash and some additional metadata. For example, the receiver will need to know the hashing algorithm you used before she can process the signa- ture
+- Encrypt the encoded hash using the private key; the result will be the signature, which you can append to the document as proof of authenticity
+- To verify the signature, the receiver takes the document and calculates the hash indepen- dently using the same algorithm. Then, she uses your public key to decrypt the message and recover the hash, confirm that the correct algorithms were used, and compare with the de- crypted hash with the one she calculated. The strength of this signature scheme depends on the individual strengths of the encryption, hashing, and encoding components
+
 
 ## Protocols  
 - SSLv1(out of date, vulnerable)
@@ -215,7 +240,8 @@ In practice, block ciphers are used via encryption schemes called block cipher m
 - GCM - best mode available
 
 ### MAC
-A pure hash function could be used to verify data integrity, but only if the hash of the data is transported separately from the data itself. Otherwise, an attacker could modify both the message and the hash, easily avoiding detection.
+- A pure hash function could be used to verify data integrity, but only if the hash of the data is transported separately from the data itself. Otherwise, an attacker could modify both the message and the hash, easily avoiding detection
+- MAC is a type of digital signature; it can be used to verify authenticity provided that the secret hashing key is securely exchanged ahead of time. - - It’s limited because it still relies on a private secret key
 - Message authentication code (MAC) or a keyed-hash is a cryptographic function that extends hashing with authentication
 - Only those in possession of the hashing key can produce a valid MAC
 - If there is no MAC, encrypted message can be altered
