@@ -36,7 +36,14 @@ Cryptographic hash functions have to have the following properties:
 - Encode the resulting hash and some additional metadata. For example, the receiver will need to know the hashing algorithm you used before she can process the signa- ture
 - Encrypt the encoded hash using the private key; the result will be the signature, which you can append to the document as proof of authenticity
 - To verify the signature, the receiver takes the document and calculates the hash indepen- dently using the same algorithm. Then, she uses your public key to decrypt the message and recover the hash, confirm that the correct algorithms were used, and compare with the de- crypted hash with the one she calculated. The strength of this signature scheme depends on the individual strengths of the encryption, hashing, and encoding components
+- Algorithms: RSA, DSA, ECDSA
 
+### Random Number Generation
+It is a problem for computer to generate a true random numbers, which are requires for keys generating in Cryptography.  
+Three types
+- True random number generator (TRNG)- based on reliable external events - mouse movements, keystrokes.. - is hard to use directly - if data is not enough - system will stall
+- Pseudorandom number generators (PRNGs) - used in programming - not suitable for cryptography - use small amounts of true random data to get them going. This process is known as seeding. From the seed, PRNGs produce unlimited amounts of pseudorandom data on demand
+- Cryptographic pseudo- random number generators (CPRNGs) - PRNGs that are also unpredictable
 
 ## Protocols  
 - SSLv1(out of date, vulnerable)
