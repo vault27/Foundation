@@ -105,7 +105,6 @@ Extension: server_name (len=13)
 - If Diffie-Hellman is used, than private key on the server side is used for Auth only, not for encryption
 
 ## TLS 1.3
-
 - https://tls13.xargs.org
 - You have to use PFS, no RSA, only Diffie Hellman.
 - TLS 1.3 handshake is shorter
@@ -119,6 +118,20 @@ Extension: server_name (len=13)
 - Server sends Hello back: chosen cipher, key share, signed cert(encrypted already), finished message(encrypted)
 
 ## Cipher suite
+
+Attributes:
+- Authentication method
+- Key exchange method
+- Encryption algorithm
+- Encryption key size
+- Cipher mode (when applicable)
+- MAC algorithm (when applicable)
+- PRF (TLS 1.2 only—depends on the protocol otherwise)
+- Hash function used for the Finished message (TLS 1.2)
+- Length of the verify_data structure (TLS 1.2)
+ 
+TLS suites use the TLS_ prefix, SSL 3 suites use the SSL_ prefix, and SSL 2 suites use the SSL_CK_ prefix. In all cases, the approach to naming is roughly the same. However, not all vendors use the standard suite names. OpenSSL and GnuTLS use different names. Microsoft large- ly uses the standard names but sometimes extends them with suffixes that are used to indicate the strength of the ECDHE key exchange.
+ 
 **Key exchange - Auth - Bulk encryption - MAC**  
 ECDHE - RSA - AES128 - GCM - SHA256
 
@@ -206,6 +219,9 @@ Algorithms
 - Elgamal - it differs from Elgamal encryption scheme. Native Elgamal signature algorithm is rarely used. DSA is much more popular
 - DSA - extension of Elgamal, better than Elgamal. Can be used only for signing, not encryption
 - Elliptic curve digital signature algorithm (ECDSA) - extension of Elgamal
+
+## Certificate
+
 
 ## Wireshark
 SNI filtering
