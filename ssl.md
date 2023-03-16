@@ -130,13 +130,14 @@ ECDHE - RSA - AES128 - GCM - SHA256
 - Diffie Hellman(more and more used today)
   - Diffie Hellman
   - DHE(ethemeral, short lived) - secret numbers generated on server and client are generated again for every session
-  - ECDH(ecliptic curve)
+  - ECDH(ecliptic curve) - variant of the Diffie–Hellman protocol using elliptic-curve cryptography. The main advantage of ECDHE is that it is significantly faster than DHE
   - ECDHE(becoming the primary)  - best
 - RSA(used from 1970s) - deprecated, large key size, no PFS, slow
      
 Ephemeral ECDH w/ RSA Certs - is used everywhere  
 Ecliptic Curve allows much smaller keys  
-DH provides forward secrecy and perfect(DHE) forward secrecy, which are required for TLS 1.3
+DH provides forward secrecy and perfect(DHE) forward secrecy, which are required for TLS 1.3  
+ECDHE by itself is worthless against an active attacker -- there's no way to tie the received ECDH key to the site you're trying to visit, so an attacker could just send their own ECDH key. This is because ECDHE is ephemeral, meaning that the server's ECDH key isn't in its certificate. So, the server signs its ECDH key using RSA, with the RSA public key being the thing in the server's certificate
 
 ### Auth
 - RSA - good to use    
@@ -183,6 +184,28 @@ In order to provide the server name, clients MAY include an extension of type "s
 - All policies on NGWF and SSL decryptors are based on SNI or Server certificate, Server certificate is more accurate source. In TLS 1.3 it is encrypted. So it is more difficult to understand what to decrypt and what not.
 - Also, reverse DNS lookup may help 
 - Correct application identification is only possible with decryption: gmail site is signed by Google cert and you will not be able to understand what it is exactly without decryption
+
+## Elliptic curve cryptography
+- This public key system. The same as RSA. 
+- ECC key 256 bits is the same as 3072 RSA key. So ECC can use smaller keys.
+- ECC key 384 bits - US government top secret
+
+## CA
+- CA stays offline
+- CA signs subordinate CA: encrypts its hash with CA private key
+- Subordinate CA signs server certificate.
+- Server sends to client its cert + subordinate CA or many subordinates
+- Enroll means to send public key and identity information to CA , so CA can issue an identity certificate
+
+## Digital signature
+- Digital signature - this is encrypted (with private key) hash of a data - non repudiation
+- Person 1 encrypts hash of the message with its private key
+
+Algorithms
+- RSA - first digital signature, de facto standard 
+- Elgamal - it differs from Elgamal encryption scheme. Native Elgamal signature algorithm is rarely used. DSA is much more popular
+- DSA - extension of Elgamal, better than Elgamal. Can be used only for signing, not encryption
+- Elliptic curve digital signature algorithm (ECDSA) - extension of Elgamal
 
 ## Wireshark
 SNI filtering
