@@ -12,6 +12,7 @@
 ## TLS 1.2
 
 ## TLS 1.3
+- Certificate is encrypted
 
 ## Packet sequence
 Every TLS record (can be several in one packet) has its own Handshake Type (number), we can use it to filter in Wireshark.
@@ -184,6 +185,18 @@ Limitations:
         - They are deterministic; they always produce the same output for the same input. On their own, block ciphers are not very useful because of several limitations
         - You can only use them to encrypt data lengths equal to the size of the encryption block. To use a block cipher in practice, you need a scheme to handle data of arbitrary length
 In practice, block ciphers are used via encryption schemes called block cipher modes, which smooth over the limitations and sometimes add authentication to the mix.
+
+**Padding**
+- Is used to handle encryption of data lengths smaller than the encryption block size
+- 128-bit AES requires 16 bytes of input data and produces the same amount as output, what if data is 4 bytes?
+- Padding - to append some extra data to the end of your plaintext
+- Format of padding must be the same on sender and receiver
+- Receiver should know exactly how many bytes to discard
+- In TLS, the last byte of an encryption block contains padding length, which indicates how many bytes of padding (excluding the padding length byte) there are. All padding bytes are set to the same value as the padding length byte. This approach enables the receiver to check that the padding is correct
+<img width="502" alt="image" src="https://user-images.githubusercontent.com/116812447/225607064-bff68c8f-069f-4921-a521-4ee8a0c8b193.png">
+- To discard the padding after decryption, the receiver examines the last byte in the data block and removes it. After that, he removes the indicated number of bytes while checking that they all have the same value
+
+
 
 ### MAC
 - SHA 256 - good
