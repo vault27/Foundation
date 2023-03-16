@@ -139,11 +139,31 @@ Ecliptic Curve allows much smaller keys
 DH provides forward secrecy and perfect(DHE) forward secrecy, which are required for TLS 1.3
 
 ### Auth
+- RSA - good to use    
+- ECDSA (Ecliptic curve digital signature algorithm) - slow  
+  
 - Auth is checked by verifying  server certificate signature by CA + that server indeed has the private key: server sends something encrypted with private key, and client decrypts it with public key
 - Auth is always a public key cryptography. Most commonly RSA, but sometimes ECDSA
 - Auth is dependent on which key exchange algorithm is used
 - During the RSA key exchange, the client generates a random value as the premaster secret  and sends it encrypted with the server’s public key. The server, which is in possession of the corresponding private key, decrypts the message to obtain the premaster secret. The authentication is implicit: it is assumed that only the server in possession of the corresponding private key can retrieve the premaster secret, construct the correct session keys, and producethe correct Finished message
 - During the DHE and ECDHE exchanges, the server contributes to the key exchange with its parameters. The parameters are signed with its private key. The client, which is in possession of the corresponding public key (obtained from the validated certificate), can verify that the parameters genuinely arrived from the intended server
+
+### Bulk Encryption
+ - AES
+    - AES GCM - best one - very fast mode of block cipher - used everywhere
+    - AES CBC - ok, possible not good, is not AEAD cipher, which is required in TLS 1.3
+ - Camellia
+ -  DES - not good
+ -  3DES - not good
+ - RC4 - not good
+ - RC2 - not good
+
+### MAC
+- SHA 256 - good
+- SHA384 - good
+- SHA1 - not good
+- MD5  - not good
+SHA1 and SHA256 are used everywhere
 
 ## Wireshark
 SNI filtering
