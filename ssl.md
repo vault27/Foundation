@@ -66,7 +66,8 @@ Algorithms
 - Instead of RSA DiffieHelman can be used, then even if you have access to private key, you cannot get session keys - this feature is called forward secrecy
 - And if you choose Ethemeral Diffie-Hellman then you achieve Perfect Forward Secrecy
 
-## Protocols  
+## Protocols 
+In TLS, integrity validation is part of the encryption process; it’s handled either explicitly at the protocol level or implicitly by the negotiated cipher.
 - SSLv1(out of date, vulnerable)
 - SSLv2(do not use)
 - SSLv3(do not use)
@@ -89,6 +90,12 @@ Algorithms
 - Hard to understand if it is required to decrypt or not, earlier it was easier based on categories
 - Client sends hello: supported ciphers, key agreements, key share(more than one). Then server can choose cipher suite and it will have a key share already for it.
 - Server sends Hello back: chosen cipher, key share, signed cert(encrypted already), finished message(encrypted)
+
+TLS v1.3 supports three key exchange methods:
+
+- Ephemeral Diffie-Hellman (combined with digital signatures for authentication);
+- PSK with ephemeral Diffie-Hellman;
+- PSK without ephemeral Diffie-Hellman.
 
 ### Packet sequence
 Every TLS record (can be several in one packet) has its own Handshake Type (number), we can use it to filter in Wireshark.  
@@ -219,6 +226,7 @@ TLS suites use the TLS_ prefix, SSL 3 suites use the SSL_ prefix, and SSL 2 suit
   - ECDH(ecliptic curve) - variant of the Diffie–Hellman protocol using elliptic-curve cryptography. The main advantage of ECDHE is that it is significantly faster than DHE
   - ECDHE(becoming the primary)  - best
 - RSA(used from 1970s) - deprecated, large key size, no PFS, slow
+- PSK
      
 Ephemeral ECDH w/ RSA Certs - is used everywhere  
 Ecliptic Curve allows much smaller keys  
@@ -229,7 +237,6 @@ ECDHE by itself is worthless against an active attacker -- there's no way to tie
 - RSA - good to use    
 - ECDSA (Ecliptic curve digital signature algorithm) - slow  
 - DSA
-- AEAD  
 - Auth is checked by verifying  server certificate signature by CA + that server indeed has the private key: server sends something encrypted with private key, and client decrypts it with public key
 - Auth is always a public key cryptography. Most commonly RSA, but sometimes ECDSA
 - Auth is dependent on which key exchange algorithm is used
@@ -245,7 +252,7 @@ ECDHE by itself is worthless against an active attacker -- there's no way to tie
  -  3DES - not good
  - RC4 - not good - stream
  - RC2 - not good
- - AEAD
+ - AEAD - authenticated encryption assosiated data
 
 Ciphers can be divided into two groups: stream and block ciphers
 - Stream Ciphers - ou feed one byte of plaintext to the encryption algorithm, and out comes one byte of ciphertext. The reverse happens at the other end
@@ -256,6 +263,10 @@ Limitations:
 In practice, block ciphers are used via encryption schemes called block cipher modes, which smooth over the limitations and sometimes add authentication to the mix.
 
 **AEAD**
+- authenticated encryption assosiated data
+- Provides encryption + integrity
+- TLS supports GCM and CCM authenticated ciphers, but only the former are currently used in practice.    
+
 
 **Padding**
 - Is used to handle encryption of data lengths smaller than the encryption block size
@@ -285,6 +296,9 @@ In practice, block ciphers are used via encryption schemes called block cipher m
 - Any hash function can be used as the basis for a MAC using a construction known as HMAC (short for hash-based message authentication code)
 - RFC 2104: HMAC: Keyed-Hashing for Message Authentication (Krawczyk et al., February 1997)
 - HMAC works by interleaving the hashing key with the message in a secure way
+- MAC from the record sequence number, header, and plaintext is calculated, MAC is added to plaintext, then al this is encrypted and sent together with header, SO MAC IS SENT IN ENCRYPTED FORM TOGETHER WITH PLAIN TEXT - This process is known as MAC-then-encrypt - has many problems
+- Encrypt-then-MAC - plaintext and padding are first encrypted and then fed to the MAC algorithm. This ensures that the active network attacker can’t ma- nipulate any of the encrypted data
+- 
 
 MACs in TLS/SSL:
 - SHA 256 - good - 256 bits
