@@ -315,3 +315,18 @@ SNI filtering
 ```
 tls.handshake.extensions_server_name contains "dlp"
 ```
+
+Show only Handshake protocol, no application data
+```
+tls.record.content_type == 22
+```
+
+Show only client hellos
+```
+tls.handshake.type == 1
+```
+
+Show only server hellos
+```
+tls.handshake.type == 2
+```
