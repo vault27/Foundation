@@ -207,7 +207,8 @@ ECDHE by itself is worthless against an active attacker -- there's no way to tie
 ### Auth
 - RSA - good to use    
 - ECDSA (Ecliptic curve digital signature algorithm) - slow  
-  
+- DSA
+- AEAD  
 - Auth is checked by verifying  server certificate signature by CA + that server indeed has the private key: server sends something encrypted with private key, and client decrypts it with public key
 - Auth is always a public key cryptography. Most commonly RSA, but sometimes ECDSA
 - Auth is dependent on which key exchange algorithm is used
