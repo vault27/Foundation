@@ -55,12 +55,12 @@ Algorithms
 - DSA - extension of Elgamal, better than Elgamal. Can be used only for signing, not encryption
 - Elliptic curve digital signature algorithm (ECDSA) - extension of Elgamal
 
-## Elliptic curve cryptography
+### Elliptic curve cryptography
 - This public key system. The same as RSA. 
 - ECC key 256 bits is the same as 3072 RSA key. So ECC can use smaller keys.
 - ECC key 384 bits - US government top secret
 
-## (Perfect) Forward Secrecy
+### (Perfect) Forward Secrecy
 - Forward because it avoids: if attacker captures encrypted traffic and then later he gets private key and can decrypt everything
 - If SSL RSA is used for key exchange, however if you have server’s private key you can decrypt session keys and then decrypt all traffic.
 - Instead of RSA DiffieHelman can be used, then even if you have access to private key, you cannot get session keys - this feature is called forward secrecy
