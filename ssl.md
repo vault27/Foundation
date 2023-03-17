@@ -45,6 +45,27 @@ Three types
 - Pseudorandom number generators (PRNGs) - used in programming - not suitable for cryptography - use small amounts of true random data to get them going. This process is known as seeding. From the seed, PRNGs produce unlimited amounts of pseudorandom data on demand
 - Cryptographic pseudo- random number generators (CPRNGs) - PRNGs that are also unpredictable
 
+### Digital signature
+- Digital signature - this is encrypted (with private key) hash of a data - non repudiation
+- Person 1 encrypts hash of the message with its private key
+
+Algorithms
+- RSA - first digital signature, de facto standard 
+- Elgamal - it differs from Elgamal encryption scheme. Native Elgamal signature algorithm is rarely used. DSA is much more popular
+- DSA - extension of Elgamal, better than Elgamal. Can be used only for signing, not encryption
+- Elliptic curve digital signature algorithm (ECDSA) - extension of Elgamal
+
+## Elliptic curve cryptography
+- This public key system. The same as RSA. 
+- ECC key 256 bits is the same as 3072 RSA key. So ECC can use smaller keys.
+- ECC key 384 bits - US government top secret
+
+## (Perfect) Forward Secrecy
+- Forward because it avoids: if attacker captures encrypted traffic and then later he gets private key and can decrypt everything
+- If SSL RSA is used for key exchange, however if you have server’s private key you can decrypt session keys and then decrypt all traffic.
+- Instead of RSA DiffieHelman can be used, then even if you have access to private key, you cannot get session keys - this feature is called forward secrecy
+- And if you choose Ethemeral Diffie-Hellman then you achieve Perfect Forward Secrecy
+
 ## Protocols  
 - SSLv1(out of date, vulnerable)
 - SSLv2(do not use)
@@ -272,12 +293,6 @@ MACs in TLS/SSL:
 - MD5  - not good
 SHA1 and SHA256 are used everywhere
 
-## (Perfect) Forward Secrecy
-- Forward because it avoids: if attacker captures encrypted traffic and then later he gets private key and can decrypt everything
-- If SSL RSA is used for key exchange, however if you have server’s private key you can decrypt session keys and then decrypt all traffic.
-- Instead of RSA DiffieHelman can be used, then even if you have access to private key, you cannot get session keys - this feature is called forward secrecy
-- And if you choose Ethemeral Diffie-Hellman then you achieve Perfect Forward Secrecy
-
 ## SNI
 ServerName encryption  
 Server Name (the domain part of the URL) is presented in the ClientHello packet, in plain text.  
@@ -291,11 +306,6 @@ In order to provide the server name, clients MAY include an extension of type "s
 - Also, reverse DNS lookup may help 
 - Correct application identification is only possible with decryption: gmail site is signed by Google cert and you will not be able to understand what it is exactly without decryption
 
-## Elliptic curve cryptography
-- This public key system. The same as RSA. 
-- ECC key 256 bits is the same as 3072 RSA key. So ECC can use smaller keys.
-- ECC key 384 bits - US government top secret
-
 ## CA
 - CA stays offline
 - CA signs subordinate CA: encrypts its hash with CA private key
@@ -303,19 +313,7 @@ In order to provide the server name, clients MAY include an extension of type "s
 - Server sends to client its cert + subordinate CA or many subordinates
 - Enroll means to send public key and identity information to CA , so CA can issue an identity certificate
 
-## Digital signature
-- Digital signature - this is encrypted (with private key) hash of a data - non repudiation
-- Person 1 encrypts hash of the message with its private key
-
-Algorithms
-- RSA - first digital signature, de facto standard 
-- Elgamal - it differs from Elgamal encryption scheme. Native Elgamal signature algorithm is rarely used. DSA is much more popular
-- DSA - extension of Elgamal, better than Elgamal. Can be used only for signing, not encryption
-- Elliptic curve digital signature algorithm (ECDSA) - extension of Elgamal
-
 ## Certificate
-
-
 
 ## Wireshark
 SNI filtering
