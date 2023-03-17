@@ -54,7 +54,7 @@ Three types
 - TLS 1.2 - is the best option for now
 - TLS 1.3
 
-## TLS 1.3
+### TLS 1.3
 - https://tls13.xargs.org
 - All encryption and authentication algorithms are combined in the authenticated encryption with associated data (AEAD) encryption algorithm
 - You have to use PFS, no RSA, only Diffie Hellman.
@@ -69,20 +69,20 @@ Three types
 - Client sends hello: supported ciphers, key agreements, key share(more than one). Then server can choose cipher suite and it will have a key share already for it.
 - Server sends Hello back: chosen cipher, key share, signed cert(encrypted already), finished message(encrypted)
 
-## Packet sequence
+### Packet sequence
 Every TLS record (can be several in one packet) has its own Handshake Type (number), we can use it to filter in Wireshark.  
 Plus there is a Content type number - for handshake it is 22, Application data - 23, Alert - 21
 
-### TLS 1.2
+#### TLS 1.2
 - Client hello - 1 packet - 583 bytes - Type 1 - TLS version, Cipher Suites, Server Name Indication
 - Server Hello - 1 packet - 1304 bytes - Type 2 - chosen cipher suite,TLS version
 - Certificate (Type 11) - both certs - server and intermediate, Server Key Exchange (Type 12) - Difie Hellman Data, Server Hello Done(Type 14) - 3 separate TLS records - 5 IP (TCP) packets - 4123 bytes
 - Client key Exchange(Type 16) - Difie Hellman data from client, Change Cipher Spec (Type - 20, This message notifies the server that all the future messages will be encrypted using the algorithm and keys that were just negotiated.), Encrypted Handshake Message
 - Change Cipher Spec from server + Encrypted handshake message
 
-### TLS 1.3
+#### TLS 1.3
 - 
-## Client Hello
+### Client Hello
 A lot of extensions and fields:
 ```
 Handshake Protocol: Client Hello
@@ -154,11 +154,11 @@ Extension: server_name (len=13)
         Server Name: nasa.gov
 ```
 
-## Server Hello
+### Server Hello
 
-## Certificate
+### Certificate
 
-## Handshake
+### Handshake
 - Client sends Hello: cipher suite, protocol version
 - Server sends hello with chosen cipher suite + server certificate(public key + certificate info)
 - Server sends Hello Done
@@ -169,7 +169,7 @@ Extension: server_name (len=13)
 - Both send change cypher spec - changing to symmetric encryption
 - If Diffie-Hellman is used, than private key on the server side is used for Auth only, not for encryption
 
-## Cipher suite
+### Cipher suite
 https://ciphersuite.info  
 
 Attributes:
@@ -191,7 +191,7 @@ TLS suites use the TLS_ prefix, SSL 3 suites use the SSL_ prefix, and SSL 2 suit
 - There is hexadecimal representation for every possible cipher suite
 - Different protocols support different cipher suites
 
-### Key Exchange
+#### Key Exchange
 - Diffie Hellman(more and more used today)
   - Diffie Hellman
   - DHE(ethemeral, short lived) - secret numbers generated on server and client are generated again for every session
@@ -204,7 +204,7 @@ Ecliptic Curve allows much smaller keys
 DH provides forward secrecy and perfect(DHE) forward secrecy, which are required for TLS 1.3  
 ECDHE by itself is worthless against an active attacker -- there's no way to tie the received ECDH key to the site you're trying to visit, so an attacker could just send their own ECDH key. This is because ECDHE is ephemeral, meaning that the server's ECDH key isn't in its certificate. So, the server signs its ECDH key using RSA, with the RSA public key being the thing in the server's certificate
 
-### Auth
+#### Auth
 - RSA - good to use    
 - ECDSA (Ecliptic curve digital signature algorithm) - slow  
 - DSA
@@ -215,7 +215,7 @@ ECDHE by itself is worthless against an active attacker -- there's no way to tie
 - During the RSA key exchange, the client generates a random value as the premaster secret  and sends it encrypted with the server’s public key. The server, which is in possession of the corresponding private key, decrypts the message to obtain the premaster secret. The authentication is implicit: it is assumed that only the server in possession of the corresponding private key can retrieve the premaster secret, construct the correct session keys, and producethe correct Finished message
 - During the DHE and ECDHE exchanges, the server contributes to the key exchange with its parameters. The parameters are signed with its private key. The client, which is in possession of the corresponding public key (obtained from the validated certificate), can verify that the parameters genuinely arrived from the intended server
 
-### Bulk Encryption
+#### Bulk Encryption
  - AES
     - AES GCM - best one - very fast mode of block cipher - used everywhere
     - AES CBC - ok, possible not good, is not AEAD cipher, which is required in TLS 1.3
@@ -224,14 +224,17 @@ ECDHE by itself is worthless against an active attacker -- there's no way to tie
  -  3DES - not good
  - RC4 - not good - stream
  - RC2 - not good
+ - AEAD
 
 Ciphers can be divided into two groups: stream and block ciphers
 - Stream Ciphers - ou feed one byte of plaintext to the encryption algorithm, and out comes one byte of ciphertext. The reverse happens at the other end
 - Block Ciphers - encrypt entire blocks of data at a time; modern block ciphers tend to use a block size of 128 bits (16 bytes). 
 Limitations:
         - They are deterministic; they always produce the same output for the same input. On their own, block ciphers are not very useful because of several limitations
-        - You can only use them to encrypt data lengths equal to the size of the encryption block. To use a block cipher in practice, you need a scheme to handle data of arbitrary length
+        - You can only use them to encrypt data lengths equal to the size of the encryption block. To use a block cipher in practice, you need a scheme to handle data of arbitrary length  
 In practice, block ciphers are used via encryption schemes called block cipher modes, which smooth over the limitations and sometimes add authentication to the mix.
+
+**AEAD**
 
 **Padding**
 - Is used to handle encryption of data lengths smaller than the encryption block size
@@ -252,7 +255,7 @@ In practice, block ciphers are used via encryption schemes called block cipher m
 - CBC - main mode for TLS/SSL
 - GCM - best mode available
 
-### MAC
+#### MAC
 - A pure hash function could be used to verify data integrity, but only if the hash of the data is transported separately from the data itself. Otherwise, an attacker could modify both the message and the hash, easily avoiding detection
 - MAC is a type of digital signature; it can be used to verify authenticity provided that the secret hashing key is securely exchanged ahead of time. - - It’s limited because it still relies on a private secret key
 - Message authentication code (MAC) or a keyed-hash is a cryptographic function that extends hashing with authentication
