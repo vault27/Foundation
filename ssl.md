@@ -1,4 +1,4 @@
-# TLS/SSL
+# Cryptography/PKI/SSL/TLS
 
 ## Cryptography
 
@@ -8,7 +8,6 @@ An example of encoding is: Base64
 
 ### Encryption
 Encryption is the process of securely encoding data in such a way that only authorized users with a key or password can decrypt the data to reveal the original.
-
 
 ### Hash functions
 =fingerprints=message digests=digests  
@@ -20,6 +19,50 @@ Cryptographic hash functions have to have the following properties:
 - Preimage resistance - Given a hash, it’s computationally unfeasible to find or construct a message that pro- duces it
 - Second preimage resistance - Given a message and its hash, it’s computationally unfeasible to find a different mes- sage with the same hash
 - Collision resistance - It’s computationally unfeasible to find two messages that have the same hash
+
+### Symmetric Encryption
+Algorithms
+ - AES
+    - AES GCM - best one - very fast mode of block cipher - used everywhere
+    - AES CBC - ok, possible not good, is not AEAD cipher, which is required in TLS 1.3
+ - Camellia
+ -  DES - not good
+ -  3DES - not good
+ - RC4 - not good - stream
+ - RC2 - not good
+ - AEAD - authenticated encryption assosiated data
+
+Ciphers can be divided into two groups: stream and block ciphers
+- Stream Ciphers - ou feed one byte of plaintext to the encryption algorithm, and out comes one byte of ciphertext. The reverse happens at the other end
+- Block Ciphers - encrypt entire blocks of data at a time; modern block ciphers tend to use a block size of 128 bits (16 bytes). 
+Limitations:
+        - They are deterministic; they always produce the same output for the same input. On their own, block ciphers are not very useful because of several limitations
+        - You can only use them to encrypt data lengths equal to the size of the encryption block. To use a block cipher in practice, you need a scheme to handle data of arbitrary length  
+In practice, block ciphers are used via encryption schemes called block cipher modes, which smooth over the limitations and sometimes add authentication to the mix.
+
+**AEAD**
+- authenticated encryption assosiated data
+- Provides encryption + integrity
+- TLS supports GCM and CCM authenticated ciphers, but only the former are currently used in practice.    
+
+**Padding**
+- Is used to handle encryption of data lengths smaller than the encryption block size
+- 128-bit AES requires 16 bytes of input data and produces the same amount as output, what if data is 4 bytes?
+- Padding - to append some extra data to the end of your plaintext
+- Format of padding must be the same on sender and receiver
+- Receiver should know exactly how many bytes to discard
+- In TLS, the last byte of an encryption block contains padding length, which indicates how many bytes of padding (excluding the padding length byte) there are. All padding bytes are set to the same value as the padding length byte. This approach enables the receiver to check that the padding is correct
+<img width="502" alt="image" src="https://user-images.githubusercontent.com/116812447/225607064-bff68c8f-069f-4921-a521-4ee8a0c8b193.png">
+- To discard the padding after decryption, the receiver examines the last byte in the data block and removes it. After that, he removes the indicated number of bytes while checking that they all have the same value
+
+**Block Cipher Modes**  
+- Block cipher modes are cryptographic schemes designed to extend block ciphers to encrypt data of arbitrary length
+- All block cipher modes support confidentiality
+- Some combine confidetiality with authentication
+- Some modes transform block ciphers to produce stream ciphers
+- ECB, CBC, CFB, OFB, CTR, GCM, and so forth
+- CBC - main mode for TLS/SSL
+- GCM - best mode available
 
 ### Assymetric encryption
 - If you encrypt data using someone’s public key, only their corresponding private key can decrypt it. On the other hand, if data is encrypted with the private key anyone can use the public key to unlock the message
@@ -66,7 +109,7 @@ Algorithms
 - Instead of RSA DiffieHelman can be used, then even if you have access to private key, you cannot get session keys - this feature is called forward secrecy
 - And if you choose Ethemeral Diffie-Hellman then you achieve Perfect Forward Secrecy
 
-## Protocols 
+## SSL/TLS Protocols 
 In TLS, integrity validation is part of the encryption process; it’s handled either explicitly at the protocol level or implicitly by the negotiated cipher.
 - SSLv1(out of date, vulnerable)
 - SSLv2(do not use)
@@ -243,50 +286,6 @@ ECDHE by itself is worthless against an active attacker -- there's no way to tie
 - During the RSA key exchange, the client generates a random value as the premaster secret  and sends it encrypted with the server’s public key. The server, which is in possession of the corresponding private key, decrypts the message to obtain the premaster secret. The authentication is implicit: it is assumed that only the server in possession of the corresponding private key can retrieve the premaster secret, construct the correct session keys, and producethe correct Finished message
 - During the DHE and ECDHE exchanges, the server contributes to the key exchange with its parameters. The parameters are signed with its private key. The client, which is in possession of the corresponding public key (obtained from the validated certificate), can verify that the parameters genuinely arrived from the intended server
 
-#### Bulk Encryption
- - AES
-    - AES GCM - best one - very fast mode of block cipher - used everywhere
-    - AES CBC - ok, possible not good, is not AEAD cipher, which is required in TLS 1.3
- - Camellia
- -  DES - not good
- -  3DES - not good
- - RC4 - not good - stream
- - RC2 - not good
- - AEAD - authenticated encryption assosiated data
-
-Ciphers can be divided into two groups: stream and block ciphers
-- Stream Ciphers - ou feed one byte of plaintext to the encryption algorithm, and out comes one byte of ciphertext. The reverse happens at the other end
-- Block Ciphers - encrypt entire blocks of data at a time; modern block ciphers tend to use a block size of 128 bits (16 bytes). 
-Limitations:
-        - They are deterministic; they always produce the same output for the same input. On their own, block ciphers are not very useful because of several limitations
-        - You can only use them to encrypt data lengths equal to the size of the encryption block. To use a block cipher in practice, you need a scheme to handle data of arbitrary length  
-In practice, block ciphers are used via encryption schemes called block cipher modes, which smooth over the limitations and sometimes add authentication to the mix.
-
-**AEAD**
-- authenticated encryption assosiated data
-- Provides encryption + integrity
-- TLS supports GCM and CCM authenticated ciphers, but only the former are currently used in practice.    
-
-
-**Padding**
-- Is used to handle encryption of data lengths smaller than the encryption block size
-- 128-bit AES requires 16 bytes of input data and produces the same amount as output, what if data is 4 bytes?
-- Padding - to append some extra data to the end of your plaintext
-- Format of padding must be the same on sender and receiver
-- Receiver should know exactly how many bytes to discard
-- In TLS, the last byte of an encryption block contains padding length, which indicates how many bytes of padding (excluding the padding length byte) there are. All padding bytes are set to the same value as the padding length byte. This approach enables the receiver to check that the padding is correct
-<img width="502" alt="image" src="https://user-images.githubusercontent.com/116812447/225607064-bff68c8f-069f-4921-a521-4ee8a0c8b193.png">
-- To discard the padding after decryption, the receiver examines the last byte in the data block and removes it. After that, he removes the indicated number of bytes while checking that they all have the same value
-
-**Block Cipher Modes**  
-- Block cipher modes are cryptographic schemes designed to extend block ciphers to encrypt data of arbitrary length
-- All block cipher modes support confidentiality
-- Some combine confidetiality with authentication
-- Some modes transform block ciphers to produce stream ciphers
-- ECB, CBC, CFB, OFB, CTR, GCM, and so forth
-- CBC - main mode for TLS/SSL
-- GCM - best mode available
-
 #### MAC
 - A pure hash function could be used to verify data integrity, but only if the hash of the data is transported separately from the data itself. Otherwise, an attacker could modify both the message and the hash, easily avoiding detection
 - MAC is a type of digital signature; it can be used to verify authenticity provided that the secret hashing key is securely exchanged ahead of time. - - It’s limited because it still relies on a private secret key
@@ -298,7 +297,6 @@ In practice, block ciphers are used via encryption schemes called block cipher m
 - HMAC works by interleaving the hashing key with the message in a secure way
 - MAC from the record sequence number, header, and plaintext is calculated, MAC is added to plaintext, then al this is encrypted and sent together with header, SO MAC IS SENT IN ENCRYPTED FORM TOGETHER WITH PLAIN TEXT - This process is known as MAC-then-encrypt - has many problems
 - Encrypt-then-MAC - plaintext and padding are first encrypted and then fed to the MAC algorithm. This ensures that the active network attacker can’t ma- nipulate any of the encrypted data
-- 
 
 MACs in TLS/SSL:
 - SHA 256 - good - 256 bits
