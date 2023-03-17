@@ -56,6 +56,7 @@ Three types
 
 ## TLS 1.3
 - https://tls13.xargs.org
+- All encryption and authentication algorithms are combined in the authenticated encryption with associated data (AEAD) encryption algorithm
 - You have to use PFS, no RSA, only Diffie Hellman.
 - TLS 1.3 handshake is shorter
 - TLS 1.3 was designed to establish session as fast as possible.  
@@ -79,6 +80,8 @@ Plus there is a Content type number - for handshake it is 22, Application data -
 - Client key Exchange(Type 16) - Difie Hellman data from client, Change Cipher Spec (Type - 20, This message notifies the server that all the future messages will be encrypted using the algorithm and keys that were just negotiated.), Encrypted Handshake Message
 - Change Cipher Spec from server + Encrypted handshake message
 
+### TLS 1.3
+- 
 ## Client Hello
 A lot of extensions and fields:
 ```
