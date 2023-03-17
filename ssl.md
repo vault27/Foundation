@@ -21,29 +21,37 @@ Cryptographic hash functions have to have the following properties:
 - Collision resistance - It’s computationally unfeasible to find two messages that have the same hash
 
 ### Symmetric Encryption
-Algorithms
- - AES
-    - AES GCM - best one - very fast mode of block cipher - used everywhere
-    - AES CBC - ok, possible not good, is not AEAD cipher, which is required in TLS 1.3
- - Camellia
- -  DES - not good
- -  3DES - not good
- - RC4 - not good - stream
- - RC2 - not good
- - AEAD - authenticated encryption assosiated data
-
-Ciphers can be divided into two groups: stream and block ciphers
+Ciphers can be divided into 3 groups: stream, block and AEAD
 - Stream Ciphers - ou feed one byte of plaintext to the encryption algorithm, and out comes one byte of ciphertext. The reverse happens at the other end
 - Block Ciphers - encrypt entire blocks of data at a time; modern block ciphers tend to use a block size of 128 bits (16 bytes). 
 Limitations:
         - They are deterministic; they always produce the same output for the same input. On their own, block ciphers are not very useful because of several limitations
         - You can only use them to encrypt data lengths equal to the size of the encryption block. To use a block cipher in practice, you need a scheme to handle data of arbitrary length  
 In practice, block ciphers are used via encryption schemes called block cipher modes, which smooth over the limitations and sometimes add authentication to the mix.
+- AEAD
+   - authenticated encryption assosiated data
+   - Provides encryption + integrity
+   - TLS supports GCM and CCM authenticated ciphers, but only the former are currently used in practice
 
-**AEAD**
-- authenticated encryption assosiated data
-- Provides encryption + integrity
-- TLS supports GCM and CCM authenticated ciphers, but only the former are currently used in practice.    
+**Block Cipher Modes**  
+- Block cipher modes are cryptographic schemes designed to extend block ciphers to encrypt data of arbitrary length
+- All block cipher modes support confidentiality
+- Some combine confidetiality with authentication
+- Some modes transform block ciphers to produce stream ciphers
+- ECB, CBC, CFB, OFB, CTR, GCM, and so forth
+- CBC - main mode for TLS/SSL
+- GCM - best mode available
+
+**Algorithms**
+ - AES
+    - AES GCM - best one - very fast mode of block cipher - used everywhere - AEAD
+    - AES CCM - AEAD
+    - AES CBC - ok, possible not good, is not AEAD cipher, which is required in TLS 1.3
+ - Camellia
+ - DES - not good - Block
+ - 3DES - not good - Block
+ - RC4 - not good - stream
+ - RC2 - not good 
 
 **Padding**
 - Is used to handle encryption of data lengths smaller than the encryption block size
@@ -54,15 +62,6 @@ In practice, block ciphers are used via encryption schemes called block cipher m
 - In TLS, the last byte of an encryption block contains padding length, which indicates how many bytes of padding (excluding the padding length byte) there are. All padding bytes are set to the same value as the padding length byte. This approach enables the receiver to check that the padding is correct
 <img width="502" alt="image" src="https://user-images.githubusercontent.com/116812447/225607064-bff68c8f-069f-4921-a521-4ee8a0c8b193.png">
 - To discard the padding after decryption, the receiver examines the last byte in the data block and removes it. After that, he removes the indicated number of bytes while checking that they all have the same value
-
-**Block Cipher Modes**  
-- Block cipher modes are cryptographic schemes designed to extend block ciphers to encrypt data of arbitrary length
-- All block cipher modes support confidentiality
-- Some combine confidetiality with authentication
-- Some modes transform block ciphers to produce stream ciphers
-- ECB, CBC, CFB, OFB, CTR, GCM, and so forth
-- CBC - main mode for TLS/SSL
-- GCM - best mode available
 
 ### Assymetric encryption
 - If you encrypt data using someone’s public key, only their corresponding private key can decrypt it. On the other hand, if data is encrypted with the private key anyone can use the public key to unlock the message
@@ -109,6 +108,17 @@ Algorithms
 - Instead of RSA DiffieHelman can be used, then even if you have access to private key, you cannot get session keys - this feature is called forward secrecy
 - And if you choose Ethemeral Diffie-Hellman then you achieve Perfect Forward Secrecy
 
+## PKI
+
+### Certificate
+
+### CA
+- CA stays offline
+- CA signs subordinate CA: encrypts its hash with CA private key
+- Subordinate CA signs server certificate.
+- Server sends to client its cert + subordinate CA or many subordinates
+- Enroll means to send public key and identity information to CA , so CA can issue an identity certificate
+
 ## SSL/TLS Protocols 
 In TLS, integrity validation is part of the encryption process; it’s handled either explicitly at the protocol level or implicitly by the negotiated cipher.
 - SSLv1(out of date, vulnerable)
@@ -151,8 +161,7 @@ Plus there is a Content type number - for handshake it is 22, Application data -
 - Client key Exchange(Type 16) - Difie Hellman data from client, Change Cipher Spec (Type - 20, This message notifies the server that all the future messages will be encrypted using the algorithm and keys that were just negotiated.), Encrypted Handshake Message
 - Change Cipher Spec from server + Encrypted handshake message
 
-#### TLS 1.3
-- 
+
 ### Client Hello
 A lot of extensions and fields:
 ```
@@ -317,15 +326,6 @@ In order to provide the server name, clients MAY include an extension of type "s
 - All policies on NGWF and SSL decryptors are based on SNI or Server certificate, Server certificate is more accurate source. In TLS 1.3 it is encrypted. So it is more difficult to understand what to decrypt and what not.
 - Also, reverse DNS lookup may help 
 - Correct application identification is only possible with decryption: gmail site is signed by Google cert and you will not be able to understand what it is exactly without decryption
-
-## CA
-- CA stays offline
-- CA signs subordinate CA: encrypts its hash with CA private key
-- Subordinate CA signs server certificate.
-- Server sends to client its cert + subordinate CA or many subordinates
-- Enroll means to send public key and identity information to CA , so CA can issue an identity certificate
-
-## Certificate
 
 ## Wireshark
 SNI filtering
