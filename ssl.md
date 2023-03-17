@@ -152,6 +152,8 @@ ECDHE by itself is worthless against an active attacker -- there's no way to tie
 - Server sends to client its cert + subordinate CA or many subordinates
 - Enroll means to send public key and identity information to CA , so CA can issue an identity certificate
 
+---------------------------------------------------------------------------------------------------------------  
+
 ## SSL/TLS Protocols 
 In TLS, integrity validation is part of the encryption process; it’s handled either explicitly at the protocol level or implicitly by the negotiated cipher.
 - SSLv1(out of date, vulnerable)
@@ -161,6 +163,66 @@ In TLS, integrity validation is part of the encryption process; it’s handled e
 - TLS 1.1
 - TLS 1.2 - is the best option for now
 - TLS 1.3
+
+### Handshake
+- Client sends Hello: cipher suite, protocol version
+- Server sends hello with chosen cipher suite + server certificate(public key + certificate info)
+- Server sends Hello Done
+- Client checks certificate
+- Client generates pre-master key, encrypt it with server public key and sends it to server if RSA is used, Diffie-Hellman may be also used
+- Client sends client finished
+- Client and server generate symmetric key based on pre master key
+- Both send change cypher spec - changing to symmetric encryption
+- If Diffie-Hellman is used, than private key on the server side is used for Auth only, not for encryption
+
+### Cipher suite
+https://ciphersuite.info  
+
+Attributes:
+- Authentication method
+- Key exchange method
+- Encryption algorithm
+- Encryption key size
+- Cipher mode (when applicable)
+- MAC algorithm (when applicable)
+- PRF (TLS 1.2 only—depends on the protocol otherwise)
+- Hash function used for the Finished message (TLS 1.2)
+- Length of the verify_data structure (TLS 1.2)
+
+TLS suites use the TLS_ prefix, SSL 3 suites use the SSL_ prefix, and SSL 2 suites use the SSL_CK_ prefix. In all cases, the approach to naming is roughly the same. However, not all vendors use the standard suite names. OpenSSL and GnuTLS use different names. Microsoft largely uses the standard names but sometimes extends them with suffixes that are used to indicate the strength of the ECDHE key exchange.  
+
+**TLS1.2 cipher suite - 4 parametres**
+```
+TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+```
+
+**TLS 1.3 cipher suite - 2 parametres**
+```
+TLS_AES_128_GCM_SHA256
+```
+
+- In TLS 1.3 there are fewer parametres to avoid many variants of suites.  
+- Signature algorithm is sent as extension in CLient hello
+- Key exchange is ECDHE always
+
+
+### TLS 1.2
+Handshake  
+- TLS communicates via records, can be several records in one packet TCP packet (one or many IP packets) 
+- Every record has its own Handshake Type (number), we can use it to filter in Wireshark.    
+- Plus there is a Content type number - for handshake it is 22, Application data - 23, Alert - 21 - it is for whole TCP packet 
+  
+Handshake process, records, 10 in total:  
+1. Client hello - Type 1 - TLS version, Cipher Suites, Server Name Indication  
+2. Server Hello - Type 2 - chosen cipher suite,TLS version  
+3. Certificate (Type 11) - both certs - server and intermediate  
+4. Server Key Exchange (Type 12) - Difie Hellman Data  
+5. Server Hello Done(Type 14)  
+6. Client key Exchange(Type 16) - Difie Hellman data from client
+7. Client Change Cipher Spec (Type - 20, This message notifies the server that all the future messages will be encrypted using the algorithm and keys that were just negotiated.)
+8. Client Encrypted Handshake Message
+9. Change Cipher Spec from server
+10. Encrypted handshake message from server
 
 ### TLS 1.3
 - https://tls13.xargs.org
@@ -182,18 +244,6 @@ TLS v1.3 supports three key exchange methods:
 - Ephemeral Diffie-Hellman (combined with digital signatures for authentication);
 - PSK with ephemeral Diffie-Hellman;
 - PSK without ephemeral Diffie-Hellman.
-
-### Packet sequence
-Every TLS record (can be several in one packet) has its own Handshake Type (number), we can use it to filter in Wireshark.  
-Plus there is a Content type number - for handshake it is 22, Application data - 23, Alert - 21
-
-#### TLS 1.2
-- Client hello - 1 packet - 583 bytes - Type 1 - TLS version, Cipher Suites, Server Name Indication
-- Server Hello - 1 packet - 1304 bytes - Type 2 - chosen cipher suite,TLS version
-- Certificate (Type 11) - both certs - server and intermediate, Server Key Exchange (Type 12) - Difie Hellman Data, Server Hello Done(Type 14) - 3 separate TLS records - 5 IP (TCP) packets - 4123 bytes
-- Client key Exchange(Type 16) - Difie Hellman data from client, Change Cipher Spec (Type - 20, This message notifies the server that all the future messages will be encrypted using the algorithm and keys that were just negotiated.), Encrypted Handshake Message
-- Change Cipher Spec from server + Encrypted handshake message
-
 
 ### Client Hello
 A lot of extensions and fields:
@@ -267,36 +317,7 @@ Extension: server_name (len=13)
         Server Name: nasa.gov
 ```
 
-### Server Hello
-
-### Handshake
-- Client sends Hello: cipher suite, protocol version
-- Server sends hello with chosen cipher suite + server certificate(public key + certificate info)
-- Server sends Hello Done
-- Client checks certificate
-- Client generates pre-master key, encrypt it with server public key and sends it to server if RSA is used, Diffie-Hellman may be also used
-- Client sends client finished
-- Client and server generate symmetric key based on pre master key
-- Both send change cypher spec - changing to symmetric encryption
-- If Diffie-Hellman is used, than private key on the server side is used for Auth only, not for encryption
-
-### Cipher suite
-https://ciphersuite.info  
-
-Attributes:
-- Authentication method
-- Key exchange method
-- Encryption algorithm
-- Encryption key size
-- Cipher mode (when applicable)
-- MAC algorithm (when applicable)
-- PRF (TLS 1.2 only—depends on the protocol otherwise)
-- Hash function used for the Finished message (TLS 1.2)
-- Length of the verify_data structure (TLS 1.2)
  
-TLS suites use the TLS_ prefix, SSL 3 suites use the SSL_ prefix, and SSL 2 suites use the SSL_CK_ prefix. In all cases, the approach to naming is roughly the same. However, not all vendors use the standard suite names. OpenSSL and GnuTLS use different names. Microsoft large- ly uses the standard names but sometimes extends them with suffixes that are used to indicate the strength of the ECDHE key exchange.
- 
- <img width="378" alt="image" src="https://user-images.githubusercontent.com/116812447/225616598-da92587a-847d-4c23-95c3-9f963a13edc4.png">
 
 - For TLS1.3 notaion is shorter, for example most popular - TLS13-AES128-GCM-SHA256 - No data about Key Exchange and Auth, because AEAD ciphers are used
 - There is hexadecimal representation for every possible cipher suite
