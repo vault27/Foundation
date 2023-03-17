@@ -68,14 +68,16 @@ Three types
 - Client sends hello: supported ciphers, key agreements, key share(more than one). Then server can choose cipher suite and it will have a key share already for it.
 - Server sends Hello back: chosen cipher, key share, signed cert(encrypted already), finished message(encrypted)
 
-
 ## Packet sequence
-Every TLS record (can be several in one packet) has its own Handshake Type (number), we can use it to filter in Wireshark.
+Every TLS record (can be several in one packet) has its own Handshake Type (number), we can use it to filter in Wireshark.  
+Plus there is a Content type number - for handshake it is 22, Application data - 23, Alert - 21
+
 ### TLS 1.2
-- Client hello - 1 packet - 583 bytes - Type 1
-- Server Hello - 1 packet - 1304 bytes - Type 2
-- Certificate (Type 11), Server Key Exchange, Server Hello Done - 3 separate TLS records - 5 IP (TCP) packets - 4123 bytes
-- Client key Exchange, Change Cipher Spec (This message notifies the server that all the future messages will be encrypted using the algorithm and keys that were just negotiated.), Encrypted Handshake Message
+- Client hello - 1 packet - 583 bytes - Type 1 - TLS version, Cipher Suites, Server Name Indication
+- Server Hello - 1 packet - 1304 bytes - Type 2 - chosen cipher suite,TLS version
+- Certificate (Type 11) - both certs - server and intermediate, Server Key Exchange (Type 12) - Difie Hellman Data, Server Hello Done(Type 14) - 3 separate TLS records - 5 IP (TCP) packets - 4123 bytes
+- Client key Exchange(Type 16) - Difie Hellman data from client, Change Cipher Spec (Type - 20, This message notifies the server that all the future messages will be encrypted using the algorithm and keys that were just negotiated.), Encrypted Handshake Message
+- Change Cipher Spec from server + Encrypted handshake message
 
 ## Client Hello
 A lot of extensions and fields:
