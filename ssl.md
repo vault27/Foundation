@@ -108,6 +108,39 @@ Algorithms
 - Instead of RSA DiffieHelman can be used, then even if you have access to private key, you cannot get session keys - this feature is called forward secrecy
 - And if you choose Ethemeral Diffie-Hellman then you achieve Perfect Forward Secrecy
 
+### MAC
+- A pure hash function could be used to verify data integrity, but only if the hash of the data is transported separately from the data itself. Otherwise, an attacker could modify both the message and the hash, easily avoiding detection
+- MAC is a type of digital signature; it can be used to verify authenticity provided that the secret hashing key is securely exchanged ahead of time. - - It’s limited because it still relies on a private secret key
+- Message authentication code (MAC) or a keyed-hash is a cryptographic function that extends hashing with authentication
+- Only those in possession of the hashing key can produce a valid MAC
+- If there is no MAC, encrypted message can be altered
+- Any hash function can be used as the basis for a MAC using a construction known as HMAC (short for hash-based message authentication code)
+- RFC 2104: HMAC: Keyed-Hashing for Message Authentication (Krawczyk et al., February 1997)
+- HMAC works by interleaving the hashing key with the message in a secure way
+- MAC from the record sequence number, header, and plaintext is calculated, MAC is added to plaintext, then al this is encrypted and sent together with header, SO MAC IS SENT IN ENCRYPTED FORM TOGETHER WITH PLAIN TEXT - This process is known as MAC-then-encrypt - has many problems
+- Encrypt-then-MAC - plaintext and padding are first encrypted and then fed to the MAC algorithm. This ensures that the active network attacker can’t ma- nipulate any of the encrypted data
+
+MACs in TLS/SSL:
+- SHA 256 - good - 256 bits
+- SHA384 - good - 384 bits
+- SHA1 - not good - 160 bits
+- MD5  - not good
+SHA1 and SHA256 are used everywhere
+
+### Key Exchange
+- Diffie Hellman(more and more used today)
+  - Diffie Hellman
+  - DHE(ethemeral, short lived) - secret numbers generated on server and client are generated again for every session
+  - ECDH(ecliptic curve) - variant of the Diffie–Hellman protocol using elliptic-curve cryptography. The main advantage of ECDHE is that it is significantly faster than DHE
+  - ECDHE(becoming the primary)  - best
+- RSA(used from 1970s) - deprecated, large key size, no PFS, slow
+- PSK
+     
+Ephemeral ECDH w/ RSA Certs - is used everywhere  
+Ecliptic Curve allows much smaller keys  
+DH provides forward secrecy and perfect(DHE) forward secrecy, which are required for TLS 1.3  
+ECDHE by itself is worthless against an active attacker -- there's no way to tie the received ECDH key to the site you're trying to visit, so an attacker could just send their own ECDH key. This is because ECDHE is ephemeral, meaning that the server's ECDH key isn't in its certificate. So, the server signs its ECDH key using RSA, with the RSA public key being the thing in the server's certificate
+
 ## PKI
 
 ### Certificate
@@ -236,8 +269,6 @@ Extension: server_name (len=13)
 
 ### Server Hello
 
-### Certificate
-
 ### Handshake
 - Client sends Hello: cipher suite, protocol version
 - Server sends hello with chosen cipher suite + server certificate(public key + certificate info)
@@ -271,20 +302,6 @@ TLS suites use the TLS_ prefix, SSL 3 suites use the SSL_ prefix, and SSL 2 suit
 - There is hexadecimal representation for every possible cipher suite
 - Different protocols support different cipher suites
 
-#### Key Exchange
-- Diffie Hellman(more and more used today)
-  - Diffie Hellman
-  - DHE(ethemeral, short lived) - secret numbers generated on server and client are generated again for every session
-  - ECDH(ecliptic curve) - variant of the Diffie–Hellman protocol using elliptic-curve cryptography. The main advantage of ECDHE is that it is significantly faster than DHE
-  - ECDHE(becoming the primary)  - best
-- RSA(used from 1970s) - deprecated, large key size, no PFS, slow
-- PSK
-     
-Ephemeral ECDH w/ RSA Certs - is used everywhere  
-Ecliptic Curve allows much smaller keys  
-DH provides forward secrecy and perfect(DHE) forward secrecy, which are required for TLS 1.3  
-ECDHE by itself is worthless against an active attacker -- there's no way to tie the received ECDH key to the site you're trying to visit, so an attacker could just send their own ECDH key. This is because ECDHE is ephemeral, meaning that the server's ECDH key isn't in its certificate. So, the server signs its ECDH key using RSA, with the RSA public key being the thing in the server's certificate
-
 #### Auth
 - RSA - good to use    
 - ECDSA (Ecliptic curve digital signature algorithm) - slow  
@@ -294,25 +311,6 @@ ECDHE by itself is worthless against an active attacker -- there's no way to tie
 - Auth is dependent on which key exchange algorithm is used
 - During the RSA key exchange, the client generates a random value as the premaster secret  and sends it encrypted with the server’s public key. The server, which is in possession of the corresponding private key, decrypts the message to obtain the premaster secret. The authentication is implicit: it is assumed that only the server in possession of the corresponding private key can retrieve the premaster secret, construct the correct session keys, and producethe correct Finished message
 - During the DHE and ECDHE exchanges, the server contributes to the key exchange with its parameters. The parameters are signed with its private key. The client, which is in possession of the corresponding public key (obtained from the validated certificate), can verify that the parameters genuinely arrived from the intended server
-
-#### MAC
-- A pure hash function could be used to verify data integrity, but only if the hash of the data is transported separately from the data itself. Otherwise, an attacker could modify both the message and the hash, easily avoiding detection
-- MAC is a type of digital signature; it can be used to verify authenticity provided that the secret hashing key is securely exchanged ahead of time. - - It’s limited because it still relies on a private secret key
-- Message authentication code (MAC) or a keyed-hash is a cryptographic function that extends hashing with authentication
-- Only those in possession of the hashing key can produce a valid MAC
-- If there is no MAC, encrypted message can be altered
-- Any hash function can be used as the basis for a MAC using a construction known as HMAC (short for hash-based message authentication code)
-- RFC 2104: HMAC: Keyed-Hashing for Message Authentication (Krawczyk et al., February 1997)
-- HMAC works by interleaving the hashing key with the message in a secure way
-- MAC from the record sequence number, header, and plaintext is calculated, MAC is added to plaintext, then al this is encrypted and sent together with header, SO MAC IS SENT IN ENCRYPTED FORM TOGETHER WITH PLAIN TEXT - This process is known as MAC-then-encrypt - has many problems
-- Encrypt-then-MAC - plaintext and padding are first encrypted and then fed to the MAC algorithm. This ensures that the active network attacker can’t ma- nipulate any of the encrypted data
-
-MACs in TLS/SSL:
-- SHA 256 - good - 256 bits
-- SHA384 - good - 384 bits
-- SHA1 - not good - 160 bits
-- MD5  - not good
-SHA1 and SHA256 are used everywhere
 
 ## SNI
 ServerName encryption  
