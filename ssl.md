@@ -225,25 +225,31 @@ Handshake process, records, 10 in total:
 10. Encrypted handshake message from server
 
 ### TLS 1.3
-- https://tls13.xargs.org
-- All encryption and authentication algorithms are combined in the authenticated encryption with associated data (AEAD) encryption algorithm
-- You have to use PFS, no RSA, only Diffie Hellman.
-- TLS 1.3 handshake is shorter
-- TLS 1.3 was designed to establish session as fast as possible.  
-- All encryption and authentication algorithms are combined in AEAD ciphers are used: Authenticated Encryption with Associated data: MAC + some are added to the encrypted message. Examples: AES-GCM(most common), AES-EAX, ChaCha20 with Poly1305(as MAC)
-- Everything after Server Hello is encrypted
-- Certificate is encrypted
-- Version negotiation removed
-- SNI is still opened, but there is new RFC where it is encrypted
-- Hard to understand if it is required to decrypt or not, earlier it was easier based on categories
-- Client sends hello: supported ciphers, key agreements, key share(more than one). Then server can choose cipher suite and it will have a key share already for it.
-- Server sends Hello back: chosen cipher, key share, signed cert(encrypted already), finished message(encrypted)
+https://tls13.xargs.org  
+ 
+ Main concepts:
+ - Only strong ciphers and algorithms
+ - Faster handshake
+ - Everything after Server Hello is encrypted, Certificate is encrypted - in order to understand where client goes, we need full interception
+ - Passive decryption, when you have TLS server private key, will not work - perfect forward secrecy
+ - Short notation of cipher suite: authentication algotithm is sent as an extension, key exchange algorithm is always Ephemeral Diffie-Hellman
+ - Version negotiation removed
+ - SNI is still opened, but there is new RFC where it is encrypted
 
-TLS v1.3 supports three key exchange methods:
+#### Strong ciphers and algorithms
+Symmetric encryption - only AEAD ciphers:
+- AES-GCM(most common)
+- AES-EAX
+- ChaCha20 with Poly1305(as MAC)
 
+Perfect forward secrecy is mandatory, no RSA, only Diffie Hellman, TLS v1.3 supports only three key exchange methods:
 - Ephemeral Diffie-Hellman (combined with digital signatures for authentication);
 - PSK with ephemeral Diffie-Hellman;
 - PSK without ephemeral Diffie-Hellman.
+
+#### Handshake
+Client sends hello: supported ciphers, key agreements, key share(more than one). Then server can choose cipher suite and it will have a key share already for it.
+- Server sends Hello back: chosen cipher, key share, signed cert(encrypted already), finished message(encrypted)
 
 ### Client Hello
 A lot of extensions and fields:
@@ -316,9 +322,6 @@ Extension: server_name (len=13)
         Server Name length: 8
         Server Name: nasa.gov
 ```
-
- 
-
 - For TLS1.3 notaion is shorter, for example most popular - TLS13-AES128-GCM-SHA256 - No data about Key Exchange and Auth, because AEAD ciphers are used
 - There is hexadecimal representation for every possible cipher suite
 - Different protocols support different cipher suites
