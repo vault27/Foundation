@@ -1,4 +1,4 @@
-# Cryptography/PKI/SSL/TLS
+# Cryptography/PKI/TLS
 
 ## Cryptography
 
@@ -29,8 +29,8 @@ Limitations:
         - You can only use them to encrypt data lengths equal to the size of the encryption block. To use a block cipher in practice, you need a scheme to handle data of arbitrary length  
 In practice, block ciphers are used via encryption schemes called block cipher modes, which smooth over the limitations and sometimes add authentication to the mix.
 - AEAD
-   - authenticated encryption assosiated data
-   - Provides encryption + integrity
+   - Authenticated encryption assosiated data
+   - Provides encryption + integrity, earlier they did MAC-then-encrypt or encrypt-then-MAC, and now everything is combined
    - TLS supports GCM and CCM authenticated ciphers, but only the former are currently used in practice
 
 **Block Cipher Modes**  
@@ -155,15 +155,22 @@ ECDHE by itself is worthless against an active attacker -- there's no way to tie
 ---------------------------------------------------------------------------------------------------------------  
 
 ## SSL/TLS Protocols 
+
 In TLS, integrity validation is part of the encryption process; it’s handled either explicitly at the protocol level or implicitly by the negotiated cipher.
 - SSLv1(out of date, vulnerable)
 - SSLv2(do not use)
 - SSLv3(do not use)
-- TLS 1.0(deprecated, many attacks, PCI DSS prohibited)
-- TLS 1.1
-- TLS 1.2 - is the best option for now
-- TLS 1.3
+- TLS 1.0(deprecated, many attacks, PCI DSS prohibited) - RFC 2246
+- TLS 1.1 - RFC 4346
+- TLS 1.2 - is the best option for now - RFC 5246
+- TLS 1.3 - RFC 8446
 
+### History
+- SSL v3 - 1996 - Netscape
+- Netscape handed it over to IETF
+- IETF renemaed it to TLS in 1999
+- 
+- 
 ### Handshake
 - Client sends Hello: cipher suite, protocol version
 - Server sends hello with chosen cipher suite + server certificate(public key + certificate info)
@@ -226,13 +233,16 @@ Handshake process, records, 10 in total:
 
 ### TLS 1.3
 https://tls13.xargs.org  
+https://blog.cloudflare.com/rfc-8446-aka-tls-1-3/  
  
- Main concepts:
+ Main features:
  - Only strong ciphers and algorithms
- - Faster handshake
+ - Faster handshake - increased performance
+ - The server now signs the entire handshake, including the cipher negotiation, so it is impossible to forge handshake process
+ - No user-defined DH parameters, no RSA. This means that every connection will use a DH-based key agreement and the parameters supported by the server are likely easy to guess (ECDHE with X25519 or P-256). Because of this limited set of choices, the client can simply choose to send DH key shares in the first message instead of waiting until the server has confirmed which key shares it is willing to support. That way, the server can learn the shared secret and send encrypted data one round trip earlier. SO CLIENT sends KEY IMMEDIATELY.
  - Everything after Server Hello is encrypted, Certificate is encrypted - in order to understand where client goes, we need full interception
  - Passive decryption, when you have TLS server private key, will not work - perfect forward secrecy
- - Short notation of cipher suite: authentication algotithm is sent as an extension, key exchange algorithm is always Ephemeral Diffie-Hellman
+ - Short notation of cipher suite: authentication algotithm is sent as an extension, key exchange algorithm is always Ephemeral Diffie-Hellman, cipher suite became too long too complex, there were too many variants of suites, for every suite IANA created a code
  - Version negotiation removed
  - SNI is still opened, but there is new RFC where it is encrypted
 
@@ -337,7 +347,7 @@ Extension: server_name (len=13)
 - During the DHE and ECDHE exchanges, the server contributes to the key exchange with its parameters. The parameters are signed with its private key. The client, which is in possession of the corresponding public key (obtained from the validated certificate), can verify that the parameters genuinely arrived from the intended server
 
 ## SNI
-ServerName encryption  
+ServerName encryption    
 Server Name (the domain part of the URL) is presented in the ClientHello packet, in plain text.  
 From RFC:  
 3.1. Server Name Indication
@@ -345,7 +355,7 @@ From RFC:
 In order to provide the server name, clients MAY include an extension of type "server_name" in the (extended) client hello.  
 - The payload in the SNI extension can now be encrypted in TLS1.3
 - **SNI can be changed by client to bypass security policies, so it is very important to check server certificate not only SNI**
-- All policies on NGWF and SSL decryptors are based on SNI or Server certificate, Server certificate is more accurate source. In TLS 1.3 it is encrypted. So it is more difficult to understand what to decrypt and what not.
+- All policies on NGWF and SSL decryptors are based on SNI or Server certificate, Server certificate is more accurate source. In TLS 1.3 it is encrypted. So it is more difficult to understand what to decrypt and what not
 - Also, reverse DNS lookup may help 
 - Correct application identification is only possible with decryption: gmail site is signed by Google cert and you will not be able to understand what it is exactly without decryption
 
