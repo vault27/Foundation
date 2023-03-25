@@ -5,6 +5,10 @@ IPv4: TTL and checksum are modified
 IPv6: only the Hop Count is decremented  
 Optimization goals: speed up the construction of new Layer 2 frame and egress interface lookup
 
+# CIDR
+
+# VLSM
+
 ## Packet processing
 - Router receives a frame, FCS is checked, router checks the Ethernet Type field for the packet type
 - Data Link header and trailer can now be discarded

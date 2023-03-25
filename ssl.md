@@ -145,16 +145,33 @@ ECDHE by itself is worthless against an active attacker -- there's no way to tie
 
 ### Certificate
 
+### Certificate signature process
+
+### Self-signed certificate
+
+### OCSP
+
+### CRL
+
 ### CA
 - CA stays offline
 - CA signs subordinate CA: encrypts its hash with CA private key
 - Subordinate CA signs server certificate.
 - Server sends to client its cert + subordinate CA or many subordinates
-- Enroll means to send public key and identity information to CA , so CA can issue an identity certificate
+- Enroll means to send public key and identity information to CA, so CA can issue an identity certificate
 
 ---------------------------------------------------------------------------------------------------------------  
 
 ## SSL/TLS Protocols 
+
+Handshake protocol
+- Authentication
+- Cryptographic modes negotiation
+- Shared keying material establishement
+
+Record protocol
+- Traffic protection between peers
+- Division of traffic into a series of records, each of which is independently protected using the traffic keys
 
 In TLS, integrity validation is part of the encryption process; it’s handled either explicitly at the protocol level or implicitly by the negotiated cipher.
 - SSLv1(out of date, vulnerable)
@@ -169,8 +186,7 @@ In TLS, integrity validation is part of the encryption process; it’s handled e
 - SSL v3 - 1996 - Netscape
 - Netscape handed it over to IETF
 - IETF renemaed it to TLS in 1999
-- 
-- 
+ 
 ### Handshake
 - Client sends Hello: cipher suite, protocol version
 - Server sends hello with chosen cipher suite + server certificate(public key + certificate info)
@@ -212,6 +228,14 @@ TLS_AES_128_GCM_SHA256
 - Signature algorithm is sent as extension in CLient hello
 - Key exchange is ECDHE always
 
+TLS 1.3 Cipher Suites:
+- TLS_AES_128_GCM_SHA256
+- TLS_AES_256_GCM_SHA384
+- TLS_CHACHA20_POLY1305_SHA256
+- TLS_AES_128_CCM_SHA256
+- TLS_AES_128_CCM_8_SHA256  
+
+LS 1.3 cipher suites are defined differently, only specifying the symmetric ciphers, and cannot be used for TLS 1.2. Similarly, cipher suites for TLS 1.2 and lower cannot be used with TLS 1.3.
 
 ### TLS 1.2
 Handshake  
@@ -235,6 +259,10 @@ Handshake process, records, 10 in total:
 https://tls13.xargs.org  
 https://blog.cloudflare.com/rfc-8446-aka-tls-1-3/  
  
+ High level:
+ - Increased speed
+ - More Secure
+
  Main features:
  - Only strong ciphers and algorithms
  - Faster handshake - increased performance
@@ -245,6 +273,12 @@ https://blog.cloudflare.com/rfc-8446-aka-tls-1-3/
  - Short notation of cipher suite: authentication algotithm is sent as an extension, key exchange algorithm is always Ephemeral Diffie-Hellman, cipher suite became too long too complex, there were too many variants of suites, for every suite IANA created a code
  - Version negotiation removed
  - SNI is still opened, but there is new RFC where it is encrypted
+ - 0-RTT Resumption: if the client has connected to the server before, TLS 1.3 permits a zero-round trip handshake. This is accomplished by storing secret information (typically, Session ID or Session Tickets) of previous sessions and using them when both parties connect with each other in future. But it leads to the absense of Forward Secrecy. The second security concern when it comes to TLS 1.3 0-RTT is that it doesn’t provide a guarantee of non-replay between connections. If an attacker somehow manages to get hold of your 0-RTT encrypted data, it can fool the server into believing that the request came from the client.
+
+#### Handshake
+- Client Hello: Supported Cipher Suites, Guesses Key Agreement Protocol, Key Share
+- Server Hello, Key Agreement Protocol, Key Share, Server Finished
+
 
 #### Strong ciphers and algorithms
 Symmetric encryption - only AEAD ciphers:
@@ -256,10 +290,6 @@ Perfect forward secrecy is mandatory, no RSA, only Diffie Hellman, TLS v1.3 supp
 - Ephemeral Diffie-Hellman (combined with digital signatures for authentication);
 - PSK with ephemeral Diffie-Hellman;
 - PSK without ephemeral Diffie-Hellman.
-
-#### Handshake
-Client sends hello: supported ciphers, key agreements, key share(more than one). Then server can choose cipher suite and it will have a key share already for it.
-- Server sends Hello back: chosen cipher, key share, signed cert(encrypted already), finished message(encrypted)
 
 ### Client Hello
 A lot of extensions and fields:
