@@ -356,9 +356,9 @@ Bidirectional Forwarding Detection
 - Mode - Asynchronious - default - ?
 - Port-channel - logical mode - ?
 - Session parametres:
-      - Desired minimum transmit interval—The interval at which this device wants to send BFD hello messages - 50 milliseconds - default
-      - Required minimum receive interval—The minimum interval at which this device can accept BFD hello messages from another BFD device - 50 milliseconds - default
-      - Detect multiplier—The number of missing BFD hello messages from another BFD device before this local device detects a fault in the forwarding path - default 
+  - Desired minimum transmit interval—The interval at which this device wants to send BFD hello messages - 50 milliseconds - default
+  - Required minimum receive interval—The minimum interval at which this device can accept BFD hello messages from another BFD device - 50 milliseconds - default
+  - Detect multiplier—The number of missing BFD hello messages from another BFD device before this local device detects a fault in the forwarding path - default 
 
 Configuration for Nexus
 ```
