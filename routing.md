@@ -1,9 +1,9 @@
 # Routing
-Routing=Forwarding  
-In two words: Layer 2 frame rewrite and send it to correct interface  
-IPv4: TTL and checksum are modified  
-IPv6: only the Hop Count is decremented  
-Optimization goals: speed up the construction of new Layer 2 frame and egress interface lookup
+- Routing=Forwarding  
+- In two words: Layer 2 frame rewrite and send it to correct interface  
+- IPv4: TTL and checksum are modified  
+- IPv6: only the Hop Count is decremented  
+- Optimization goals: speed up the construction of new Layer 2 frame and egress interface lookup
 
 # CIDR
 
@@ -333,3 +333,53 @@ router bgp 64600
 - A null route or black hole route is a network route (routing table entry) that goes nowhere. Matching packets are dropped (ignored) rather than forwarded, acting as a kind of very limited firewall
 - Null routes are typically configured with a special route flag, but can also be implemented by forwarding packets to an illegal IP address such as 0.0.0.0, or the loopback address
 - Null routing has an advantage over classic firewalls since it is available on every potential network router (including all modern operating systems), and adds virtually no performance impact- 
+
+## BFD
+Bidirectional Forwarding Detection
+- RFC:  5880, 5881, 7130
+- Builds neighborship between peers
+- Detects link failure in subsecond
+- Sends alert to BFD enabled protocol, for example OSPF
+- OSPF tears down relationship and chooses new route
+- Support VRF
+- For Layer 3 port channels used by BFD, you must enable LACP on the port channel
+- For Layer 2 port channels used by SVI sessions, you must enable LACP on the port channel
+- You can configure BFD at the global level and at the interface level. The interface configuration overrides the global configuration
+- For physical ports that are members of a port channel, the member port inherits the primary port channel BFD configuration
+- You can configure SHA-1 authentication of BFD packets
+- BFD Echo Function - ? - enabled by default
+- Cisco NX-OS uses the packet Time to Live (TTL) value to verify that the BFD packets came from an adjacent BFD peer. For all asynchronous and echo request packets, the BFD neighbor sets the TTL value to 255 and the local BFD process verifies the TTL value as 255 before processing the incoming packet. For the echo response packet, BFD sets the TTL value to 254
+- Disable Internet Control Message Protocol (ICMP) redirect messages on BFD-enabled interfaces: no ip redirects, no ipv6 redirects
+- Disable the IP packet verification check for identical IP source and destination addresses
+- Slow timer - ? - 2000 miliseconds - default
+- The BFD feature is just not supported on Nexus 9000v
+- Mode - Asynchronious - default - ?
+- Port-channel - logical mode - ?
+- Session parametres:
+      - Desired minimum transmit interval—The interval at which this device wants to send BFD hello messages - 50 milliseconds - default
+      - Required minimum receive interval—The minimum interval at which this device can accept BFD hello messages from another BFD device - 50 milliseconds - default
+      - Detect multiplier—The number of missing BFD hello messages from another BFD device before this local device detects a fault in the forwarding path - default 
+
+Configuration for Nexus
+```
+#Enable feature
+switch(config)# feature bfd
+
+#Configure GLobal
+# We can skip this and use defaults
+bfd interval 50 min_rx 50 multiplier 3
+bfd slow-timer 2000
+bfd echo-interface loopback 1 3
+
+#Enable BFD for all OSPF interfaces
+switch(config)# router ospf 200
+switch(config-router)# bfd
+
+#Enable BFD on one OSPF interface
+switch(config-router)# interface ethernet 2/1
+switch(config-if)# ip ospf bfd
+
+#Enable BFD for BGP neighbor
+switch(config-router)# neighbor 209.165.201.1 remote-as 64497
+switch(config-router-neighbor)# bfd
+```
