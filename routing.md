@@ -72,7 +72,10 @@ Can be changed with distance command
 - iBGP - 200
 - Unreachable - 255
 
-## Route maps
+## Route filtering
+Route filtering during redistribution or BGP advertising can be done via route-maps, distribute lists, ip-prefixes, ip acls
+
+### Route maps
 Mostly used for route redistribution: permit or deny redistribution based on match + changing something in route with set command as a bonus. Plus they are used to generate default route in OSPF, BGP routing policies(in neighbor statement, in export import commands for RT to control exported and imported routes) and in policy routing.
 - If/Then/Else logic
 - One or more commands
@@ -113,6 +116,19 @@ Mostly used for route redistribution: permit or deny redistribution based on mat
 - One or more statements with the same name
 - Each has a sequence number
 - Permit or deny, means if packet should match statement or not
+
+## Distribute list
+- Work together with ACLs
+- Can be attached directly to neighbor BGP command
+
+Example on Cisco IOS and it does not work:
+
+```
+access-list 1 deny   159.33.0.0 0.0.0.255
+access-list 1 permit any
+
+neighbor 192.168.5.1 distribute-list 1 out
+```
 
 ## ECMP
 Rapidly changing latency, packet reordering and maximum transmission unit (MTU) differences within a network flow, which could disrupt the operation of many Internet protocols, most notably TCP and path MTU discovery. RFC 2992 - load balances based on hash of packet header.
