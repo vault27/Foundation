@@ -117,11 +117,23 @@ Mostly used for route redistribution: permit or deny redistribution based on mat
 - Each has a sequence number
 - Permit or deny, means if packet should match statement or not
 
+Example on Cisco IOS, allow send to BGP neighboor all networks except one:
+
+```
+ip prefix-list BLOCK_EXTERNAL seq 10 deny 159.33.0.0/24
+ip prefix-list BLOCK_EXTERNAL seq 20 permit 0.0.0.0/0 le 32
+
+route-map BLOCK_EXTERNAL permit 10
+match ip address prefix-list BLOCK_EXTERNAL
+ 
+neighbor 192.168.5.1 route-map BLOCK_EXTERNAL out
+```
+
 ## Distribute list
 - Work together with ACLs
 - Can be attached directly to neighbor BGP command
 
-Example on Cisco IOS and it does not work:
+Example on Cisco IOS, allow sent to BGP neighbor all networks except one:
 
 ```
 access-list 1 deny   159.33.0.0 0.0.0.255
