@@ -32,7 +32,7 @@ vlan 400
 vlan 500
   vn-segment 500
 
-# Create firsr VRF, assign RT, RD, VNI for it. We can have as mamy VRFs as we want. VRF's VNI is used for all traffic between hosts in one VRF but different VLANs
+# Create first VRF, assign RT, RD, VNI for it. We can have as mamy VRFs as we want. VRF's VNI is used for all traffic between hosts in one VRF but different VLANs
 vrf context OTUS
   vni 300
   
@@ -54,6 +54,8 @@ vrf context OTUS2
     route-target import 500:500 evpn
     route-target export 500:500
     route-target export 500:500 evpn
+
+# Create
 vrf context VPC
 vrf context management
 hardware access-list tcam region racl 512
