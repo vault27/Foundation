@@ -39,6 +39,7 @@ vrf context OTUS
   # All routes from this VRF will be exported to global BGP table with this RD
   rd 10.10.2.3:300
   
+  # All routes with RT 300:300 will be imported to this VRF from global BGP tables in L2VPN and IPv4 address families, as well as exported
   address-family ipv4 unicast
     route-target import 300:300
     route-target import 300:300 evpn
@@ -55,11 +56,14 @@ vrf context OTUS2
     route-target export 500:500
     route-target export 500:500 evpn
 
-# Create
+# Create separate VRF for vPC peer-keepalive interface, according to vendor recomendations
 vrf context VPC
-vrf context management
+
+# Configure TCAM memory, so we can use command "fabric forwarding mode anycast-gateway" on VLAN interface
 hardware access-list tcam region racl 512
 hardware access-list tcam region arp-ether 256 double-wide
+
+
 vpc domain 8
   peer-switch
   role priority 5
@@ -68,11 +72,6 @@ vpc domain 8
   peer-gateway
   layer3 peer-router
   ip arp synchronize
-
-
-interface Vlan1
-  no ip redirects
-  no ipv6 redirects
 
 interface Vlan100
   no shutdown
