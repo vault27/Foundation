@@ -4,6 +4,15 @@
 
 <img width="1738" alt="image" src="https://user-images.githubusercontent.com/116812447/229617253-8db5f2fb-0458-44f2-a055-76c6fa092d16.png">
 
+## Fabric features
+- Underlay: eBGP
+- Overlay control plane: BGP EVPN, separate loopback interface for EVPN adjacencies
+- Overlay data plane: VxLAN, separate loopback interface for tunneling NVE interface
+- 2 VRFs
+- Several VLANs in each VRF
+- VRFs are routed via external firewall
+- Connection with external networks: Campus, Internet, Remote VPN networks
+
 ## Leaf-1-1 Config
 
 ```
@@ -62,7 +71,6 @@ vrf context VPC
 # Configure TCAM memory, so we can use command "fabric forwarding mode anycast-gateway" on VLAN interface
 hardware access-list tcam region racl 512
 hardware access-list tcam region arp-ether 256 double-wide
-
 
 vpc domain 8
   peer-switch
