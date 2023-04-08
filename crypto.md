@@ -12,14 +12,15 @@ Encryption is the process of securely encoding data in such a way that only auth
 ## Hash functions
 
 =fingerprints=message digests=digests  
+  
 A hash function is an algorithm that converts input of arbitrary length into fixed-size out- put.  
 This is a very good way to compare two large files.  
 The strength of a hash function doesn’t equal the hash length.
 
 Cryptographic hash functions have to have the following properties:
 
-- Preimage resistance - Given a hash, it’s computationally unfeasible to find or construct a message that pro- duces it
-- Second preimage resistance - Given a message and its hash, it’s computationally unfeasible to find a different mes- sage with the same hash
+- Preimage resistance - Given a hash, it’s computationally unfeasible to find or construct a message that produces it
+- Second preimage resistance - Given a message and its hash, it’s computationally unfeasible to find a different message with the same hash
 - Collision resistance - It’s computationally unfeasible to find two messages that have the same hash
 
 ## Symmetric Encryption
@@ -27,7 +28,8 @@ Cryptographic hash functions have to have the following properties:
 Ciphers can be divided into 3 groups: stream, block and AEAD
 
 - Stream Ciphers - ou feed one byte of plaintext to the encryption algorithm, and out comes one byte of ciphertext. The reverse happens at the other end
-- Block Ciphers - encrypt entire blocks of data at a time; modern block ciphers tend to use a block size of 128 bits (16 bytes).
+- Block Ciphers - encrypt entire blocks of data at a time; modern block ciphers tend to use a block size of 128 bits (16 bytes)
+
 Limitations:
         - They are deterministic; they always produce the same output for the same input. On their own, block ciphers are not very useful because of several limitations
         - You can only use them to encrypt data lengths equal to the size of the encryption block. To use a block cipher in practice, you need a scheme to handle data of arbitrary length  
@@ -36,6 +38,8 @@ In practice, block ciphers are used via encryption schemes called block cipher m
   - Authenticated encryption assosiated data
   - Provides encryption + integrity, earlier they did MAC-then-encrypt or encrypt-then-MAC, and now everything is combined
   - TLS supports GCM and CCM authenticated ciphers, but only the former are currently used in practice
+
+### Block ciphers
 
 **Block Cipher Modes**  
 
