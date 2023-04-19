@@ -1,2 +1,2 @@
 # CCIE
-My short notes on networks.
+My short notes on networks, security, protocols, cryptography, technologies, products.
