@@ -221,8 +221,3 @@ Define a QoS policy rule to match to traffic based on:
 - Services and service groups limited to specific TCP and/or UDP port numbers
 - URL categories, including custom URL categories
 - Differentiated Services Code Point (DSCP) and Type of Service (ToS) values, which are used to indicate  the level of service requested for traffic, such as high priority or best effort delivery
-
-
-show log system | match ha4
-```
-
