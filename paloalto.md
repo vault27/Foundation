@@ -205,6 +205,7 @@ Configuration overview
 
 Show logs about HA4 sessions sync
 ```
+show log system | match ha4
 ```
 
 ## QOS
