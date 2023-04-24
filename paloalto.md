@@ -35,14 +35,14 @@
 - Decryption
 - Security profiles
   - Antivirus
-  - Anti-Spyware
-  - Vulnerability Protection
-  - URL filtering
-  - File blocking
-  - Wildfire
-  - Data Filtering
+  - Anti-Spyware - botnet
+  - Vulnerability Protection - IPS
+  - URL filtering - categories
+  - File blocking - block files by types and applications
+  - Wildfire - send file to cloud for check
+  - Data Filtering - in files, patterns, credit card numbers
 - Traps
-- DoS
+- DoS - different protocols floods, port scans - can be configured for zone and in separate policy. In separate policy is configured per application using DOS profile
 - NAT
 - VPN
 - QoS
@@ -71,6 +71,7 @@ Concepts
 - Then Security Policy is checked
 - It is best practice to use zones in all security rules and leveraging a clear naming convention
 - Policy check relies on pre-NAT IP addresses
+- Zone protection profile, flood protection: syn(random early drop - drops random syn packets, syn cookies - are always on) icmp, icmpv6, other ip, udp; reconnaissance - port scan, host sweep. All thresholds here are aggregate for all zone. + there is packet based protection. Then we apply it in zone configuration, usually for outside zone
 
 The policy evaluation then uses the 'six tuple' (6-Tuple) to match establishing sessions to security rules:
 1. Source IP
