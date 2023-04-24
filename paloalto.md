@@ -22,12 +22,12 @@
 - Cortex Data Lake
 - AutoFocus
 
-### NGFW
+## NGFW
 - The Palo Alto Networks firewall was designed to use an efficient system known as next-generation processing. Next-generation processing enables packet evaluation, application identification, policy decisions, and content scanning in a single, efficient processing pass - Single Pass Architecture
 - Zone based firewall
 - Full hardware separate mgmt
 
-#### Features
+### Features
 - 6 Tulip stateful firewall
 - App-ID - Scans traffic to identify the application involved, regardless of the protocol or port number used
 - Content-ID - Scans traffic for security threats (e.g., data leak prevention and URL filtering, viruses, spyware, unwanted file transfers, specific data patterns, vulnerability attacks, and appropriate browsing access
@@ -50,8 +50,6 @@
 - DHCP
 - DNS-Proxy
 - Routing
-
-## Firewall components
 
 ### Zones
 Firewall types
@@ -121,18 +119,18 @@ https://knowledgebase.paloaltonetworks.com/KCSArticleDetail?id=kA10g000000ClVHCA
 - The application decoder will continuously scan the session for expected and deviant behavior, in case the application changes to a sub-application or a malicious actor is trying to tunnel a different application or protocol over the existing session
 - If the protocol is unknown, App-ID will apply heuristics
 
-## HA
+### HA
 - Up to 16 firewalls as peer members of an HA cluster
 - Active firewall has less priority
 - Firewall-specific configuration such as management interface IP address or administrator profiles, HA specific configuration, log data, and the Application Command Center (ACC) information is not shared between peers
 
-### The conditions that trigger a failover are:
+#### The conditions that trigger a failover are:
 - One or more of the monitored interfaces fail (Link Monitoring)
 - One or more of the destinations specified on the firewall cannot be reached (Path Monitoring)
 - The firewall does not respond to heartbeat polls (Heartbeat Polling and Hello messages)
 - A critical chip or software component fails, known as packet path health monitoring
 
-### HA prerequisites
+#### HA prerequisites
 - Model
 - PAN-OS version
 - UP-to-date application, URL, threat databases
@@ -141,7 +139,7 @@ https://knowledgebase.paloaltonetworks.com/KCSArticleDetail?id=kA10g000000ClVHCA
 - Slot configuration
 - For VMs: HYpervisor, number of CPU cores
 
-### Links
+#### Links
 7 Links in total
 - HA-1 control link - hello, heartbeats, HA state info, User-ID, config sync, L3 link, requires IP. ICMP is used to exchange heartbeats between HA peers. Ports used for HA1 — TCP port 28769 and 28260 for clear text communication; port 28 for encrypted communication (SSH over TCP) - Control Plane
 - HA-2 data link - seesion info, forwarding tables, IPSec, ARP. Data flow on the HA2 link is always unidirectional (except for the HA2 keep-alive); it flows from the active or active-primary firewall to the passive or active-secondary firewall. The HA2 link is a Layer 2 link, and it uses ether type 0x7261 by default. Ports used for HA2—The HA data link can be configured to use either IP (protocol number 99) or UDP (port 29281) as the transport, and thereby allow the HA data link to span subnets - Data plane
@@ -150,7 +148,7 @@ https://knowledgebase.paloaltonetworks.com/KCSArticleDetail?id=kA10g000000ClVHCA
 - HA4 - session cache synchronization among all HA cluster members having the same cluster ID
 - HA4 BAckup
 
-### Active/Passive
+#### Active/Passive
 Configuration overview
 
 #### Firewall states
@@ -160,7 +158,7 @@ Configuration overview
 - Suspended - administratively disabled
 - Non Functional - error state
 
-### Active/Active
+#### Active/Active
 4 types of design:
 - Floating IP Address and Virtual MAC Address
 - Floating IP Address Bound to Active-Primary Firewall
