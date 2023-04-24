@@ -209,7 +209,10 @@ show log system | match ha4
 ```
 
 ## QOS
-QoS is enforced on traffic as it egresses the firewall
+QoS is enforced on traffic as it egresses the firewall  
+
+Unclassified traffic enters firewall > **QoS Policy** assignes **class** to traffic > **QoS Profile** on Egress interface prioritizes traffic accorsing to **QoS class**  
+
 - QoS profile - matching traffic is then shaped based on the QoS profile class settings as it exits the physicalinterface. Each QoS profile rule allows you to configure individual bandwidth and priority settings for up to eight QoS classes, as well as the total bandwidth allowed for the eight classes combined. In every profile you configure priorities for every class. Then you apply a profile to an interface.
 - QoS policy - define traffic you want to receive QoS treatment and assign that traffic a QoS class. QoS policy rule is applied to traffic after the firewall has enforced all other security policy rules, including Network Address Translation (NAT) rules.
 - QoS egress interface - this is where you apply QoS profile. If you limit Youtube then Egress interface is Internal interface of FW. You apply it in separate section Network > QoS
