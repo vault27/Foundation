@@ -7,7 +7,15 @@
 
 ### Strata
 - PA-220, PA-800, PA-3200, PA-5200, and PA-7000 Series
-- VM-Series
+- VM-Series: 50, 100, 300, 500, 700
+      - Amazon Web Services
+      - Cisco ACI
+      - Citrix NetScaler SDX
+      - Google CloudPlatform
+      - Kernel-based Virtual Machine (KVM)
+      - Microsoft Azure and Microsoft Hyper-V
+      - OpenStack
+      - VMware ESXi, VMware NSX, and VMware vCloud Air
 - Panorama
 
 ### Prisma
@@ -255,5 +263,13 @@ Define a QoS policy rule to match to traffic based on:
 - Source zones, source addresses, and source users
 - Destination zones and destination addresses
 - Services and service groups limited to specific TCP and/or UDP port numbers
+
+## Panorama
+- Policy management
+- Centralized visibility
+- Network security insights
+- Automated threat response
+- Network security management
+- Enterprise-level reporting and administration
 - URL categories, including custom URL categories
 - Differentiated Services Code Point (DSCP) and Type of Service (ToS) values, which are used to indicate  the level of service requested for traffic, such as high priority or best effort delivery
