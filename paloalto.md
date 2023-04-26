@@ -263,6 +263,8 @@ Define a QoS policy rule to match to traffic based on:
 - Source zones, source addresses, and source users
 - Destination zones and destination addresses
 - Services and service groups limited to specific TCP and/or UDP port numbers
+- URL categories, including custom URL categories
+- Differentiated Services Code Point (DSCP) and Type of Service (ToS) values, which are used to indicate  the level of service requested for traffic, such as high priority or best effort delivery
 
 ## Panorama
 - Policy management
@@ -271,5 +273,3 @@ Define a QoS policy rule to match to traffic based on:
 - Automated threat response
 - Network security management
 - Enterprise-level reporting and administration
-- URL categories, including custom URL categories
-- Differentiated Services Code Point (DSCP) and Type of Service (ToS) values, which are used to indicate  the level of service requested for traffic, such as high priority or best effort delivery
