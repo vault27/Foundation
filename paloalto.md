@@ -210,20 +210,26 @@ Configuration overview
 - Everytime different firewall replies on ARP request with its own virtual MAC, IP is the same for both firewalls
 - ARP load sharing on LAN side and floating IP on the other
 
-### Cluster Configuration overview
+### Cluster
 - 2 HA4 interfaces(primary and backup) with type HA, IP address, mask
 - On every device add all over devices with serial number, HA4 and HA4 backup IP addresses and sessions sync
 - Enable cluster on all devices with the same cluster ID
-
-### Cluster Concepts
 - Zone names should be identical
 - All appliances should be configured on all devices with HA4 IP addresses
 - Session is logged on that device, where it ended
 - On Passive devices cluster is inactive
 - TCP handshake should pass one firewall, otherwise asymmetric path bypass should enabled on internal zone
 - Security checks cannot be done with asymmetric
+- HA peers in the cluster can be a combination of HA pairs and standalone cluster members
+- Only the firewall that is the session owner creates a traffic log
+- The new session owner (the firewall that receives the failed over traffic) creates the traffic log
 
-### Cluster Session Synchronization States  
+**Use cases**
+- HA peers are spread across multiple data centers
+- One data center is active and the other is standby
+- Horizontal scaling, in which you add HA cluster members to a single data center to scale security and ensure session survivability: Load balancer sends traffic to many NGFWs
+
+**Session Synchronization States **
 - Pending → Synchronization is not triggered yet
 - Unknown. → Device Serial Number and Peer IP is configured but session synchronization process has not started yet
 - In-Progress  → Full session synchronization is running 
