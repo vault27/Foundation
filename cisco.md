@@ -42,5 +42,45 @@ IOSv is performance limited when forwarding traffic. Achieved throughputs are ~2
 
 ## IOU
 
+## Switch commands
+Show all MAC addresses on a port
+```
+cisco9300#sh mac address-table interface gigabitEthernet1/0/22
+          Mac Address Table
+-------------------------------------------
+
+Vlan    Mac Address       Type        Ports
+----    -----------       --------    -----
+ 423    0892.04b5.fb46    DYNAMIC     Gi1/0/22
+Total Mac Addresses for this criterion: 1
+```
+
+Show all ARPs
+```
+cisco9300#show ip arp            
+Protocol  Address          Age (min)  Hardware Addr   Type   Interface
+Internet  10.0.3.1              211   6c41.0ead.2bc4  ARPA   Vlan19
+Internet  10.0.3.165              -   4ce1.75e8.31c4  ARPA   Vlan19
+```
+
+Show all ports status
+```
+cisco9300#show ip int br
+Interface              IP-Address      OK? Method Status                Protocol
+Vlan836                10.2.136.110    YES manual up                    up      
+GigabitEthernet0/0     unassigned      YES NVRAM  down                  down
+```
+
+Show brief status of the interface
+```
+cisco9300#show int gi1/0/22 status
+
+Port         Name               Status       Vlan       Duplex  Speed Type
+Gi1/0/22     d.bandaletov_NAC   connected    423        a-full a-1000 10/100/1000BaseTX
+```
+
+
+
+
 
 ## IOS VS ASA
