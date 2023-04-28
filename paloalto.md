@@ -19,15 +19,26 @@
 - Panorama
 
 ### Prisma
-- Prisma Cloud
-- Prisma Access Secure Access Service Edge (SASE)
-- Prisma SaaS
+- Prisma Cloud - Cloud Security Posture Management (CSPM) - Prisma Cloud taps into the cloud providers’ APIs for read-only access to network traffic, user activity, and the configuration of systems and services.
+      - Alibaba Cloud
+      - Amazon Web Services
+      - Docker EE
+      - Google CloudPlatform
+      - IBM Cloud
+      - Kubernetes
+      - Microsoft Azure
+      - Rancher
+      - Red Hat OpenShift
+      - VMware Tanzu
+- Prisma Access Secure Access Service Edge (SASE) - Users connect to Prisma Access to access the internet and cloud and data center applications safely, regardless of their location
+- Prisma SaaS - multimode CASB service that allows you to govern any sanctioned software as a service (SaaS) application - complete visibility and granular enforcement across all user, folder, and file activity within the sanctioned SaaS applications
 - VM-Series ML-powered NGFWs
 
 ### Cortex
-- Cortex XDR
-- Cortex XSOAR
-- Cortex Data Lake
+Detection, investigation, automation, and response capabilities.
+- Cortex XDR - Extended Detection and Response - detection and response platform that runs on integrated endpoint, network, and cloud data. Runs on integrated endpoint, network, and cloud data. Immediate response actions. Define indicators of compromise (IOCs) and behavioral indicators of compromise (BIOCs).
+- Cortex XSOAR - extended Security Orchestration, Automation, and Response - 
+- Cortex Data Lake - central log storage
 - AutoFocus
 
 ## NGFW
@@ -62,7 +73,7 @@
 ## Zones
 Firewall types
 - Route based firewall - zones are simply an architectural or topological concept that helps identify which areas comprise the global network
-- Zone absed firewall - use zones as a means to internally classify the source and destination in its state table  
+- Zone based firewall - use zones as a means to internally classify the source and destination in its state table  
   
 Concepts
 - One zone per interface
@@ -273,3 +284,16 @@ Define a QoS policy rule to match to traffic based on:
 - Automated threat response
 - Network security management
 - Enterprise-level reporting and administration
+
+## CLI
+Default username/pass - admin/admin  
+
+Configure network
+```
+configure
+set deviceconfig system ip-address <ip address> netmask <netmask> default-gateway <default gateway> dns-setting servers primary <DNS ip address>
+set deviceconfig system type static
+commit
+
+show interface management
+```
