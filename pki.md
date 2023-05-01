@@ -5,6 +5,7 @@
 ## Certificate signature process
 
 ## Self-signed certificate
+In self-signed certificate all data in Subject Name is identical to all data in Issuer Name section.
 
 ## OCSP
 
