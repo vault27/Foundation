@@ -131,6 +131,21 @@ https://knowledgebase.paloaltonetworks.com/KCSArticleDetail?id=kA10g000000ClVHCA
 - Three types: universal, intrazone, interzone: selects the type of traffic to be checked
 - Use App-Id, not ports
 - Separate rule for loging blocks
+
+**Session end reasons**
+- threat
+- policy-deny
+- decrypt-cert-validation
+- decrypt-unsupport-param
+- decrypt-error
+- tcp-rst-from-client
+- tcp-rst-from-server
+- resources-unavailable
+- tcp-fin
+- tcp-reuse
+- decoder
+- aged-out
+- unknown
  
 ## App-ID
 - 6-Tuple is checked against the security policy > known application signatures > check if it is SSH, TLS, or SSL > decryption policy (if exists) > checked again for a known application signature inside TLS > the application has not been identified (a maximum of 4 packets after the handshake, or 2,000 bytes) > will use the base protocol to determine which decoder to use to analyze the packets more deeply > unknown-tcp > check policy if unknown is allowed  
@@ -297,3 +312,81 @@ commit
 
 show interface management
 ```
+
+Show routing table
+```
+show routing route
+show routing fib
+```
+
+Show sessions - with NAT data
+```
+show session all filter application ping
+
+--------------------------------------------------------------------------------
+ID          Application    State   Type Flag  Src[Sport]/Zone/Proto (translated IP[Port])
+Vsys                                          Dst[Dport]/Zone (translated IP[Port])
+--------------------------------------------------------------------------------
+20           ping           ACTIVE  FLOW  NS   192.168.1.20[1]/Inside/1  (10.2.62.150[1])
+vsys1                                          1.1.1.1[26]/Outside  (1.1.1.1[26])
+```
+
+Show detailed info about session: NAT, app, rule names, vsys, interfaces, bytes, type, state, user, QoS, end reason, logging...
+```
+admin@PA-1-1> show session id 25
+
+Session              25
+
+        c2s flow:
+                source:      192.168.1.20 [Inside]
+                dst:         1.1.1.1
+                proto:       1
+                sport:       1               dport:      31
+                state:       INIT            type:       FLOW
+                src user:    unknown
+                dst user:    unknown
+
+        s2c flow:
+                source:      1.1.1.1 [Outside]
+                dst:         10.2.62.150
+                proto:       1
+                sport:       31              dport:      1
+                state:       INIT            type:       FLOW
+                src user:    unknown
+                dst user:    unknown
+
+        start time                           : Sat May  6 09:58:41 2023
+        timeout                              : 6 sec
+        total byte count(c2s)                : 74
+        total byte count(s2c)                : 0
+        layer7 packet count(c2s)             : 1
+        layer7 packet count(s2c)             : 0
+        vsys                                 : vsys1
+        application                          : ping  
+        rule                                 : Allow ping
+        service timeout override(index)      : False
+        session to be logged at end          : True
+        session in session ager              : False
+        session updated by HA peer           : False
+        address/port translation             : source
+        nat-rule                             : Lan(vsys1)
+        layer7 processing                    : enabled
+        URL filtering enabled                : False
+        session via syn-cookies              : False
+        session terminated on host           : False
+        session traverses tunnel             : False
+        session terminate tunnel             : False
+        captive portal session               : False
+        ingress interface                    : ethernet1/1
+        egress interface                     : ethernet1/3
+        session QoS rule                     : N/A (class 4)
+        tracker stage firewall               : Aged out
+        end-reason                           : aged-out
+```
+## Log filtering
+
+Show only ICMP protocol
+```
+(proto eq icmp) 
+```
+
