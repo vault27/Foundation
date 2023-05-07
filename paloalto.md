@@ -1,11 +1,13 @@
 # Palo Alto
 
 ## Portfolio
+
 - Strata - Enterprise Security
 - Prisma - Cloud Security
 - Cortex - Security Operations
 
 ### Strata
+
 - PA-220, PA-800, PA-3200, PA-5200, and PA-7000 Series
 - VM-Series: 50, 100, 300, 500, 700
       - Amazon Web Services
@@ -19,6 +21,7 @@
 - Panorama
 
 ### Prisma
+
 - Prisma Cloud - Cloud Security Posture Management (CSPM) - Prisma Cloud taps into the cloud providers’ APIs for read-only access to network traffic, user activity, and the configuration of systems and services.
       - Alibaba Cloud
       - Amazon Web Services
@@ -35,6 +38,7 @@
 - VM-Series ML-powered NGFWs
 
 ### Cortex
+
 Detection, investigation, automation, and response capabilities.
 - Cortex XDR - Extended Detection and Response - detection and response platform that runs on integrated endpoint, network, and cloud data. Runs on integrated endpoint, network, and cloud data. Immediate response actions. Define indicators of compromise (IOCs) and behavioral indicators of compromise (BIOCs).
 - Cortex XSOAR - extended Security Orchestration, Automation, and Response - 
@@ -42,11 +46,20 @@ Detection, investigation, automation, and response capabilities.
 - AutoFocus
 
 ## NGFW
+
 - The Palo Alto Networks firewall was designed to use an efficient system known as next-generation processing. Next-generation processing enables packet evaluation, application identification, policy decisions, and content scanning in a single, efficient processing pass - Single Pass Architecture
 - Zone based firewall
 - Full hardware separate mgmt
 
-## Features
+Main features:
+- App-ID
+- Content-ID
+- User-ID
+- Device-ID
+
+
+## NGFW Features
+
 - 6 Tulip stateful firewall
 - App-ID - Scans traffic to identify the application involved, regardless of the protocol or port number used
 - Content-ID - Scans traffic for security threats (e.g., data leak prevention and URL filtering, viruses, spyware, unwanted file transfers, specific data patterns, vulnerability attacks, and appropriate browsing access
@@ -70,7 +83,18 @@ Detection, investigation, automation, and response capabilities.
 - DNS-Proxy
 - Routing
 
+## NGFW Licenses
+
+- Advanced Threat Protection
+- Advanced URL filtering
+- Global Protect
+- Web Proxy
+- DNS Security
+- Support
+- Wildfire
+
 ## Zones
+
 Firewall types
 - Route based firewall - zones are simply an architectural or topological concept that helps identify which areas comprise the global network
 - Zone based firewall - use zones as a means to internally classify the source and destination in its state table  
@@ -99,12 +123,15 @@ The policy evaluation then uses the 'six tuple' (6-Tuple) to match establishing 
 6. Protocol
 
 ## Packet Flow Sequence
+
 https://knowledgebase.paloaltonetworks.com/KCSArticleDetail?id=kA10g000000ClVHCA0
 
 <img width="1071" alt="image" src="https://user-images.githubusercontent.com/116812447/215520946-0255d873-1931-4799-b57e-4a62d4e48765.png">
 
 ## Security policy
+
 **Options**
+
 - Source
   - Zone
   - Address
@@ -121,6 +148,7 @@ https://knowledgebase.paloaltonetworks.com/KCSArticleDetail?id=kA10g000000ClVHCA
 - Security Profiles (Content-ID) - use signatures to identify known threats. Unknown threats are identified by WildFire
 
 **Concepts**
+
 - Top to down
 - Left to right
 - More specific rules first
@@ -131,6 +159,17 @@ https://knowledgebase.paloaltonetworks.com/KCSArticleDetail?id=kA10g000000ClVHCA
 - Three types: universal, intrazone, interzone: selects the type of traffic to be checked
 - Use App-Id, not ports
 - Separate rule for loging blocks
+- Pre rules and post rules from Panorama
+- Default rules
+- Types: universal (default), interzone, and intrazone
+
+## Sessions
+
+**Session types**
+- FLOW
+
+**Session states**
+- INIT
 
 **Session end reasons**
 - threat
@@ -144,32 +183,48 @@ https://knowledgebase.paloaltonetworks.com/KCSArticleDetail?id=kA10g000000ClVHCA
 - tcp-fin
 - tcp-reuse
 - decoder
-- aged-out
+- aged-out - no ARP of router, routing issues, no reply from server
 - unknown
  
 ## App-ID
+
 - 6-Tuple is checked against the security policy > known application signatures > check if it is SSH, TLS, or SSL > decryption policy (if exists) > checked again for a known application signature inside TLS > the application has not been identified (a maximum of 4 packets after the handshake, or 2,000 bytes) > will use the base protocol to determine which decoder to use to analyze the packets more deeply > unknown-tcp > check policy if unknown is allowed  
 - SSL > Web-Browsing > flickr > flickr-uploading  
 - The application decoder will continuously scan the session for expected and deviant behavior, in case the application changes to a sub-application or a malicious actor is trying to tunnel a different application or protocol over the existing session
 - If the protocol is unknown, App-ID will apply heuristics
+- Use App-ID instead of service and protocols and port based
+
+Best pratice Moving from Port-Based to App-ID Security: set of rules that aligns with business goals, thus simplifying administration and reducing the chance of error
+    - Assess your business and identify what you need to protect
+    - Segment your network by using interfaces and zones
+    - Identify allow list applications
+    - Create user groups for access to allow list applications
+    - Decrypt traffic for full visibility and threat inspection
+    - Create best-practice Security Profiles for the internet gateway for all allow rules
+    - Define the initial internet gateway Security policy, Using the application and user group inventory
+
 
 ## HA
+
 Types:
 - Active/Standby
 - Active/Active
 - Cluster
 
+Concepts:
 - Up to 16 firewalls as peer members of an HA cluster
 - Active firewall has less priority
 - Firewall-specific configuration such as management interface IP address or administrator profiles, HA specific configuration, log data, and the Application Command Center (ACC) information is not shared between peers
 
 ### The conditions that trigger a failover are:
+
 - One or more of the monitored interfaces fail (Link Monitoring)
 - One or more of the destinations specified on the firewall cannot be reached (Path Monitoring)
 - The firewall does not respond to heartbeat polls (Heartbeat Polling and Hello messages)
 - A critical chip or software component fails, known as packet path health monitoring
 
 ### HA prerequisites
+
 - Model
 - PAN-OS version
 - UP-to-date application, URL, threat databases
@@ -179,6 +234,7 @@ Types:
 - For VMs: HYpervisor, number of CPU cores
 
 ### Links
+
 7 Links in total, all are configured in HA Communications section
 - HA-1 control link (Control Plane) - HA type?
     - L3 link, requires IP, mask, gateway - can be spanned via subnets 
@@ -210,9 +266,11 @@ Types:
 - HA4 BAckup
 
 ### Active/Passive
+
 Configuration overview
 
 ### Firewall states
+
 - Initial - after boot-up and before it finds peer
 - Active - normal traffic handling state
 - Passive - normal traffic is discarded, except LACP and LLDP
@@ -220,6 +278,7 @@ Configuration overview
 - Non Functional - error state
 
 ### Active/Active
+
 4 types of design:
 - Floating IP Address and Virtual MAC Address
 - Floating IP Address Bound to Active-Primary Firewall
@@ -227,12 +286,14 @@ Configuration overview
 - ARP Load-Sharing
 
 ### Virtual MAC address
+
 - Manually configure different gateways on end systems or use load balancers
 - Each firewall in the HA pair creates a virtual MAC address for each of its interfaces that has a floating IP address or ARP Load-Sharing IP address
 - After the failed firewall recovers, by default the floating IP address and virtual MAC address move back to firewall with the Device ID [0 or 1] to which the floating IP address is bound
 - When a new active firewall takes over, it sends gratuitous ARPs from each of its connected interfaces to inform the connected Layer 2 switches of the new location of the virtual MAC address. 
 
 ### Route based redundancy
+
 - Firewalls are connected  to routers, not switches
 - Each firewall has separate IP addresses, sessions are synced
 - If firewall fails, then based on routing protocol traffic is not sent to it
@@ -240,11 +301,13 @@ Configuration overview
 <img width="602" alt="image" src="https://user-images.githubusercontent.com/116812447/215494580-eeaed00c-52a0-479c-b8db-909f8cce27fc.png">
 
 ### ARP load sharing
+
 - Use only when firewall is default gateway for end hosts
 - Everytime different firewall replies on ARP request with its own virtual MAC, IP is the same for both firewalls
 - ARP load sharing on LAN side and floating IP on the other
 
 ### Cluster
+
 - 2 HA4 interfaces(primary and backup) with type HA, IP address, mask
 - On every device add all over devices with serial number, HA4 and HA4 backup IP addresses and sessions sync
 - Enable cluster on all devices with the same cluster ID
@@ -276,6 +339,7 @@ show log system | match ha4
 ```
 
 ## QOS
+
 QoS is enforced on traffic as it egresses the firewall  
 
 Unclassified traffic enters firewall > **QoS Policy** assignes **class** to traffic > **QoS Profile** on Egress interface prioritizes traffic accorsing to **QoS class**  
@@ -293,6 +357,7 @@ Define a QoS policy rule to match to traffic based on:
 - Differentiated Services Code Point (DSCP) and Type of Service (ToS) values, which are used to indicate  the level of service requested for traffic, such as high priority or best effort delivery
 
 ## Panorama
+
 - Policy management
 - Centralized visibility
 - Network security insights
@@ -301,6 +366,7 @@ Define a QoS policy rule to match to traffic based on:
 - Enterprise-level reporting and administration
 
 ## CLI
+
 Default username/pass - admin/admin  
 
 Configure network
@@ -383,6 +449,61 @@ Session              25
         tracker stage firewall               : Aged out
         end-reason                           : aged-out
 ```
+
+Clear session
+```
+clear session id 27240
+```
+
+Show NAT policy
+```
+admin@PA-1-1> show running nat-policy
+
+"Lan; index: 1" {
+        nat-type ipv4;
+        from any;
+        source any;
+        to Outside;
+        to-interface  ;
+        destination any;
+        service 0:any/any/any;
+        translate-to "src: ethernet1/3 10.2.62.150 (dynamic-ip-and-port) (pool idx: 1)";
+        terminal no;
+}
+```
+
+Ping
+```
+ping source 10.2.62.150 host 10.2.62.1
+```
+
+Show MAC addresses
+The MAC addresses of the HA1 interfaces, which are on the control plane and synchronize the configuration of the devices are unique. The MAC addresses of the HA2 interfaces, which are on the data plane and synchronize the active sessions mirror each other.
+```
+show interface all - including VMAC for Active-Passive HA cluster
+ethernet1/5             20    1000/full/up              00:1b:17:00:0b:14
+HA Group ID = 0b Hex (11 Decimal) and Interface ID = 14 Hex (20 Decimal)
+
+show interface ethernet1/1
+show high-availability state - The following command displays the MAC addresses of an HA cluster
+show high-availability virtual-address - displays VMAC and VIP for Active-Active HA cluster
+
+```
+
+## Packet capture
+
+- Packets are captured on the dataplane vs on the interface
+
+**Filters**
+- Filters are not mandatory
+- 
+
+**Stages**
+- drop stage is where packets get discarded. The reasons may vary and, for this part, the global counters may help identify if the drop was due to a policy deny, a detected threat, or something else
+- receive stage captures the packets as they ingress the firewall before they go into the firewall engine. When NAT is configured, these packets will be pre-NAT
+- transmit stage captures packets how they egress out of the firewall engine. If NAT is configured, these will be post-NAT
+- firewall stage captures packets in the firewall stage
+
 ## Log filtering
 
 Show only ICMP protocol
