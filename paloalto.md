@@ -215,6 +215,13 @@ Concepts:
 - Up to 16 firewalls as peer members of an HA cluster
 - Active firewall has less priority
 - Firewall-specific configuration such as management interface IP address or administrator profiles, HA specific configuration, log data, and the Application Command Center (ACC) information is not shared between peers
+- Any Layer 3 interface that is already active in the network will receive a new MAC address once HA is enabled (and committed), which could cause connectivity issues while switches and clients learn the new MAC associated with the firewall IPs. Some ARP tables may need to be cleared and static entries updated
+
+Monitoring
+- Link monitoring: If an interface goes down, the member fails
+- Path monitoring: If an IP becomes unavailable, the member fails
+- Heartbeat monitoring: The peers periodically send heartbeat packages and hello messages to verify they are up and running
+- Hardware monitoring: The member continually performs packet path health monitoring on its own hardware and fails if a malfunction is detected
 
 ### The conditions that trigger a failover are:
 
@@ -267,7 +274,45 @@ Concepts:
 
 ### Active/Passive
 
+Failovers:
+- path
+- link
+- system
+- network 
+
+Supported deployments
+- virtual wire
+- Layer 2
+- Layer 3 
+
 Configuration overview
+- Connect the HA ports.
+- Enable ping on the management port
+- Enable HA: Group-ID, mode, config sync, peer HA1 IP and backup IP: Device > HA > General
+- This ID needs to be identical on both members. The Group ID will also have an impact on the MAC addresses associated with each interface as they switch to a virtual MAC that both firewalls will be able to claim via gratuitous ARP in case one member fails
+- Configure Active/PAssive: Passive Link State  + Monitor Fail Hold Down Time (min) - By default, the passive device will have its interfaces in a shutdown state, meaning any connected devices will also see the link as being down. Depending on your environment, this could prevent other clusters from functioning properly, in which case you will need to set these to Auto (up but not accepting packets). Monitor Fail Hold Down Time keeps the firewall in a failed statefor the specified amount of time after an error was detected before setting the member to the passive state: Device > HA > General
+- You can enable Link Layer Discovery Protocol (LLDP) and Link Aggregation Control Protocol (LACP) in passive mode by accessing the interface's advanced tab
+- Configure Election settings: 
+      - Priority - the less the better
+      - Preemptive - higher-priority firewall to resume active (active/passive) or active-primary (active/active) operation after recovering from a failure. You must enable the preemption option on both firewalls for the higher-priority firewall to resume active or active-primary operation upon recovery after a failure. If this setting is disabled, then the lower-priority firewall remains active or active-primary even after the higher-priority firewall recovers from a failure
+      - Heartbeat backup - This will use the management interface to send a simple heartbeat to the remote peer
+      - HA Timer settings
+            - Promotion Hold Time (ms) - how long passive will wait
+            - Hello Interval (ms) - hello packets sent to verify that the HA program on the other firewall is operational
+            - Heartbeat Interval (ms) - heartbeat messages in the form of an ICMP ping 
+
+- Set up the control link connection
+- (Optional) Enable encryption for the control link connection.
+- Set up the backup control link connection.
+- Set up the data link connection (HA2) and the backup HA2 connection.
+- Enable heartbeat backup.
+- Set the device priority and enable preemption
+- (Optional) Modify the HA timers.
+- (Optional) Modify the link status of the HA ports on the passive device.
+- Enable HA.
+- (Optional) Enable LACP and LLDP Pre-Negotiation for active/passive HA.
+- Verify that the firewalls are paired
+
 
 ### Firewall states
 
@@ -278,6 +323,19 @@ Configuration overview
 - Non Functional - error state
 
 ### Active/Active
+
+- Advanced design concepts
+- Complex troubleshooting
+- Additional configuration on both firewalls
+- Recommended if each firewall needs its own routing instances and you require full, real-time redundancy out of both firewalls all the time
+- Active/active mode has faster failover
+- Can handle peak traffic flows better than active/passive mode because both firewalls actively process traffic
+
+Supported deployments:
+- L3
+- Virtual Wire
+
+Does not support the DHCP client. Furthermore, only the active-primary firewall can function as a DHCP Relay. If the active-secondary firewall receives DHCP broadcast packets, it drops them
 
 4 types of design:
 - Floating IP Address and Virtual MAC Address
@@ -490,13 +548,22 @@ show high-availability virtual-address - displays VMAC and VIP for Active-Active
 
 ```
 
+To place the local HA peer into a suspended state and temporarily disable HA functionality on it
+```
+request high-availability state suspend
+```
+
+To place the suspended local HA peer back into a functional state
+```
+request high-availability state functional
+```
+
 ## Packet capture
 
 - Packets are captured on the dataplane vs on the interface
 
 **Filters**
 - Filters are not mandatory
-- 
 
 **Stages**
 - drop stage is where packets get discarded. The reasons may vary and, for this part, the global counters may help identify if the drop was due to a policy deny, a detected threat, or something else

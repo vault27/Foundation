@@ -12,7 +12,6 @@ In self-signed certificate all data in Subject Name is identical to all data in 
 ## CRL
 
 ## CA
-
 - CA stays offline
 - CA signs subordinate CA: encrypts its hash with CA private key
 - Subordinate CA signs server certificate.
