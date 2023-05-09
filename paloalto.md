@@ -213,9 +213,14 @@ Types:
 
 Concepts:
 - Up to 16 firewalls as peer members of an HA cluster
+- Configure HA then everything else: Interfaces, policies....
 - Active firewall has less priority
 - Firewall-specific configuration such as management interface IP address or administrator profiles, HA specific configuration, log data, and the Application Command Center (ACC) information is not shared between peers
 - Any Layer 3 interface that is already active in the network will receive a new MAC address once HA is enabled (and committed), which could cause connectivity issues while switches and clients learn the new MAC associated with the firewall IPs. Some ARP tables may need to be cleared and static entries updated
+- In Active/Passive mode, on Passive node interfaces are down by default
+- In Active/Passive mode IPs and MACs are identical, when failover happens, gratuitous ARPs (GARPs) are sent. On hypervisors MACs are different, because they are set by Hypervisor, it can be changed in Palo Ato Settings
+- After commit changes are automatically sent to Passive
+- You can make changes on Passive, press Commit and it will go to Active
 
 Monitoring
 - Link monitoring: If an interface goes down, the member fails
@@ -243,17 +248,18 @@ Monitoring
 ### Links
 
 7 Links in total, all are configured in HA Communications section
-- HA-1 control link (Control Plane) - HA type?
-    - L3 link, requires IP, mask, gateway - can be spanned via subnets 
+- HA-1 control link (Control Plane) - should be HA type
+    - L3 link, requires IP, mask, gateway - can be spanned via subnets
     - Hello, heartbeats, HA state info, User-ID, config sync
     - ICMP is used to exchange heartbeats between HA peers
-    - Ports used for HA1 — TCP port 28769 and 28260 for clear text communication; port 28 for encrypted communication (SSH over TCP)     - Dedicated HA port should be used on big models, if not Management port is used
+    - Ports used for HA1 — TCP port 28769 and 28260 for clear text communication; port 28 for encrypted communication (SSH over TCP)     
+    - Dedicated HA port should be used on big models, if not Management port is used
     - Monitor Hold Time (ms)— Enter the length of time, in milliseconds, that the firewall will wait before declaring a peer failure      due to a control link failure (range is 1,000 to 60,000; default is 3,000). This option monitors the physical link status of         HA1 ports
 - HA-2 data link (Data plane) - HA type?
     - Layer 2 link, ether type 0x7261 by default, available: IP (protocol number 99) or UDP (port 29281), can span subnets.The benefit of using UDP mode is the presence of the UDP checksum to verify the integrity of a session sync message
     - Session info, forwarding tables, IPSec, ARP
     - Data flow on the HA2 link is always unidirectional (except for the HA2 keep-alive); it flows from the active or active-primary firewall to the passive or active-secondary firewall. 
-    - HA2 Keep-alive - recomended to enable. Plus configure action: Log for Active-passive, Split Datapath for Active/Active - each peer to take ownership of their local state and session tables when it detects an HA2 interface failure
+    - HA2 Keep-alive - recomended to enable. To monitor and maintain the HA2 connection. A log will be written in the event of a failure, or in Active/Active mode the action can be set to split datapath to instruct both peers to keep processing traffic while only maintaining a local state table until HA2 returns Plus configure action: Log for Active-passive, Split Datapath for Active/Active - each peer to take ownership of their local state and session tables when it detects an HA2 interface failure
 - HA-1 and HA-2 Backup Links
     - Provide redundancy for the HA1 and the HA2 links
     - In-band ports can be used for backup links for both HA1 and HA2 connections when dedicated backup links are not available. 
@@ -285,40 +291,36 @@ Supported deployments
 - Layer 2
 - Layer 3 
 
-Configuration overview
-- Connect the HA ports.
-- Enable ping on the management port
-- Enable HA: Group-ID, mode, config sync, peer HA1 IP and backup IP: Device > HA > General
-- This ID needs to be identical on both members. The Group ID will also have an impact on the MAC addresses associated with each interface as they switch to a virtual MAC that both firewalls will be able to claim via gratuitous ARP in case one member fails
-- Configure Active/PAssive: Passive Link State  + Monitor Fail Hold Down Time (min) - By default, the passive device will have its interfaces in a shutdown state, meaning any connected devices will also see the link as being down. Depending on your environment, this could prevent other clusters from functioning properly, in which case you will need to set these to Auto (up but not accepting packets). Monitor Fail Hold Down Time keeps the firewall in a failed statefor the specified amount of time after an error was detected before setting the member to the passive state: Device > HA > General
-- You can enable Link Layer Discovery Protocol (LLDP) and Link Aggregation Control Protocol (LACP) in passive mode by accessing the interface's advanced tab
+**Configuration overview**
+- Enable Ping on management interface
+- Configure HA type interface for HA2 link
+- Enable HA and general options: Group-ID, mode, config sync, peer HA1 IP and backup IP: Device > HA > General
+      - This ID needs to be identical on both members. The Group ID will also have an impact on the MAC addresses associated with each interface as they switch to a virtual MAC that both firewalls will be able to claim via gratuitous ARP in case one member fails
+- Configure Active/PAssive options: Passive Link State  + Monitor Fail Hold Down Time (min) - By default, the passive device will have its interfaces in a shutdown state, meaning any connected devices will also see the link as being down. Depending on your environment, this could prevent other clusters from functioning properly, in which case you will need to set these to Auto (up but not accepting packets). Monitor Fail Hold Down Time keeps the firewall in a failed statefor the specified amount of time after an error was detected before setting the member to the passive state: Device > HA > General
+      - You can enable Link Layer Discovery Protocol (LLDP) and Link Aggregation Control Protocol (LACP) in passive mode by accessing the interface's advanced tab
 - Configure Election settings: 
       - Priority - the less the better
       - Preemptive - higher-priority firewall to resume active (active/passive) or active-primary (active/active) operation after recovering from a failure. You must enable the preemption option on both firewalls for the higher-priority firewall to resume active or active-primary operation upon recovery after a failure. If this setting is disabled, then the lower-priority firewall remains active or active-primary even after the higher-priority firewall recovers from a failure
       - Heartbeat backup - This will use the management interface to send a simple heartbeat to the remote peer
-      - HA Timer settings
+      - HA Timer settings - Use recomeneded - 7 timers in total:
             - Promotion Hold Time (ms) - how long passive will wait
             - Hello Interval (ms) - hello packets sent to verify that the HA program on the other firewall is operational
             - Heartbeat Interval (ms) - heartbeat messages in the form of an ICMP ping 
-
-- Set up the control link connection
-- (Optional) Enable encryption for the control link connection.
-- Set up the backup control link connection.
-- Set up the data link connection (HA2) and the backup HA2 connection.
-- Enable heartbeat backup.
-- Set the device priority and enable preemption
-- (Optional) Modify the HA timers.
-- (Optional) Modify the link status of the HA ports on the passive device.
-- Enable HA.
-- (Optional) Enable LACP and LLDP Pre-Negotiation for active/passive HA.
-- Verify that the firewalls are paired
-
+- Configure HA communications
+      - HA1 port - management, or dedicated, on port with HA type - if not management is used, then configure IP, mask, gateway, possible encryption and Monitor Hold Time (ms)
+      - HA2 port - select transport type - Ethernet - and nothing more should be configured - Interface type - HA. Also HA2 Keep alive is recomended to enable to monitor health of HA2 link and log if something happens
+- Enable HA widget on a dashboard
+- Sync config
+- Manually suspend node: Device > High Availability > Operational Commands > Suspend local device
 
 ### Firewall states
 
 - Initial - after boot-up and before it finds peer
 - Active - normal traffic handling state
 - Passive - normal traffic is discarded, except LACP and LLDP
+- Active-Primary - A/A only
+- Active-Secondary - A/A only
+- Tentative - A/A only
 - Suspended - administratively disabled
 - Non Functional - error state
 
@@ -556,6 +558,11 @@ request high-availability state suspend
 To place the suspended local HA peer back into a functional state
 ```
 request high-availability state functional
+```
+
+Sync config to remote peer
+```
+request high-availability sync-to-remote running-config
 ```
 
 ## Packet capture
