@@ -398,6 +398,40 @@ Show logs about HA4 sessions sync
 show log system | match ha4
 ```
 
+## User-ID
+
+- Runs either on the firewall (agentless implementation)
+- Separate process on a Microsoft Windows Server-based host
+- Redirect HTTP requests to a Captive Portal login: Browser challenge: Uses Kerberos or NT LAN Manager (NTLM) or Web form, MFA, Client Cert
+- Monitors Security Event logs for successful login and logout events on Microsoft domain controllers, Exchange servers, or Novell eDirectory
+- Microsoft Terminal Services or Citrix environments - Agent - Source port is used
+- Linux terminal servers - XML API to send user mapping information from login or logout events to User-ID
+- Syslog Parse Profiles
+- XFF headers: If a proxy server exists between users and a firewall
+- Global Protect
+- XML API
+- Client probing: Windows Management Instrumentation or NetBIOS - not recomended
+- 100 domain controllers or 50 syslog servers - MAX
+
+Use Agentless (PAN-OS)
+- If you have a small-to-medium deployment with few users and 10 or fewer domain controllers or exchange servers
+- If you want to share the PAN-OS-sourced mappings from Microsoft Active Directory (AD), Captive Portal, or GlobalProtect with other PA devices (maximum 255 devices)
+- Saves network bandwidth
+
+Use User-ID Agent (Windows)
+- If you have a medium-to-large deployment with many users or more than 10 domain controllers
+- If you have a multi-domain setup with a large number of servers to monitor
+- Save processing cycles on the firewall’s management plane
+
+
+
+ Device > User Identification > User-ID Agents
+
+Show logged in users
+```
+debug dataplane show user all
+```
+
 ## QOS
 
 QoS is enforced on traffic as it egresses the firewall  
