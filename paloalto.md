@@ -417,6 +417,8 @@ show log system | match ha4
 - Before a firewall or Panorama can collect user mappings, you must configure its connections to the User-ID agents or redistribution points
 - Four domain controllers within an LDAP server profile for redundancy
 - If you have universal groups, create an LDAP server profile to connect to the root domain of the global catalog server on port 3268 or 3269 for SSL. Then, create another LDAP server profile to connect to the root domain controllers on port 389 or 636 for SSL. This helps ensure that both user and group information is available for all the domains and subdomains
+- Maximum of 512k users in a domain
+- User-ID agent is launched under the same User name as it connects to AD
 
 Use Agentless (PAN-OS)
 - If you have a small-to-medium deployment with few users and 10 or fewer domain controllers or exchange servers
@@ -433,6 +435,8 @@ Use User-ID Agent (Windows)
 - Allow the service account to read the security log events
 - Active Directory Users and Computers > Builtin > Event Log Readers > Add new managed service account
 - Allow WMI: Active Directory Users and Computers > Builtin > Distributed COM USers - add amanged service account
+- Add user-id managed service account to Server Operators group
+- 
 
 
 AD has to generate logs for Audit Logon, Audit Kerberos Authentication Service, and Audit Kerberos Service Ticket Operations events. At a minimum, the source must generate logs for the following events:
@@ -643,6 +647,7 @@ Show only ICMP protocol
 ```
 (proto eq icmp) 
 ```
+
 ## Troubleshooting
 
 Show system logs
