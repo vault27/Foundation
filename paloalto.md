@@ -193,6 +193,7 @@ https://knowledgebase.paloaltonetworks.com/KCSArticleDetail?id=kA10g000000ClVHCA
 - The application decoder will continuously scan the session for expected and deviant behavior, in case the application changes to a sub-application or a malicious actor is trying to tunnel a different application or protocol over the existing session
 - If the protocol is unknown, App-ID will apply heuristics
 - Use App-ID instead of service and protocols and port based
+- App-ID without decryption identifies application based on server certificate: CN field, if it is exact, then it will be google-base for example, if there is a wildcard, it will be SSL app
 
 Best pratice Moving from Port-Based to App-ID Security: set of rules that aligns with business goals, thus simplifying administration and reducing the chance of error
     - Assess your business and identify what you need to protect
@@ -412,6 +413,10 @@ show log system | match ha4
 - XML API
 - Client probing: Windows Management Instrumentation or NetBIOS - not recomended
 - 100 domain controllers or 50 syslog servers - MAX
+- Firewalls share user mappings and authentication timestamps as part of the same redistribution flow
+- Before a firewall or Panorama can collect user mappings, you must configure its connections to the User-ID agents or redistribution points
+- Four domain controllers within an LDAP server profile for redundancy
+- If you have universal groups, create an LDAP server profile to connect to the root domain of the global catalog server on port 3268 or 3269 for SSL. Then, create another LDAP server profile to connect to the root domain controllers on port 389 or 636 for SSL. This helps ensure that both user and group information is available for all the domains and subdomains
 
 Use Agentless (PAN-OS)
 - If you have a small-to-medium deployment with few users and 10 or fewer domain controllers or exchange servers
@@ -423,14 +428,34 @@ Use User-ID Agent (Windows)
 - If you have a multi-domain setup with a large number of servers to monitor
 - Save processing cycles on the firewall’s management plane
 
+### Configure managed service account on Windows AD
+- Active Directory Users and Computers > Managed Service Accounts > New User
+- Allow the service account to read the security log events
+- Active Directory Users and Computers > Builtin > Event Log Readers > Add new managed service account
+- Allow WMI: Active Directory Users and Computers > Builtin > Distributed COM USers - add amanged service account
 
 
- Device > User Identification > User-ID Agents
+AD has to generate logs for Audit Logon, Audit Kerberos Authentication Service, and Audit Kerberos Service Ticket Operations events. At a minimum, the source must generate logs for the following events:
+- Logon Success (4624)
+- Authentication Ticket Granted (4768)
+- Service Ticket Granted (4769)
+- Ticket Granted Renewed (4770)
+
+### Configure agentless
+- Enable User-ID in a zone options
+
+### Debug
 
 Show logged in users
 ```
 debug dataplane show user all
 ```
+Show log for agentkess connection to Active Directory
+```
+less mp-log useridd.log
+```
+Go to the end of the file by pressing Shift+G
+
 
 ## QOS
 
@@ -618,4 +643,9 @@ Show only ICMP protocol
 ```
 (proto eq icmp) 
 ```
+## Troubleshooting
 
+Show system logs
+```
+show log system
+```
