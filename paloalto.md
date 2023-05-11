@@ -204,7 +204,6 @@ Best pratice Moving from Port-Based to App-ID Security: set of rules that aligns
     - Create best-practice Security Profiles for the internet gateway for all allow rules
     - Define the initial internet gateway Security policy, Using the application and user group inventory
 
-
 ## HA
 
 Types:
@@ -223,18 +222,11 @@ Concepts:
 - After commit changes are automatically sent to Passive
 - You can make changes on Passive, press Commit and it will go to Active
 
-Monitoring
+Failover reasons
 - Link monitoring: If an interface goes down, the member fails
 - Path monitoring: If an IP becomes unavailable, the member fails
 - Heartbeat monitoring: The peers periodically send heartbeat packages and hello messages to verify they are up and running
 - Hardware monitoring: The member continually performs packet path health monitoring on its own hardware and fails if a malfunction is detected
-
-### The conditions that trigger a failover are:
-
-- One or more of the monitored interfaces fail (Link Monitoring)
-- One or more of the destinations specified on the firewall cannot be reached (Path Monitoring)
-- The firewall does not respond to heartbeat polls (Heartbeat Polling and Hello messages)
-- A critical chip or software component fails, known as packet path health monitoring
 
 ### HA prerequisites
 
@@ -256,7 +248,7 @@ Monitoring
     - Ports used for HA1 — TCP port 28769 and 28260 for clear text communication; port 28 for encrypted communication (SSH over TCP)     
     - Dedicated HA port should be used on big models, if not Management port is used
     - Monitor Hold Time (ms)— Enter the length of time, in milliseconds, that the firewall will wait before declaring a peer failure      due to a control link failure (range is 1,000 to 60,000; default is 3,000). This option monitors the physical link status of         HA1 ports
-- HA-2 data link (Data plane) - HA type?
+- HA-2 data link (Data plane) - HA type
     - Layer 2 link, ether type 0x7261 by default, available: IP (protocol number 99) or UDP (port 29281), can span subnets.The benefit of using UDP mode is the presence of the UDP checksum to verify the integrity of a session sync message
     - Session info, forwarding tables, IPSec, ARP
     - Data flow on the HA2 link is always unidirectional (except for the HA2 keep-alive); it flows from the active or active-primary firewall to the passive or active-secondary firewall. 
@@ -280,12 +272,6 @@ Monitoring
 - HA4 BAckup
 
 ### Active/Passive
-
-Failovers:
-- path
-- link
-- system
-- network 
 
 Supported deployments
 - virtual wire
