@@ -99,6 +99,21 @@ Firewall types
 - Route based firewall - zones are simply an architectural or topological concept that helps identify which areas comprise the global network
 - Zone based firewall - use zones as a means to internally classify the source and destination in its state table  
   
+What we configure in zone:
+- Log setting
+- Type
+- Interfaces
+- Protection profile
+- User-ID
+- Device-ID
+
+Zone types:
+- L3
+- L2
+- Tap
+- Virtualwire
+- Tunnel
+
 Concepts
 - One zone per interface
 - Zones are attached to a physical, virtual, or sub interface
@@ -114,13 +129,24 @@ Concepts
 - Policy check relies on pre-NAT IP addresses
 - Zone protection profile, flood protection: syn(random early drop - drops random syn packets, syn cookies - are always on) icmp, icmpv6, other ip, udp; reconnaissance - port scan, host sweep. All thresholds here are aggregate for all zone. + there is packet based protection. Then we apply it in zone configuration, usually for outside zone
 
-The policy evaluation then uses the 'six tuple' (6-Tuple) to match establishing sessions to security rules:
-1. Source IP
-2. Source Port
-3. Destination IP
-4. Destination Port
-5. Source Zone
-6. Protocol
+
+
+## Zone protection profile
+
+- Flood protection
+- Reconnaissance protection - port scans
+- Packet based attack protection - check packet headers and drop undesirable
+- Protocol protection - non-IP protocol-based attacks - block or allow non-IP protocols between security zones on a Layer 2 VLAN or on a virtual wire, or between interfaces within a single zone on a Layer 2 VLAN (Layer 3 interfaces and zones drop non-IP protocols so non-IP Protocol Protection doesn’t apply) - block is based on Ethertype field in Ethernet frame
+- Ethernet SGT protection - droop traffic based on Security Group Tag (SGT) in Ethernet frame, when your firewall is part of a Cisco TrustSec network
+
+Floods:
+- Protects from floods: SYN, ICMP, ICMPv6, UDP, and other IP flood attacks
+- Configure thresholds in CPS:
+    - Alarm Rate - 15-20 % above normal CPS
+    - Activate - start dropping
+    - Maximum - 80-90 % load
+- Random Early Drop (RED, also known as Random Early Detection) used for all floods 
+- For SYN - SYN Cookies can be used besides RED
 
 ## Interfaces
 
@@ -192,8 +218,15 @@ https://knowledgebase.paloaltonetworks.com/KCSArticleDetail?id=kA10g000000ClVHCA
 - Separate rule for loging blocks
 - Pre rules and post rules from Panorama
 - Default rules
-- Types: universal (default), interzone, and intrazone
 - Drop - silently, Deny - notify with ICMP + in App-Id data base there is a prefereable Deny action, Reset - send RST
+
+The policy evaluation then uses the 'six tuple' (6-Tuple) to match establishing sessions to security rules:
+1. Source IP
+2. Source Port
+3. Destination IP
+4. Destination Port
+5. Source Zone
+6. Protocol
 
 ## Sessions
 
@@ -221,7 +254,7 @@ Session end reasons
 ## App-ID
 
 - 6-Tuple is checked against the security policy > known application signatures > check if it is SSH, TLS, or SSL > decryption policy (if exists) > checked again for a known application signature inside TLS > the application has not been identified (a maximum of 4 packets after the handshake, or 2,000 bytes) > will use the base protocol to determine which decoder to use to analyze the packets more deeply > unknown-tcp > check policy if unknown is allowed  
-- SSL > Web-Browsing > flickr > flickr-uploading  
+- SSL > Web-Browsing > flickr > flickr-uploading: NGFW continiously watches at traffic app, the more data it gets, then identificationis changed
 - The application decoder will continuously scan the session for expected and deviant behavior, in case the application changes to a sub-application or a malicious actor is trying to tunnel a different application or protocol over the existing session
 - If the protocol is unknown, App-ID will apply heuristics
 - Use App-ID instead of service and protocols and port based
@@ -488,6 +521,7 @@ show log system | match ha4
 - If you have universal groups, create an LDAP server profile to connect to the root domain of the global catalog server on port 3268 or 3269 for SSL. Then, create another LDAP server profile to connect to the root domain controllers on port 389 or 636 for SSL. This helps ensure that both user and group information is available for all the domains and subdomains
 - Maximum of 512k users in a domain
 - User-ID agent is launched under the same User name as it connects to AD
+- Special User-ID log
 
 Use Agentless (PAN-OS)
 - If you have a small-to-medium deployment with few users and 10 or fewer domain controllers or exchange servers
