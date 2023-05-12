@@ -122,15 +122,44 @@ The policy evaluation then uses the 'six tuple' (6-Tuple) to match establishing 
 5. Source Zone
 6. Protocol
 
+## Interfaces
+
+- L2
+- L3: IP address, zone, virtual router
+- Virtual wire - no routing or switching, no MAC or IP addresses, blocking or allowing of traffic based on the virtual LAN (VLAN) tags
+- It ignores any Layer 2 or Layer 3 addresses for switching or routing purposes
+- A virtual wire interface does not use an Interface Management Profile
+- All the firewalls that are shipped from the factory have two Ethernet ports (port 1 and port 2) preconfigured as virtual wire interfaces. These interfaces allow all of the untagged traffic
+- TAP passively monitor traffic flows across a network by using a switch port analyzer (SPAN) or mirror port
+- Subinterfaces: Layer 3, Layer 2, and VWIRE - using 802.1Q
+- VWIRE subinterfaces also allow the use of IP classifiers to further this segregation
+- Tunnel interfaces - virtual interfaces for VPN, should be in the same virtual router as physical - separate VPN zone for them is recomended. IP is required only when dynamic routing is used or for tunnel monitoring. Policy based VPN requires Proxy ID on both sides. 
+- Aggregate interfaces - IEEE 802.1AX link aggregation - harwdware media can be mixed - interface type must be the same - 8 groups, some models - 16, 8 interfaces un each group
+- Loopback interfaces - connect to the virtual routers in the firewall, DNS sinkholes, GlobalProtect service interfaces (such as portals and gateways)
+- Decrypt mirror interfaces - routing of copied decrypted traffic through an external interface to another system, such as a data loss prevention (DLP) service
+- VLAN interface
+
+
 ## Packet Flow Sequence
 
 https://knowledgebase.paloaltonetworks.com/KCSArticleDetail?id=kA10g000000ClVHCA0
 
 <img width="1071" alt="image" src="https://user-images.githubusercontent.com/116812447/215520946-0255d873-1931-4799-b57e-4a62d4e48765.png">
 
-## Security policy
+## Policies
 
-**Options**
+- Security
+- NAT
+- QoS
+- Policy Based Forwarding
+- Decryption
+- Tunnel inspection
+- Application Override
+- Authentication
+- DoS protection
+- SD-WAN
+
+### Security policy options
 
 - Source
   - Zone
@@ -147,31 +176,34 @@ https://knowledgebase.paloaltonetworks.com/KCSArticleDetail?id=kA10g000000ClVHCA
 - GlobalProtect Host Information Profile (HIP)
 - Security Profiles (Content-ID) - use signatures to identify known threats. Unknown threats are identified by WildFire
 
-**Concepts**
+### Security policy concepts
 
 - Top to down
 - Left to right
 - More specific rules first
+- Exceptions to policy rules must appear before the general policy
 - Step 1: check security policy
 - Step 2: apply Security Profiles: only if traffic is allowed
 - Intrazone allow
 - Interzone deny
 - Three types: universal, intrazone, interzone: selects the type of traffic to be checked
 - Use App-Id, not ports
+- By default, traffic logging is disabled
 - Separate rule for loging blocks
 - Pre rules and post rules from Panorama
 - Default rules
 - Types: universal (default), interzone, and intrazone
+- Drop - silently, Deny - notify with ICMP + in App-Id data base there is a prefereable Deny action, Reset - send RST
 
 ## Sessions
 
-**Session types**
+Session types
 - FLOW
 
-**Session states**
+Session states
 - INIT
 
-**Session end reasons**
+Session end reasons
 - threat
 - policy-deny
 - decrypt-cert-validation
@@ -194,6 +226,17 @@ https://knowledgebase.paloaltonetworks.com/KCSArticleDetail?id=kA10g000000ClVHCA
 - If the protocol is unknown, App-ID will apply heuristics
 - Use App-ID instead of service and protocols and port based
 - App-ID without decryption identifies application based on server certificate: CN field, if it is exact, then it will be google-base for example, if there is a wildcard, it will be SSL app
+- Application override - only for trusted traffic - create custom application based on zones, ips, ports...
+- Create a custom app configuring its characteristics:
+    - Charachteristics
+    - Category and subcategory
+    - Risk
+    - Timeout
+    - Port
+    - Signatures
+- Application groups for convenience
+- Application filters - they are dynamic - based on categories or tags
+- Dependenciescan be added to the same rule or other rule
 
 Best pratice Moving from Port-Based to App-ID Security: set of rules that aligns with business goals, thus simplifying administration and reducing the chance of error
     - Assess your business and identify what you need to protect
@@ -203,6 +246,16 @@ Best pratice Moving from Port-Based to App-ID Security: set of rules that aligns
     - Decrypt traffic for full visibility and threat inspection
     - Create best-practice Security Profiles for the internet gateway for all allow rules
     - Define the initial internet gateway Security policy, Using the application and user group inventory
+
+App-ID database
+- Description
+- Depends on Applications
+- Category
+- Subcategory
+- Risk
+- Standard ports
+- Technology 
+- Deny action 
 
 ## HA
 
@@ -227,6 +280,20 @@ Failover reasons
 - Path monitoring: If an IP becomes unavailable, the member fails
 - Heartbeat monitoring: The peers periodically send heartbeat packages and hello messages to verify they are up and running
 - Hardware monitoring: The member continually performs packet path health monitoring on its own hardware and fails if a malfunction is detected
+
+What is not synced?
+- Mgmt interface settings
+- Panorama settings
+- SNMP
+- Services
+- Service routes
+- Decryption certificates
+- Decrypted SSL sessions (both inbound and outbound) that were established using PFS key exchange algorithms. In these cases, when a failover occurs, the passive device allows transferred sessions without decrypting them
+- Decrypted, outbound SSL sessions using non-PFS key exchange algorithms
+- Certificates
+- Licenses
+- Jumbo frames
+- Log Export Settings
 
 ### HA prerequisites
 
@@ -278,7 +345,7 @@ Supported deployments
 - Layer 2
 - Layer 3 
 
-**Configuration overview**
+Configuration overview
 - Enable Ping on management interface
 - Configure HA type interface for HA2 link
 - Enable HA and general options: Group-ID, mode, config sync, peer HA1 IP and backup IP: Device > HA > General
@@ -368,12 +435,12 @@ Does not support the DHCP client. Furthermore, only the active-primary firewall 
 - Only the firewall that is the session owner creates a traffic log
 - The new session owner (the firewall that receives the failed over traffic) creates the traffic log
 
-**Use cases**
+Use cases
 - HA peers are spread across multiple data centers
 - One data center is active and the other is standby
 - Horizontal scaling, in which you add HA cluster members to a single data center to scale security and ensure session survivability: Load balancer sends traffic to many NGFWs
 
-**Session Synchronization States **
+Session Synchronization States
 - Pending → Synchronization is not triggered yet
 - Unknown. → Device Serial Number and Peer IP is configured but session synchronization process has not started yet
 - In-Progress  → Full session synchronization is running 
@@ -384,6 +451,22 @@ Show logs about HA4 sessions sync
 ```
 show log system | match ha4
 ```
+
+## Routing
+
+- All ingress traffic goes to firewall itself or virtual router object, vlan object or virtual wire object
+- Legacy virtual routers: RIP, OSPF, OSPFv3, BGP, multicast, static routes, redistribution, administrative distances
+- Advanced Route Engine of virtual routers supports the Border Gateway Protocol (BGP) dynamic routing protocol and static routes, can be only one - for large data centers, enterprises, ISPs, and cloud services
+- IPsec tunnels are considered Layer 3 traffic segments for implementation purposes and are handled by virtual routers like any other network segments. Forwarding decisions are made by destination address, not by VPN policy
+- There are limitations for the number of entries in the forwarding tables (forwarding information bases [FIBs]) and the routing tables (routing information bases [RIBs]) in either routing engine
+- Lower administrative distanse is prefered
+- ECMP: 4 routes max: no need to wait for RIB recalculation, load balancing, all links load
+- Route monitoring
+- PBF 
+- Application-specific rules are not recommended for use with PBF because PBF rules might be applied before the firewall has determined the application
+- Virtual routers can route to other virtual routers within the same firewall
+- Each Layer 3 Ethernet, loopback, VLAN, and tunnel interface defined on the firewall must be associated with a virtual router
+- Each model supporting a different maximum of virtual routers
 
 ## User-ID
 
@@ -422,8 +505,6 @@ Use User-ID Agent (Windows)
 - Active Directory Users and Computers > Builtin > Event Log Readers > Add new managed service account
 - Allow WMI: Active Directory Users and Computers > Builtin > Distributed COM USers - add amanged service account
 - Add user-id managed service account to Server Operators group
-- 
-
 
 AD has to generate logs for Audit Logon, Audit Kerberos Authentication Service, and Audit Kerberos Service Ticket Operations events. At a minimum, the source must generate logs for the following events:
 - Logon Success (4624)
@@ -467,12 +548,17 @@ Define a QoS policy rule to match to traffic based on:
 
 ## Panorama
 
+Features:
 - Policy management
 - Centralized visibility
 - Network security insights
 - Automated threat response
 - Network security management
 - Enterprise-level reporting and administration
+
+Concepts:
+- Adds pre rules and post rules, which are read only on NGFW
+- 
 
 ## CLI
 
