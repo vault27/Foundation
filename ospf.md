@@ -1,12 +1,15 @@
 # OSPF
+
 Everything I need to know about OSPF in one place.
 
 ## History
+
 Open Shortest Path First  was developed in the late 1980s. Because RIP had issues with scalability, performance, large AS.
 Developed by Internet Engineering Task Force (IETF).
 The first version of OSPF was described in RFC 1131, published in October 1989. This was quickly replaced by OSPF Version 2 in July 1991, described in RFC 1247. Since then there have been several revisions to the OSPF Version 2 standard, in RFCs 1583, 2178, and 2328, with the last of these the current standard. OSPF Version 2 is the only version in use today, so it is usually what is meant when people (including myself) refer to “OSPF”. RFC is 240 pages! 
 
 ## Terms
+- Link state - link is an interface - The state of the link is a description of that interface and of its relationship to its neighbor routers. A description of the interface would include, for example, the IP address of the interface, the mask, the type of network it is connected to, the routers connected to that network and so on. The collection of all these link-states would form a link-state database
 - LSDB - Link State Database   
 - SPF - Shortest Path First  
 - LSU - Link State Update - packet which holds LSAs, all types of LSA can be in one packet  
@@ -32,15 +35,17 @@ The first version of OSPF was described in RFC 1131, published in October 1989. 
 
 ## Concepts
 - Open standard
-- Which networks are advertised by default???
+- The algorithm places each router at the root of a tree
+- Each router has its own view of the topology even though all the routers build a shortest path tree which uses the same link-state database
+- Which networks are advertised by default - ???
 - IGP routing protocol for IP networks
-- Uses link state routing (LSR) algorithm or Shotest Path, uses Dijcstra algorithm
+- Uses link state routing (LSR) algorithm or Shotest Path, uses Dijcstra algorithm, this algorithm is very complicated
 - Operates in one Autonomous System
 - OSPF routers have End -to- End Visibility of entire network in form on Topology table
 - LSDB is identical on all routers in 1 area
 - Administrative distance 110
 - Metric is cost, cost is dependent on bandwidth of the link, cost is inversly proportional to the bandwidth, the greater the bandwidth the less the cost, the better the path, cost=Reference bandwidth/100 in Mbps 
-- - Loops are impossible inside the area because every router knows all topology. And between areas all areas have to be connected to area 0, so loops are avoided as well like in distance vector
+- Loops are impossible inside the area because every router knows all topology. And between areas all areas have to be connected to area 0, so loops are avoided as well like in distance vector
 - Complicated > high load
 - One area - 500 routers
 - Process id can be different
@@ -50,18 +55,19 @@ The first version of OSPF was described in RFC 1131, published in October 1989. 
 - All networks are connected via backbone areas to avoid loops
 - Hello interval - router sends Hello messages
 - Dead timer - after it neighboor is considered dead
-- Route tags- tag routes as theay are redistributed into OSPF
+- Route tags- tag routes as they are redistributed into OSPF
 - Next-hop field - supports the advertisment of routes with a different next-hop router than the advertising router
 - Manual route summarization - summarization is supported on ABR only
 - If there is an topology change - router sends LSA, if no changes LSAs are sent every 30 mins
 Each router stores the data, composed of individual link-state advertisements (LSA) , in its own copy of the link-state database (LSDB) . Then, the router applies the Shortest Path First (SPF) algorithm to the LSDB to determine the best (lowest-cost) route for each reachable subnet (prefix/length).  
 
 **Three fundamental concepts of link state protocols**
-1. Every link state router floods information about itself, its links, and its neighbors to every other router. From this flooded information each router builds an identical link state database. Each router then independently runs a shortest-path-first calculation on its database – a local calculation using distributed information – to derive a shortest-path tree. This tree is a sort of map of the shortest path to every other router.
-2. When link state domains grow large, the flooding and the resulting size of the link state database becomes a scaling problem. The problem is remedied by breaking the routing domain into areas: That first concept is modified so that flooding occurs only within the boundaries of an area, and the resulting link state database contains only information from the routers in the area.This, in turn, means that each router’s calculated shortest-path tree only describes the path to other routers within the area.
+1. Every link state router floods information about itself, its links, and its neighbors to every other router. From this flooded information each router builds an identical link state database. Each router then independently runs a shortest-path-first calculation on its database – a local calculation using distributed information – to derive a shortest-path tree. This tree is a sort of map of the shortest path to every other router
+2. When link state domains grow large, the flooding and the resulting size of the link state database becomes a scaling problem. The problem is remedied by breaking the routing domain into areas: That first concept is modified so that flooding occurs only within the boundaries of an area, and the resulting link state database contains only information from the routers in the area. This, in turn, means that each router’s calculated shortest-path tree only describes the path to other routers within the area.
 3. OSPF areas are connected by one or more Area Border Routers (the other main link state protocol, IS-IS, connects areas somewhat differently) which maintain a separate link state database and calculate a separate shortest-path tree for each of their connected areas. So an ABR by definition is a member of two or more areas. It advertises the prefixes it learns in one area to its other areas by flooding Type 3 LSAs into the areas that basically say, “I know how to reach these destinations.”
 
 ## Design
+
 We have to think through the following:
 - IP networks between routers - /31 is ok
 - Loopback interfaces and Router-IDs - loopback is actually not needed if we configure router-id manually, which is recomended. Loopback numbers on all devices.
@@ -72,19 +78,21 @@ We have to think through the following:
 - Timers, maybe it is better to harden them
 
 ## Data centre CLOS specifics
+
 - All routers are in area 0
-- In case of super spine: superspine is in backbone, POD is in non backbone, stub area. In this scheme Spine-1 stores everything about area 1 and backbone area  and so load on Spine is BIG!Such scheme is used rarely.OSPF is not recommended for Fabric!!Do not use unnumbered!
+- In case of super spine: superspine is in backbone, POD is in non backbone, stub area. In this scheme Spine-1 stores everything about area 1 and backbone area  and so load on Spine is BIG! Such scheme is used rarely. OSPF is not recommended for Fabric!! Do not use unnumbered!
 - Point to point links between leafs and Spines - /31 networks
 - BFD timers: Tx/Rx 100 ms x 3, MicroBFD if we use LAG
 - To delete Spine from operation for maintenence we use command max-metric router-lsa
-- use ip ospf area instead of network
-- Do not use redistribute
+- Use ip ospf area instead of network
+- Do not use redistribute - ?
 - Authentication
 - Configure OSPF in GRT, not VRF
 - Passive interface default
 - Configure RID explicitly
 
 ## Configuration and operations overview
+
 - Enable OSPF process with particular ID (number in IOS and word in Nexus) and configure router ID for it, or loopback is used
 - Iclude interfaces into OSPF using network command in IOS, we should include interfaces on which we peer and which we want to announce - and specify area
 - Enable OSPF on required interfaces and specify area - on Nexus
@@ -92,9 +100,43 @@ We have to think through the following:
 
 ## Operations
 
+## Areas
 
-#Areas
+We configure area after network command and so put interface in particular area.  
+Area types:
+- Internal
+
+
+### Stub area
+
 - Stub - area with single exit point. LSA 5 are not propogated. ABR will send default route to all Internal routers. No additional load on Internal routers
+- Stub area restrictions are that a stub area cannot be used as a transit area for virtual links
+- All OSPF routers inside a stub area have to be configured as stub routers
+- When an area is configured as stub, all interfaces that belong to that area should be configured as stub. If it is not done they will not become neighnors. They exchange Hello packets with a flag that indicates that the interface is stub. Actually this is just a bit in the Hello packet (E bit) that gets set to 0.
+- To make area stub we add the command after network aommand in router section:
+```
+router ospf 10
+  network 203.0.113.150 0.0.0.255 area 2
+  network 203.0.113.140 0.0.0.255 area 0
+  area 2 stub
+```
+- **All external routes in stub area are substituted by default route, intra area routes remains**
+
+### Totally stubby area
+
+- This is an extension to stub area
+- Blocks external routes and summary routes (inter-area routes) from entrance into the area
+- This way, intra-area routes and the default of 0.0.0.0 are the only routes injected into that area
+- We configure total stubby area by adding no-summary only on the ABR, no need to add it on Internal routers:
+```
+router ospf 10
+  network 203.0.113.150 0.0.0.255 area 2
+  network 203.0.113.140 0.0.0.255 area 0
+  area 2 stub no-summary
+  area 2 default cost 10
+```
+- **The external and inter-area routes have been blocked**
+- By default default gateway is sent with metric 1
 
 ## Tables
 - Neighbor table
