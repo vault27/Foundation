@@ -50,6 +50,22 @@ Detection, investigation, automation, and response capabilities.
 - The Palo Alto Networks firewall was designed to use an efficient system known as next-generation processing. Next-generation processing enables packet evaluation, application identification, policy decisions, and content scanning in a single, efficient processing pass - Single Pass Architecture
 - Zone based firewall
 - Full hardware separate mgmt
+- Best Practice Assessment (BPA) tool for Palo Alto Networks firewalls and Panorama. The two components of the BPA tool are the Security Policy Adoption Heatmap and the BPA assessment. The Heatmap **analyzes a Palo Alto Networks deployment**. The Heatmap can filter information by device groups, serial numbers, zones, areas of architecture, and other categories. The results chart the progress of security improvement toward a Zero Trust network.**The BPA assessment compares a firewall or Panorama configuration against best practices** and provides recommendations to strengthen the organization’s security posture by fully adopting the Palo Alto Networks prevention capabilities. More than 200 security checks are performed on the firewall or Panorama configuration
+
+The Heatmap measures the adoption rate of the following Palo Alto Networks firewall features:
+- WildFire
+- Threat Prevention
+- Anti-Spyware
+- DNS Sinkhole
+- Antivirus
+- Vulnerability Protection
+- URL Filtering
+- File Blocking
+- Data Filtering
+- User-ID
+- App-ID
+- Service/Port
+- Logging
 
 Main features:
 - App-ID
@@ -92,6 +108,8 @@ Main features:
 - DNS Security
 - Support
 - Wildfire
+- IoT security
+- Autofocus
 
 ## Zones
 
@@ -128,8 +146,6 @@ Concepts
 - It is best practice to use zones in all security rules and leveraging a clear naming convention
 - Policy check relies on pre-NAT IP addresses
 - Zone protection profile, flood protection: syn(random early drop - drops random syn packets, syn cookies - are always on) icmp, icmpv6, other ip, udp; reconnaissance - port scan, host sweep. All thresholds here are aggregate for all zone. + there is packet based protection. Then we apply it in zone configuration, usually for outside zone
-
-
 
 ## Zone protection profile
 
@@ -289,6 +305,18 @@ App-ID database
 - Standard ports
 - Technology 
 - Deny action 
+
+## Decryption
+
+We configure policy based on profile. 
+In profile we configure all SSL settings.  
+Than we mark one cert as forward proxy  
+
+
+
+- Content-ID is impossible
+- App-ID - works partially
+- Decryption policies enable you to specify traffic for decryption according to destination, source, user/user group, or URL category
 
 ## HA
 
@@ -501,6 +529,28 @@ show log system | match ha4
 - Each Layer 3 Ethernet, loopback, VLAN, and tunnel interface defined on the firewall must be associated with a virtual router
 - Each model supporting a different maximum of virtual routers
 
+## NAT
+
+Separate policy. Regulated by:
+- Zones
+- Interfaces
+- IP addresses
+- App services - ports
+
+First matched ruled is applied  
+The advantage of specifying the interface in the NAT rule is that the NAT rule is automatically updated to use any address subsequently acquired by the interface.  
+
+Supported  Source NAT types:
+- Static IP
+- Dynamic IP and port
+- Dynamic IP
+
+No NAT policy for exculsion  
+Use session browser to find NAT rule name  
+U-Turn NAT - user connects to Internal resource via external IP address and it is uturned on the firewall. Due to absence of internal DNS server for example. If we use regular Destination NAT for it, then traffic will be sent back to Internal network and web server will reply directly to client, causing assymetry. To avoid this Source NAT should be used as well, so the reply traffic will be sent to NGFW as well. Place the rule for it above all other
+
+
+
 ## User-ID
 
 - Runs either on the firewall (agentless implementation)
@@ -580,18 +630,47 @@ Define a QoS policy rule to match to traffic based on:
 - URL categories, including custom URL categories
 - Differentiated Services Code Point (DSCP) and Type of Service (ToS) values, which are used to indicate  the level of service requested for traffic, such as high priority or best effort delivery
 
+## Logging
+
+By default, the logs that the firewall generates reside only in its local storage.   
+Everything is in a Log Forwarding profile  
+Objects > Log Forwarding  
+Profile is attached to Security, Authentication, DoS Protection, and Tunnel Inspection policy rules  
+
+- Several rules in one profile
+- ICMP and DNS are logged only locally to NGFW to lesses load on Panorama
+- Separate rule for logging blocks
+- Log Forwarding Profile is configured for every rule:
+        - Log type: Authentication, Data Filtering, GTP, SCTP, Threat, Traffic, Tunnel, URL Filtering, and WildFire
+        - Filtration - based on any field in a log: App, Bytes In....
+        - Forward Method
+                - Panorama
+                - SNMP (profile)
+                - Email (profile)
+                - Syslog (profile)
+                - HTTP (profile)
+        - Add/del tag for src/dst address or User
+
+All other logs forwarding: Device > Log Settings - System, Configuration, User-ID....
+
 ## Panorama
 
 Features:
 - Policy management
+- Device health: Panorama > Managed Devices > Health
+- Objects configurations: addreses, profiles...
+- NGFW configuration - SNMP, User-ID, LDAP, NTP...
+- Database updates and software updates
+- Logforwarding control
 - Centralized visibility
 - Network security insights
 - Automated threat response
-- Network security management
 - Enterprise-level reporting and administration
 
 Concepts:
 - Adds pre rules and post rules, which are read only on NGFW
+- NGFW configuration is managed via Template Stack
+- Devices must be added to device group
 - 
 
 ## CLI
