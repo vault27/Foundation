@@ -1,4 +1,5 @@
 # OSI Reference Model
+
 - Open Systems Interconnection model (OSI model) or network suite of protocols - it splits the process of connection between 2 systems and the flow of data into 7 layers
 - Other suites exist as well: Internet suite(TCP/IP), AppleTalk....
 - Developed by the International Standards Organization (ISO) and CCITT in th 1970-80s
@@ -9,17 +10,30 @@
 - Protocol Data Unit (PDU) contains a payload, called the service data unit (SDU), along with protocol-related headers or footers.- 
 
 ## Internet protocol suite
+
 - Promoted by IETF
 - Combines Physical layer and Data link layer into a Link layer
 - All layers above Transport is Application layer
  
+## Network organizations
+
+- IEEE -  Institute of Electrical and Electronics Engineers - Manhattan, New York - 1963 
+
+## IEEE 802
+
+- Family of standards  for local area networks (LAN), personal area network (PAN), and metropolitan area networks (MAN)
+- 24 groups
+- Only for variable sized packets networks
+
 ## Physical layer
+
 - Sends unstructured raw data in bits
 - It converts the digital bits into electrical, radio, or optical signals
 - Layer specifications define characteristics such as voltage levels, the timing of voltage changes, physical data rates, maximum transmission distances, modulation scheme, channel access method and physical connectors
 - The Physical Layer also specifies how encoding occurs over a physical signal, such as electrical voltage or a light pulse. For example, a 1 bit might be represented on a copper wire by the transition from a 0-volt to a 5-volt signal, whereas a 0 bit might be represented by the transition from a 5-volt signal to 0-volt signal
 
 ## Data link layer
+
 - Node-to-node data transfer—a link between two directly connected nodes
 - Detects and possibly corrects errors
    - Medium access control (MAC) layer - responsible for controlling how devices in a network gain access to a medium and permission to transmit data
@@ -27,6 +41,7 @@
    - Protocol examples: Ethernet, Point-to-Point Protocol (PPP), HDLC, FDDI, Frame Relay, LLDP
 
 ## Network layer
+
 - Connect hosts in different networks
 - If message is too large for Layer 2 it can be fragmented
 - A number of layer-management protocols belong to the network layer: routing protocols, multicast group management, network-layer information and error, and network-layer address assignment
@@ -34,18 +49,22 @@
 ## Transport layer
 
 ## Session layer
+
 Sockets in TCP/IP
 
 ## Presentaion layer
+
 TLS
 
 ## Application layer
+
 HTTP, FTP, SMTP
 
 
 
 
 ## OSI protocols terms
+
 - End System (ES) - host
 - Intermediate System (IS) - router
 - System - network node
@@ -59,6 +78,7 @@ HTTP, FTP, SMTP
 
 
 ## NSAP addressing
+
 - An NSAP address is assigned to the entire network node, not to its individual interfaces. A single node requires only one NSAP address in a common setup, regardless of how many network interfaces it uses. As a result, NSAP addressing does not have the notion of per-interface subnets similar to IP subnets.
 - NSAP address has a variable length: the minimum size of an NSAP address is 8 octets — with only AFI, System ID, and SEL fields present. The maximum NSAP address size is 20 octets.  
 
@@ -87,6 +107,7 @@ Example (IDI is not present in it)
 - 00 - Service - SEL - NET - 2 hexadecimal digits - 1 octet
 
 ## Routing in OSI networks
+
 Different levels of routing exist in OSI world. Level 1 and Level 2 routing are provided by the IS-IS routing protocol (ISO 10589). Level 3 routing should have been provided by Inter Domain Routing Protocol (IDRP, ISO 10747). However, BGP killed it, because it could carry NSAP addresses. Level 0 and Level 3 routing are provided by different mechanisms and are not relevant for TCP/IP networks.
 
 - Level 0 routing: Routing between two ES nodes on the same link, or between an ES node and its nearest IS

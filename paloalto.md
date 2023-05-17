@@ -275,7 +275,7 @@ Session end reasons
 - If the protocol is unknown, App-ID will apply heuristics
 - Use App-ID instead of service and protocols and port based
 - App-ID without decryption identifies application based on server certificate: CN field, if it is exact, then it will be google-base for example, if there is a wildcard, it will be SSL app
-- Application override - only for trusted traffic - create custom application based on zones, ips, ports...
+- Application override - only for trusted traffic - create custom application based on zones, ips, ports... - used to decrease load on NGFW - it does not analyze App for certain traffic
 - Create a custom app configuring its characteristics:
     - Charachteristics
     - Category and subcategory
@@ -306,13 +306,19 @@ App-ID database
 - Technology 
 - Deny action 
 
+App-ID status in logs:
+- Icomplete - three-way TCP handshake did not complete OR no enough data after the handshake - is not really an application
+- Insufficient data - not enough data to identify the application - for example one data packet after the handshake
+- unknown-tcp - firewall captured the three-way TCP handshake, but the application was not identified - custom app, no signatures
+ - unknown-udp - custom app, no signatures
+ - unknown-p2p - generic P2P heuristics
+ - Not-applicable - port is blocked
+
 ## Decryption
 
-We configure policy based on profile. 
-In profile we configure all SSL settings.  
+We configure policy based on profile  
+In profile we configure all SSL settings  
 Than we mark one cert as forward proxy  
-
-
 
 - Content-ID is impossible
 - App-ID - works partially
@@ -321,11 +327,13 @@ Than we mark one cert as forward proxy
 ## HA
 
 Types:
+
 - Active/Standby
 - Active/Active
 - Cluster
 
 Concepts:
+
 - Up to 16 firewalls as peer members of an HA cluster
 - Configure HA then everything else: Interfaces, policies....
 - Active firewall has less priority
@@ -343,6 +351,7 @@ Failover reasons
 - Hardware monitoring: The member continually performs packet path health monitoring on its own hardware and fails if a malfunction is detected
 
 What is not synced?
+
 - Mgmt interface settings
 - Panorama settings
 - SNMP
@@ -828,14 +837,43 @@ request high-availability sync-to-remote running-config
 
 ## Log filtering
 
-Show only ICMP protocol
-```
-(proto eq icmp) 
-```
+Logical operators
+
+- (proto neq udp) or ( addr.src notin 192.168.0.0/24 ) or !(addr in 1.1.1.1) или not (app eq ssl)
+- AND: (port.src eq 23459) and (port.dst eq 22)
+- OR: (port.src eq 23459) or (port.dst eq 22) 
+
+Addresses
+
+- (addr.src in 1.1.1.1)
+- (addr.dst in 2.2.2.2)
+- (addr in 1.1.1.1)
+
+Protocols: (proto eq udp)
+
+Ports
+
+- (port.src eq 22)
+- (port.dst eq 25)
+
+Apps: (app eq ssh)
+
+Users
+
+- Unindentified user: (user.src eq ’’)
+- User in group: (user.src in 'group1')
+
+Action: (action eq allow)  
+
+Date and time
+
+Before date: (receive_time leq '2015/08/31 08:30:00’)
+After date: (receive_time geq '2015/08/31 08:30:00')
 
 ## Troubleshooting
 
 Show system logs
-```
+
+```text
 show log system
 ```

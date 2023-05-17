@@ -16,7 +16,8 @@
 
 ## LAG
 Concepts
-- How many links each tech?
+- 802.3ad earlier, now 802.1AX
+How many links each tech?
 - Why even number?
 - Load balance methods ?
 - M-LAG vs MC-LAG? STandard?
