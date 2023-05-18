@@ -707,10 +707,7 @@ Types:
 - Log Collector
 - Panorama: both
 
-<img width="208" alt="image" src="https://github.com/philipp-ov/foundation/assets/116812447/70a9593e-22aa-4927-9025-64dfff9e7328">
-
-
- ### Templates, stacks - to control configuration and updates
+### Templates, stacks - to control configuration and updates
  
  <img width="576" alt="image" src="https://github.com/philipp-ov/foundation/assets/116812447/813aef71-ce9f-401e-80a9-81e34f4c42c3">
 
