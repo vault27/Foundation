@@ -248,6 +248,26 @@ The policy evaluation then uses the 'six tuple' (6-Tuple) to match establishing 
 
 <img width="712" alt="image" src="https://github.com/philipp-ov/foundation/assets/116812447/1d86b533-ba26-4894-b550-35aa76e314da">
 
+- Stream mode is used for scanning, not file
+- Applied only for allowed rules
+- All security profiles - is a Content-ID feature
+- Wildfire license - updates are in real time
+- Threat prevention license - updates are once in 24 hours
+- We can create groups
+
+Possible actions:
+
+- default: For each threat signature and antivirus signature that is defined by Palo Alto Networks, a default action is specified internally. Typically, the default action is an alert or a reset-both. The default action is displayed in parenthesis—for example, default (alert) in the threat or antivirus signature.
+- allow: This action permits the application traffic.
+- alert: This action generates an alert for each application traffic flow. The alert is saved in the
+Threat log.
+- drop: This action drops the application traffic.
+- reset-client: For TCP, this action resets the client-side connection. For UDP, it drops the
+connection.
+- reset-server: For TCP, this action resets the server-side connection. For UDP, it drops the
+connection.
+- reset-both: For TCP, this action resets the connection on both client and server ends. For
+UDP, it drops the connection.
 
 ## Sessions
 
