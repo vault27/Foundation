@@ -583,8 +583,6 @@ No NAT policy for exculsion
 Use session browser to find NAT rule name  
 U-Turn NAT - user connects to Internal resource via external IP address and it is uturned on the firewall. Due to absence of internal DNS server for example. If we use regular Destination NAT for it, then traffic will be sent back to Internal network and web server will reply directly to client, causing assymetry. To avoid this Source NAT should be used as well, so the reply traffic will be sent to NGFW as well. Place the rule for it above all other
 
-
-
 ## User-ID
 
 - Runs either on the firewall (agentless implementation)
@@ -618,6 +616,7 @@ Use User-ID Agent (Windows)
 - Save processing cycles on the firewall’s management plane
 
 ### Configure managed service account on Windows AD
+
 - Active Directory Users and Computers > Managed Service Accounts > New User
 - Allow the service account to read the security log events
 - Active Directory Users and Computers > Builtin > Event Log Readers > Add new managed service account
@@ -631,6 +630,7 @@ AD has to generate logs for Audit Logon, Audit Kerberos Authentication Service, 
 - Ticket Granted Renewed (4770)
 
 ### Configure agentless
+
 - Enable User-ID in a zone options
 
 ### Debug
@@ -644,7 +644,6 @@ Show log for agentkess connection to Active Directory
 less mp-log useridd.log
 ```
 Go to the end of the file by pressing Shift+G
-
 
 ## QOS
 
@@ -702,24 +701,28 @@ Features:
 - Automated threat response
 - Enterprise-level reporting and administration
 
-Concepts:
+ ### Templates, stacks - to control configuration and updates
+ 
+ <img width="576" alt="image" src="https://github.com/philipp-ov/foundation/assets/116812447/813aef71-ce9f-401e-80a9-81e34f4c42c3">
+
+- Configuration is written to template
+- Template is addded to stack - 8 max
+- NGFW is connected to max one stack
+- A Panorama administrator can override the template settings at the stack level
+- A local administrator can also perform overrides directly on an individual device if necessary
+
+### Device groups - to control policies and objects
 
 - Device groups: for controlling all policies + all objects 
 - One NGFW only in one Device Group
 - You can create a device group hierarchy to nest device groups in a hierarchy of up to four levels, with the lower-level groups inheriting the settings (policy rules and objects) of the higher-level groups
-- For centralized firewall configuration and update management, define a template stack
-- Template stacks can combine up to eight templates
-- Assign firewalls to stack
-- One Firewall - one template stack
 - Adds pre rules and post rules, which are read only on NGFW
-- NGFW configuration is managed via Template Stack
 - Devices must be added to device group
 - PAN-OS doesn’t synchronize pushed rules across HA peers
 - User-ID master in HA-group during adding to Device Group - This will be the only firewall in the device group from which Panorama gathers username and user group information
 - Local rules are not touched, we just pre and post
 
-
-Configuration
+### Configuration
 
 - Add Panorama and Secondary Panorama IP on device
 - Insert auth key from Panorama: Panorama > Device Registration Auth Key 
