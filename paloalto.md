@@ -244,6 +244,11 @@ The policy evaluation then uses the 'six tuple' (6-Tuple) to match establishing 
 5. Source Zone
 6. Protocol
 
+## Security profiles
+
+<img width="712" alt="image" src="https://github.com/philipp-ov/foundation/assets/116812447/1d86b533-ba26-4894-b550-35aa76e314da">
+
+
 ## Sessions
 
 Session types
