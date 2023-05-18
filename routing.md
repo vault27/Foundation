@@ -4,6 +4,11 @@
 - IPv4: TTL and checksum are modified  
 - IPv6: only the Hop Count is decremented  
 - Optimization goals: speed up the construction of new Layer 2 frame and egress interface lookup
+- Dynamic routing protocols
+- FIB/RIB
+- Administartive distance
+- Metrics
+- Redistribution
 
 # CIDR
 
