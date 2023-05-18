@@ -10,7 +10,15 @@
 - Metrics
 - Redistribution
 
-# CIDR
+# CIDR/VLSM
+
+- Classless Inter-Domain Routing (CIDR) is an IP address allocation method and IP routing
+- Introduced by IETF in 1993 to replace the previous classful network addressing architecture 
+- Goals: slow growth of routing tables and exhaustion of IPv4 addresses
+- Until the early 1990s, IP addresses were allocated using the classful addressing system. The total length of the address was fixed, and the number of bits allocated to the network and host portions were also fixed
+- Classless or Classless Inter-Domain Routing (CIDR) addresses use variable length subnet masking (VLSM) to alter the ratio between the network and host address bits in an IP address
+- 
+
 
 # VLSM
 
