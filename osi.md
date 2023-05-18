@@ -24,6 +24,18 @@
 - Family of standards  for local area networks (LAN), personal area network (PAN), and metropolitan area networks (MAN)
 - 24 groups
 - Only for variable sized packets networks
+- The number 802 has no significance: it was simply the next number in the sequence that the IEEE used for standards projects
+- Describes only data link and physical layers
+- IEEE 802 divides the OSI data link layer into two sub-layers: logical link control (LLC) and medium access control (MAC), as follows:
+   - Data link layer
+         - LLC sublayer
+         - MAC sublayer
+   - Physical layer
+- IEEE 802.3	Ethernet
+- 802.1Q VLANS
+- 802.1AX - Link Aggregation
+- 802.1X - Port Based Network Access control
+- 802.11 - Wireless LANs
 
 ## Physical layer
 

@@ -665,6 +665,7 @@ All other logs forwarding: Device > Log Settings - System, Configuration, User-I
 ## Panorama
 
 Features:
+
 - Policy management
 - Device health: Panorama > Managed Devices > Health
 - Objects configurations: addreses, profiles...
@@ -677,10 +678,35 @@ Features:
 - Enterprise-level reporting and administration
 
 Concepts:
+
+- Device groups: for controlling all policies + all objects 
+- One NGFW only in one Device Group
+- You can create a device group hierarchy to nest device groups in a hierarchy of up to four levels, with the lower-level groups inheriting the settings (policy rules and objects) of the higher-level groups
+- For centralized firewall configuration and update management, define a template stack
+- Template stacks can combine up to eight templates
+- Assign firewalls to stack
+- One Firewall - one template stack
 - Adds pre rules and post rules, which are read only on NGFW
 - NGFW configuration is managed via Template Stack
 - Devices must be added to device group
+- PAN-OS doesn’t synchronize pushed rules across HA peers
+- User-ID master in HA-group during adding to Device Group - This will be the only firewall in the device group from which Panorama gathers username and user group information
+- Local rules are not touched, we just pre and post
+
+
+Configuration
+
+- Add Panorama and Secondary Panorama IP on device
+- Insert auth key from Panorama: Panorama > Device Registration Auth Key 
+- Commit
+- Do the same for secondary device OR if it is already was in cluster, all setting will be commited from active device, except Auth key - it should be added manually
+- Add both devices to Panorama > Managed devices using serials
+- Group HA pair in panorama  
+- Create a device group
+- Commit and push
+- Go to Policies, select device group and edit edit policy and push it
 - 
+
 
 ## CLI
 
