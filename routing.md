@@ -17,10 +17,8 @@
 - Goals: slow growth of routing tables and exhaustion of IPv4 addresses
 - Until the early 1990s, IP addresses were allocated using the classful addressing system. The total length of the address was fixed, and the number of bits allocated to the network and host portions were also fixed
 - Classless or Classless Inter-Domain Routing (CIDR) addresses use variable length subnet masking (VLSM) to alter the ratio between the network and host address bits in an IP address
-- 
-
-
-# VLSM
+- Supernetting is the direct opposite of subnetting, in which multiple networks are combined into a single large network known as supernets
+- FLSM (Fixed Length Subnet Masks) Subnetting
 
 ## Packet processing
 - Router receives a frame, FCS is checked, router checks the Ethernet Type field for the packet type
