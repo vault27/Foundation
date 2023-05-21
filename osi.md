@@ -18,7 +18,7 @@
 ## Network organizations
 
 - IEEE -  Institute of Electrical and Electronics Engineers - Manhattan, New York - 1963 - Ethernet, LAG, NAC, Wi-Fi...
-- IETF - Internet Engineering Task Force - is a standards organization for the Internet and is responsible for the technical standards that make up the Internet protocol suite (TCP/IP) - all its participants are volunteers - published RFCs: https://www.rfc-editor.org 
+- IETF - Internet Engineering Task Force - is a standards organization for the Internet and is responsible for the technical standards that make up the Internet protocol suite (TCP/IP) + OSPF - all its participants are volunteers - published RFCs: https://www.rfc-editor.org 
 
 ## IEEE 802
 

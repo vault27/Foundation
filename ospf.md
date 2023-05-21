@@ -2,13 +2,31 @@
 
 Everything I need to know about OSPF in one place.
 
+## Books
+
+- OSPF: Anatomy of an Internet Routing Protocol
+- Routing TCP/IP Volume 1
+- Cisco IP Routing: Packet Forwarding and Intra-domain Routing Protocols
+
+## Standards
+
+- RFC 2328 "OSPF Version 2"
+- RFC 5340 "OSPF for IPv6"
+
+## Documentation
+
+- OSPF Technology Documentation - 
+- OSPF Configuration Guide
+
 ## History
 
-Open Shortest Path First  was developed in the late 1980s. Because RIP had issues with scalability, performance, large AS.
-Developed by Internet Engineering Task Force (IETF).
-The first version of OSPF was described in RFC 1131, published in October 1989. This was quickly replaced by OSPF Version 2 in July 1991, described in RFC 1247. Since then there have been several revisions to the OSPF Version 2 standard, in RFCs 1583, 2178, and 2328, with the last of these the current standard. OSPF Version 2 is the only version in use today, so it is usually what is meant when people (including myself) refer to “OSPF”. RFC is 240 pages! 
+- Open Shortest Path First  was developed in the late 1980s
+- Because RIP had issues with scalability, performance, large AS
+- Developed by Internet Engineering Task Force (IETF)
+- The first version of OSPF was described in RFC 1131, published in October 1989. This was quickly replaced by OSPF Version 2 in July 1991, described in RFC 1247. Since then there have been several revisions to the OSPF Version 2 standard, in RFCs 1583, 2178, and 2328, with the last of these the current standard. OSPF Version 2 is the only version in use today, so it is usually what is meant when people (including myself) refer to “OSPF”. RFC is 240 pages!
 
 ## Terms
+
 - Link state - link is an interface - The state of the link is a description of that interface and of its relationship to its neighbor routers. A description of the interface would include, for example, the IP address of the interface, the mask, the type of network it is connected to, the routers connected to that network and so on. The collection of all these link-states would form a link-state database
 - LSDB - Link State Database   
 - SPF - Shortest Path First  
@@ -22,24 +40,37 @@ The first version of OSPF was described in RFC 1131, published in October 1989. 
 - BDR - BAckup Designated Router  
 
 ## Pros
-- Router knows all network and builds a tree - no loops
+- Router knows all network and builds a tree - Guarantees Loop-Free Topology
 - OSPF is very good for traffic engineering in ISP with MPLS
 - Fast convergence
 - Simple
 - IPv4 and IPv6
 - Open protocol
 - Easy to configure
+- Large scalability - hierrachy through areas - topology summarization
+- Fast Convergence
+    - Actively Tracks Neighbor Adjacencies
+    - Event Driven Incremental Updates
+- Efficient Updating
+    - Uses reliable multicast and unicast updates - instead of broadcast on  RIP
+    - Non-OSPF devices do not need to process updates
+- Bandwidth Based Cost Metric
+    - More flexible than static hop count
+Control Plane Security
+- Supports multiple forms of authentication
+    - E.g. Clear Text, MD5, SHA, IPsec, etc.
+- Extensible
+    - Future application support through "opaque" LSA
+    - E.g. MPLS Traffic Engineering
 
 ## Cons
 - Main cons is bad performance when many hosts - high CPU load - several thousand prefixes max - because every router has to calculate a tree
 
 ## Concepts
-- Open standard
+- Open standard, IGP, Link-state, classless(VLSM, Summarization), Dikstra SPF Algorithm
 - The algorithm places each router at the root of a tree
 - Each router has its own view of the topology even though all the routers build a shortest path tree which uses the same link-state database
 - Which networks are advertised by default - ???
-- IGP routing protocol for IP networks
-- Uses link state routing (LSR) algorithm or Shotest Path, uses Dijcstra algorithm, this algorithm is very complicated
 - Operates in one Autonomous System
 - OSPF routers have End -to- End Visibility of entire network in form on Topology table
 - LSDB is identical on all routers in 1 area
@@ -50,7 +81,6 @@ The first version of OSPF was described in RFC 1131, published in October 1989. 
 - One area - 500 routers
 - Process id can be different
 - Metric is based on cumulitive cost of all outgoing interfaces, the lower the mitric the better, it is a price of the route
-- Supports VLSM and CIDR
 - No hop limit
 - All networks are connected via backbone areas to avoid loops
 - Hello interval - router sends Hello messages

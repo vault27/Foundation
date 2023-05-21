@@ -86,12 +86,22 @@ STP - Shielded Twisted Pair - covered with foil
 
 - Destination MAC address
 - Source MAC address
-- Type: ARP,
+- EtherType: two-octet field in an Ethernet frame. It is used to indicate which protocol is encapsulated in the payload of the frame and is used at the receiving end by the data link layer to determine how the payload is processed. Examples:
+    - IPv4
+    - ARP
+    - IPv6
+    - MPLS
+    - PPPoE 
 
 ## MAC
 
-- 48 bits - 6 bytes - Media Access Controll address - MAC - how we access media
-- First 24 bits are OUI
+- 48 bits - 6 bytes - Media Access Controll address
+- Consists of 6 numbers, usually written in hexademical format
+- 12 digits long hexadecimal number
+- Usually devided into 2 or 4 digit blocks, when presented in software
+- No matter which style you use to write the MAC address, a MAC address is always processed in binary numbers only
+- First 24 bits are OUI - organizationally unique identifier - provided by IEEE
+- The rest 24 bits are assigned by manufacture
 - Written in hexadecimal - 6 numbers - one for each byte
 - Broadcast MAC: ff:ff:ff:ff:ff:ff, all 1s, used in ARP, broadcast, DHCP...
   

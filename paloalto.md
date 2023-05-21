@@ -73,8 +73,7 @@ Main features:
 - User-ID
 - Device-ID
 
-
-## NGFW Features
+Features
 
 - 6 Tulip stateful firewall
 - App-ID - Scans traffic to identify the application involved, regardless of the protocol or port number used
@@ -98,8 +97,15 @@ Main features:
 - DHCP
 - DNS-Proxy
 - Routing
+- Tags
+- IP Tags
+- VM Monitoring
+- Dynamic Address Groups
+- Dynamic Extrnal Lists
+- XML API
+- Device ID
 
-## NGFW Licenses
+Licenses
 
 - Advanced Threat Protection
 - Advanced URL filtering
@@ -147,7 +153,7 @@ Concepts
 - Policy check relies on pre-NAT IP addresses
 - Zone protection profile, flood protection: syn(random early drop - drops random syn packets, syn cookies - are always on) icmp, icmpv6, other ip, udp; reconnaissance - port scan, host sweep. All thresholds here are aggregate for all zone. + there is packet based protection. Then we apply it in zone configuration, usually for outside zone
 
-## Zone protection profile
+Zone protection profile
 
 - Flood protection
 - Reconnaissance protection - port scans
@@ -222,6 +228,7 @@ https://knowledgebase.paloaltonetworks.com/KCSArticleDetail?id=kA10g000000ClVHCA
 
 - Top to down
 - Left to right
+- New rule is created under currently selected rule
 - More specific rules first
 - Exceptions to policy rules must appear before the general policy
 - Step 1: check security policy
@@ -349,6 +356,53 @@ Than we mark one cert as forward proxy
 - App-ID - works partially
 - Decryption policies enable you to specify traffic for decryption according to destination, source, user/user group, or URL category
 
+## Tags
+
+- Tags can be attached to the following objects: address objects, address groups, user groups, zones, service groups, and policy rules
+- If we attach a Tag to a policy rule + specify fo rule which Tag to use to group it by + enable "View rulebase as Groups" the we can use it to see policy grouped by tag
+- Tags can be painted or not
+- In Panorama we can: Move rules in group to a different rulebase or device group
+- We also can:
+    - Change group of all rules
+    - Move all rules in group
+    - Delete all rules in group
+    - Clone all rules in group
+
+## IP Tags and Dynamic Address Group (DAG)
+
+Sberbank case: script sends via XML API Tag + IP, based on this Tag IP is added to DAG, DAG is used in a policy as destination, or source  
+
+- IP-Tag can be assigned to IP address via:
+        - XML API
+        - Log Forwarding Profile - For example, whenever the firewall generates a threat log, you can configure the firewall to tag the source IP address in the threat log with a specific tag name
+        - Device > VM Information Sources - monitor VMware ESXi, vCenter Server, AWS-VPCs, and Google Compute Engines natively on the firewall
+        - User-ID agent for Windows - monitor up to 100 VMware ESXi servers, vCenter Servers, or a combination of the two
+        - Panorama Plugin - Azure or AWS public cloud 
+        - VMware Service Manager - Integrated NSX solutions only
+- IP Tags can be seen via Monitor > IP tag
+- You can configure the firewall to dynamically unregister a tag after a configured amount of time using a timeout  
+
+- Tags can be used in Dynamic Address Groups: Objects > Address Groups > Create Dynamic
+- Tags are used as match criteria for groups
+- Dynamic address groups are very useful if you have an extensive virtual infrastructure where changes in virtual machine location/IP address are frequent
+- Dynamic address groups can also include statically defined address objects, we configure tag for static object
+- PAN-OS only supports IPv4 IP subnets and ranges in dynamic address groups
+- We create dynamic group and what it matches - it matches a tag - then we use this dynamic group in policy
+- Dynamic tags are part of the runtime configuration
+- This implies that a commit is not required to update dynamic tags
+- Each registered IP address can have up to 32 tags
+- We can view a list of addresses in DAG by pointing on DAG in Security Policy > Pressing Inspect > Pressing more OR going to Address Groups in Objects and pressing More
+- If you want to delete all registered IP addresses, use the CLI command debug object registered-ip clear all and then reboot the firewall after clearing the tags
+
+## External Dynamic List
+
+- Text file that is hosted on an external web server so that the firewall can import objects—IP addresses, URLs, domains—included in the list and enforce policy
+- Objects > External Dynamic Lists
+- Used in Policy: Source/Destination Address, URL category
+- Configure DNS Sinkholing for a List of Custom Domains
+- Use an External Dynamic List in a URL Filtering Profile
+
+
 ## HA
 
 Types:
@@ -436,7 +490,7 @@ What is not synced?
 ### Active/Passive
 
 Supported deployments
-- virtual wire
+- Virtual wire
 - Layer 2
 - Layer 3 
 
@@ -461,6 +515,9 @@ Configuration overview
 - Enable HA widget on a dashboard
 - Sync config
 - Manually suspend node: Device > High Availability > Operational Commands > Suspend local device
+
+Out of sync state  
+Possible when person makes change to active host, does not commit. Then someone from Panorama commits amd push configs to both devices. But panorama does not touch what we did locally. As a result new configuration only on Active device and we have out of sync state. Now we can sync from both devices, we need to choose which one is better for us.
 
 ### Firewall states
 
@@ -633,12 +690,33 @@ AD has to generate logs for Audit Logon, Audit Kerberos Authentication Service, 
 
 - Enable User-ID in a zone options
 
+### Map users to groups
+
+- Add LDAP server profile Device > Server > Profiles > LDAP
+        - Port - 389
+        - Base DN - DC=sber,DC=ru
+        - Bind DN - Administrator@sber.ru
+        - No SSL
+- Enable Group Mapping Device > User Identification > Group Mapping Settings
+        - Choose server profile
+- Verify that the user and group mapping has correctly identified users DeviceUser IdentificationGroup MappingGroup Include List
+- To verify that all of the user attributes have been correctly captured, use the following CLI command:
+
+```text
+show user user-attributes user all
+```
+
+- Verify that the usernames are correctly displayed in the Source User column under Monitor > Logs > Traffic
+- Verify that the users are mapped to the correct usernames in the User Provided by Source column under Monitor > Logs > User-ID.
+
 ### Debug
 
 Show logged in users
-```
+
+```text
 debug dataplane show user all
 ```
+
 Show log for agentkess connection to Active Directory
 ```
 less mp-log useridd.log
@@ -665,13 +743,14 @@ Define a QoS policy rule to match to traffic based on:
 
 ## Logging
 
-By default, the logs that the firewall generates reside only in its local storage.   
+By default, the logs that the firewall generates reside only in its local storage  
 Everything is in a Log Forwarding profile  
 Objects > Log Forwarding  
 Profile is attached to Security, Authentication, DoS Protection, and Tunnel Inspection policy rules  
 
 - Several rules in one profile
-- ICMP and DNS are logged only locally to NGFW to lesses load on Panorama
+- We configure all in one profile and then apply it to all rules, for example we can negate DNS and ICMP int it: ICMP and DNS are logged only locally to NGFW to lesses load on Panorama
+- Also in this profile we configure to send logs simulteniusly to Syslog and Panorama
 - Separate rule for logging blocks
 - Log Forwarding Profile is configured for every rule:
         - Log type: Authentication, Data Filtering, GTP, SCTP, Threat, Traffic, Tunnel, URL Filtering, and WildFire
@@ -714,12 +793,14 @@ Types:
 - Configuration is written to template
 - Template is addded to stack - 8 max
 - NGFW is connected to max one stack
-- A Panorama administrator can override the template settings at the stack level
+- A Panorama administrator can override the template settings at the stack level: add options to stack directly
 - A local administrator can also perform overrides directly on an individual device if necessary
 
 ### Device groups - to control policies and objects
 
-- Device groups: for controlling all policies + all objects 
+- Device groups: for controlling all policies + all objects
+- Tags can be applied to devices when add them to panorama
+- Then these tags are used as targets in rule instead of sending to all devices in device group
 - One NGFW only in one Device Group
 - You can create a device group hierarchy to nest device groups in a hierarchy of up to four levels, with the lower-level groups inheriting the settings (policy rules and objects) of the higher-level groups
 - Adds pre rules and post rules, which are read only on NGFW
@@ -727,6 +808,10 @@ Types:
 - PAN-OS doesn’t synchronize pushed rules across HA peers
 - User-ID master in HA-group during adding to Device Group - This will be the only firewall in the device group from which Panorama gathers username and user group information
 - Local rules are not touched, we just pre and post
+- Rule is installed by default on all devices in device group, but we can choose exact firewalls or based on tags
+- One giant device group consists of many subgroups
+- Every device in panorama has its own tag or many tags
+
 
 ### Configuration
 

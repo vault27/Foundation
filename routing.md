@@ -1,4 +1,5 @@
 # Routing
+
 - Routing=Forwarding  
 - In two words: Layer 2 frame rewrite and send it to correct interface  
 - IPv4: TTL and checksum are modified  
@@ -9,16 +10,6 @@
 - Administartive distance
 - Metrics
 - Redistribution
-
-# CIDR/VLSM
-
-- Classless Inter-Domain Routing (CIDR) is an IP address allocation method and IP routing
-- Introduced by IETF in 1993 to replace the previous classful network addressing architecture 
-- Goals: slow growth of routing tables and exhaustion of IPv4 addresses
-- Until the early 1990s, IP addresses were allocated using the classful addressing system. The total length of the address was fixed, and the number of bits allocated to the network and host portions were also fixed
-- Classless or Classless Inter-Domain Routing (CIDR) addresses use variable length subnet masking (VLSM) to alter the ratio between the network and host address bits in an IP address
-- Supernetting is the direct opposite of subnetting, in which multiple networks are combined into a single large network known as supernets
-- FLSM (Fixed Length Subnet Masks) Subnetting
 
 ## Packet processing
 - Router receives a frame, FCS is checked, router checks the Ethernet Type field for the packet type
