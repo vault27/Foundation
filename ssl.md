@@ -1,9 +1,5 @@
 # TLS/SSL
 
-
-
----------------------------------------------------------------------------------------------------------------  
-
 ## SSL/TLS Protocols 
 
 Handshake protocol
@@ -25,11 +21,13 @@ In TLS, integrity validation is part of the encryption process; it’s handled e
 - TLS 1.3 - RFC 8446
 
 ### History
+
 - SSL v3 - 1996 - Netscape
 - Netscape handed it over to IETF
 - IETF renemaed it to TLS in 1999
  
 ### Handshake
+
 - Client sends Hello: cipher suite, protocol version
 - Server sends hello with chosen cipher suite + server certificate(public key + certificate info)
 - Server sends Hello Done
@@ -41,6 +39,7 @@ In TLS, integrity validation is part of the encryption process; it’s handled e
 - If Diffie-Hellman is used, than private key on the server side is used for Auth only, not for encryption
 
 ### Cipher suite
+
 https://ciphersuite.info  
 
 Attributes:
@@ -80,6 +79,7 @@ TLS 1.3 Cipher Suites:
 LS 1.3 cipher suites are defined differently, only specifying the symmetric ciphers, and cannot be used for TLS 1.2. Similarly, cipher suites for TLS 1.2 and lower cannot be used with TLS 1.3.
 
 ### TLS 1.2
+
 Handshake  
 - TLS communicates via records, can be several records in one packet TCP packet (one or many IP packets) 
 - Every record has its own Handshake Type (number), we can use it to filter in Wireshark.    
@@ -98,6 +98,7 @@ Handshake process, records, 10 in total:
 10. Encrypted handshake message from server
 
 ### TLS 1.3
+
 https://tls13.xargs.org  
 https://blog.cloudflare.com/rfc-8446-aka-tls-1-3/  
  
@@ -123,6 +124,7 @@ https://blog.cloudflare.com/rfc-8446-aka-tls-1-3/
 
 
 #### Strong ciphers and algorithms
+
 Symmetric encryption - only AEAD ciphers:
 - AES-GCM(most common)
 - AES-EAX
@@ -134,6 +136,7 @@ Perfect forward secrecy is mandatory, no RSA, only Diffie Hellman, TLS v1.3 supp
 - PSK without ephemeral Diffie-Hellman.
 
 ### Client Hello
+
 A lot of extensions and fields:
 ```
 Handshake Protocol: Client Hello
@@ -209,6 +212,7 @@ Extension: server_name (len=13)
 - Different protocols support different cipher suites
 
 #### Auth
+
 - RSA - good to use    
 - ECDSA (Ecliptic curve digital signature algorithm) - slow  
 - DSA
@@ -219,6 +223,7 @@ Extension: server_name (len=13)
 - During the DHE and ECDHE exchanges, the server contributes to the key exchange with its parameters. The parameters are signed with its private key. The client, which is in possession of the corresponding public key (obtained from the validated certificate), can verify that the parameters genuinely arrived from the intended server
 
 ## SNI
+
 ServerName encryption    
 Server Name (the domain part of the URL) is presented in the ClientHello packet, in plain text.  
 From RFC:  
@@ -231,7 +236,10 @@ In order to provide the server name, clients MAY include an extension of type "s
 - Also, reverse DNS lookup may help 
 - Correct application identification is only possible with decryption: gmail site is signed by Google cert and you will not be able to understand what it is exactly without decryption
 
+## HSTS
+
 ## Wireshark
+
 SNI filtering
 ```
 tls.handshake.extensions_server_name contains "dlp"

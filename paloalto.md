@@ -356,6 +356,22 @@ Than we mark one cert as forward proxy
 - App-ID - works partially
 - Decryption policies enable you to specify traffic for decryption according to destination, source, user/user group, or URL category
 
+Configuration:
+
+- Policies > Decryption
+- Name: Sber
+- Source address: 192.168.1.0/24
+- Action: Decrypt
+- Type: SSL Forward Proxy
+- Decryption profile: Default
+- Device > Certificate Management > Certificates
+- Name: sber.ru
+- Common Name: sber.ru
+- Signed by - empty
+- Certificate Authority
+- After cert generation enable in it: Forward Trust Certificate, Forward Untrust Certificate, Trusted Root CA
+- Export cert to client
+
 ## Tags
 
 - Tags can be attached to the following objects: address objects, address groups, user groups, zones, service groups, and policy rules
@@ -661,6 +677,9 @@ U-Turn NAT - user connects to Internal resource via external IP address and it i
 - Maximum of 512k users in a domain
 - User-ID agent is launched under the same User name as it connects to AD
 - Special User-ID log
+- The User-ID agent queries the Domain Controller and Exchange server logs using Microsoft Remote Procedure Calls (MSRPCs)
+- During the initial connection, the agent transfers the most recent 50,000 events from the log to map users
+- On each subsequent connection, the agent transfers events with a timestamp later than the last communication with the domain controller
 
 Use Agentless (PAN-OS)
 - If you have a small-to-medium deployment with few users and 10 or fewer domain controllers or exchange servers
@@ -690,7 +709,12 @@ AD has to generate logs for Audit Logon, Audit Kerberos Authentication Service, 
 
 - Enable User-ID in a zone options
 
-### Map users to groups
+### Configure via User-ID agent
+
+- Enable User-ID in zone
+- Device > Data Redistribution - Configure Agent host and port
+
+`### Map users to groups
 
 - Add LDAP server profile Device > Server > Profiles > LDAP
         - Port - 389
@@ -699,7 +723,7 @@ AD has to generate logs for Audit Logon, Audit Kerberos Authentication Service, 
         - No SSL
 - Enable Group Mapping Device > User Identification > Group Mapping Settings
         - Choose server profile
-- Verify that the user and group mapping has correctly identified users DeviceUser IdentificationGroup MappingGroup Include List
+- Verify that the user and group mapping has correctly identified users Device > User Identification > Group Mapping > Group Include List
 - To verify that all of the user attributes have been correctly captured, use the following CLI command:
 
 ```text
@@ -794,7 +818,7 @@ Types:
 - Template is addded to stack - 8 max
 - NGFW is connected to max one stack
 - A Panorama administrator can override the template settings at the stack level: add options to stack directly
-- A local administrator can also perform overrides directly on an individual device if necessary
+- A local administrator can also perform overrides directly on an individual device if necessary - we chose an object and there is a button in the bottom: Override
 
 ### Device groups - to control policies and objects
 
@@ -824,8 +848,6 @@ Types:
 - Create a device group
 - Commit and push
 - Go to Policies, select device group and edit edit policy and push it
-- 
-
 
 ## CLI
 
@@ -970,15 +992,35 @@ request high-availability sync-to-remote running-config
 ## Packet capture
 
 - Packets are captured on the dataplane vs on the interface
+- Packet captures are session-based, so a single filter is capable of capturing both client2server and server2client
+- Offloaded sessions can't be captured so offloading may need to be disabled temporarily. An offloaded session will display 'layer7 processing: completed' in the show session details
+- When filtering is enabled, new sessions are marked for filtering and can be captured, but existing sessions are not being filtered and may need to be restarted to be able to capture them
+- Allowed traffic can be seen in the following stages: Firewall, Transmit, Receive
+- Dropped traffic can be seen in the following stages: Receive, Drop
+- Receive stage is good to use if we need to make sure that traffic reaches FW in general
+- Transmit stage is good to make sure that traffic successfully passed and left FW and how it was NATed
+
 
 **Filters**
 - Filters are not mandatory
 
 **Stages**
 - drop stage is where packets get discarded. The reasons may vary and, for this part, the global counters may help identify if the drop was due to a policy deny, a detected threat, or something else
-- receive stage captures the packets as they ingress the firewall before they go into the firewall engine. When NAT is configured, these packets will be pre-NAT
-- transmit stage captures packets how they egress out of the firewall engine. If NAT is configured, these will be post-NAT
-- firewall stage captures packets in the firewall stage
+- receive stage captures the packets as they ingress the firewall before they go into the firewall engine. When NAT is configured, these packets will be pre-NAT - only incoming packets
+- transmit stage captures packets how they egress out of the firewall engine. If NAT is configured, these will be post-NAT - only outgoing packets
+- firewall stage captures packets in the firewall stage - only incoming packets before NAT
+
+If Ping is allowed you will see the following:
+- Nothing in drop stage
+- In Receive stage: Incoming packets before NAT on all interfaces involved for both request and response, no outgoing packets - only incoming
+- In Firewall stage: The same as in Receive, if there is no filtering
+- In Transmit stage: only outgoing packets after NAT
+
+If ping is allowed you will see the following:
+- Receive and drop stages are the same - all incoming requests are received and dropped
+- No Firewall and Transmit stages
+
+
 
 ## Log filtering
 
