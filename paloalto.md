@@ -40,10 +40,18 @@
 ### Cortex
 
 Detection, investigation, automation, and response capabilities.
-- Cortex XDR - Extended Detection and Response - detection and response platform that runs on integrated endpoint, network, and cloud data. Runs on integrated endpoint, network, and cloud data. Immediate response actions. Define indicators of compromise (IOCs) and behavioral indicators of compromise (BIOCs).
-- Cortex XSOAR - extended Security Orchestration, Automation, and Response - 
-- Cortex Data Lake - central log storage
-- AutoFocus
+- Cortex XDR - Extended Detection and Response - detection and response platform that runs on integrated endpoint, network, and cloud data.  Immediate response actions. Define indicators of compromise (IOCs) and behavioral indicators of compromise (BIOCs).
+- Cortex XSOAR - extended Security Orchestration, Automation, and Response - automate up to 95 percent of all of the response actions - gets data from XDR and Autofocus
+- Cortex Data Lake - central log storage - Effortlessly run advanced artificial intelligence and ML with cloud-scale data - Constantly learn from new data sources to evolve defenses
+- The following products can utilize Cortex Data Lake:
+    - Prisma Access
+    - Palo Alto Networks NGFWs and Panorama devices with the ability to connect to the cloud
+service
+    - Cortex XDR
+    - Previous versions of Palo Alto Networks Traps for endpoint protection and response (now
+Cortex XDR)
+    - Traps running version 5.0+ with the Traps management service
+- AutoFocus - cloud-based threat intelligence service - takes data from every where and provides it for XSOAR, XDR
 
 ## NGFW
 
@@ -116,6 +124,37 @@ Licenses
 - Wildfire
 - IoT security
 - Autofocus
+
+IPv6 support
+
+- Neighbor Discovery (ND) is enhanced
+- The firewall by default runs NDP, which uses ICMPv6 packets to **discover and track the link-layer addresses** and status of neighbors on connected links
+- Provision the IPv6 hosts with the Recursive DNS Server (RDNSS) option and DNS Search List (DNSSL) option, per RFC 6106, IPv6 Router Advertisement Options for DNS Configuration
+- When you configure Layer 3 interfaces, you configure these DNS options on the firewall so it can provision the IPv6 hosts
+- You don’t need a separate DHCPv6 server to provision the hosts
+- The firewall sends IPv6 Router Advertisements (RAs) containing these options to the IPv6 hosts as part of their DNS configuration to fully provision them to reach internet services
+- IPv6 hosts are configured with
+    - The addresses of the RDNS servers that can resolve DNS queries
+    - A list of domain names (suffixes) that the DNS client appends (one at a time) to an unqualified domain name before entering the domain name into a DNS query
+- The IPv6 Router Advertisement for DNS configuration is supported for Ethernet interfaces, subinterfaces, Aggregated Ethernet interfaces, and Layer 3 VLAN interfaces on all of the PAN-OS platforms
+- After you configure the firewall with the addresses of RDNS servers, the firewall provisions an IPv6 host (the DNS client) with those addresses
+- An IPv6 Router Advertisement can contain multiple DNS Recursive Server Address options, each with the same or different lifetimes
+
+Configuration of IPv6
+- You enable IPv6 on interface
+- You configure address
+- You enable Duplicate Address Detection
+- You enable  NDP Monitoring - you can view the IPv6 addresses of devices on the link local network, their MAC address, associated username from User-ID, eachability Status of the address, and Last Reported date and time the NDP monitor received a Router Advertisement from this IPv6 address
+- You enable RA-Router Advertisment
+- You enable DNS support - include DNS information in Router Advertisment: Recursive DNS servers and lifetime, suffixes and lifetime, lifetime - the maximum length of time the client can use the specific RDNS Server to resolve domain names
+
+Artificial intelligence operations (AIOps)/Telemetry
+
+- When enabled, Telemetry allows the firewall to collect and forward traffic information to Palo Alto Networks
+- The data collected pertains to applications, threats, device health, and passive DNS information
+- Data is sent to Cortex Data lake
+- Device > Setup > Telemetry + enable Cortex Data Lake
+
 
 ## Zones
 
@@ -711,10 +750,11 @@ AD has to generate logs for Audit Logon, Audit Kerberos Authentication Service, 
 
 ### Configure via User-ID agent
 
-- Enable User-ID in zone
-- Device > Data Redistribution - Configure Agent host and port
+- Install User-ID agent on supported Windows version according to instructions, configure it and launch
+- Enable User-ID in zone configuration
+- Device > Data Redistribution - Configure Agent host and port - verify that its status is connected
 
-`### Map users to groups
+### Map users to groups
 
 - Add LDAP server profile Device > Server > Profiles > LDAP
         - Port - 389

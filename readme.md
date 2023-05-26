@@ -3,3 +3,9 @@ My personal knowledge base on networks, security, protocols, cryptography, techn
 
 ## L2
 [Ethernet](ethernet.md)
+
+## Routing protocols
+
+## VPN
+
+## Operating systems
