@@ -1,8 +1,17 @@
 # BGP
 
 ## Concepts
+
 - Routing protocol that is used to exchange network layer reachability information (NLRI) between routing domains
+- BGP is not a routing protocol: BGP is an application used to exchange NLRI, we exchange the route details but not the path details
+- IPV4 NLRI contains..
+    - Prefix/len
+    - Attributes
+      - Local-pref, AS-Path, MED, etc.
+  - Next-Hop
 - Internet de facto protocol, Routing protocol of Intenet, Port 179 TCP, EGP
+- BGP knows the next-hop but not the outgoing interface
+- IGP must be able to perform recursion otherwise the route cannot be used
 - In general, it is an application, which establishes connection and exchange information: IPv4, IPv6, l2vpn, VPnv4...All data in a packet is presented in the form of Path attributes, all these make it very flexible
 - It is not binded to interface, we just configure neighbors and then connect to them according to routing table
 - It does not use metric like IGP to calculate best route, it uses many steps and PAs
@@ -16,7 +25,7 @@
 - Very slow convergance by design, Hello - 60 sec, Dead - 180 sec
 - ECMP to work: AS Path should be absolutely identical
 - The AD Values: eBGP - 20, iBGP - 200
-- eBGP changes next-hop to by default
+- eBGP changes next-hop to self by default, if update-source is Loopback0, next-hop is LoopbackO, can be modified: "route-map action set ip next-hop" or "neighbor next-hop-unchanged"
 - Flow control, route manipulation, PBR - ???
 - What is happend when route is deleted??
 - Huge routing table
@@ -30,6 +39,7 @@
 - Prepending - form of traffic engineering - artificially increases AS-path length. Example: AS_PATH: 64500 64496 64496. Usually the operator uses their own AS, but that’s not enforced in the protocol. Unfortunately, prepending has a catch: To be the deciding factor, all the other attributes need to be equal. Excessive prepending opens a network up to wider spread route hijacks - ???.
 - Default TTL - 1 for eBGP, >1 for iBGP, that is why peering from Loopback will not work by default, multihop command can help
 - By default most routers will not send BGP updates to routers with the same AS. It should be enabled with special command. For example, router A has neighbors B and C, which are in the same AS. Updates, received from B, will not be forwarded to C by default
+- Inbound updates containing local AS are discarded
 
 ## Design
 - ASN numbering
@@ -219,6 +229,7 @@ Don't use or advertise the route/s learned via an iBGP neighbor to an eBG neighb
 - Route distinguisher is configured for VRF, after this all routes, exported from this VRF to BGP table, will be with this RD, only one RD for VRF
 
 ## Route target
+
 - MPLS uses Route Targets to determine into which VRFs a PE places IBGP-learned routes
 - Transfered in Extended Community
 - Format the same as in RD
@@ -229,11 +240,70 @@ Don't use or advertise the route/s learned via an iBGP neighbor to an eBG neighb
 - During import we may decrease routes priority by decreasing local preference or weight (these attributes are local and will not leave AS) with route map after import command
 
 - Type 2 - MAC/IP advertisment route
+
+
 ## Load Share with BGP in Single and Multihomed Environments
 
 ## iBGP
 
+- iBGP packets default to TTL 255
+    - Implies neighbors do not have to be connected as long as IGP reachability exists
+- iBGP peers typically peer via Loopbacks
+    - Allows rerouting around failed paths via IP
+    - Required for some application such as MPLS L3VPN
+- Loop prevention via route filtering: IBGP learned routes cannot be advertised on to another iBGP neighbor, as a result it requires:
+    - Fully meshed iBGP peerings
+    - Route reflectors
+    - Confederation
+- You don't need to only choose one design
+  - E.g full mesh, RR, and Confed can interoperate
+  - Pockets of full mesh for path diversity + Inter-cluster RR for scaling larger
+- One of the key component of the route reflection approach in addressing the scaling issue is that the RR summarizes routing information and only reflects its best path
+- Certain route reflection topologies the route reflection approach may not yield the same route selection result as that of the full IBGP mesh approach
+- A way to make route selection the same... is by configuring the intra-cluster IP metrics to be better than the inter-cluster IGP metrics, and maintaining full mesh within the cluster
+- By default Outbound iBGP updates do not modify the next-hop attribute regardless of iBGP peer type
+- Can be modified
+  - neighbor next-hop-self
+  - route-map action set ip next-hop
+  - "next-hop-self ALL" for inserting RR in the data-path: packets will go via RR: Used in Unified MPLS design
+
+Full Mesh Design Advantages
+
+- Path Diversity - All BGP peers learn all possible egress paths
+- Optimal Traffic Flows - All BGP peers learn the closest egress path
+- Path selection by default would be based on IP metric to egress router - I.e. Hot Potato Routing
+
+Full Mesh Design Disadvantages
+
+- Control plane scaling is exponential
+  - Full mesh means n*(n-1)/2 peerings
+  - 10 routers = 45 peerings
+  - 100 routers = 4950 peerings
+  - 500 routers = 124750 peerings
+- Operationally hard to scale
+- Adding or changing peering config is administratively prohibitive
+- Could be automated, but few out of the box solutions
+
+iBGP Route Reflection  
+This is one if iBGP scaling techniques  
+
+- Eliminates need for full mesh
+- Only need peering(s) to the RR(s)
+- Like OSPF DR & IS-IS DIS, minimizes prefix replication
+- Send one update to the RR
+- RR sends the update to its "clients"
+- Does not modify other attributes when reflecting routes
+- Loop prevention through Cluster-ID
+- RR discards routes received with its own Cluster-ID
+- Sets Originator-ID attribute to the router-id of RR client on routes RECEIVED from the client
+- Client uses Originator-ID for loop prevention
+- Route reflector can have three types of peers
+  - EBGP peers
+  - IBGP Client Peers
+  - IBGP Non Client Peers
+
 Configuration overview
+
 - Enable router process with AS number - the same on all routers
 - Configure router id
 - Configure neighbors with specifiying their AS number - the same
@@ -244,11 +314,13 @@ Configuration overview
 - Configure dynamic neighbors if necessary: listen range, if request arrives from it put it to specified group, which is already configured
 
 ## Incindents
+
 - Leaks - Customer gets prefixes from one provider and anounces them to other provider. This leads to traffic spikes via customer. Amount of hops rises. MITM is possible. RTT is rising. How to fight with it? If you are the leaker and you are not the transit AS, then just configure filtering: allow announces only for routes with 0 AS PATH - our own routes
 - Hijacks - bad guy announces prefixes, which are not theirs, and traffic goes to them instead of legitimate user. Nobody is protected from hijacking, because BGP is not secure
 - Bogons - bogon prefixes are leaked to public internet and hosts in LAN become available from th Internet. The same with bogon AS numbers - may be dropped by other provider.
 
 ### Bogon ASNs
+
 - 0 - RFC 7607
 - 23456 - RFC 4893 AS_TRANS
 - 64496..64511 - RFC 5398 and documentation/example ASNs
@@ -260,11 +332,13 @@ Configuration overview
 - 4294967295 - RFC 7300 Last 32 bit ASN
 
 ## Filtering
+
 - https://bgpfilterguide.nlnog.net  
 - The bgpq4 utility is used to generate configurations (prefix-lists, extended access-lists, policy-statement terms and as-path lists) based on IRR data 
 - https://github.com/bgp/bgpq4
 
 ## BGP Security
+
 - RPKI
 - ASPA
 - Open Roles
@@ -272,6 +346,7 @@ Configuration overview
 - BGP Sec
 
 ## Monitoring
+
 - Looking glasses - located in different parts of the world, it provides web access to router routing table, and you can BGP records for particular prefix
     - https://lg.he.net/
     - https://lookingglass.centurylink.com/

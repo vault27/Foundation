@@ -6,14 +6,36 @@ My personal knowledge base on networks, security, protocols, cryptography, techn
 
 ## L1
 
-[Fiber](fiber.md)
+- [Fiber](fiber.md)
 
 ## L2
 
-[Ethernet](ethernet.md)
+- [Ethernet](ethernet.md)
+
+## L3
+
+## L4
+
+## L7
+
+- [SSL](ssl.md)
 
 ## Routing protocols
 
 ## VPN
 
+## AAA protocols
+
+## Cryptography
+
+## PKI
+
 ## Operating systems
+
+## Automation
+
+### Python
+
+### JSON
+
+### Ansible
