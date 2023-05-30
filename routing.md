@@ -10,8 +10,23 @@
 - Administartive distance
 - Metrics
 - Redistribution
+- Filtering in redistribution
+- Filtering in routes exchange
+- Summarization
+
+Routing table input data:
+
+- Static routes with administrative distance
+- Connected networks
+- Routes from dynamic routing protocols
+
+If ECMP is enabled several routes can be installed to the same destination, we can do it with static routes as well.
+
+Wich route to use is determined by administrative ditsnce or metric.  
+On Linux (and, I think, on Windows) priority is determined by metric, but it is not the case on macOS as you correctly pointed out. Instead of assigning metrics to individual routes, macOS assigns priorities to interfaces.  
 
 ## Packet processing
+
 - Router receives a frame, FCS is checked, router checks the Ethernet Type field for the packet type
 - Data Link header and trailer can now be discarded
 - Header checksum is first verified for IPv4, no header checksum for IPv6
@@ -23,6 +38,7 @@
 - New Data Link frame is built: new header and trailer, including new FCS
 
 ## Switching paths - methods to optimize the forwarding processing
+
 In basic forwarding router has to perform for every packet two lookups in two separate tables: routing table + Layer 2 addresses table
 - Process switching - described above
 - Fast switching - first packet goes through process switching, results are added to fast switching cache or route cache. The cache contains the destination IP address, the next-hop information, and the data-link header information that needs to be added to the packet before forwarding. An entry **per each destination address, not per destination subnet/prefix**. All future packets with the same destination addresses use this data and are switched faster. Also called **route once, forward many times**  
@@ -54,10 +70,12 @@ show ipv6 cef
 ```
 
 ## Routing protocols
+
 Link State routing protocol - every router builds a tree or a graph of the whole network. Then launches shortest path algorithm to find out best paths to all destinations. These paths go to a Routing table. Generally some variant of Dijkstra's algorithm is used.  
 LPM - Long Prefix Match - network with longest mask will be chosen from routing table. Default route has the shortest prefix and the lowest priority.
 
 ## Administrative distances
+
 Route with lowest distance is installed into the routing table  
 Can be changed with distance command
 
@@ -75,9 +93,11 @@ Can be changed with distance command
 - Unreachable - 255
 
 ## Route filtering
+
 Route filtering during redistribution or BGP advertising can be done via route-maps, distribute lists, ip-prefixes, ip acls
 
 ### Route maps
+
 Mostly used for route redistribution: permit or deny redistribution based on match + changing something in route with set command as a bonus. Plus they are used to generate default route in OSPF, BGP routing policies(in neighbor statement, in export import commands for RT to control exported and imported routes) and in policy routing.
 - If/Then/Else logic
 - One or more commands
@@ -113,6 +133,7 @@ Mostly used for route redistribution: permit or deny redistribution based on mat
 - tag
 
 ## IP prefix
+
 - Describes prefix number and its length
 - Used by route map, and route map is used by redistribute
 - One or more statements with the same name
@@ -132,6 +153,7 @@ neighbor 192.168.5.1 route-map BLOCK_EXTERNAL out
 ```
 
 ## Distribute list
+
 - Work together with ACLs
 - Can be attached directly to neighbor BGP command
 
@@ -145,9 +167,11 @@ neighbor 192.168.5.1 distribute-list 1 out
 ```
 
 ## ECMP
+
 Rapidly changing latency, packet reordering and maximum transmission unit (MTU) differences within a network flow, which could disrupt the operation of many Internet protocols, most notably TCP and path MTU discovery. RFC 2992 - load balances based on hash of packet header.
 
 ## Load balance
+
 - It is also called Load Sharing in the Unicast FIB
 - Same AD and cost - load balance
 - The IGRP and EIGRP routing processes also support unequal cost load balancing
@@ -166,7 +190,9 @@ Rapidly changing latency, packet reordering and maximum transmission unit (MTU) 
 - Load-sharing method can consist of src/dst IP, src/dst port, in different combinations, then hash is calculated on these values
 - Default load sharing method in Nexus: address source-destination port source-destination
 - That is why VXLAN traffic always goes via different links - because source UDP port is always different. And usual ping always goes via the same link
+
 Show method on Nexus:
+
 ```
 leaf-1# show ip load-sharing
 IPv4/IPv6 ECMP load sharing:
@@ -176,19 +202,24 @@ GRE-Outer hash is disabled
 Concatenation is disabled
 Rotate: 32
 ```
+
 Configure method on Nexus
+
 ```
 switch(config)# ip load-sharing address source-destination
 ```
+
 ## Route map / Prefix map / IP prefix
 
 ## FHRP: GLBP/HSRP/VRRP
+
 First hop redundancy protocol (FHRP)
 - Hot Standby Router Protocol (HSRP) - Cisco's initial, proprietary standard developed in 1998
 - Gateway Load Balancing Protocol (GLBP) is a Cisco proprietary protocol that attempts to overcome the limitations of existing redundant router protocols by adding basic load balancing functionality - round robin. Allows setting priorities and weights. 224.0.0.102 to send hello packets to their peers every 3 seconds over UDP 3222.
 - Virtual Router Redundancy Protocol (VRRP) - an open standard protocol
 
 ## VRF
+
 - Virtual router: separate control plane and data plane, overlapping IP addresses, VPN in general
 - VRF was developed for MPLS
 - Full VRF - is when many VRFs are tied together
@@ -210,10 +241,13 @@ Each VRF:
 - A separate instance or process of the routing protocol 
 
 **Ping from VRF on Nexus**
+
 ```
 ping 192.168.1.1 vrf GOOGLE
 ```
+
 **Configuration on Nexus**
+
 ```
 vrf context GOOGLE
 interface Ethernet1/3
@@ -243,7 +277,9 @@ vrf forwarding [name]
 
 router ospf router vrf VRFA
 ```
+
 **Configuration on IOS XR**
+
 ```
 vrf [name]
 router bgp [ASN]
@@ -254,19 +290,23 @@ interface GigabitEthernet0/0/0/0
 ```
 
 ## Verification on Cisco IOS
+
 ```
 #Show all VRFs in a system with their RD
 show ip vrf
 #Show all config related to VRF
 show run vrf
 ```
+
 ## Route leaking
+
 - Route leaking can be done via BGP, static routes or physical cable :)
 - It can be configured between two VRFs. With any IGP used. BGP is started locally on one router. For every VRF we configure RD, RT which is use to export routes, RT which are used to import routes (we may import several RTs). Routes go from VRF to global VPNv4 table, and from this table they go to particlar VRF
 - After enabling leaking we need to consider that leaked routes will start spreading across VRFs, so we may require to configure route maps with ip prefixes to increase/decrease local preference or weight to control routes priority, we also may need to filter particular routes
 - When we configure leaks, we need to consider which exact networks will be leaked, if we leak all routing table, it will be a mess, we control it with a route map via ip prefix list. In BGP route map is attached to neighbor command to set high local preference for example for all routes from this neighbor. Route map is also used to set low local preference and filter which routes to export from particular VRF.
 
 Example of configuration: route leaking via BGP, if firewall is down then leaking routes are active, by default they have low local prefrence and not active. Configured on Nexus 9000. Two VRFs: Google and Nasa. Configuration is for Spine-1.
+
 ```
 # IP prefixes to filter what export from VRF
 ip prefix-list GOOGLE seq 5 permit 192.168.1.0/24
@@ -359,12 +399,14 @@ router bgp 64600
 ![image](https://user-images.githubusercontent.com/116812447/209544910-db2af0ff-7a61-4539-87ba-d2dc2ac26bd0.png)
 
 ## Black hole
+
 - Black hole refers to a place in the network where incoming or outgoing traffic is silently discarded (or "dropped"), without informing the source that the data did not reach its intended recipient
 - A null route or black hole route is a network route (routing table entry) that goes nowhere. Matching packets are dropped (ignored) rather than forwarded, acting as a kind of very limited firewall
 - Null routes are typically configured with a special route flag, but can also be implemented by forwarding packets to an illegal IP address such as 0.0.0.0, or the loopback address
 - Null routing has an advantage over classic firewalls since it is available on every potential network router (including all modern operating systems), and adds virtually no performance impact- 
 
 ## BFD
+
 Bidirectional Forwarding Detection
 - RFC:  5880, 5881, 7130
 - Builds neighborship between peers
@@ -391,6 +433,7 @@ Bidirectional Forwarding Detection
   - Detect multiplier—The number of missing BFD hello messages from another BFD device before this local device detects a fault in the forwarding path - default 
 
 Configuration for Nexus
+
 ```
 #Enable feature
 switch(config)# feature bfd
