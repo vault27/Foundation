@@ -57,9 +57,10 @@ RJ-45 - it is a connector, mostly used, SFP connector can also be used
 
 If we connect two devices on one level of OSI model then we use crossover cable: switch-switch hub-hub router-router  
 If we connect two devices on different levels of OSI model, then we use straight-through cable: router-switch, hub-PC, switch-hub  
-Crossover acble: 1 goes to 3, 2 goes to 6  
+Crossover cable: 1 goes to 3, 2 goes to 6  
 Auto MDI-X technology on adapters switch automatically to correct cable type  
 The UTP cables differ in the following parameters:
+
 - Twists per centimeter - the more the better protection against EMI
 - Sheath thickness
 
@@ -84,14 +85,29 @@ STP - Shielded Twisted Pair - covered with foil
 
 ## Frame
 
-- Destination MAC address
-- Source MAC address
+1522 bytes max  
+64 bytes - min  
+Ethernet frame is a data link layer protocol data unit and uses the underlying Ethernet physical layer transport mechanisms  
+Ethernet packet at the physical layer: preamble + Start frame delimiter + Ethernet frame + Interpacket gap (IPG)  
+A data packet on the wire and the frame as its payload consist of binary data  
+Ethernet transmits data with the most-significant octet (byte) first  
+In each octet the least-significant bit is transmitted first
+The internal structure of an Ethernet frame is specified in IEEE 802.3  
+
+- Destination MAC address - 6 bytes
+- Source MAC address - 6 bytes
+- 802.1Q tag - optional - 4 bytes
 - EtherType: two-octet field in an Ethernet frame. It is used to indicate which protocol is encapsulated in the payload of the frame and is used at the receiving end by the data link layer to determine how the payload is processed. Examples:
     - IPv4
     - ARP
     - IPv6
     - MPLS
     - PPPoE 
+- Payload - 1500 bytes max
+- Frame check sequence - 32‑bit CRC - 4 bytes - used to detect any in-transit corruption of data
+
+ IEEE 802.1ad (Q-in-Q) allows for multiple tags in each frame  
+ Runt frame is an Ethernet frame that is less than the IEEE 802.3's minimum length of 64 octets. Runt frames are most commonly caused by collisions; other possible causes are a malfunctioning network card, buffer underrun, duplex mismatch or software issues
 
 ## MAC
 
@@ -104,6 +120,15 @@ STP - Shielded Twisted Pair - covered with foil
 - The rest 24 bits are assigned by manufacture
 - Written in hexadecimal - 6 numbers - one for each byte
 - Broadcast MAC: ff:ff:ff:ff:ff:ff, all 1s, used in ARP, broadcast, DHCP...
+
+## Multicast MAC address
+
+- The last bit of the first octet is 1
+- The broadcast MAC address 0xFFFF-FFFF-FFFF can be taken as a special type of multicast MAC address
+- First 24 bits of multicast MAC for IPv4 are 0x01005E,  25th bit is 0, the last 23 bits are mapped to the last 23 bits of IP
+- For example, MAC address for IPv4 multicast address 224.0.1.1 will be 01-00-5E-00-01-01
+- For IPv6 multicast address the first 16 bits of MAC address are 0x3333, and the last 32 bits of MAC are mapped to the last 32 bits of IPv6 multicast address
+- 
   
 ## FCS
 
@@ -112,6 +137,9 @@ By far the most popular FCS algorithm is a cyclic redundancy check (CRC), used i
 The FCS provides error detection only. Error recovery must be performed through separate means. Ethernet, for example, specifies that a damaged frame should be discarded and does not specify any action to cause the frame to be retransmitted. Other protocols, notably the Transmission Control Protocol (TCP), can notice the data loss and initiate retransmission and error recovery.
 
 ## Jumbo frames
+
+Jumbo frames are Ethernet frames with more than 1500 bytes of payload, the limit set by the IEEE 802.3 standard.
+The payload limit for jumbo frames is variable: while 9000 bytes is the most commonly used
 
 ## Pause frames
 

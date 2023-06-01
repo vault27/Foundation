@@ -1104,3 +1104,17 @@ Show system logs
 ```text
 show log system
 ```
+
+## Wildfire
+
+- Sandboxing platform
+- Machine learning, static analysis, dynamic analiisis
+- Reporting
+- Integrates with firewalls, traps, Autofocus, unit 42 team, URL filtering
+- Spreads signatures to all platforms
+- Real Time updates for NGFW AV
+- WF-500 applicance can work alone - updated manually
+- Cloud query approach - samples do not leave the network
+- Hybrid approach
+- Integrated Logging, Reporting, and Forensics - via Panorama
+- We can send files via API

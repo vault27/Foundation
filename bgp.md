@@ -1,8 +1,25 @@
 # BGP
 
+## History
+
+- It was first described in 1989
+- In use on the Internet since 1994
+- The current version of BGP is version 4 (BGP4)
+
+## RFC
+
+- RFC 4271 - 2006
+- RFC 2283 - IPv6 - 1998
+
+## Books
+
+- Google Talks - BGP at 18: Lessons In Protocol Design - Dr. Yakov Rekhter, co-designer of BGP
+- Cisco Live 365 BRKRST-3321 Scaling BGP
+
 ## Concepts
 
 - Routing protocol that is used to exchange network layer reachability information (NLRI) between routing domains
+- Path vector routing protocol
 - BGP is not a routing protocol: BGP is an application used to exchange NLRI, we exchange the route details but not the path details
 - IPV4 NLRI contains..
     - Prefix/len
@@ -57,6 +74,7 @@
 - Allow only certain prefixes from certain neighboors via ip prefixes and route maps 
 
 ## Data Centre Design
+
 - ASN numbering to exclude path hunting: Spines have the same AS
 - Multipath
 - One BGP session for multiple address families
@@ -71,9 +89,10 @@
 - On Spines we configure dynamic neighboring using peer filter, where we configure which AS we accept from leafs, and listen command to specify networks on which we listen for BGP connections. Listen command is a passive mode. Leafs cannot be configured in this mode, they should be active. Listen command specifies which networks to listen, to which peer group place these neighbores and which AS accept
 
 ## Operations
+
 - If everything is fine, only keepalives are sent, nothing inside them
 - When connection starts, routers send OPEN messages with AS number, router id and capabilities list
-- Then they send UPDATE messages with next hop as themselfs. One packet can contain several UPDATE messgaes and even KEEPALIVE inside. UPDATE message contains PATH ATTRIBUTES: ORIGIN, AS_PATH, MP_REACH_NLRI
+- Then they send UPDATE messages with next hop as themselfs. One packet can contain several UPDATE messages and even KEEPALIVE inside. UPDATE message contains PATH ATTRIBUTES: ORIGIN, AS_PATH, MP_REACH_NLRI
 - Only the following routes are sent: network command, redistribute command via route map of local addresses, redistribute from other protocols, routes received via BGP, nothing is sent by default
 
 ## Capabilities
@@ -114,6 +133,7 @@
 
 
 ## Attributes
+
 - MP_REACH_NLRI - includes next hop
 - ORIGIN
 - AS_PATH
@@ -121,6 +141,22 @@
 - EXTENDED_COMMUNITIES
 - NEXT_HOP
 - Multi Exit Discriminator (MED)
+
+Path attributes fall into four separate categories:
+
+1. Well-known mandatory
+2. Well-known discretionary
+3. Optional transitive
+4. Optional non-transitive
+
+attribute           EBGP                    IBGP  
+ORIGIN             mandatory               mandatory  
+AS_PATH            mandatory               mandatory  
+NEXT_HOP           mandatory               mandatory  
+MULTI_EXIT_DISC    discretionary           discretionary  
+LOCAL_PREF         see Section 5.1.5       required  
+ATOMIC_AGGREGATE   see Section 5.1.6 and 9.1.4  
+AGGREGATOR         discretionary           discretionary  
 
 ```
 BGP Message
@@ -134,20 +170,18 @@ BGP Message
     Network Layer Reachability Information (NLRI):
         192.0.2.0/24
 ```
-- MED - suggestion to other directly connected networks on which path should be taken if multiple options are available, and the lowest value wins. transfered from iBGP to eBGP.
+
+- MED - suggestion to other directly connected networks on which path should be taken if multiple options are available, and the lowest value wins. Transfered from iBGP to eBGP. allow routers in one AS to tell routers in a neighboring AS how good a particular route is. We send a route with lower MED, and this route becomes preferable.
 - Origin code can be one of three values: IGP(0, i), EGP(1, e) or Incomplete(2, ?). IGP will be set if you originate the prefix through BGP, EGP is no longer used (it’s an ancient routing protocol), and Incomplete is set when you distribute a prefix into BGP from another routing protocol (like IS-IS or OSPF)
 - Communities - optional
 - Local preference - used only in iBGP, used to show the best exit from AS, the higher the better route, default - 100. Default value exists only for routes, which originate from this router and with in AS, if router is received from different AS, local preference is empty
 
-## Path attributes
-- ORIGIN
-- AS_PATH
-- MP_REACH_NLRI
-
 ## Best path selection
+
 **12 steps** 
 First nine are main  
 Remaining 3 are tiebreackers
+
 1. Is next hop reachable?
 2. Weight
 3. Local preference - is set when router receives a route. A higher value is a higher preference
@@ -166,11 +200,11 @@ The decision for eBGP routes can reach Step 11 if at Step 10 the formerly best r
 - If the best path for an NLRI is determined after Step 9, BGP considers placing mul- tiple BGP routes into the IP routing table
 - Even if multiple BGP routes are added to the IP routing table, BGP still chooses only one route per NLRI as the best route; that best route is the only route to that NLRI that BGP will advertise to neighbors
 
-
 ## Communities
-Well known communioties
+Well known communities
 
 ## Timers
+
 - Advertisment interval - default eBGP 30 sec, iBGP 0 sec - 0 secs for Clos - send updates immediately after receiving
 - Keepalive - default 60 secs - 3 sec for CLOS - how often to send HELLOs
 - Hold - default 180 sec -  9 sec for CLOS - how long to wait for dead peer
@@ -179,10 +213,12 @@ Well known communioties
 - MicroBFD if LAG is used - for CLOS
 
 ## Community based local preference
+
 They are used for inbound traffic engineering. Some transit providers allow their customers to influence the local preference in the transit network through the use of BGP communities.  
 For example community 174:10 means local preference 10
 
 ## Path hunting
+
 - Starts on big networks, 30 routers and above
 - It is relevant for CLOS networks as well
 - Spines in one AS helps to avoid this issue, because in this case route which passed spine 1 will be dropped by spine 2. Super spines have the same AS as well
@@ -284,7 +320,8 @@ Full Mesh Design Disadvantages
 - Adding or changing peering config is administratively prohibitive
 - Could be automated, but few out of the box solutions
 
-iBGP Route Reflection  
+### iBGP Route Reflection  
+
 This is one if iBGP scaling techniques  
 
 - Eliminates need for full mesh
@@ -302,7 +339,64 @@ This is one if iBGP scaling techniques
   - IBGP Client Peers
   - IBGP Non Client Peers
 
-Configuration overview
+RR processes updates differently depending on what type of peer they came from
+
+- EBGP learned routes...
+  - Pass to EBGP peers, Clients, & Non-Clients 
+- Client learned routes...
+  - Pass to EBGP peers, Clients, & Non-Clients 
+-  Non-Client learned routes...
+  - Pass to EBGP peers & Clients
+- RR placement based upon these rules
+
+Large Scale Route Reflection
+
+- Large scale BGP designs should not be serviced by a single RR
+- RR "clusters" allow redundancy and hierarchy
+- Cluster is defined by the clients a RR serves + RRs in the same cluster use the same Cluster-ID
+- Per address-family RR pairs
+- Avoids "fate sharing" of services
+
+Inter-Cluster Peerings
+
+- Inter-Cluster peerings between Rs can be client or non-client peerings
+  - Depends on redundancy design
+  - Duplicate routes, more processing
+- Cluster-ID is based on Router-|D
+  - By default all RR are in separate clusters
+- Same cluster-id on both clusters or not?
+  - Depends on redundancy design...
+
+Virtual Route Reflectors
+
+- RR generally does not need to be in data-path
+- E.g. I give you the route but you forward through someone else
+- High Memory/CPU VM can do the job
+- IOS-XRv
+- CSR1000v
+- Quagga fort Linux
+- No need to install 500k routes in the RIB/FIB if RR is not in the data-path
+- Selective RIB Download Feature
+- Prevents BGP paths from being installed in RIB/FIB
+- table-map [route-map] filter
+- Scale to 20 + Million VPNv4 routes
+
+### Confederation
+
+This is one if iBGP scaling techniques
+
+- Reduces full mesh iBGP requirement by splitting AS into smaller Sub-AS
+- Inside Sub-AS full mesh or R requirement remains
+- Between Sub-AS acts like EBGP
+- Devices outside the confederation do not know about the internal structure
+- Sub-AS numbers are stripped from advertisements to "true" EBGP peers
+- Typically uses ASs in private range: 64512 - 65535
+- Can use different IGPs in each Sub-AS
+- Next-hop self on border routers
+- Next-hop, Local-Pref, and MED are kept across Sub-AS eBGP peerings
+- BGP Confederation Loop Prevention: AS CONFED SEQUENCE, AS CONFED SET, these attributes never leave the confederation
+
+### Configuration overview
 
 - Enable router process with AS number - the same on all routers
 - Configure router id
@@ -312,6 +406,15 @@ Configuration overview
 - Configure communities
 - Configure route reflector
 - Configure dynamic neighbors if necessary: listen range, if request arrives from it put it to specified group, which is already configured
+
+### Route Reflection vs. Confederation
+
+- Why both?
+  - Generally accomplish the same goal
+- Migrations paths are different
+  - Migrate to confederation is hard
+  - Greenfield confederation is easier
+  - Migrate to RR is easy, just add peers then remove old ones
 
 ## Incindents
 
@@ -374,6 +477,7 @@ vrf OTUS2
 ```
 
 **Configure routes summarization/aggregation: all /32 routes to /24 route in address family section**
+
 ```
 border-leaf(config-router-vrf-af)# aggregate-address 192.168.1.0/24 as-set summary-only
 ```
@@ -381,6 +485,7 @@ Now only one /24 prefix will be sent
 
 
 **Origin code IGP**
+
 ```
 network
 neighbor default-originate
@@ -388,6 +493,7 @@ aggregate-address only when:
 as-set is not set
 as-set is et and all components of summarized route use IGP (i)
 ```
+
 **Allow announcing only empty AS path prefixes ( our own prefixes ), no transit prefixes**
 To fight with route leaks, when you are connected to 2 providers
 ```
@@ -508,8 +614,10 @@ router bgp 64701
 ```
 
 ## Verification
+
 **Show BGP table for global VRF or VRF**  
 It shows all BGP routes both best and secondary with all the options: Path,Weight, Local Pref, Next Hop, Status, Path type, Origin Code
+
 ```
 leaf-1(config-router-vrf-af)# show ip bgp vrf GOOGLE
 BGP routing table information for VRF GOOGLE, address family IPv4 Unicast
@@ -523,8 +631,10 @@ est2
    Network            Next Hop            Metric     LocPrf     Weight Path
 *>l192.168.1.0/24     0.0.0.0                           100      32768 i
 ```
+
 **Show brief list of BGP neighbors**  
 Here we can see amount of prefixes from neighbor, and if it is 0 - we have a problem
+
 ```
 spine-1# show ip bgp summary
 BGP summary information for VRF default, address family IPv4 Unicast
@@ -543,7 +653,9 @@ The same for all VRFs
 ```
 spine-1# show ip bgp summary vrf all
 ```
-**Show routes advertised to particular neighbor**
+
+**Show routes advertised to particular neighbor**  
+
 ```
 firewall(config-router)# show ip bgp neighbors 172.16.3.2 advertised-routes
 
@@ -558,7 +670,9 @@ est2
    Network            Next Hop            Metric     LocPrf     Weight Path
 *>l1.1.1.1/32         0.0.0.0                           100      32768 i
 ```
+
 **Debug BGP updates on Nexus**
+
 ```
 N7K-2# debug-filter bgp neighbor 10.2.3.3
 N7K-2# debug-filter bgp prefix 10.255.255.1/32
@@ -572,6 +686,7 @@ undebug all
 no debug-filter all
 clear debug logfile <FILE_NAME>
 ```
+
 **Debug BGP updates on Cisco IOS**
 ```
 R3#debug bgp ipv4 unicast 
