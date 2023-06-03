@@ -45,6 +45,8 @@ My personal knowledge base on networks, security, protocols, cryptography, techn
 - [PKI](pki.md)
 - [TLS/SSL](ssl.md)
 
+## Vendors
+
 ## Operating systems
 
 ## Automation

@@ -10,6 +10,7 @@
 
 - RFC 4271 - 2006
 - RFC 2283 - IPv6 - 1998
+- RFC 2858 - MP-BGP
 
 ## Books
 
@@ -59,6 +60,9 @@
 - Inbound updates containing local AS are discarded
 
 ## Design
+
+What you need to think through, when you design BGP network
+
 - ASN numbering
 - IP addresses, VRFs, subinterfaces
 - Router-ID - the same as loopback - configured manually
@@ -95,6 +99,17 @@
 - Then they send UPDATE messages with next hop as themselfs. One packet can contain several UPDATE messages and even KEEPALIVE inside. UPDATE message contains PATH ATTRIBUTES: ORIGIN, AS_PATH, MP_REACH_NLRI
 - Only the following routes are sent: network command, redistribute command via route map of local addresses, redistribute from other protocols, routes received via BGP, nothing is sent by default
 
+## Address families
+
+- Originally, BGP was intended for routing of IPv4 prefixes
+- RFC 2858 added Multi-Protocol BGP (MP-BGP) capability by adding an extension called the address family identifier (AFI)
+- Address family shows particular network protocol, for example IPv4, IPv6
+- Additional granularity is provided through a subsequent address-family identifier (SAFI) such as unicast or multicast
+- MBGP achieves this separation by using the BGP path attributes (PAs) MP_REACH_NLRI and MP_UNREACH_NLRI
+- These attributes are carried inside BGP update messages and are used to carry network reachability information for different address families
+- Every address family maintains a separate database and configuration for each protocol (address family + sub-address family) in BGP.
+- BGP includes an AFI and SAFI with every route advertisement to differentiate between the AFI and SAFI databases
+
 ## Capabilities
 
 ## ASN
@@ -107,6 +122,7 @@
 - We can substitute AS number for particular neighbor. For example we can do it, when we connect VRFs in fabric via external Firewall and to avoid "allow as in" option we configure different ASNs for different VRFs to peer with firewall 
 
 ## Injecting Routes/Prefixes,Summarization, Redistribution
+
 - If we configure summarization, for example two LANs connected to Leaf, and then if we disconnect one LAN, summerized route will continue propogating and everyone will consider this LAN available. Especially summarization is unacceptable on Spines. This is relevant only with "summer only" option
 - We configure summarization in address family section for Nexus and it works for all neighbors, we specify summarized prefix there wit as-set option and summer only, without summer only option it will advertise all prefixes plus summer
 - No auto-summary is the default
@@ -115,11 +131,13 @@
 - route-map can be used in network command to manipulate path attributes, including next hop
 
 ## Route maps
+
 - Route map can be added after network command and after neighbor command
 - network route-map command changes attrivutes before adding prefix to BGP table, except AS path
 - neighbor route-map in|out applies changes to updates, sent or received. It also acts as filter, it can drop update based on match
 
 ## Packet types
+
 - Open - negotiation parametres: BGP version, AS number, RID, Timers...
 - Notification - for errors
 - Update - routing information
@@ -127,12 +145,48 @@
 - Route refresh - request all routes for particular AFI/SAFI
 
 ### Update message
-- This is a bunch of Path Attributes, both for BGP and MP-BGP
+
+ NLRI + Path Attributes, both for BGP and MP-BGP  
+
+ ```
+ Border Gateway Protocol - UPDATE Message
+    Marker: ffffffffffffffffffffffffffffffff
+    Length: 61
+    Type: UPDATE Message (2)
+    Withdrawn Routes Length: 0
+    Total Path Attribute Length: 35
+    Path attributes
+        Path Attribute - ORIGIN: IGP
+        Path Attribute - AS_PATH: 65100 
+        Path Attribute - NEXT_HOP: 192.168.51.2 
+        Path Attribute - MULTI_EXIT_DISC: 0
+        Path Attribute - COMMUNITIES: 321:654 
+    Network Layer Reachability Information (NLRI)
+
+ ```
 
 ## Neighbor states
 
 
 ## Attributes
+
+Path attributes fall into four separate categories:
+
+1. Well-known mandatory - The PA must be in every BGP Update, all devices have to support it
+2. Well-known discretionary - he PA is not required in every BGP Update, all devices have to support it: ATOMIC_AGGREGATE
+3. Optional transitive - not all have to support it, the router should silently forward the PA to other routers without needing to consider the meaning of the PA
+4. Optional non-transitive - not all have to support it, the router should remove the PA so that it is not propagated to any peers
+
+Attributes:
+
+- AS_PATH
+- NEXT_HOP
+- AGGREGATOR
+- ATOMIC_AGGREGATE
+- ORIGIN 
+- ORIGINATOR_ID
+- CLUSTER_LIST
+
 
 - MP_REACH_NLRI - includes next hop
 - ORIGIN
@@ -142,12 +196,7 @@
 - NEXT_HOP
 - Multi Exit Discriminator (MED)
 
-Path attributes fall into four separate categories:
 
-1. Well-known mandatory
-2. Well-known discretionary
-3. Optional transitive
-4. Optional non-transitive
 
 attribute           EBGP                    IBGP  
 ORIGIN             mandatory               mandatory  
@@ -201,7 +250,99 @@ The decision for eBGP routes can reach Step 11 if at Step 10 the formerly best r
 - Even if multiple BGP routes are added to the IP routing table, BGP still chooses only one route per NLRI as the best route; that best route is the only route to that NLRI that BGP will advertise to neighbors
 
 ## Communities
-Well known communities
+
+What is BGP community?
+
+- Cummunity is optional transitive BGP attribute that can traverse from AS to AS
+- Any BGP prefix can have more than one tag (BGP community), you can attach up to 32 communities to a single route
+
+Why use BGP communities?
+
+- Additional capability for tagging routes and for modifying BGP routing policy
+- BGP communities can be appended, removed, or modified selectively on each attribute as a route travels from router to router
+- Service providers can make an agreement with your customers on a specific policy to be applied to their prefixes using BGP communities - Incoming traffic engineering - set local preference based on community
+
+Types of BGP communnities
+- Standard communities
+- Extended communities
+- Large communities
+
+Standard communities
+
+- Written as numeric 32-bit tags in (AS:Action) format
+- The first 16 bits is the (AS) number of the AS that defines the community
+- The second 16 bits have the local significance (Action)
+- The primary purpose of standard communities is to the group and tag routes so that actions can perform
+- The BGP community can be displayed in full 32-bit format (0-4,294,967,295) or as two 16 bit numbers (0-65535):(0-65535) commonly referred to as new-format
+
+Well-known standard communities
+
+- Internet: should be advertised on the Internet
+- No_Advertise: Routes with this community should not be advertised to any BGP peer (iBGP or eBGP)
+- No_Export: When a route with this community is received, the route is not advertised to any eBGP peer. Routes with this community can be advertised to iBGP peers
+- Local-as: prevent sending tagged routes outside the local AS within the confederation.(route will not send to any EBGP neighbor or any to intra-confederation external neighbor )
+
+Extended communities 
+
+- Written as numeric 64-bit tags in (Type:AS:Membership) format
+- The first 16 bits are used to encode a type that defines a specific purpose for an extended community, extended community type numbers are assigned by Internet Assigned Numbers Authority (IANA)
+- The remaining 48 bits can be used by operators
+- Examples: Site of Origin (SOO), Ethernet VPN (EVPN), OSPF Domain Identifier, Route Target
+
+Large communities 
+
+- Written as numeric 96-bit tags in (Source AS:Action: Target AS) 
+- Format split into three 32-bit values which can accommodate more identification data including 4-byte AS numbers
+
+How to set community attribute values?
+
+Using Route-maps associated with:
+
+- Network Command
+- Aggregate address
+- Neighbor command
+- Redistribution command
+
+Configuration  
+IOS and IOS XE routers do not advertise BGP communities to peers by default
+
+```
+#Show in new format
+ip bgp-community new-format
+
+neighbor ip-address send-community [standard | extended | both] [additive] - for additional community
+```
+
+Can Delete Community by setting to none on route-map
+
+Match occurs via community list
+
+- Define list
+- Standard list matches community name or number 
+  - ip community-list 1 standard permit no-export
+- Expanded matches regular expression
+  - ip community-list expanded AS100 permit 100: [0-9]+
+- Reference from route-map
+  - match community AS100
+
+BGP Cost-Community - BGP Custom Decision Process
+
+- http://tools.ietf.org/html/draft-retana-bqp-custom-decision-02
+- Only advertised within the AS or to confederation peers
+- Influences BGP path selection at the Point of Insertion 
+  - "pre-bestpath" point of insertion can be used 
+  - Compares cost-community value before Weight
+- EIGRP PE/CE
+  - Uses "pre-bestpath" cost-community to encode composite metric into BGP
+
+GSHUT Community
+
+- Graceful BGP session shutdown
+- http://tools.ietf.org/html/draft-ietf-grow-bgp-gshut-05
+- Used in conjunction with Graceful Restart
+- Takes the restarting peer out of the data-path by modifying local preference
+- Similar to IS-IS Overload or OSPF Max Metric LSA
+- Introduce on Cisco IOS XE Release 3.6S
 
 ## Timers
 
