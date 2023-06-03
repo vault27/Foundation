@@ -61,5 +61,10 @@ My personal knowledge base on networks, security, protocols, cryptography, techn
 - [JSON](json.md)
 - [Ansible](ansible.md)
 - [Git](git.md)
+- [Bash](bash.md)
 
 ## Tools
+
+- [tcpdump](tcpdump.md)
+- [Wireshark](wireshark.md)
+- [curl](curl.md)
