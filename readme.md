@@ -17,12 +17,18 @@ My personal knowledge base on networks, security, protocols, cryptography, techn
 
 ### L3
 
+- [IP](ip.md)
+- [MPLS](mpls.md)
+
 ### L4
 
 ### L7
 
 - [HTTP](http.md)
-- [LDAP](ldap.md)
+- [ICAP](icap.md)
+- [SNMP](snmp.md)
+- [DNS](dns.md)
+
 
 ### Routing
 
@@ -43,6 +49,7 @@ My personal knowledge base on networks, security, protocols, cryptography, techn
 - [Radius](radius.md)
 - [Tacacs](tacacs.md)
 - [NTLM](ntlm.md)
+- [LDAP](ldap.md)
 
 ## Security foundation
 

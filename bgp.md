@@ -358,6 +358,15 @@ GSHUT Community
 They are used for inbound traffic engineering. Some transit providers allow their customers to influence the local preference in the transit network through the use of BGP communities.  
 For example community 174:10 means local preference 10
 
+## Graceful restart and shutdown
+
+- BGP Graceful Restart is a feature of the Border Gateway Protocol (BGP) that enables BGP sessions to be restarted without causing a disruption in the network. It works by allowing routers to maintain their established routes even after a session reset or restart
+- When a BGP session is established, GR capability for BGP is negotiated by neighbors through the BGP OPEN message
+- If the neighbor also advertises support for GR, GR is activated for that neighbor session
+- If the BGP session is lost, the BGP peer router, known as a GR helper, marks all routes associated with the device as “stale” but continues to forward packets to these routes for a set period of time. The restarting device also continues to forward packets for the duration of the graceful restart. When the graceful restart is complete, routes are obtained from the helper so that the device is able to quickly resume full operation
+- Graceful shutdown A feature in routing protocols allowing a router to inform its neighbors about its impending deactivation. The neighbors can react to this indication immediately, instead of waiting for the Hold or Dead intervals to expire.
+
+
 ## Path hunting
 
 - Starts on big networks, 30 routers and above
