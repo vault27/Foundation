@@ -45,14 +45,30 @@ It is a header between L2 header and IP packet
 
 ## MPLS L2VPN
 
+L2 over WAN variants, 
+
+- Frame Relay
+- PPP
+- ATM
+- Ethernet - Carrier Ethernet or Metro Ethernet
+- 802.1Q VLAN tagging
+- Q-in-Q tunneling (QinQ)
+- Ethernet over MPLS (EoMPLS) - EoMPLS is one of the AToM transport types. EoMPLS works by encapsulating Ethernet PDUs in MPLS packets and forwarding them across the MPLS network. Each PDU is transported as a single packet
+- Virtual Private LAN Service (VPLS) - multipoint to multipoint - Any Transport Over MPLS (AToM) is Cisco’s implementation of VPWS for IP/MPLS networks
+- VxLAN + EVPN
+- PBB-EVPN
+- Virtual Private Wire Service (VPWS) - point to point
+
 Connection scheme
 
 ```text
 CE > PE (ELSR) > P(LSR) > P(LSR) > PE(ELSR) > CE
-CE >>>>>>>>>>>>Neighborship>>>>>>>>>>>>>>>>>>>CE
+CE >>>>>>>>>>>>Neighborship>>>>>>>>>>>>>>>>>>> CE
 ```
 
 - With a Layer 2 MPLS VPN, the MPLS network allows customer edge (CE) routers at different sites to form routing protocol neighborships with one another as if they were Layer 2 adjacent. Therefore, you can think of a Layer 2 MPLS VPN as a logical Layer 2 switch
+- SPs oftentimes replace older Layer 2 WAN services such as Frame Relay and ATM with an MPLS VPN service
+
 
 ## MPLS L3VPN
 
