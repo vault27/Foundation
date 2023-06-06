@@ -2,12 +2,14 @@
 
 ## Response mode
 
-The best way to filter RESPMOD in ICAP traffic is using Request URI field (http.response_for.uri), this field is located in HTTP replies, which sends to DLP server for checking. And DLP server repeated these replies in its Response.  
-For example, to see in ICAP traffic ICAP RESPMOD request regarding eicar file and ICAP response to it we use filter
+- The best way to filter RESPMOD in ICAP traffic is using Request URI field (http.response_for.uri), this field is located in HTTP replies, which sends to DLP server for checking. And DLP server repeated these replies in its Response
+- For example, to see in ICAP traffic ICAP RESPMOD request regarding eicar file and ICAP response to it we use filter
 
 ```text
-http.response_for.uri == "http://secure.eicar.org/eicar.com.txt
+http.response_for.uri == "http://secure.eicar.org/eicar.com.txt"
 ```
+
+### Operations overview 
 
 - User requests PDF file and F5 sends ICAP request to DLP via Request mode with this HTTP request
 
