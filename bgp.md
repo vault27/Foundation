@@ -17,6 +17,25 @@
 - Google Talks - BGP at 18: Lessons In Protocol Design - Dr. Yakov Rekhter, co-designer of BGP
 - Cisco Live 365 BRKRST-3321 Scaling BGP
 
+## Main features
+
+- Path attributes
+  - AS_Path
+  - Origin
+  - MED
+  - Local preference
+- Communities
+  - Route target
+- MP-BGP: MPLS L3VPN, EVPN, IPv6
+  - Route distinguisher
+- iBGP
+  - Full mesh
+  - Route reflector
+    - Route reflector cluster
+    - Virtual route reflector
+  - Confiderations
+  - IGP recursion
+
 ## Concepts
 
 - Routing protocol that is used to exchange network layer reachability information (NLRI) between routing domains
@@ -375,6 +394,7 @@ For example community 174:10 means local preference 10
 - The same AS on leafs is not good idea, it will prevent from getting a route on Leaf 2 from Leaf 1 via Spine 1
 
 ## ECMP
+
 Criteria:
 - weight
 - local preference - only for iBGP
@@ -386,15 +406,18 @@ Criteria:
 Five tuples are used for load balancing. Hash is calculated for these 5 parametres. If all traffic is absolutely identical, it will always go via one link. It is called traffic polarization. Traffic entropy is zero. The entropy can be added manually.
 
 ## Maintenence
+
 - Use AS_PATH prepend
 - Increse MED
 - isolate command for NX-OS
 - Well-known community - GRACEFUL_SHUTDOWN
 
 ## Synchronization
+
 Don't use or advertise the route/s learned via an iBGP neighbor to an eBG neighbor unless & until the same is/are learned via some other IP like RIP, OSPF, EIGRP...
 
 ## MP-BGP
+
 -  IETF RFC 4760
 -  Extension to BGP, which allows to transfer different address families
 -  IPv4, IPv6, multicast, unicast, VPN
@@ -403,6 +426,7 @@ Don't use or advertise the route/s learned via an iBGP neighbor to an eBG neighb
 -  EVPN AFI/SAFI - 25/70 - RFC 7209, 7432, 8365
 
 ## Route Distinguisher
+
 - Used to distinguish different routes for different VRFs in BGP routing table, the routes are different from Best Path Algorithm point of view
 - Part of MP-BGP
 - Route distinguisher and route target were also devised for MPLS
@@ -838,6 +862,7 @@ clear debug logfile <FILE_NAME>
 ```
 
 **Debug BGP updates on Cisco IOS**
+
 ```
 R3#debug bgp ipv4 unicast 
 R3#clear bgp ipv4 unicast * soft
