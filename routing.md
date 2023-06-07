@@ -57,22 +57,46 @@ After the FIB and adjacency table are created, the routing table is not used any
 Routing Information Base (RIB)—it is the master copy of routing information from which the FIB and other structures are populated, but it is not necessarily used to route packets itself. RIBs for different routing protocols are different case.  
 CEF is implemented in software.  
 High end routers use specialized circuits (specifically, Ternary Content Addressable Memory [TCAM]) to store the FIB contents and perform even faster lookups.  
+
 **Activation**
+
 ```
 ip cef
 ipv6 cef
 ```
+
 **Verification**
+
 ```
 #Shows what is inside FIB: Prefix, Next hop and Interface
-show ip cef 10.0.0.0 255.0.0.0 longer-prefixes
+
+show ip cef 
+Router# show ip cef
+Prefix              Next Hop             Interface
+0.0.0.0/0           drop                 Null0 (default route handler entry)
+0.0.0.0/32          receive
+10.0.0.1/32         receive
+10.0.0.2/32         10.0.9.2             FastEthernet0/1
+10.0.0.3/32         10.0.9.6             FastEthernet1/0
+10.0.0.4/32         10.0.9.2             FastEthernet0/1
+10.0.0.5/32         10.0.9.13            FastEthernet0/0
+10.0.9.0/30         attached             FastEthernet0/1
+
 show ipv6 cef
+
+
 ```
 
 ## Routing protocols
 
-Link State routing protocol - every router builds a tree or a graph of the whole network. Then launches shortest path algorithm to find out best paths to all destinations. These paths go to a Routing table. Generally some variant of Dijkstra's algorithm is used.  
-LPM - Long Prefix Match - network with longest mask will be chosen from routing table. Default route has the shortest prefix and the lowest priority.
+- Link State routing protocol - every router builds a tree or a graph of the whole network. Then launches shortest path algorithm to find out best paths to all destinations. These paths go to a Routing table
+- Generally some variant of Dijkstra's algorithm is used
+- LPM - Long Prefix Match - network with longest mask will be chosen from routing table. Default route has the shortest prefix and the lowest priority
+- Classful routing protocols (RIPv1 and IGRP) do not advertise subnet mask information
+- Discontinious networks - discontiguous ? - 192.168.1.0 > 10.2.3.0 > 192.168.3.0 -  ???
+- Contiguous network: A single classful network in which packets sent between every pair of subnets will pass only through subnets of that same classful network, without having to pass through subnets of any other classful network
+- Discontiguous network: A single classful network in which packets sent between at least one pair of subnets must pass through subnets of a different classful network
+- Split horizon - 
 
 ## Administrative distances
 
