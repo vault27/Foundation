@@ -1,34 +1,28 @@
 # Foundation
 My personal knowledge base on networks, security, protocols, cryptography, technologies, products, infrastructure, operating systems, virtualization.
 
-- [Hardware architectures](hardware.md)
-
 ## Network foundation
 
 - [OSI model](osi.md)
-
-### L1
-
+- [Hardware architectures](hardware.md)
 - [Fiber](fiber.md)
-
-### L2
-
+- [Wireless](wireless.md)
 - [Ethernet](ethernet.md)
-
-### L3
-
 - [IP](ip.md)
 - [MPLS](mpls.md)
-
-### L4
-
-### L7
-
+- [IPSec](ipsec.md)
+- [DMVPN](dmvpn.md)
+- [VxLAN](vxlan.md)
+- [TCP](tcp.md)
+- [UDP](udp.md)
+- [ICMP](icmp.md)
+- [TLS/SSL](ssl.md)
 - [HTTP](http.md)
 - [ICAP](icap.md)
 - [SNMP](snmp.md)
 - [DNS](dns.md)
 
+### Switching
 
 ### Routing
 
@@ -37,11 +31,7 @@ My personal knowledge base on networks, security, protocols, cryptography, techn
 - [BGP](bgp.md)
 - [EIGRP](eigrp.md)
 - [IS-IS](isis.md)
-- [rip](rip.md)
-
-### Switching
-
-### VPN
+- [RIP](rip.md)
 
 ### AAA protocols
 
@@ -55,8 +45,6 @@ My personal knowledge base on networks, security, protocols, cryptography, techn
 
 - [Cryptography](cryptography.md)
 - [PKI](pki.md)
-- [TLS/SSL](ssl.md)
-- [IPSec](ipsec.md)
 
 ## Vendors
 
