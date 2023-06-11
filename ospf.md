@@ -79,6 +79,10 @@ We have to think through the following:
 - Process ID - it has local significance, it is better to use the same ID on all devices
 - Timers, maybe it is better to harden them
 
+## Two OSPF links between sites via IPSec link
+
+- In order to make one link primary - we need to change its cost: either directly via interface command, on indirectly via changing bandwidth
+
 ## Data centre CLOS specifics
 
 - All routers are in area 0

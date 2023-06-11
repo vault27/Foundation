@@ -1,4 +1,5 @@
 # Foundation
+
 My personal knowledge base on networks, security, protocols, cryptography, technologies, products, infrastructure, operating systems, virtualization.
 
 ## Network foundation
@@ -10,6 +11,7 @@ My personal knowledge base on networks, security, protocols, cryptography, techn
 - [Ethernet](ethernet.md)
 - [IP](ip.md)
 - [MPLS](mpls.md)
+- [QoS](qos.md)
 - [IPSec](ipsec.md)
 - [DMVPN](dmvpn.md)
 - [VxLAN](vxlan.md)
@@ -23,6 +25,8 @@ My personal knowledge base on networks, security, protocols, cryptography, techn
 - [DNS](dns.md)
 
 ### Switching
+
+- [Switching](switching.md)
 
 ### Routing
 
@@ -45,10 +49,26 @@ My personal knowledge base on networks, security, protocols, cryptography, techn
 
 - [Cryptography](cryptography.md)
 - [PKI](pki.md)
+- [DoS](dos.md)
 
 ## Vendors
 
+- [Cisco](cisco.md)
+- [Fortinet](fortinet.md)
+- [Palo Alto](paloalto.md)
+- [F5](f5.md)
+
 ## Operating systems
+
+- [Windows](Windows.md)
+- [Linux](linux.md)
+
+### Virtualization
+
+- [VMWare](vmware.md)
+- [Azure](azure.md)
+- [Docker](docker.md)
+- [Kubernetes](Kubernetes.md)
 
 ## Automation
 

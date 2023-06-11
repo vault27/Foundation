@@ -83,11 +83,53 @@ Prefix              Next Hop             Interface
 10.0.9.0/30         attached             FastEthernet0/1
 
 show ipv6 cef
-
-
 ```
 
 ## Routing protocols
+
+### History
+
+- EGP - 1982
+- IGRP - 1985
+- RIPv1 - 1988
+- IS-IS - 1990
+- OSPFv2 - 1991
+- EIGRP - 1992
+- RIPv2 - 1994
+- BGP - 1995
+- RIPng - 1995
+- BGPv6, OSPFv3 - 1999
+- IS-ISv6 - 2000
+
+Types:
+
+- Purpose: Interior Gateway Protocol (IGP) or Exterior Gateway Protocol (EGP)
+- Operation: Distance vector protocol, link-state protocol, or path-vector protocol
+- Behavior: Classful (legacy) or classless protocol
+
+Distance vector
+
+- RIP
+- EIGRP
+
+Link-state
+
+- OSPF
+- IS-IS
+
+Path vector
+
+- BGP
+
+Routing Protocol Characteristics
+
+- Speed of convergence: Speed of convergence defines how quickly the routers in the network topology share routing information and reach a state of consistent knowledge. The faster the convergence, the more preferable the protocol. Routing loops can occur when inconsistent routing tables are not updated due to slow convergence in a changing network
+- Scalability: Scalability defines how large a network can become, based on the routing protocol that is deployed. The larger the network is, the more scalable the routing protocol needs to be.
+- Classful or classless (use of VLSM): Classful routing protocols do not include the subnet mask and cannot support variable-length subnet mask (VLSM). Classless routing protocols include the subnet mask in the updates. Classless routing protocols support VLSM and better route summarization
+- Resource usage: Resource usage includes the requirements of a routing protocol such as memory space (RAM), CPU utilization, and link bandwidth utilization. Higher resource requirements necessitate more powerful hardware to support the routing protocol operation, in addition to the packet forwarding processes
+- Implementation and maintenance: Implementation and maintenance describes the level of knowledge that is required for a network administrator to implement and maintain the network based on the routing protocol deployed
+
+### Concepts 
 
 - Link State routing protocol - every router builds a tree or a graph of the whole network. Then launches shortest path algorithm to find out best paths to all destinations. These paths go to a Routing table
 - Generally some variant of Dijkstra's algorithm is used
@@ -115,6 +157,21 @@ Can be changed with distance command
 - EIGRP (external) - 170
 - iBGP - 200
 - Unreachable - 255
+
+## Routing table
+
+Format:
+
+```
+Route source | Administrative distance/metric | Next hop | Time stamp | Outgoing interface
+R | 172.16.4.0/26 | 120/2 | via 1.1.1.1 | 00:00:12 | Etherntet 0/0
+```
+
+- Route source: Identifies how the route was learned. Directly connected interfaces have two route source codes. C identifies a directly connected network. Directly connected networks are automatically created whenever an interface is configured with an IP address and activated. L identifies that this is a local route. Local routes are automatically created whenever an interface is configured with an IP address and activated
+- S: Identifies that the route was manually created by an administrator to reach a specific network. This is known as a static route.
+- D: Identifies that the route was learned dynamically from another router using the EIGRP routing protocol.
+- O: Identifies that the route was learned dynamically from another router using the OSPF routing protocol.
+- R: Identifies that the route was learned dynamically from another router using the RIP routing protocol.
 
 ## Route filtering
 

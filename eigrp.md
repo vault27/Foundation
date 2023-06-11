@@ -4,10 +4,13 @@
 
 ## RFC
 
+- RFC 7868
+
 ## Concepts
 
 - Enhanced Interior Gateway Routing Protocol 
 - Advanced distance vector protocol
+
 - DUAL algorithm - diffusing update algorithm
 - Named and classic configuration modes
 - Autonomous systems numbers are used
@@ -36,16 +39,83 @@
 - Automatic summarization on classfull network boundries
 - Multiprotocol: IPX, Apple Talk, IPv4, IPv6
 - However, with auto-summary enabled, EIGRP acts like classful routing protocols in one specific way: They do not support discontiguous networks. To support discontiguous networks with EIGRP, simply disable auto-summary
+- The default maximum ECMP is four routes
+- Internal & External Routes, different AD, Internal: network command, External: redistribution
 
 ## Metric
 
 - Metric: constrained bandwidth + cumulative delay, optionally: load + reliability
+- Very difficult formula
+- EIGRP uses multiple factors to calculate the metric for a path
+- EIGRP uses K values to define which factors the formula uses and the impact associated with a factor when calculating the metric
 - The less the metric the better
-- Feasible distance - metric based on neighbor's data + local parametres: bandwidth, delay - metric value for the lowest-metric path to reach a destination - best path!
+- Link speed is collected from the configured interface bandwidth on an interface
+- Delay is the total measure of delay in the path, measured in tens of microseconds (μs)
+- The EIGRP update packet includes path attributes associated with each prefix
+- The EIGRP path attributes can include hop count, cumulative delay, minimum bandwidth link speed, and RD
+- The attributes are updated each hop along the way, allowing each router to independently identify the shortest path
+- The hop count increments, minimum bandwidth decreases, total delay increases, and the RD changes with each EIGRP update
+- Minimum bandwidth along all the path is used
+- Delay is configured per interface
+- For example: FastEthernet, link speed - 100,000, Delay - 100 μs, result metric - 28,160
+- Custom K Values are available
+
+Show metric for particular prefix:
+
+```
+R1# show ip eigrp topology 10.4.4.0/24
+! Output omitted for brevity
+EIGRP-IPv4 Topology Entry for AS(100)/ID(10.14.1.1) for 10.4.4.0/24
+  State is Passive, Query origin flag is 1, 1 Successor(s), FD is 3328
+  Descriptor Blocks:
+  10.13.1.3 (GigabitEthernet0/1), from 10.13.1.3, Send flag is 0x0
+      Composite metric is (3328/3072), route is Internal
+      Vector metric:
+        Minimum bandwidth is 1000000 Kbit
+        Total delay is 30 microseconds
+        Reliability is 252/255
+        Load is 1/255
+        Minimum MTU is 1500
+        Hop count is 2
+        Originating router is 10.34.1.4
+  10.14.1.4 (GigabitEthernet0/2), from 10.14.1.4, Send flag is 0x0
+      Composite metric is (5376/2816), route is Internal
+     Vector metric:
+        Minimum bandwidth is 1000000 Kbit
+        Total delay is 110 microseconds
+        Reliability is 255/255
+        Load is 1/255
+        Minimum MTU is 1500
+        Hop count is 1
+        Originating router is 10.34.1.4
+```
+
+## Neighbor adjacency
+
+- K1-K5 numbers are the same
+- Primary subnet/mask om interface
+- AS Number
+
+Network command - multicast is used  
+neighbor command - unicast is used
+
+
+
+- Feasible distance - metric based on neighbor's data + local parametres: bandwidth, delay - metric value for the lowest-metric path to reach a destination
 - Reported distance - metric based on data, received from neighboor: bandwidth+delay
 - FD is always bigger then RD
 - RD is always equal to neighbor's FD
+
+
+## EIGRP Diffusing Update Algorithm (DUAL)
+
+- Best route = successor
+- Backup route - feasible successor
+- Feasible distance - exist for every route - metric value
+- Reported distance - exist for every route - metric value received from neighbor, before we add metric for path to this neighbor
 - Feasibility condition: For a route to be considered a backup route, the RD received for that route must be less than the FD(best route) calculated locally. This logic guarantees a loop-free path
+- Only successor goes to RIB
+
 
 FD example:  
 
@@ -179,3 +249,24 @@ router eigrp  1
     network 0.0.0.0 255.255.255.255
 ```
 
+### Passive interface
+
+```
+router eigrp 100
+    passive-interface default
+    no passive-interface Ethernet0/0
+    network 10.1.0.0 0.0.255.255
+    network 192.168.0.0 0.0.255.255
+
+OR
+
+router eigrp 100
+passive-interface Ethernet0/1
+network 10.1.0.0 0.0.255.255
+network 192.168.0.0 0.0.255.255
+```
+###  Manual Route Summarization
+
+```
+
+```

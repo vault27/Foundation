@@ -1,21 +1,44 @@
 # Switching
 
+## Main features
+
+- VLANs
+- STP
+- RSTP
+- MSTP
+- VTP
+- DTP
+- CDP
+- LLDP
+- LAG
+- MC-LAG
+- LACP
+- Etherchannel - port channel
+
 ## Native VLAN
+
 - The native VLAN should match on both trunk ports, or traffic can change VLANs unintentionally
 - A native VLAN is a port-specific configuration and is changed with the interface command switchport trunk native vlan vlan-id
 - All switch control plane traffic (DTP, VTP and CDP frames and also BPDU’s) is advertised using VLAN 1. The Cisco security hardening guidelines recommend changing the native VLAN to something other than VLAN 1. More specifically, it should be set to a VLAN that is not used at all (that is, has no hosts attached to it). Somebody may add port in VLAN 1 and forget about it
 
 ## SPAN
+
 - Can be oversubscribed
 - Configurable
 - Cisco private
 
 ## Mirror port - TAP?
+
 - Full physical copy, no oversubscription
 
 
 ## LAG
+
 Concepts
+- Implementation may follow vendor-independent standards such as Link Aggregation Control Protocol (LACP) for Ethernet, defined in IEEE 802.1AX or the previous IEEE 802.3ad, but also proprietary protocols
+- Sending all frames associated with a particular session across the same link. Common implementations use L2 or L3 hashes (i.e. based on the MAC or the IP addresses), ensuring that the same flow is always sent via the same physical link, or we will face Ethernet reordening - this will increase load on TCP
+- However, this may not provide even distribution across the links in the trunk when only a single or very few pairs of hosts communicate with each other, i.e. when the hashes provide too little variation. It effectively limits the client bandwidth in aggregate.[18] In the extreme, one link is fully loaded while the others are completely idle and aggregate bandwidth is limited to this single member's maximum bandwidth. For this reason, an even load balancing and full utilization of all trunked links is almost never reached in real-life implementations
+
 - 802.3ad earlier, now 802.1AX
 How many links each tech?
 - Why even number?
@@ -23,16 +46,28 @@ How many links each tech?
 - M-LAG vs MC-LAG? STandard?
 - What LACP negotiates?
 - 
-## M-LAG
-- Different a little bit on different vendors
+
+## MC-LAG
+
+- Is a type of link aggregation group (LAG) iwth using different appliances
+- Its implementation varies by vendor; notably, the protocol existing between the chassis is proprietary
+- The IEEE 802.1AX-2008 industry standard for link aggregation does not mention MC-LAG, but does not preclude it
+- Cisco Catalyst 6500	Multichassis Etherchannel (MEC) - Virtual Switching System (VSS)
+- Cisco Catalyst 3750 (and similar)	Cross-Stack EtherChannel
+- Cisco Catalyst 9000	StackWise Virtual
+- Cisco Nexus	Virtual PortChannel (vPC), where a PortChannel is a regular LAG
+- Cisco IOS XR	mLACP (Multichassis Link Aggregation Control Protocol)
+- Juniper	MC-LAG
 
 ## Port Channel
+
 Port-channels provide three important benefits:
 - Redundancy. If one of the member interfaces fails, traffic is redirected over the remaining links.
 - Bandwidth. Increase in transmission capacity due to bundling multiple interfaces together. All interfaces are active transmission channels.
 - Spanning Tree. Port-channels are seen as a single interface by Spanning-Tree protocols
 
 ### Concepts
+
 - "EtherChannel" or "Link Aggregation" is the particular technology that allows you to bundle several links between two devices and use them simultaneously as a single interface. The "Port-channel" is the name of this virtual interface in IOS
 - Port-Channel=Etherchannel=Link Aggregation
 - It may be Layer 2 or Layer 3
@@ -77,10 +112,12 @@ switch(config)# port-channel load-balance
 ```
 
 ## ESI
+
 - Works above VxLAN EVPN
 - Host may be connected to more than 2 switches - multiple home active/active
 
 ## vPC
+
 - Virtual port channel - feature on Nexus switches which provides the ability to configure a Port-Channel across multiple switches
 - We create vPC domain on switch, then we create port-channel interfaces with one port inside and configure vpc domain number in them, access or trunk we configure in port-channel interfaces as well
 - Provides active-active dual homed host connection
@@ -95,6 +132,7 @@ switch(config)# port-channel load-balance
 - LACP is used - not optimal load balance algorithm is used - it is better to use 5 tuple - MACs, Ports, Protocol
 
 ### Components
+
 - Peer link - LAG - no traffic - CFS Cisco protocol - sync vPC config + MAC table + ARP table - 2 High speed links are used - 40/100 Gbits - can be connected via switch
 - Peer keep alive link - maybe virtual - used only for heartbeat - recomended to use physical in separate VRF - mgmt0 interface can be used - every second - UDP 3200 - SVI interface and loopback are not recomended - IPs are used - can be connected via switch
 - vPC domain - all about 2 switches - has a number - it influences virtual MAC
@@ -128,7 +166,9 @@ Type 2
 - Keep-alive fails - nothing happens
 
 ### Configuration
+
 Nexus - configs on tboth switches should be identical!!!
+
 ```
 feature vpc
 
@@ -202,6 +242,7 @@ Nexus(config-if)# vpc orphan-ports suspend
 ```
 
 ### Verification
+
 Show all we need about vPC
 ```
 leaf-1# show vpc
@@ -239,11 +280,8 @@ Id    Port          Status Consistency Reason                Active vlans
 8     Po101         up     success     success               100
 ```
 
-## VSS
-
-## Stackwise
-
 ## STP
+
 Port types:
 - Network - goes immediately to Blocking state - for connecting switches
 - Edge - goes immediately to Forwarding state - for connecting end hosts

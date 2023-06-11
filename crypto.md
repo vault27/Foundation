@@ -1,5 +1,7 @@
 # Cryptography
 
+- In mathematics, computer science and physics, a deterministic system is a system in which no randomness is involved in the development of future states of the system.[1] A deterministic model will thus always produce the same output from a given starting condition or initial state
+
 ## Encoding
 
 Encoding data is a process involving changing data into a new format using a scheme. Encoding is a reversible process and data can be encoded to a new format and decoded to its original format. Encoding typically involves a publicly available scheme that is easily reversed. Encoding data is typically used to ensure the integrity and usability of data and is commonly used when data cannot be transferred in its current format between systems or applications. Encoding is not used to protect or secure data because it is easy to reverse.  
@@ -127,16 +129,29 @@ Three types
 
 ### MAC
 
+- It is a cryptographic primitive
+- MACs Provide Authentication & Data Integrity Checks (But Can’t Support Non-Repudiation)
+- It is a mix of Hash and secret key: as Input it accepts a message + secret key and generates an Authentication Tag - this process is deterministic
+- MAC is like a private hash function, which only you can produce
+- This protocol allows replies: if it is replied later, it still be authentic
+- Symmetric key version of digital signatures, but digital signature provide non-repudiation, MAC does not
+- You need a way to verify that a message came from an authentic sender (not an imposter) and that the data hasn’t been modified (i.e., it arrived as intended)
+- MAC authenticates the sender using private key
+- Used also in SSH
+- It’s also sometimes referred to as a keyed hash function 
 - A pure hash function could be used to verify data integrity, but only if the hash of the data is transported separately from the data itself. Otherwise, an attacker could modify both the message and the hash, easily avoiding detection
-- MAC is a type of digital signature; it can be used to verify authenticity provided that the secret hashing key is securely exchanged ahead of time. - - It’s limited because it still relies on a private secret key
+- MAC is a type of digital signature; it can be used to verify authenticity provided that the secret hashing key is securely exchanged ahead of time
+- It’s limited because it still relies on a private secret key
 - Message authentication code (MAC) or a keyed-hash is a cryptographic function that extends hashing with authentication
 - Only those in possession of the hashing key can produce a valid MAC
 - If there is no MAC, encrypted message can be altered
 - Any hash function can be used as the basis for a MAC using a construction known as HMAC (short for hash-based message authentication code)
 - RFC 2104: HMAC: Keyed-Hashing for Message Authentication (Krawczyk et al., February 1997)
 - HMAC works by interleaving the hashing key with the message in a secure way
+- A MAC is created by combining a symmetric (secret) key with the message and then hashing it using a hashing function
 - MAC from the record sequence number, header, and plaintext is calculated, MAC is added to plaintext, then al this is encrypted and sent together with header, SO MAC IS SENT IN ENCRYPTED FORM TOGETHER WITH PLAIN TEXT - This process is known as MAC-then-encrypt - has many problems
-- Encrypt-then-MAC - plaintext and padding are first encrypted and then fed to the MAC algorithm. This ensures that the active network attacker can’t ma- nipulate any of the encrypted data
+- Encrypt-then-MAC - plaintext and padding are first encrypted and then fed to the MAC algorithm. This ensures that the active network attacker can’t manipulate any of the encrypted data
+- Types : CMAC, HMAC, KMAC  
 
 MACs in TLS/SSL:
 
@@ -144,7 +159,7 @@ MACs in TLS/SSL:
 - SHA384 - good - 384 bits
 - SHA1 - not good - 160 bits
 - MD5  - not good
-SHA1 and SHA256 are used everywhere
+- SHA1 and SHA256 are used everywhere
 
 ### Key Exchange
 

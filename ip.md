@@ -32,6 +32,7 @@ The king of networks
 - 0.0.0.0 address in source can be used, if host yet does not have an address
 
 ## Bogon prefixes
+
 These prefixes are not globally unique prefixes. IETF didn’t intend for these to be routed on the public Internet  
 https://bgpfilterguide.nlnog.net/guides/bogon_prefixes
 
@@ -49,3 +50,16 @@ https://bgpfilterguide.nlnog.net/guides/bogon_prefixes
 - 203.0.113.0/24+    # RFC 5737 TEST-NET-3
 - 224.0.0.0/4+      # multicast
 - 240.0.0.0/4+      # reserved
+
+## IP services
+
+### NAT
+
+### DHCP
+
+### FHRP
+
+### ARP
+
+
+

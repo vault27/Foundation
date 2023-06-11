@@ -59,6 +59,13 @@ L2 over WAN variants,
 - PBB-EVPN
 - Virtual Private Wire Service (VPWS) - point to point
 
+VLPS vs Ethernet over MPLS (EoMPLS)
+
+-  Ethernet over MPLS (EoMPLS): sends traffic from one port to another, no switch logic
+- It does not perform MAC learning or MAC look up for forwarding packets
+- VPLS can be defined as a group of Virtual Switch Instances (VSIs) that are interconnected using EoMPLS circuits in a full mesh topology to form a single, logical bridge
+- The technologies that can be used as pseudo-wire for VPLS can be Ethernet over MPLS, L2TPv3 or even GRE
+
 Connection scheme
 
 ```text

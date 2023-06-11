@@ -1,0 +1,46 @@
+# Fortinet
+
+## NAT
+
+- Firewall policy NAT - for small amount of IP addreses
+    - SNAT and DNAT are configured inside policy
+    - SNAT uses outgoing interface IP
+    - DNAT uses VIP as destination address
+- Central NAT
+    - SNAT and DNAT per VDOM
+    - SNAT in central SNAT policy
+
+### Firewall Policy SNAT
+
+- Two options: outgoing interface address or IP pool
+- IP pools should be the same subnet as External IP of Fortigate, unless proper routing is configured
+- IP pools type:
+    - Overload
+    - One to one
+    - Fixed port range - good for CGN
+    - Port block allocation - good for CGN
+- IP Pool type - Fixed port range - 200 internal addresses are assigned to 10 external addresses - used in CGN environments - Carrier Grade NAT
+- Then using this pool you can identify which external address and which ports range on it is attched to particular internal address, and you do not need to log all traffic that then understand which particluar clientgenerated a traffic, you can just know it based on external IP and port, for example:
+
+```
+# diagnose firewall ippool list
+list ippool info: (v£=root)
+Check block size and number of blocks for IP pool
+ippool cgnat-pba-pooll: id=1, block-sz=2323, num-block=1,
+fixed-port=no, use=2
+natip-range=70.70.70.71-70.70.70.80 start-port=5117, num-pba-per-ip=26
+source ip-range=10.0.1.1-10.0.1.253 deterministic NAT
+clients=0, inuse-NAT-IPs=0
+total-PBAs=260, inuse-PBAs=0, expiring-PBAs=0, free-PBAs=100.00%
+allocate-PBA-times=0, reuse-PBA-times=0
+
+# diagnose firewall ippool-fixed-range list natip 70.70.70.71
+ippool name=cgnat-pba-pool1, ip shared num=26, port num=2323
+internal ip=10.0.1.1, nat ip=70.70.70.71, range=5117~7439 
+internal ip=10.0.1.2, nat ip=70.70.70.71, range=7440~9762
+internal ip=10.0.1.26, nat ip=70.70.70.71, range= 63192~65514
+
+# diagnose firewall ippool-fixed-range list natip 70.70.70.71 5900
+ippool name=cgnat-pba-pool1, ip shared num=26, port num=2323
+internal ip=10.0.1.1, nat ip=70.70.70.71, range=5117~7439
+```
