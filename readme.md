@@ -50,6 +50,7 @@ My personal knowledge base on networks, security, protocols, cryptography, techn
 - [Cryptography](cryptography.md)
 - [PKI](pki.md)
 - [DoS](dos.md)
+- [Web security](websec.md)
 
 ## Vendors
 
@@ -83,3 +84,6 @@ My personal knowledge base on networks, security, protocols, cryptography, techn
 - [tcpdump](tcpdump.md)
 - [Wireshark](wireshark.md)
 - [curl](curl.md)
+- [OpenSSL](openssl.md)
+- [nmap](nmap.md)
+- [hping](hping.md)

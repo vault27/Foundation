@@ -2,21 +2,25 @@
 
 Everything I need to know about OSPF in one place.
 
-## Books
+## Additional reading
 
 - OSPF: Anatomy of an Internet Routing Protocol
 - Routing TCP/IP Volume 1
 - Cisco IP Routing: Packet Forwarding and Intra-domain Routing Protocols
+- OSPF Technology Documentation
+- OSPF Configuration Guide
 
 ## Standards
 
 - RFC 2328 "OSPF Version 2"
 - RFC 5340 "OSPF for IPv6"
 
-## Documentation
+## Main features to know
 
-- OSPF Technology Documentation
-- OSPF Configuration Guide
+- DR/BDR
+- Area types
+- Virtual links
+- LSA types
 
 ## History
 
@@ -45,6 +49,7 @@ Everything I need to know about OSPF in one place.
 
 - Open standard, IGP, Link-state, classless (VLSM, Summarization), Dikstra SPF Algorithm, guaranties loop free, hierarchi through areas - large scalability, topology summarization, interopeability between vendors
 - Router knows all network and builds a tree - The algorithm places each router at the root of a tree
+- OSPF runs directly over IPv4, using its own protocol 89, which is reserved for OSPF by the Internet Assigned Numbers Authority (IANA)
 - Each router has its own view of the topology even though all the routers build a shortest path tree which uses the same link-state database
 - OSPF is very good for traffic engineering in ISP with MPLS
 - IPv4 and IPv6
@@ -56,7 +61,7 @@ Everything I need to know about OSPF in one place.
 - Metric is cost, cost is dependent on bandwidth of the link, cost is inversly proportional to the bandwidth, the greater the bandwidth the less the cost, the better the path, cost=Reference bandwidth/100 in Mbps - More flexible than static hop count
 - Loops are impossible inside the area because every router knows all topology. And between areas all areas have to be connected to area 0, so loops are avoided as well like in distance vector
 - One area - 500 routers
-- Process id can be different
+- A router can run multiple OSPF processes. Each process maintains its own unique database, and routes learned in one OSPF process are not available to a different OSPF process with- out redistribution of routes between processes. The OSPF process numbers are locally sig- nificant and do not have to match among routers. Running OSPF process number 1 on one router and running OSPF process number 1234 will still allow the two routers to become neighbors
 - Metric is based on cumulitive cost of all outgoing interfaces, the lower the mitric the better, it is a price of the route
 - No hop limit
 - All networks are connected via backbone areas to avoid loops
@@ -66,11 +71,12 @@ Everything I need to know about OSPF in one place.
 - Next-hop field - supports the advertisment of routes with a different next-hop router than the advertising router
 - Manual route summarization - summarization is supported on ABR only
 - If there is an topology change - router sends LSA, if no changes LSAs are sent every 30 mins
-Each router stores the data, composed of individual link-state advertisements (LSA) , in its own copy of the link-state database (LSDB) . Then, the router applies the Shortest Path First (SPF) algorithm to the LSDB to determine the best (lowest-cost) route for each reachable subnet (prefix/length).  
+- Each router stores the data, composed of individual link-state advertisements (LSA) , in its own copy of the link-state database (LSDB) . Then, the router applies the Shortest Path First (SPF) algorithm to the LSDB to determine the best (lowest-cost) route for each reachable subnet (prefix/length) 
 
 ## Design
 
 We have to think through the following:
+
 - IP networks between routers - /31 is ok
 - Loopback interfaces and Router-IDs - loopback is actually not needed if we configure router-id manually, which is recomended. Loopback numbers on all devices.
 - Authentication
@@ -113,6 +119,9 @@ OSPF areas are connected by one or more Area Border Routers (the other main link
 
 - Enable OSPF process with particular ID (number in IOS and word in Nexus) and configure router ID for it, or loopback is used
 - Iclude interfaces into OSPF using network command in IOS, we should include interfaces on which we peer and which we want to announce - and specify area
+- Network command uses wild cards and specifies which interfaces will be enabled
+- If the IP address for an interface matches two network statements with different areas, the most explicit network statement (that is, the longest match) preempts the other network statements for area allocation
+- The connected network for the OSPF-enabled interface is added to the OSPF LSDB under the corresponding OSPF area in which the interface participates. Secondary connected net- works are added to the LSDB only if the secondary IP address matches a network statement associated with the same area
 - Enable OSPF on required interfaces and specify area - on Nexus
 - Enable OSPF on loopback to announce it
 
@@ -120,7 +129,7 @@ OSPF areas are connected by one or more Area Border Routers (the other main link
 
 - OSPF uses Hello packets to discover neighbors on OSPF enabled attached links
 - Transport via IP protocol 89 (OSPF)
-- Sent as multicast to 224.0.0.5 (all OSPF routers) or 224.0.0.6 (all DRs)
+- Sent as multicast to 224.0.0.5 (all OSPF routers) - or MAC address 01:00:5E:00:00:05 or 224.0.0.6 (all DRs) - MAC address 01:00:5E:00:00:06
 - Multicast is used to find neighbors, TTL 1, then unicast is used to exchange topologies
 - Hello packets contain attributes that neighbors must agree on to form "adiacency"
 - Once adjacency is negotiated, LSDB is exchanged
@@ -129,7 +138,7 @@ OSPF areas are connected by one or more Area Border Routers (the other main link
 - Full updates - during discovery, partial otherwise. Router changes its LSDB, increases its number and sends LSU
 - Authentication - MD5 and clear text
 
-**Unique OSPF Adjacency Attributes**
+### Unique OSPF Adjacency Attributes
 
 - Router-ID - 32 bit number, must be unique.
   - Manual configuration
@@ -139,7 +148,7 @@ OSPF areas are connected by one or more Area Border Routers (the other main link
   - For OSPFv2 the interface's primary IP address 
   - For OSPFv3 the interface's link-local address
 
-**Common OSPF Adjacency Attributes**
+### Common OSPF Adjacency Attributes
 
 - Interface Area-ID
 - Hello interval & dead interval
@@ -150,24 +159,7 @@ OSPF areas are connected by one or more Area Border Routers (the other main link
 - Stub Flags
 - Other optional capabilities
 
-**OSPF Hello Packets**  
-
-OSPF routers periodically send Hello packets out OSPF enabled links every Hellolnterval  
-
-Hello packet contains
-
-- Local Router-|D
-- Local Area-ID
-- Local Interface Subnet Mask
-- Local Interface Priority
-- Hello Interval
-- Dead Interval
-- Authentication Type & Password
-- DR/BDR Addresses
-- Options (e.g. stub flags, etc.)
-- Router IDs of other neighbors on the link
-
-**Neighbor states - OSPF Adjacency State Machine - 8 states**
+### Neighbor states - OSPF Adjacency State Machine - 8 states**
 
 - Down - initial state - No hellos have been received from neighbor
 - Attempt - for NBMA networks, if does not get updates from neighboor - try to reach it
@@ -175,12 +167,11 @@ Hello packet contains
 - 2-Way - communication established, DR/BDR is elected, if needed
     - I have received a hello packet from a neighbor and they have acknowledged a hello from me
     - Indicated by my Router-ID in neighbor's hello packet
-- Exstart - master/slave is chosen based on Router ID - where master has higher Router-ID - First step of actual adjacency - Master chooses the starting sequence number for the Database Descriptor
-(DBD) packets that are used for actual LSA exchange
+- Exstart - master/slave is chosen based on Router ID - where master has higher Router-ID - First step of actual adjacency - Master chooses the starting sequence number for the Database Descriptor (DBD) packets that are used for actual LSA exchange
 - Exchange
     - Local link state database is sent through DBD packets
     - DBD sequence number is used for reliable acknowledgement/retransmission
-- Loading - Link State Request packets are sent to ask for more information about a particular LSA
+- Loading - LSR packets are sent to the neighbor, asking for the more recent LSAs that have been discovered (but not received) in the Exchange state
 - Full - Neighbors are fully adjacent and databases are synchronized
 
 To see the state of adjecency: 
@@ -201,7 +192,8 @@ The Dead Time field indicates the amount of time that remains as the router wait
 State  
 The state of NEIGHBOR + Neighbor's status - if it is DR or BDR or DROTHER  
   
-**Tracking Topology Changes**  
+**Tracking Topology Changes** 
+
 When a new LSA is received it is checked against the database for changes such as...
 
 - Sequence number - Used to track new vs old LSAs
@@ -211,6 +203,7 @@ When a new LSA is received it is checked against the database for changes such a
 - Checksum - Used to avoid transmission & memory corruption
   
 **LSA Flooding**
+
 - When change is detected new LSA is generated and "flooded" (sent) out all links
 - OSPF does not use split horizon
 - Self-originated LSAs are simply dropped
@@ -420,11 +413,28 @@ LSA-type 1 (Router-LSA), len 48
 
 There are 5 different types of OSPF packets:
 
-- 1 - Hello
-- 2 - DBD - Database Description
-- 3 - LSR - Link State Request
-- 4 - LSU - Link State Update - contains LSA
-- 5 - Link State Acknowledgment
+- 1 - Hello - discover and maintain neighbors. Are sent periodically via all interfaces to discover new neighbors and test existing
+- 2 - DBD - Database Description - summer of database, during first adjecency
+- 3 - LSR - Link State Request - request a portion of neighbors database
+- 4 - LSU - Link State Update - contains LSA - sent in direct response to LSR
+- 5 - Link State Acknowledgment - acknowledge of LSA
+
+### Hello Packet
+
+OSPF routers periodically send Hello packets out OSPF enabled links every Hellolnterval  
+
+Hello packet contains:
+
+- Router-ID - 32 bit ID within OSPF domain
+- Authentication options: none, plain text, MD5
+- Area-ID - The OSPF area that the OSPF interface belongs to. It is a 32-bit number that can be written in dotted-decimal format (0.0.1.0) or decimal (256)
+- Interface Subnet Mask
+- Interface Priority - for DR elections
+- Hello Interval
+- Dead Interval
+- DR/BDR Addresses
+- Options (e.g. stub flags, etc.)
+- Router IDs of other neighbors on the link
 
 ## Router types
 
@@ -455,15 +465,55 @@ There are 5 different types of OSPF packets:
 
 - Main goal is to avoid LSA flooding
 - DR/BDR are chosen based on hello messages in broadcast segment
-- Non-DR and non-BDR routers only exchange routing information with the DR and BDR, rather than exchanging updates with every other router upon the segment. This, in turn significantly reduces the amount of OSPF routing updates that need to be sent.  
-- Upon the segment each router will go through an election process, to elect a DR and BDR. There are two rules used to determine who is elected:  
-
-1. Priority - Router with the highest interface priority wins the election. The default priority is 1. This is configured on a per-interface level.  
-2. Router ID - If there is a tie, the highest router ID wins the election.  
-- Each router forms a full relationship (/neighbor state) with the Designated and Backup Designated Routers. Non-DR and Non-BDR's on the other hand form the 2-way neighbor state. This means that they both send/receive each other's HELLO's, but no routing updates are exchanged between one another.  
-
+- Non-DR and non-BDR routers only exchange routing information with the DR and BDR, rather than exchanging updates with every other router upon the segment. This, in turn significantly reduces the amount of OSPF routing updates that need to be sent
+- In the event of DR failure, a backup designated router (BDR) becomes the new DR; then an election occurs to replace the BDR
 - Only DR generates type 2 LSAs
+- To minimize transition time, the BDR also forms full OSPF adjacencies with all OSPF routers on that segment
+- All OSPF routers (DR, BDR, and DROTHER) on a segment form full OSPF adjacencies with the DR and BDR
+- As an OSPF router learns of a new route, it sends the updated LSA to the AllDRouters (224.0.0.6) address, which only the DR and BDR receive and process
+- The DR sends a unicast acknowledgment to the router that sent the initial LSA update
+- The DR floods the LSA to all the routers on the segment via the AllSPFRouters (224.0.0.5) address
+
+Elections:
+
+- The DR/BDR election occurs during OSPF neighborship—specifically during the last phase of 2-Way neighbor state and just before the ExStart state
+- If the hello packet includes a RID other than 0.0.0.0 for the DR or BDR, the new router assumes that the current routers are the actual DR and BDR
+- Any router with OSPF priority of 1 to 255 on its OSPF interface attempts to become the DR
+- By default, all OSPF interfaces use a priority of 1
+- The routers place their RID and OSPF priorities in their OSPF hellos for that segment
+- Priority for the interface is the highest for that segment - DR
+- If the OSPF priority is the same, the higher RID is more favorable
+- Once all the routers have agreed on the same DR, all routers for that segment become adjacent with the DR
+- Then the election for the BDR takes place
+- The election follows the same logic for the DR election, except that the DR does not add its RID to the BDR field of the hello packet
+- The OSPF DR and BDR roles cannot be preempted after the DR/BDR election. Only upon the failure (or process restart of the DR or BDR) does the election start to replace the role that is missing
 - Priority 0 - router does not pretend on DR
+- Modifying a router’s RID for DR placement is a bad design strategy. A better technique involves modifying the interface priority to a higher value than the existing DR has
+- Remember that OSPF does not preempt the DR or BDR roles, and the OSPF process might need to be restarted on the current DR/BDR for the changes to take effect
+
+Show DR/BDR
+
+```
+R1# show ip ospf interface brief
+```
+
+Configure interface priority on IOS
+
+```
+R1(config-if)# ip ospf priority 100
+```
+
+Show all neighbors, their priority, state of adjecency with them, their status: DR, BDR, or DROTHER
+
+```
+R2# show ip ospf neighbor
+```
+
+Restart OSPD processes to change DR/BDR after changing priority
+
+```
+R3# clear ip ospf process
+```
 
 ## Authentication
 
@@ -489,13 +539,14 @@ Separate instances for OSPFv2 and OSPFv3
 
 ## Configuration
 
-Configuration on Nexus  
-Interface point to point is necessary on Loopback  
-It is better to configure RID manually - so it will not be changed  
-Network command can be excessive  
-IP oSPF area command on interface  
+### Nexus  
 
-```
+- Interface point to point is necessary on Loopback  
+- It is better to configure RID manually - so it will not be changed  
+- Network command can be excessive  
+- IP oSPF area command on interface  
+
+```text
 hostname leaf-1
 
 feature ospf
@@ -520,10 +571,9 @@ interface Ethernet1/6
   ip ospf network point-to-point
   ip router ospf UNDERLAY area 0.0.0.0
   no shutdown
-
 ```
 
-**Basic IOS configuration**
+### IOS
 
 ```text
 interface loopback 1
@@ -531,9 +581,11 @@ ip address 2.2.2.2 255.255.255.255
 router ospf 2
 network 10.1.12.2 0.0.0.0 area 1
 network 10.1.0.0 0.0.255.255 area 0
+network 10.0.0.10 0.0.0.0 area 0 - explicit only one IP - only on interface
+network 0.0.0.0 255.255.255.255 area 0 - all interfaces
 ```
 
-**Enable OSPF on all interfaces in each VRF**
+### IOS VRF
 
 ```
 router ospf 1 vrf Red
@@ -543,27 +595,30 @@ router ospf 2 vrf Green
 network 0.0.0.0 255.255.255.255 area 0
 ```
 
-**Change default reference bandwidth**  
+### Change default reference bandwidth 
 
 ```
 auto-cost reference bandwidth 
 ```
 
-**Remove router from the network for maintenence**  
+### Remove router from the network for maintenence
+
 Not to be confused with stub areas.  
 This feature will advertise R2's router LSA with the maximum metric, making it least likely as a transit router.
+
 ```
 router ospf 1
 max-metric router lsa include-stub
 ```
+
 Also other options are available:
 - max-metric router-lsa on-startup wait-for-bgp
 - max-metric router-lsa on-startup time
 - max-metric router-lsa summary-lsa
 - max-metric router-lsa external-lsa
-  
-  
-**Virtual Links**
+
+### Virtual Links
+
 ```
 ! On Router C1:
 router ospf 1
@@ -625,9 +680,3 @@ To prove whether the virtual link works, a neighbor relationship between C1 and 
 ```
 show ip ospf virtual-links
 ```
-## Interview questions
-
-Why does OSPF require all traffic between non-backbone areas to pass through a backbone area (area 0)?  
-> Because inter-area OSPF is distance vector, it is vulnerable to routing loops. It avoids loops by mandating a loop-free inter-area topology, in which traffic from one area can only reach another area through area 0
-
-## Cisco Live Sessions

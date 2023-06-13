@@ -129,11 +129,13 @@ Three types
 
 ### MAC
 
+- Does MAC function provide always the same amount of bits like hash?
+- RFC 2104: HMAC: Keyed-Hashing for Message Authentication (Krawczyk et al., February 1997)
 - It is a cryptographic primitive
 - MACs Provide Authentication & Data Integrity Checks (But Can’t Support Non-Repudiation)
 - It is a mix of Hash and secret key: as Input it accepts a message + secret key and generates an Authentication Tag - this process is deterministic
 - MAC is like a private hash function, which only you can produce
-- This protocol allows replies: if it is replied later, it still be authentic
+- Mac is prone to reply attacks. Nothing prevents malicious actor from replying captured message with MAC. To remediate it counters are used: they add to the function the sequence number: MAC (k1, 1, how are you). And if such message is replied later, it will be droopped because it does not match the sequence
 - Symmetric key version of digital signatures, but digital signature provide non-repudiation, MAC does not
 - You need a way to verify that a message came from an authentic sender (not an imposter) and that the data hasn’t been modified (i.e., it arrived as intended)
 - MAC authenticates the sender using private key
@@ -146,12 +148,18 @@ Three types
 - Only those in possession of the hashing key can produce a valid MAC
 - If there is no MAC, encrypted message can be altered
 - Any hash function can be used as the basis for a MAC using a construction known as HMAC (short for hash-based message authentication code)
-- RFC 2104: HMAC: Keyed-Hashing for Message Authentication (Krawczyk et al., February 1997)
+- MACs are resistant against forgery
+- Minimum length of authentication tag is 128 bits - to be strong
 - HMAC works by interleaving the hashing key with the message in a secure way
 - A MAC is created by combining a symmetric (secret) key with the message and then hashing it using a hashing function
 - MAC from the record sequence number, header, and plaintext is calculated, MAC is added to plaintext, then al this is encrypted and sent together with header, SO MAC IS SENT IN ENCRYPTED FORM TOGETHER WITH PLAIN TEXT - This process is known as MAC-then-encrypt - has many problems
 - Encrypt-then-MAC - plaintext and padding are first encrypted and then fed to the MAC algorithm. This ensures that the active network attacker can’t manipulate any of the encrypted data
-- Types : CMAC, HMAC, KMAC  
+
+Types:
+
+- CMAC
+- HMAC
+- KMAC  
 
 MACs in TLS/SSL:
 
