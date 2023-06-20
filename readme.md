@@ -14,7 +14,6 @@ My personal knowledge base on networks, security, protocols, cryptography, techn
 - [QoS](qos.md)
 - [IPSec](ipsec.md)
 - [DMVPN](dmvpn.md)
-- [VxLAN](vxlan.md)
 - [TCP](tcp.md)
 - [UDP](udp.md)
 - [ICMP](icmp.md)
@@ -27,6 +26,8 @@ My personal knowledge base on networks, security, protocols, cryptography, techn
 ### Switching
 
 - [Switching](switching.md)
+- [LAG](lag.md)
+- [STP](stp.md)
 
 ### Routing
 
@@ -36,6 +37,12 @@ My personal knowledge base on networks, security, protocols, cryptography, techn
 - [EIGRP](eigrp.md)
 - [IS-IS](isis.md)
 - [RIP](rip.md)
+
+### Data center
+
+- [VxLAN](vxlan.md)
+- [EVPN](evpn.md)
+- [Nexus](nexus.md)
 
 ### AAA protocols
 
@@ -64,8 +71,9 @@ My personal knowledge base on networks, security, protocols, cryptography, techn
 - [Windows](Windows.md)
 - [Linux](linux.md)
 
-### Virtualization
+### Virtualization foundation
 
+- [Virtualization](virtualization.md)
 - [VMWare](vmware.md)
 - [Azure](azure.md)
 - [Docker](docker.md)

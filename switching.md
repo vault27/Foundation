@@ -90,6 +90,7 @@ Port-channels provide three important benefits:
 - Mode is configured on each physical interface
 
 ### Configuration
+
 Nexus
 ```
 interface Vlan2

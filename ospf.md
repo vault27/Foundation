@@ -22,6 +22,15 @@ Everything I need to know about OSPF in one place.
 - Virtual links
 - LSA types
 
+## Typical tasks
+
+- Add network to OSPF domain - network command
+- Add router to OSPF domain
+- Redistribute routes to OSPF domain
+- Make one path preferable - using cost
+- Summarize routes
+
+
 ## History
 
 - Open Shortest Path First  was developed in the late 1980s
@@ -137,6 +146,18 @@ OSPF areas are connected by one or more Area Border Routers (the other main link
 - Two neighbors choose who is master and who is transferring first
 - Full updates - during discovery, partial otherwise. Router changes its LSDB, increases its number and sends LSU
 - Authentication - MD5 and clear text
+
+## Packet flow during adjecency
+
+- R1 sends Hello - multicast - 224.0.0.5
+- R2 gets Hello and sends DB description packet without anything useful - unicast
+- R2 also sends Hello Packet
+- R1 sends many DB descriptions packets to R2 with very weird content
+- R2 sends LS request where it provides Link State ID - Router ID of R1 - unicast
+- R1 sends LS update, where there are 2 LSA type 1 - for both networks which are directly connected to R1, including the network between routers
+- 
+
+
 
 ### Unique OSPF Adjacency Attributes
 
@@ -409,7 +430,13 @@ LSA-type 1 (Router-LSA), len 48
 
 ```
 
-## Packet types
+## OSPF packets
+
+OSPF packet consists of:
+
+- OSPF header
+- OSPF packet
+- OSPF LLS Data Block - ?
 
 There are 5 different types of OSPF packets:
 
@@ -419,22 +446,30 @@ There are 5 different types of OSPF packets:
 - 4 - LSU - Link State Update - contains LSA - sent in direct response to LSR
 - 5 - Link State Acknowledgment - acknowledge of LSA
 
+### OSPF header
+
+OSPF header is included in any OSPF packet
+
+- Destination MAC: 01:00:5e:00:00:05
+- Destination IP: 224.0.0.5
+- IP type: 89
+- Message type: Hello - 1
+- Router ID
+- Area ID - 0.0.0.0 - The OSPF area that the OSPF interface belongs to. It is a 32-bit number that can be written in dotted-decimal format (0.0.1.0) or decimal (256)
+- Auth Data
+
 ### Hello Packet
 
-OSPF routers periodically send Hello packets out OSPF enabled links every Hellolnterval  
+OSPF routers periodically send Hello packets out OSPF enabled links every Hellolnterval 
 
-Hello packet contains:
-
-- Router-ID - 32 bit ID within OSPF domain
-- Authentication options: none, plain text, MD5
-- Area-ID - The OSPF area that the OSPF interface belongs to. It is a 32-bit number that can be written in dotted-decimal format (0.0.1.0) or decimal (256)
-- Interface Subnet Mask
-- Interface Priority - for DR elections
-- Hello Interval
-- Dead Interval
-- DR/BDR Addresses
+- Network mask
+- Hello interval
+- Router priority
+- Dead interval
+- DR: interface address itself
+- BDR: 0.0.0.0
 - Options (e.g. stub flags, etc.)
-- Router IDs of other neighbors on the link
+- Router IDs of other neighbors on the link - ??
 
 ## Router types
 

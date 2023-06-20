@@ -1,8 +1,33 @@
 # Cisco
 
+## Portfolio
+
+
+
 ## IOS
 - Monolithic operating system running directly on the hardware
 - Replaced with Cisco IOS XE
+
+Image types:
+
+- Original IOS for hardware - used with Dynamips
+- IOL (IOS on Linux also known as IOU)
+- QEMU images
+- IOSv - used in VIRL - can be downloaded with Cisco account, there are available:
+    - IOSXRv 9000
+    - IOSvL2
+    - CSR1000v
+    - ASAv
+    - NX-OSv
+    - IOS XRv
+    - IOSv
+- vIOS can be qcow2 image and vmdk image
+- qcow2 - is almost ready to be used in EVE
+- vmdk - need to be converted
+
+Image naming scheme:
+- K9 - crypto support
+
 
 ## IOS XR
 - Focuses on the needs of service providers
@@ -20,6 +45,8 @@
 ## NX-OS
 
 ## Nexus
+
+vPC / Fabric Path / OTV / LISP / FEX  
 
 The Nexus platform is modular. Each feature has its own processes, independent of other features.  
 
@@ -45,6 +72,7 @@ TCAM in Nexus
 - To use a non-default feature for Nexus 9000 Series switches, one must manually carve out TCAM space for the features. By default, all TCAM space is allocated
 
 ## CSR
+
 Cloud Services Router 1000V Series
 Contains features of Cisco IOS ® XE and IOS XE SD-WAN Software and can run on Cisco Unified Computing System ™ (Cisco UCS ®) servers or servers from leading vendors that support VMware ESXi, Citrix XenServer, Suse KVM, Red Hat KVM, or Microsoft Hyper-V. It is also available on Amazon Web Services and Microsoft Azure cloud marketplace. The CSR 1000V IOS XE Software is also available for Google Cloud Platform.
 - IPsec VPNs
@@ -59,12 +87,14 @@ Contains features of Cisco IOS ® XE and IOS XE SD-WAN Software and can run on C
 ## ISR
 
 ## IOSv
+
 IOSv is an implementation of Cisco IOS that runs as a full virtual machine. The IOSv images are built from the Cisco IOS M/T train and support up to 16 GigabitEthernet interfaces. IOSv provides full layer-3 control-plane and data-plane functionality. Layer-2 switching is not supported, but layer-2 encapsulations, such as EoMPLS and L2TPv3, are supported.  
 IOSv is performance limited when forwarding traffic. Achieved throughputs are ~2.8 Mb/s when passing traffic through one IOSv router, and ~2.4 Mb/s when chained over two routers. Baseline throughput bypassing the router was ~720 Mb/s.
 
 ## IOU
 
 ## Switch commands
+
 Show all MAC addresses on a port
 ```
 cisco9300#sh mac address-table interface gigabitEthernet1/0/22

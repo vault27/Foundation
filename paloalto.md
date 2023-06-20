@@ -773,6 +773,11 @@ show user user-attributes user all
 - Verify that the usernames are correctly displayed in the Source User column under Monitor > Logs > Traffic
 - Verify that the users are mapped to the correct usernames in the User Provided by Source column under Monitor > Logs > User-ID.
 
+### Configure User-ID Agent
+
+- Configure according to Palo Alto documentation
+- Enter username with domain and password
+
 ### Debug
 
 Show logged in users
