@@ -29,7 +29,8 @@ Everything I need to know about OSPF in one place.
 - Redistribute routes to OSPF domain
 - Make one path preferable - using cost
 - Summarize routes
-
+- Add default gateway
+- Configure ECMP
 
 ## History
 
@@ -134,6 +135,47 @@ OSPF areas are connected by one or more Area Border Routers (the other main link
 - Enable OSPF on required interfaces and specify area - on Nexus
 - Enable OSPF on loopback to announce it
 
+## OSPF packets
+
+OSPF packet consists of:
+
+- OSPF header
+- OSPF packet
+- OSPF LLS Data Block - ?
+
+There are 5 different types of OSPF packets:
+
+- 1 - Hello - discover and maintain neighbors. Are sent periodically via all interfaces to discover new neighbors and test existing
+- 2 - DBD - Database Description - summer of database, during first adjecency
+- 3 - LSR - Link State Request - request a portion of neighbors database
+- 4 - LSU - Link State Update - contains LSA - sent in direct response to LSR
+- 5 - Link State Acknowledgment - acknowledge of LSA
+
+### OSPF header
+
+OSPF header is included in any OSPF packet
+
+- Destination MAC: 01:00:5e:00:00:05 - all OSPF routers, 01:00:5e:00:00:06 - DRs 
+- Destination IP: 224.0.0.5 - all OSPF routers, 224.0.0.6 - DRs
+- IP type: 89
+- Message type: Hello - 1
+- Router ID - unique within OSPF domain and processes
+- Area ID - 0.0.0.0 - The OSPF area that the OSPF interface belongs to. It is a 32-bit number that can be written in dotted-decimal format (0.0.1.0) or decimal (256)
+- Auth Data
+
+### Hello Packet
+
+OSPF routers periodically send Hello packets out OSPF enabled links every Hellolnterval 
+
+- Network mask
+- Hello interval
+- Router priority
+- Dead interval
+- DR: interface address itself
+- BDR: 0.0.0.0
+- Options (e.g. stub flags, etc.)
+- Router IDs of other neighbors on the link - even if there are only 2 routers on the links, if R2 got Hello from R1, then it sends its own hello to R1 with R1's ID in this field > so R1 understands that R2 knows about him and 2-Way neighbor state is established
+
 ## Neighbor & Topology Discovery, Adjacency
 
 - OSPF uses Hello packets to discover neighbors on OSPF enabled attached links
@@ -155,11 +197,8 @@ OSPF areas are connected by one or more Area Border Routers (the other main link
 - R1 sends many DB descriptions packets to R2 with very weird content
 - R2 sends LS request where it provides Link State ID - Router ID of R1 - unicast
 - R1 sends LS update, where there are 2 LSA type 1 - for both networks which are directly connected to R1, including the network between routers
-- 
 
-
-
-### Unique OSPF Adjacency Attributes
+## Unique OSPF Adjacency Attributes
 
 - Router-ID - 32 bit number, must be unique.
   - Manual configuration
@@ -169,7 +208,7 @@ OSPF areas are connected by one or more Area Border Routers (the other main link
   - For OSPFv2 the interface's primary IP address 
   - For OSPFv3 the interface's link-local address
 
-### Common OSPF Adjacency Attributes
+## Common OSPF Adjacency Attributes
 
 - Interface Area-ID
 - Hello interval & dead interval
@@ -180,22 +219,24 @@ OSPF areas are connected by one or more Area Border Routers (the other main link
 - Stub Flags
 - Other optional capabilities
 
-### Neighbor states - OSPF Adjacency State Machine - 8 states**
+## Neighbor states
+
+8 states
 
 - Down - initial state - No hellos have been received from neighbor
 - Attempt - for NBMA networks, if does not get updates from neighboor - try to reach it
 - Init - I have received a hello packet from a neighbor, but they have not acknowledged a hello from me
 - 2-Way - communication established, DR/BDR is elected, if needed
     - I have received a hello packet from a neighbor and they have acknowledged a hello from me
-    - Indicated by my Router-ID in neighbor's hello packet
-- Exstart - master/slave is chosen based on Router ID - where master has higher Router-ID - First step of actual adjacency - Master chooses the starting sequence number for the Database Descriptor (DBD) packets that are used for actual LSA exchange
+    - Indicated by my Router-ID in neighbor's hello packet in Active neighbors field  
+- Exstart - master/slave is chosen based on Router ID - where master has higher Router-ID - First step of actual adjacency  - Master chooses the starting sequence number for the Database Descriptor (DBD) packets that are used for actual LSA exchange
 - Exchange
     - Local link state database is sent through DBD packets
     - DBD sequence number is used for reliable acknowledgement/retransmission
 - Loading - LSR packets are sent to the neighbor, asking for the more recent LSAs that have been discovered (but not received) in the Exchange state
 - Full - Neighbors are fully adjacent and databases are synchronized
 
-To see the state of adjecency: 
+To see the state of adjecency + who is DR: 
 
 ```text
 Router2# show ip ospf neighbor 
@@ -429,47 +470,6 @@ LSA-type 1 (Router-LSA), len 48
         0 Metric: 10
 
 ```
-
-## OSPF packets
-
-OSPF packet consists of:
-
-- OSPF header
-- OSPF packet
-- OSPF LLS Data Block - ?
-
-There are 5 different types of OSPF packets:
-
-- 1 - Hello - discover and maintain neighbors. Are sent periodically via all interfaces to discover new neighbors and test existing
-- 2 - DBD - Database Description - summer of database, during first adjecency
-- 3 - LSR - Link State Request - request a portion of neighbors database
-- 4 - LSU - Link State Update - contains LSA - sent in direct response to LSR
-- 5 - Link State Acknowledgment - acknowledge of LSA
-
-### OSPF header
-
-OSPF header is included in any OSPF packet
-
-- Destination MAC: 01:00:5e:00:00:05
-- Destination IP: 224.0.0.5
-- IP type: 89
-- Message type: Hello - 1
-- Router ID
-- Area ID - 0.0.0.0 - The OSPF area that the OSPF interface belongs to. It is a 32-bit number that can be written in dotted-decimal format (0.0.1.0) or decimal (256)
-- Auth Data
-
-### Hello Packet
-
-OSPF routers periodically send Hello packets out OSPF enabled links every Hellolnterval 
-
-- Network mask
-- Hello interval
-- Router priority
-- Dead interval
-- DR: interface address itself
-- BDR: 0.0.0.0
-- Options (e.g. stub flags, etc.)
-- Router IDs of other neighbors on the link - ??
 
 ## Router types
 

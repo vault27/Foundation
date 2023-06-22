@@ -2,18 +2,23 @@
 
 ## Portfolio
 
-
-
 ## IOS
+
 - Monolithic operating system running directly on the hardware
 - Replaced with Cisco IOS XE
+
+How to choose IOS
+
+- Hardware Support
+- Feature Support
+- Cisco IOS Software Release Version
 
 Image types:
 
 - Original IOS for hardware - used with Dynamips
 - IOL (IOS on Linux also known as IOU)
 - QEMU images
-- IOSv - used in VIRL - can be downloaded with Cisco account, there are available:
+- IOSv - used in VIRL - can be downloaded with Cisco account, there are also available:
     - IOSXRv 9000
     - IOSvL2
     - CSR1000v
@@ -26,7 +31,29 @@ Image types:
 - vmdk - need to be converted
 
 Image naming scheme:
+
+- Different platforms ultimately run different Cisco IOS versions
 - K9 - crypto support
+- Image: platform + services + IOS version
+
+IOS version naming
+
+- Different platforms ultimately run different Cisco IOS versions 
+- There are three sets of numbers that give us information about any version of Cisco IOS
+- Train, throttle, rebuild
+- Train - major version number
+- Train examples: 12.2M, 12.4T, 15.0M, 15.1T
+- Different trains for different platforms
+    - ISR Routers G1/G2 (1800, 2800, 3800, 1900, 2900, 3900, etc) - 12.2M, 12.4M, 12.4T, 15.0M, 15.1T
+    - Catalyst 6500 - Supervisor 32, Supervisor 720, Supervisor VS-720 - 12.2(18)SX, 12.2(33)SX
+    -  7600 Router 12.2(33)SR, 15.0S
+- Cisco IOS Throttle is roughly a minor version number where some new features and bug fixes can have been added
+- Throttle consists of train + number in parenthesis: 12.4(20)T
+- Cisco IOS Rebuilds typically consist of bug fixes. The addition of new features to a rebuild is generally avoided but it does happen sometimes. With rebuilds it can be confidently stated that one version of Cisco IOS is more recent than another. For example, 12.4(24)T7 is newer than 12.4(24)T5
+- 15.0(1)M8 has been rebuilt 8 times
+- M - mainline - recomended
+- T - technology line - new features, not very stable
+- 15X (special or early deployment), 15S (7600), 15Y (Sup-2T-10GE – Catalyst 6500), 15SG (Sup-CS-S2T – Catalyst 6500), and 15SE (2960, 3560, 3650, and 3750 platforms)
 
 
 ## IOS XR

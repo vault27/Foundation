@@ -19,8 +19,12 @@
     - One to one
     - Fixed port range - good for CGN
     - Port block allocation - good for CGN
-- IP Pool type - Fixed port range - 200 internal addresses are assigned to 10 external addresses - used in CGN environments - Carrier Grade NAT
-- Then using this pool you can identify which external address and which ports range on it is attched to particular internal address, and you do not need to log all traffic that then understand which particluar clientgenerated a traffic, you can just know it based on external IP and port, for example:
+- IP Pool type - Fixed port range - 200 internal addresses are assigned to 10 external addresses - used in CGN environments - Carrier Grade NAT - you configure external IPs and Internal IPs
+- Then using this pool you can identify which external address and which ports range on it is attched to particular internal address, and you do not need to log all traffic that then understand which particluar clientgenerated a traffic, you can just know it based on external IP and port. For example: 10 external IPs are shared by 253 internal hosts
+- If static pool NAT is used and all addresses are occupied, then traffic is droped
+- IP pool Type - Port Block Allocation - you define external IPs and block size - how many ports
+
+Show block size and number of blocks for IP pool + find out which Internal IP is behind particular external IP + Port
 
 ```
 # diagnose firewall ippool list
@@ -44,3 +48,24 @@ internal ip=10.0.1.26, nat ip=70.70.70.71, range= 63192~65514
 ippool name=cgnat-pba-pool1, ip shared num=26, port num=2323
 internal ip=10.0.1.1, nat ip=70.70.70.71, range=5117~7439
 ```
+
+## VIPs
+
+- Static DNAT by default - all protocols
+- If Internal host goes outside - SNAT is used from VIP - if no port forwarding and if VIP has a rule and enabled
+- Port forwarding is available
+- VIP provides ARP replies
+- Special rules for it in policy - firewall objects do not match VIPs - to override it we can add option "set match-vip enable" in the policy which we want to influence the VIPs
+
+## Central NAT
+
+- Disabled by default
+- Enabled in GUI or CLI
+- Central SNAT + DNAT and virtual IPs 
+- VIPs should be removed from policy before enabling
+- Central SNAT is mandatory NGFW policy-based mode
+- All SNATs are in separeate section - possible options: incoming interface, outgoing interface, source address, destination address, protocol, explicit port mapping
+- Rules are evaluated from top to bottom, once match, stop processing
+- VIPs in separate section as well, appropriate firewall rule should be configured
+- DNAT takes place before firewall policy, so in a firewall rule you use internal IP
+- Options for DNAT: interface, external IP, internal IP, Port Forwarding
