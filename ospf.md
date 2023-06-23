@@ -2,14 +2,6 @@
 
 Everything I need to know about OSPF in one place.
 
-## Additional reading
-
-- OSPF: Anatomy of an Internet Routing Protocol
-- Routing TCP/IP Volume 1
-- Cisco IP Routing: Packet Forwarding and Intra-domain Routing Protocols
-- OSPF Technology Documentation
-- OSPF Configuration Guide
-
 ## Standards
 
 - RFC 2328 "OSPF Version 2"
@@ -130,9 +122,10 @@ OSPF areas are connected by one or more Area Border Routers (the other main link
 - Enable OSPF process with particular ID (number in IOS and word in Nexus) and configure router ID for it, or loopback is used
 - Iclude interfaces into OSPF using network command in IOS, we should include interfaces on which we peer and which we want to announce - and specify area
 - Network command uses wild cards and specifies which interfaces will be enabled
+- Discontiguous mask 10.168.1.0 255.0.0.255 cannot be used
 - If the IP address for an interface matches two network statements with different areas, the most explicit network statement (that is, the longest match) preempts the other network statements for area allocation
 - The connected network for the OSPF-enabled interface is added to the OSPF LSDB under the corresponding OSPF area in which the interface participates. Secondary connected net- works are added to the LSDB only if the secondary IP address matches a network statement associated with the same area
-- Enable OSPF on required interfaces and specify area - on Nexus
+- Enable OSPF on required interfaces and specify area - on Nexus - and on IOS as well
 - Enable OSPF on loopback to announce it
 
 ## OSPF packets
@@ -534,6 +527,7 @@ LSA-type 1 (Router-LSA), len 48
 
 ## DR/BDR
 
+- Used in Ethernet, Frame Relay
 - Main goal is to avoid LSA flooding
 - DR/BDR are chosen based on hello messages in broadcast segment
 - Non-DR and non-BDR routers only exchange routing information with the DR and BDR, rather than exchanging updates with every other router upon the segment. This, in turn significantly reduces the amount of OSPF routing updates that need to be sent
@@ -598,6 +592,25 @@ R3# clear ip ospf process
 - IOS default reference bandwidth 100 mbit/s
 - NX-OS default reference bandwidth 40 gbit/s
 
+## Router ID
+
+- 32 bits, 4 octets
+- Highest IP of loopback interface
+- Highest IP of interface
+- Changed when OSPF process restarts
+- OSPF topology is heavy based on RID
+- Recomended to configure manually
+
+```
+router-id 1.1.1.1
+```
+
+- To change RID we need to restart OSPF
+
+```
+clear ip ospf process
+```
+
 ## Virtual links
 
 - They are used when there are two area 0, and with them both area 0 are connected with each other. It can happen if 2 companies are merged
@@ -615,7 +628,7 @@ Separate instances for OSPFv2 and OSPFv3
 - Interface point to point is necessary on Loopback  
 - It is better to configure RID manually - so it will not be changed  
 - Network command can be excessive  
-- IP oSPF area command on interface  
+- IP OSPF area command on interface  
 
 ```text
 hostname leaf-1
@@ -654,6 +667,16 @@ network 10.1.12.2 0.0.0.0 area 1
 network 10.1.0.0 0.0.255.255 area 0
 network 10.0.0.10 0.0.0.0 area 0 - explicit only one IP - only on interface
 network 0.0.0.0 255.255.255.255 area 0 - all interfaces
+passive-interface ethernet 0/1
+passive-unterface default
+no passive-interface ethernet 0/1 - when default is enabled
+```
+
+### IOS interface specific configuration
+
+```
+interface GigabitEthernet 0/0
+  ip ospf 1 area 0
 ```
 
 ### IOS VRF
