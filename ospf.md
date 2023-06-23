@@ -146,8 +146,8 @@ OSPF packet consists of:
 There are 5 different types of OSPF packets:
 
 - 1 - Hello - discover and maintain neighbors. Are sent periodically via all interfaces to discover new neighbors and test existing
-- 2 - DBD - Database Description - summer of database, during first adjecency
-- 3 - LSR - Link State Request - request a portion of neighbors database
+- 2 - DBD - Database Description - summary of database, during first adjecency, nothing interesting inside
+- 3 - LSR - Link State Request - request a portion of neighbors database - during adjecency
 - 4 - LSU - Link State Update - contains LSA - sent in direct response to LSR
 - 5 - Link State Acknowledgment - acknowledge of LSA
 
@@ -176,6 +176,18 @@ OSPF routers periodically send Hello packets out OSPF enabled links every Hellol
 - Options (e.g. stub flags, etc.)
 - Router IDs of other neighbors on the link - even if there are only 2 routers on the links, if R2 got Hello from R1, then it sends its own hello to R1 with R1's ID in this field > so R1 understands that R2 knows about him and 2-Way neighbor state is established
 
+### LSU packet
+
+- OSPF header
+- One or many LSAs
+
+### Link State Acknowledgment
+
+- LSA which was received is inside, but less details
+- Link state ID - 192.168.1.1
+- Advertising router ID - 192.168.1.1
+- Sequence number
+
 ## Neighbor & Topology Discovery, Adjacency
 
 - OSPF uses Hello packets to discover neighbors on OSPF enabled attached links
@@ -189,7 +201,9 @@ OSPF routers periodically send Hello packets out OSPF enabled links every Hellol
 - Full updates - during discovery, partial otherwise. Router changes its LSDB, increases its number and sends LSU
 - Authentication - MD5 and clear text
 
-## Packet flow during adjecency
+## Packet flow
+
+### Adjecency
 
 - R1 sends Hello - multicast - 224.0.0.5
 - R2 gets Hello and sends DB description packet without anything useful - unicast
@@ -197,6 +211,17 @@ OSPF routers periodically send Hello packets out OSPF enabled links every Hellol
 - R1 sends many DB descriptions packets to R2 with very weird content
 - R2 sends LS request where it provides Link State ID - Router ID of R1 - unicast
 - R1 sends LS update, where there are 2 LSA type 1 - for both networks which are directly connected to R1, including the network between routers
+- R1 also sends LSA-2, because it is DR
+- Both routers send LS acknowledges, confirminf that they got everything they need
+- After this only Hello packets
+
+### Withdraw a route, link is down
+
+- Router generates LSA-1 and LSA-2(if it is a transit network with DR) with higher sequence number and absence of this link - multicast 224.0.0.5
+- Received routers send LS Acknowledge - multicast as well
+- All routers in area run SPF alhorithm and recalculate topology
+- Other areas should know about it as well
+- ABR sends new Summary LSA with and updated sequence number. The prefix is flagged as unreachable by setting the 24-bit metric field to all ones. This is called LSInfinity and has a decimal value of 16777215
 
 ## Unique OSPF Adjacency Attributes
 
@@ -366,16 +391,7 @@ A router with one loopback interface generates a router-LSA with Type-1 link (st
 LSA types:
 
 - 1 - Router LSA
-   - Contains all links with IPs, masks and metrics, link type, and a list of neighboring routers (in that area) on each interface
-   - Flooded only within its area of origin, represents stub networks as well
-   - Does it contain connected routers?
-   - We see this as “O” routes in the routing table
 - 2 - Network
-  - Used in transit broadcast of NBMA Network: network, where several routers are connected, and where DR exists
-  - Created by DR 
-  - Flooded only inside area
-  - It includes the network ID, subnet mask and also the list of attached routers in the transit
-  - We see this as “O” routes in the routing table
 - 3 - Net Summary - Created by ABR, represent subnets listed in one's area LSA 1 and 2 to advertise to another area. Defines links(subnets) and costs , but no topology, goes between areas. We see them as “OIA” routes.
 - 4 - ASBR Summary - The same as LSA 3, but how to reach ASBR router
 - 5 - AS external - created by ASBRs. They are used to propogate external routes - routes, which are redistributed from other protocols or other OSPF process
@@ -384,6 +400,26 @@ LSA types:
 - 8 - Link LSA - for IPv6
 - 9 - Intra area prefix LSA
 - 10 - 11 - Opaque
+
+### LSA-1
+
+Is sent inside the area, every router generates LSA-1 for every enabled interface  
+In one LSA-1 can be several number of links  
+We see this as “O” routes in the routing table
+
+- Link ID - 10.1.1.0
+- Link Data - 255.255.255.0
+- Link type - 3 - Stub network, 2 - transit - when there are other routers on the link
+- Metric - 10
+
+### LSA-2
+
+Sent by DR. Only inside area.
+
+- Link state ID - 192.168.1.1
+- Netmask - 255.255.255.252
+- IPs of all attched routers
+
 
 ## Link types
 

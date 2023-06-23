@@ -163,3 +163,29 @@ Gi1/0/22     d.bandaletov_NAC   connected    423        a-full a-1000 10/100/100
 
 
 ## IOS VS ASA
+
+## Wildcard masks
+
+- Wildcard - uknown or unpredictable factor - a symbol which represents one or more unspecified characters
+- It is a 32 bit binary number
+- Inverted subnet mask
+- A wild card mask is a matching rule
+- Wildcard masks are used in situations where subnet masks may not apply. For example, when two affected hosts fall in different subnets, the use of a wildcard mask will group them together
+- For example in access list we can use access-list 1 permit 10.168.1.0 255.0.0.255 - it will match address from different networks: 192.168.1.3 and 10.168.1.4!
+- Subnet Masks can only identify sequential IP addresses. Wildcard Masks, however, can identify IP addresses which are not sequential
+- Directs the router’s logic bit by bit
+- Bit of 0 means the comparison should be done as normal
+- Binary 1 means that the bit is a wildcard and can be ignored when comparing the numbers
+- All bits which are zero in WC should match in bith comparing numbers!
+- To match a range of addresses
+- Shows wich octets and bits to consider and which to ignore
+- Used in access lists, OSPF network command, EIGRP network command
+- Decimal 0: The router must compare this octet as normal.
+- Decimal 255: The router ignores this octet, considering it to already match
+- 0.0.0.255 - ignore last octet - 10.1.2.0 matches 10.1.2.1
+- 0.0.255.255 - ignore last two octets
+- 0.255.255.255 - ignore last three octets
+- access-list 1 permit 10.1.1.1 - match exactly one address
+- access-list 1 deny 10.1.1.0 0.0.0.255 - match everything starting with 10.1.1.
+- access-list 1 permit 10.0.0.0 0.255.255.255 - match everything starting from 10
+- Convert subnet mask to WC: 255.255.255.255 - 255.255.252.0 = 0. 0. 3.255 - wildcard mask!
