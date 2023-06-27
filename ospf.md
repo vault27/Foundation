@@ -16,12 +16,12 @@ Everything I need to know about OSPF in one place.
 
 ## Typical tasks
 
-- Add network to OSPF domain - network command
+- Add network to OSPF domain - network command or interface command
 - Add router to OSPF domain
 - Redistribute routes to OSPF domain
 - Make one path preferable - using cost
 - Summarize routes
-- Add default gateway
+- Add default gateway - one command
 - Configure ECMP
 
 ## History
@@ -235,6 +235,7 @@ OSPF routers periodically send Hello packets out OSPF enabled links every Hellol
 - Network Type
 - Authentication
 - Stub Flags
+- DR enablement
 - Other optional capabilities
 
 ## Neighbor states
@@ -670,6 +671,7 @@ network 0.0.0.0 255.255.255.255 area 0 - all interfaces
 passive-interface ethernet 0/1
 passive-unterface default
 no passive-interface ethernet 0/1 - when default is enabled
+default-information originate
 ```
 
 ### IOS interface specific configuration
@@ -733,11 +735,88 @@ ip ospf 1 area 1
 
 ## Verification
 
-List interfaces, where OSPF is enabled based on network command , omitting passive interfaces.
+### Verification of interfaces
+
+Show OSPF interfaces in detail: up/down/disabled/timers/DR/BDR/area/
+
+```
+Router#show ip ospf interface
+
+Ethernet0/3 is up, line protocol is up
+  Internet Address 192.168.1.1/30, Area 0, Attached via Network Statement
+  Process ID 1, Router ID 192.168.1.1, Network Type BROADCAST, Cost: 10
+  Topology-MTID    Cost    Disabled    Shutdown      Topology Name
+        0           10        no          no            Base
+  Transmit Delay is 1 sec, State DR, Priority 1
+  Designated Router (ID) 192.168.1.1, Interface address 192.168.1.1
+  Backup Designated router (ID) 192.168.1.2, Interface address 192.168.1.2
+  Timer intervals configured, Hello 10, Dead 40, Wait 40, Retransmit 5
+    oob-resync timeout 40
+    Hello due in 00:00:04
+  Supports Link-local Signaling (LLS)
+  Cisco NSF helper support enabled
+  IETF NSF helper support enabled
+  Index 1/1/1, flood queue length 0
+  Next 0x0(0)/0x0(0)/0x0(0)
+  Last flood scan length is 1, maximum is 2
+  Last flood scan time is 0 msec, maximum is 6 msec
+  Neighbor Count is 1, Adjacent neighbor count is 1
+    Adjacent with neighbor 192.168.1.2  (Backup Designated Router)
+  Suppress hello for 0 neighbor(s)
+```
+
+List interfaces, where OSPF is enabled based on network command, omitting passive interfaces.
+
 ```
 show ip ospf interface brief
+
+Interface    PID   Area            IP Address/Mask    Cost  State Nbrs F/C
+Et0/1        1     0               10.1.1.1/24        10    DR  0/0
+Et0/3        1     0               192.168.1.1/30     10    DR    1/1
 ```
+
+- State: DR, BDR, DROTHER, LOOP, Down  
+- Nbrs F - fully adjacent neighbors  
+- Nbrs C - number of neighbors in 2Way state
+
+### Verification of neighbors
+
+Show neighbor table: neighbor priority, state of adjecency, DR state of neighbor, dead time, address, local interface
+
+```
+Router#show ip ospf neighbor
+
+Neighbor ID     Pri   State           Dead Time   Address         Interface
+192.168.1.2       1   FULL/BDR        00:00:33    192.168.1.2     Ethernet0/3
+```
+
+### Verification of Routes
+
+Show OSPF routes installed to RIB
+
+```
+Router#show ip route ospf
+Codes: L - local, C - connected, S - static, R - RIP, M - mobile, B - BGP
+       D - EIGRP, EX - EIGRP external, O - OSPF, IA - OSPF inter area
+       N1 - OSPF NSSA external type 1, N2 - OSPF NSSA external type 2
+       E1 - OSPF external type 1, E2 - OSPF external type 2
+       i - IS-IS, su - IS-IS summary, L1 - IS-IS level-1, L2 - IS-IS level-2
+       ia - IS-IS inter area, * - candidate default, U - per-user static route
+       o - ODR, P - periodic downloaded static route, H - NHRP, l - LISP
+       a - application route
+       + - replicated route, % - next hop override, p - overrides from PfR
+
+Gateway of last resort is not set
+
+      10.0.0.0/8 is variably subnetted, 3 subnets, 2 masks
+O        10.1.3.0/24 [110/20] via 192.168.1.2, 3d23h, Ethernet0/3
+```
+
+- 110 - administrative distance
+- 20 - OSPF cost
+
 Show how many types OSPF was launched and area type
+
 ```
 show ip ospf
 ```

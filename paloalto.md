@@ -225,6 +225,7 @@ Floods:
 - Loopback interfaces - connect to the virtual routers in the firewall, DNS sinkholes, GlobalProtect service interfaces (such as portals and gateways)
 - Decrypt mirror interfaces - routing of copied decrypted traffic through an external interface to another system, such as a data loss prevention (DLP) service
 - VLAN interface
+- SD-WAN - ?
 
 
 ## Packet Flow Sequence
@@ -1123,3 +1124,148 @@ show log system
 - Hybrid approach
 - Integrated Logging, Reporting, and Forensics - via Panorama
 - We can send files via API
+
+## Site-to-Site IPSec tunnels
+
+Palo Alto Supports 3 VPN deployments:
+
+- Site-to-site VPN: IPSec or GRE or GRE inside IPSec(For multicast and broadcast)
+- Remote-user-to-site VPN: SSL
+- Large scale VPN (LSVPN)
+
+How traffic is routed:
+
+- Option 1: You create a tunnel, no IPs, you create static routes specifing only interface, and it works
+- Option 2: You create a tunnel, configure IPs on both ends, use dynamic routing or static routing, and it works
+- Option 3: You create a tunnel, configure Proxy-IDs, and it works, without IPs, without routing - policy based VPN
+
+All tunnels are configured in Network section  
+
+Site-to-site VPN concepts
+
+- The tunnel interface must belong to a security zone to apply policy, and it must be assigned to a virtual router 
+- Tunnel interface and the physical interface are assigned to the same virtual router
+- Tunnel interface can be in VPN zone and physical interface in External zone, for example
+- To route traffic between the sites, a tunnel interface does not require an IP address
+- An IP address is only required if you want to enable tunnel monitoring or if you are using a dynamic routing protocol to route traffic across the tunnel
+- With dynamic routing, the tunnel IP address serves as the next hop IP address for routing traffic to the VPN tunnel
+- If you are configuring the Palo Alto Networks firewall with a VPN peer that performs policy-based VPN, you must configure a local and remote Proxy ID when setting up the IPSec tunnel
+- Proxy-ID: Local Subnet, Remote Subnet, Protocol
+- Tunnel interface can have a maximum of 250 Proxy IDs
+- These tunnels require IPsec and Crypto Profiles for Phase 1 and Phase 2 connectivity
+- Route-based VPNs - virtual router decides where to send what
+- Proxy IDs force splitting the single configuration into multiple IPSec tunnels
+- Creating multiple tunnels through proxy IDs will spread the load over more cores
+- When multiple Proxy IDs are configured, the naming of the Policy IDs is important because the order of the proxy ID matching depends on the string order of the proxy ID name
+- Proxy-IDs may overlap
+- For proxy IDs with overlapping subnets, define the proxy ID names so that a more specific proxy ID name is above the broader Proxy ID name, as per String Sorting
+- Proxy-IDs are referenced during quick mode/IKE phase 2 negotiation, and are exchanged as proxy IDs in the first or the second message of the process - and the should match
+- If you are configuring the Palo Alto Networks firewall to work with a policy-based VPN peer, for a successful phase 2 negotiation, you must define the proxy ID so that the setting on both peers is identical
+- If the proxy ID is not configured, because the Palo Alto Networks firewall supports route-based VPN, the default values used as proxy ID are source ip: 0.0.0.0/0, destination ip: 0.0.0.0/0 and application: any
+- Each proxy ID is counted as a VPN tunnel, and therefore counted towards the IPSec VPN tunnel capacity of the firewall
+- The advantage with the proxy IDs is the ability to get granular with protocol numbers or TCP/UDP port numbers if you have specific traffic you want to travel over the VPN tunnel only. Proxy IDs easily enable such granularity
+- Because there are 2 versions of IKE, the behavior with proxy IDs is different:
+    - With IKEv1, Palo Alto Networks devices support only proxy-ID exact match. In the event where the Peer's Proxy ID's do not match, then there will be problems with the VPN working correctly.
+    - With IKEv2, there is support traffic selector narrowing when the proxy ID setting is different on the two VPN gateways, Only the implemented choice is described in the use cases below
+
+### Configuration
+
+Configuration overview
+
+- IKE crypto profile
+- IPSec crypto pfofile
+- IKE gateway - connect IKE crypto profile to it + connect physical interface to it
+- Create tunnel Interface - you create tunnel.1 and it creates tunnel automatically - ??? - add it to proper virtual router and zone
+- Create IPSec tunnel - here you combine everything: Tunnel interface, IKE Gateway, IPSec crypto profile + Proxy IDs + GRE encapsulation + Replay protection + Tunnel Monitor
+
+- GRE tunnel inside the IPSec tunnel by selecting Add GRE Encapsulation, which will add a GRE header after the IPSec header
+- Monitor profile can be used to monitor IPSec tunnel or next hop device, failover action is available
+- Step 1: Create phase 1 crypto profile or use default: Network | Network Profiles | IKE Crypto
+    - Here we configure typical IPSec options:
+    - DH group: 1-20 - for key exchange - the more the better
+    - Encryption algorithm, for example AES + mode + key length
+    - Authentication used in MAC or HASH algorithm
+    - Key life-time
+- Step 2: Create IPSec crypto profile or use default: Network | Network Profiles | IPSec Crypto
+    - Here we configure:
+    - Protocol: ESP or AH
+    - Authentication for MAC
+    - DH group - elliptic curve can be chosen
+    - Life time
+- Step 3: Create IKE Gateway: Network | Network Profiles | IKE Gateways
+    - Here we configure
+    - Name
+    - IKE mode: 1 or 2
+    - IPv4 or IPv6
+    - Interface - can be loopback
+    - Local IP
+    - Peer IP or FQDN or Dynamic
+    - Peer address
+    - Authentication: Preshared or Cert
+    - Local Identification - can be none
+    - Peer Identification - can be none
+    - Passive mode - accept connection only
+    - NAT traversal
+    - IKE crypto profile
+
+### Verify
+
+Test gateway
+
+```
+test vpn ike-sa gateway <gateway_name>
+```
+
+Show IKE phase 1
+
+```
+show vpn ike-sa gateway <gateway_name>
+```
+
+Test IKE Phase 2
+
+```
+test vpn ipsec-sa tunnel <tunnel_name>
+```
+
+Show IKE Phase 2
+
+```
+show vpn ipsec-sa tunnel <tunnel_name>
+```
+
+Show general info about all tunnels:total amount, IPs, interfaces
+
+```
+show vpn flow
+```
+
+Filter the logs in System section
+
+```
+subtype eq vpn
+```
+
+Follow logs
+
+```
+> tail follow yes mp-log ikemgr.log
+> tail follow yes mp-log cryptod.log
+```
+
+
+## Site-to-Site GRE tunnels
+
+- The firewall encapsulates the tunneled packet in a GRE packet, and so the additional 24 bytes of GRE header automatically result in a smaller MSS in the MTU. If you don’t change the IPv4 MSS adjustment size for the interface, the firewall reduces the MTU by 64 bytes by default (40 bytes of IP header + 24 bytes of GRE header)
+- GRE tunneling does not support NAT between the GRE tunnel endpoints
+- A GRE tunnel does not support QoS
+- Networks | GRE Tunnels
+- All you need to configure
+    Name
+    Source interface
+    Source IP
+    Destination IP
+    Tunnel interface
+    TTL (default 64)
+    Keepalive
+- You don’t need a Security policy rule for the GRE traffic that the firewall encapsulates. However, when the firewall receives GRE traffic, it generates a session and applies all of the policies to the GRE IP header in addition to the encapsulated traffic. The firewall treats the received GRE packet like any other packet
