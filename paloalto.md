@@ -141,6 +141,7 @@ IPv6 support
 - An IPv6 Router Advertisement can contain multiple DNS Recursive Server Address options, each with the same or different lifetimes
 
 Configuration of IPv6
+
 - You enable IPv6 on interface
 - You configure address
 - You enable Duplicate Address Detection
@@ -389,13 +390,61 @@ App-ID status in logs:
 ## Decryption
 
 We configure policy based on profile  
-In profile we configure all SSL settings  
+In profile we configure all SSL settings - avoid weak ciphers and protocols  
 Than we mark one cert as forward proxy  
+
+Policy includes:
+
+- Source (IP, Zone, User, Device)
+- Destination (Zone, address, device)
+- Service/URL category
+- DECRYPT OR NOT
+- Type of decryption: Forward, Inbound or SSH
+- Decryption profile
+- Logging
+
+Profile includes:
+
+- Expired certs, untrusted certs
+- Unsupported ciphers
+- Client auth
+- Key exchange algorithms, Protocols version, Encryption algorithms, Authentication algorithms
+- Unsupported versions and algorithms in SSH
+
+Concepts
 
 - Content-ID is impossible
 - App-ID - works partially
 - Decryption policies enable you to specify traffic for decryption according to destination, source, user/user group, or URL category
+- All encrypted traffic is SSL in App-ID
+- Sometomes it can identify traffic without decryption using server cert
+- Untrusted servers are sighned using special forward untrust certificate - ensures that clients are prompted with a certificate warning when attempting to access sites hosted by a server with untrusted certificates
+- Decryption policy rules are compared against the traffic in sequence, so more specific rules must precede the more general ones
+- The key used to decrypt SSH sessions is generated automatically on the firewall during bootup. With SSH decryption enabled, the firewall decrypts SSH traffic and blocks or restricts it based on your decryption policy and Decryption Profile settings. The traffic is re-encrypted as it exits the firewall
 
+Three types of decryption policies
+
+- SSL Forward Proxy to control outbound SSL traffic
+- SSL Inbound Inspection to control inbound SSL traffic
+- SSH Proxy to control tunneled SSH traffic
+
+Three types of certificates are used
+
+- Forward Trust (used for SSL Forward Proxy decryption)
+- Forward Untrust (used for SSL Forward Proxy decryption)
+- SSL Inbound Inspection - The certificates of the servers on your network for which you want to perform SSL Inbound Inspection of traffic destined for those servers. Import the server certificates onto the firewall
+
+Decryption policy can apply to
+
+- HTTPS
+- IMAPS
+- POP3S
+- SMTPS
+- FTPS
+- SSH - inbound and outband
+
+SSH decryption does not require certificates  
+  
 Configuration:
 
 - Policies > Decryption
@@ -1046,11 +1095,12 @@ request high-availability sync-to-remote running-config
 - Receive stage is good to use if we need to make sure that traffic reaches FW in general
 - Transmit stage is good to make sure that traffic successfully passed and left FW and how it was NATed
 
-
 **Filters**
+
 - Filters are not mandatory
 
 **Stages**
+
 - drop stage is where packets get discarded. The reasons may vary and, for this part, the global counters may help identify if the drop was due to a policy deny, a detected threat, or something else
 - receive stage captures the packets as they ingress the firewall before they go into the firewall engine. When NAT is configured, these packets will be pre-NAT - only incoming packets
 - transmit stage captures packets how they egress out of the firewall engine. If NAT is configured, these will be post-NAT - only outgoing packets
@@ -1065,8 +1115,6 @@ If Ping is allowed you will see the following:
 If ping is allowed you will see the following:
 - Receive and drop stages are the same - all incoming requests are received and dropped
 - No Firewall and Transmit stages
-
-
 
 ## Log filtering
 
@@ -1125,7 +1173,7 @@ show log system
 - Integrated Logging, Reporting, and Forensics - via Panorama
 - We can send files via API
 
-## Site-to-Site IPSec tunnels
+## Site-to-Site tunnels
 
 Palo Alto Supports 3 VPN deployments:
 
@@ -1133,28 +1181,30 @@ Palo Alto Supports 3 VPN deployments:
 - Remote-user-to-site VPN: SSL
 - Large scale VPN (LSVPN) - This deployment uses the Palo Alto Networks GlobalProtect LSVPN. It provides a scalable mechanism to provide a hub-and-spoke VPN for up to 1,024 branch offices
 
+All tunnels are configured in Network section  
+
+### IPSec tunnels
+
 How traffic is routed:
 
 - Option 1: You create a tunnel, no IPs, you create static routes specifing only interface, and it works
 - Option 2: You create a tunnel, configure IPs on both ends, use dynamic routing or static routing, and it works
-- Option 3: You create a tunnel, configure Proxy-IDs, and it works, without IPs, without routing - policy based VPN - only with third party devices, legacy
+- Option 3: You create a tunnel, configure Proxy-IDs, and it works, without IPs, without routing - policy based VPN - only with third party devices, legacy - as I understand does not work on Palo Alto to Palo Alto
 
-All tunnels are configured in Network section  
-
-Site-to-site VPN concepts
+Concepts
 
 - The tunnel interface must belong to a security zone to apply policy, and it must be assigned to a virtual router 
 - Tunnel interface and the physical interface are assigned to the same virtual router
 - Tunnel interface can be in VPN zone and physical interface in External zone, for example
 - An IP address is only required if you want to enable tunnel monitoring or if you are using a dynamic routing protocol to route traffic across the tunnel
 - With dynamic routing, the tunnel IP address serves as the next hop IP address for routing traffic to the VPN tunnel
-- ALl tunnels require IPsec and Crypto Profiles for Phase 1 and Phase 2 connectivity
+- All tunnels require IPsec and Crypto Profiles for Phase 1 and Phase 2 connectivity
 - Route-based VPNs - virtual router decides where to send what
 - On Palo Alto OSPF works without enabling GRE....somehow
 - Monitor profile can be used to monitor IPSec tunnel or next hop device, failover action is available
 - The tunnel comes up only when there is interesting traffic destined to the tunnel
 
-### Policy-based VPN and Proxy-ID
+#### Policy-based VPN and Proxy-ID
 
 - Palo Alto to Palo Alto policy based VPN is not supported
 - Policy-based VPN only for connection with third party devices, old ones, you must configure a local and remote Proxy ID for them
@@ -1174,7 +1224,7 @@ Site-to-site VPN concepts
     - With IKEv1, Palo Alto Networks devices support only proxy-ID exact match. In the event where the Peer's Proxy ID's do not match, then there will be problems with the VPN working correctly.
     - With IKEv2, there is support traffic selector narrowing when the proxy ID setting is different on the two VPN gateways
 
-### Configuration
+#### Configuration
 
 Configuration overview
 
@@ -1183,6 +1233,8 @@ Configuration overview
 - IKE gateway
 - Create tunnel Interface
 - Create IPSec tunnel
+- Configure routing: static or dynamic
+- Add proper rules in policy
 
 Configuration details
 
@@ -1205,11 +1257,11 @@ Configuration details
     - IPv4 or IPv6
     - Interface - can be loopback
     - Local IP
-    - Peer IP or FQDN or Dynamic
+    - Peer IP or FQDN or Dynamic (peer IP is uknown, can be any)
     - Peer address
     - Authentication: Preshared or Cert
-    - Local Identification - can be none
-    - Peer Identification - can be none
+    - Local Identification - can be none - used for Phase 1 negotiation
+    - Peer Identification - can be none - used for Phase 1 negotiation
     - Passive mode - accept connection only
     - NAT traversal
     - IKE crypto profile
@@ -1219,9 +1271,17 @@ Configuration details
 - Step 5: Create IPSec tunnel
     - Here you combine everything: Tunnel interface, IKE Gateway, IPSec crypto profile + Proxy IDs + GRE encapsulation + Replay protection + Tunnel Monitor
 - Step 6: Allow IKE negotiation and IPSec/ESP packets. By default the IKE negotiation and IPSec/ESP packets would be allowed via the intrazone default allow
+- Step 7: Configure routing: static or dynamic. If static, we may avoid ip addresses on tunnel interfaces, so we configure route with Tunnel interface as a next hop. For dynamic routing we need configure IP on Tunnel interfaces
+- Step 8: Allow required traffic between sites
 
+If we need another site, we:
 
-### Redundancy
+- Create new IKE Gateway
+- Create new IP Sec tunnel
+- Enable dynamic routing on this tunnel
+- Add required rules
+
+#### Redundancy
 
 - Two different ISPs - 2 different tunnels
 - Tunnel.1 is configured for Primary VPN tunnel
@@ -1229,20 +1289,12 @@ Configuration details
 - Both tunnel interfaces are configured under Security Zone "L3-VPN"
 
 There are three methods to do VPN tunnel traffic automatic failover. Any one of the below methods can be used. 
+
 - Failover using Tunnel Monitoring
 - Failover using Static Route Path monitoring
 - Dynamic routing protocol
 
-### Xauth
-
-- Xauth (Extended Authentication within IKE) is what Palo Alto Networks use to support third party VPN software using the Globalprotect Gateway
-- It allows the third party VPN client to authenticate through the Globalprotect auth profile as part of the IKE negotiation
-- IKE V.1 must be used on the 3rd party clients: iOS, Android
-- The Palo Alto Network firewall uses the OpenSSL crypto library
-- Globalprotect IPsec crypto profiles aren't used for the X-auth clients
-- Troubleshooting of the tunnel is done much the same way as any IPSec tunnel would be troubleshot
-
-### Verify
+#### Verify
 
 Test gateway
 
@@ -1287,7 +1339,7 @@ Follow logs
 > tail follow yes mp-log cryptod.log
 ```
 
-## Site-to-Site GRE tunnels
+### GRE tunnels
 
 - The firewall encapsulates the tunneled packet in a GRE packet, and so the additional 24 bytes of GRE header automatically result in a smaller MSS in the MTU. If you don’t change the IPv4 MSS adjustment size for the interface, the firewall reduces the MTU by 64 bytes by default (40 bytes of IP header + 24 bytes of GRE header)
 - GRE tunneling does not support NAT between the GRE tunnel endpoints
@@ -1302,6 +1354,17 @@ Follow logs
     TTL (default 64)
     Keepalive
 - You don’t need a Security policy rule for the GRE traffic that the firewall encapsulates. However, when the firewall receives GRE traffic, it generates a session and applies all of the policies to the GRE IP header in addition to the encapsulated traffic. The firewall treats the received GRE packet like any other packet
+
+## GlobalProtect
+
+### Xauth
+
+- Xauth (Extended Authentication within IKE) is what Palo Alto Networks use to support third party VPN software using the Globalprotect Gateway
+- It allows the third party VPN client to authenticate through the Globalprotect auth profile as part of the IKE negotiation
+- IKE V.1 must be used on the 3rd party clients: iOS, Android
+- The Palo Alto Network firewall uses the OpenSSL crypto library
+- Globalprotect IPsec crypto profiles aren't used for the X-auth clients
+- Troubleshooting of the tunnel is done much the same way as any IPSec tunnel would be troubleshot
 
 ## VSYS
 

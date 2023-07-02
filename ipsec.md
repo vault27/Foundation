@@ -1,16 +1,102 @@
 # IPSec
 
-- Does not support multicast and broadcast, OSPF, EIGRP caanot be used, GRE inside IPSec solves the problem
+## History
 
+- 
+- IPsec is not a protocol, it's a framework for securing unicast traffic
+- It consists of 3 protocols:
+    - ESP 
+    - AH(obsolete)
+    - IKE
+- For negotiations(IKE) UDP port 500 is used. 
+- Encapsulating Security Payload uses IP protocol 50
+- Authentication Header uses IP protocol 51.  
+- IKE - set of protocols to exchange keys
+- ISAKMP -  protocol to manage keys - responsible for Security Associations
+- IPSec uses both of them
+- ISAKMP is part of IKE. IKE comprises the three following protocols:
+    - ISAKMP
+    - SKEME
+    - OAKLEY
+- Does not support multicast and broadcast, OSPF, EIGRP cannot be used, GRE inside IPSec solves the problem
+- IKE Phase 1 + IKE Phase 2 - 2 tunnels
+- Tunnel 1 is used to negotiate parametres for tunnel 2, tunnel 1 is used only for communication between firewalls, then for actual data only tunnel 2 is used directly, they work in paralell
+- Is there any IKE traffic, when everything is established and data flows normally?
+- Security Associations are negotiated for both tunnels
+
+## SA
+An SA is a set of IPSec specifications that are negotiated between devices that are establishing an IPSec relationship.  
+An SA can be either unidirectional or bidirectional, depending on the choices made by the network administrator. An SA is uniquely identified by a Security Parameter Index (SPI), an IPv4 or IPv6 destination address, and a security protocol (AH or ESP) identifier.  
+There are two types of SAs: manual and dynamic.  
+Manual SAs require no negotiation; all values, including the keys, are static and specified in the configuration. Manual SAs statically define the Security Parameter Index (SPI) values, algorithms, and keys to be used, and require matching configurations on both ends of the tunnel. Each peer must have the same configured options for communication to take place.  
+Dynamic SAs require additional configuration. With dynamic SAs, you configure IKE first and then the SA. IKE creates dynamic security associations; it negotiates SAs for IPsec. The IKE configuration defines the algorithms and keys used to establish the secure IKE connection with the peer security gateway. This connection is then used to dynamically agree upon keys and other data used by the dynamic IPsec SA. The IKE SA is negotiated first and then used to protect the negotiations that determine the dynamic IPsec SAs.
 
 ## IKEv1
+
+IKE does the following:
+
+- Negotiates and manages IKE and IPsec parameters
+- Authenticates secure key exchange
+- Provides mutual peer authentication by means of shared secrets (not passwords) and public keys
+- Provides identity protection (in main mode)
 
 ### Phase 1 - ISAKMP protocol
 
 - During traffic capture you cannot see Phase 2 negotiation, only Phase 1 as ISAKMP protocol, everything else is encrypted
-- In ISAKMP you mode: main or aggressive
+- In ISAKMP you can see mode: main or aggressive
 - Suggested encryption parametres
 - Key exchange
+
+IKE Phase 1 can be established via 
+
+- main mode(6 messages)  
+- aggressive mode(3 messages)
+
+During this phase peers authenticate each other, using pre-shared keys(PSK) or RSA signatures(PKI)  
+  
+Negotiations:
+
+- Hashing - md5 or sha
+- Authentication - PSK or certificates
+- Group - Diffie Helman group - algorithm which is used to establish shared secret keys
+- Lifetime
+- Encryption
+
+Phase 1 establishes an ISAKMP(Internet Security Association and Key Management Protocol) SA, which is a secure channel through which the IPsec SA negotiation can take place.  
+Next step in Phase 1 is to run Diffie Hellman and to establish secret keys And the next step is to authenticate each other  
+  
+HAGEL > DH exchange > Authentication  
+  
+And only after this IKE Phase 1 is established, it is used only for communications between firewalls themselves.  
+
+A Diffie-Hellman (DH) exchange allows participants to produce a shared secret value. The strength of the technique is that it allows participants to create the secret value over an unsecured medium without passing the secret value through the wire. The size of the prime modulus used in each group's calculation differs as follows:
+- DH Group 1 — 768-bit modulus
+- DH Group 2 — 1024-bit modulus
+- DH Group 5 — 1536-bit modulus
+- DH Group 14 — 2048-bit modulus
+- DH Group 19 — 256-bit modulus elliptic curve
+- DH Group 20 — 384-bit modulus elliptic curve
+- DH Group 24 — 2048-bit modulus with 256-bit prime order subgroup
+
+We do not recommend the use of DH groups 1, 2, and 5.  
+Because the modulus for each DH group is a different size, the participants must agree to use the same group
+
+#### IKE identity
+
+- If you do not configure a local-identity, the device uses the IPv4 or IPv6 address corresponding to the local endpoint by default
+- It can be: distinguished-name, hostname, ip-address, e-mail-address, key-id
+- Configurated on most devices, maybe none, on every device we configure both local and remote ID - on Palo Alto it is configured in IKE gateway
+
+#### Main Mode
+
+At the cost of three extra messages, Main Mode provides identity protection, enabling the peers to hide their actual identities from potential attackers. This means that the peers’ identities are never exchanged unencrypted in the course of the IKE negotiation.  
+In main mode, the initiator and recipient send three two-way exchanges (six messages total) to accomplish the following services:
+- First exchange (messages 1 and 2)—Proposes and accepts the encryption and authentication algorithms.
+- Second exchange (messages 3 and 4)—Executes a DH exchange, and the initiator and recipient each provide a pseudorandom number.
+- Third exchange (messages 5 and 6)—Sends and verifies the identities of the initiator and recipient.
+The information transmitted in the third exchange of messages is protected by the encryption algorithm established in the first two exchanges. Thus, the participants’ identities are encrypted and therefore not transmitted “in the clear.”
+
+
 
 ### IKE Phase 2
 
