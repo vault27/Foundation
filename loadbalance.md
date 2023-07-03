@@ -60,3 +60,7 @@ Healthchecking is complicated in this case:
     - Source IP: <VIP IP> Dest IP: <LB IP>
     - Status code "200 OK"
 - Due to destination address rewriting, source/destination on the LB do not match
+
+## GSLB
+
+- Global server load balancing or GSLB is the practice of distributing Internet traffic amongst a large number of connected servers dispersed around the world

@@ -747,38 +747,98 @@ U-Turn NAT - user connects to Internal resource via external IP address and it i
 
 ## User-ID
 
-- Runs either on the firewall (agentless implementation)
-- Separate process on a Microsoft Windows Server-based host
-- Redirect HTTP requests to a Captive Portal login: Browser challenge: Uses Kerberos or NT LAN Manager (NTLM) or Web form, MFA, Client Cert
-- Monitors Security Event logs for successful login and logout events on Microsoft domain controllers, Exchange servers, or Novell eDirectory
-- Microsoft Terminal Services or Citrix environments - Agent - Source port is used
-- Linux terminal servers - XML API to send user mapping information from login or logout events to User-ID
-- Syslog Parse Profiles
-- XFF headers: If a proxy server exists between users and a firewall
-- Global Protect
+### User mapping methods
+
+- Server monitoring - User-ID agent, PAN-OS built-in, AD, Exchange, Novell eDirectory
+- Port mapping - Microsoft Terminal Services - Citrix Environments - Palo Alto Networks Terminal Services agent - the source port of each client connection to map each user to a session. Linux terminal servers do not support the Terminal Services agent and must use the XML API to send user mapping information from login or logout events to User-ID
+- Syslog- The Windows-based User-ID agent and the PAN-OS integrated User-ID agent both use Syslog Parse Profiles to interpret login and logout event messages that are sent to syslog servers from the devices that authenticate users. Such devices include wireless controllers, 802.1x devices, Apple Open Directory servers, proxy servers, and other network access control devices
+- XFF headers - IP address of client in additional header
+- Authentication policy and Captive Portal - ny web traffic (HTTP or HTTPS) that matches an Authentication policy rule forces the user to authenticate via one of the following three Captive Portal authentication methods:ny web traffic (HTTP or HTTPS) that matches an Authentication policy rule forces the user to authenticate via one of the following three Captive Portal authentication methods:
+    - Browser challenge: Uses Kerberos or NT LAN Manager (NTLM)
+    - Web form: Uses multi-factor authentication (MFA), security assertion markup
+language (SAML) single sign-on (SSO), Kerberos, terminal access controller access control system plus (TACACS+), remote authentication dial-in user service (RADIUS), LDAP, or local authentications
+    - Client CA
+- GlobalProtect
 - XML API
-- Client probing: Windows Management Instrumentation or NetBIOS - not recomended
-- 100 domain controllers or 50 syslog servers - MAX
+- Client probing - in a Microsoft Windows environment - User-ID agent probes client systems by using Windows Management Instrumentation or NetBIOS. Client probing is not a recommended method for user mapping - WMI is recomended - probes are sent ebery 20 mins to verify that user is still loged in - client probes can be sent outside - large amount of network traffic
+
+### Concepts
+
+- 100 domain controllers or 50 syslog servers - MAX - per agent or per PAN-OS
 - Firewalls share user mappings and authentication timestamps as part of the same redistribution flow
 - Before a firewall or Panorama can collect user mappings, you must configure its connections to the User-ID agents or redistribution points
 - Four domain controllers within an LDAP server profile for redundancy
 - If you have universal groups, create an LDAP server profile to connect to the root domain of the global catalog server on port 3268 or 3269 for SSL. Then, create another LDAP server profile to connect to the root domain controllers on port 389 or 636 for SSL. This helps ensure that both user and group information is available for all the domains and subdomains
 - Maximum of 512k users in a domain
-- User-ID agent is launched under the same User name as it connects to AD
 - Special User-ID log
-- The User-ID agent queries the Domain Controller and Exchange server logs using Microsoft Remote Procedure Calls (MSRPCs)
-- During the initial connection, the agent transfers the most recent 50,000 events from the log to map users
-- On each subsequent connection, the agent transfers events with a timestamp later than the last communication with the domain controller
+- Source NAT destroys User-ID
+
+### Agentless (PAN-OS)
 
 Use Agentless (PAN-OS)
 - If you have a small-to-medium deployment with few users and 10 or fewer domain controllers or exchange servers
 - If you want to share the PAN-OS-sourced mappings from Microsoft Active Directory (AD), Captive Portal, or GlobalProtect with other PA devices (maximum 255 devices)
 - Saves network bandwidth
 
+Configure
+
+- Enable User-ID in a zone options
+
+- Verify that the usernames are correctly displayed in the Source User column under Monitor > Logs > Traffic
+- Verify that the users are mapped to the correct usernames in the User Provided by Source column under Monitor > Logs > User-ID.
+
+### User-ID Agent (Windows)
+
 Use User-ID Agent (Windows)
 - If you have a medium-to-large deployment with many users or more than 10 domain controllers
 - If you have a multi-domain setup with a large number of servers to monitor
 - Save processing cycles on the firewall’s management plane
+
+Concepts
+
+- The User-ID agent queries the Domain Controller and Exchange server logs using Microsoft Remote Procedure Calls (MSRPCs)
+- User-ID agent is launched under the same User name as it connects to AD
+- During the initial connection, the agent transfers the most recent 50,000 events from the log to map users
+- On each subsequent connection, the agent transfers events with a timestamp later than the last communication with the domain controller
+
+Configure User-ID Agent
+
+- Configure according to Palo Alto documentation
+- Enter username with domain and password
+- Install User-ID agent on supported Windows version according to instructions, configure it and launch
+- Enable User-ID in zone configuration
+- Device > Data Redistribution - Configure Agent host and port - verify that its status is connected
+
+### User-ID redistribution
+
+- If you configure an Authentication policy, you have to configure firewall to redistribute mappings + timestamps to other firewalls
+- In Device > Data Redistribution > Agents you can configure other Firewall, Panorama or Windows agent as agent
+- In Device > Data Redistribution > Collector Settings you can configure firewall as a redistribuion point for other firewalls and VSYSs
+- Connection to agent is done via pre-shared key
+- It is possible to redistribute not only User-IP mappings, but also:
+    - IP tags
+    - User tags
+    - HIP
+    - Quarantine list
+- You can include/exclude networks for IP-Tag and IP-user in Device > Data Redistribution > Include/Exlcude networks, as I understand it is both for collector and client
+
+### Map users to groups via LDAP
+
+- Add LDAP server profile Device > Server > Profiles > LDAP
+        - Port - 389
+        - Base DN - DC=sber,DC=ru
+        - Bind DN - Administrator@sber.ru
+        - No SSL
+- 4 servers in one profile MAX
+- Enable Group Mapping: Device > User Identification > Group Mapping Settings
+        - Choose server profile
+- Verify that the user and group mapping has correctly identified users Device > User Identification > Group Mapping > Group Include List
+- If you have universal groups, create an LDAP server profile to connect to the root domain of the global catalog server on port 3268 or 3269 for SSL
+- To verify that all of the user attributes have been correctly captured, use the following CLI command:
+
+```text
+show user user-attributes user all
+```
 
 ### Configure managed service account on Windows AD
 
@@ -794,39 +854,74 @@ AD has to generate logs for Audit Logon, Audit Kerberos Authentication Service, 
 - Service Ticket Granted (4769)
 - Ticket Granted Renewed (4770)
 
-### Configure agentless
+### Authentication portal
 
-- Enable User-ID in a zone options
+MFA profile > Authentication profile > Authentication enforcement object > Authentication Policy + Captive Portal settings in paralell
 
-### Configure via User-ID agent
+### Multi-Factor authentication
 
-- Install User-ID agent on supported Windows version according to instructions, configure it and launch
-- Enable User-ID in zone configuration
-- Device > Data Redistribution - Configure Agent host and port - verify that its status is connected
+- Device > Server Profiles > Muli Factor Authentication
+- Create a profile
+- Configure Certificate profile, choose vendor (DUO for example) and configure options for vendor
+- The MFA factors that the firewall supports include push, Short Message Service (SMS), voice, and one-time password (OTP) authentication
+- These profiles are connected as Factors to Authentication profile, several Factors can be addded
 
-### Map users to groups
+### Authentication profile
 
-- Add LDAP server profile Device > Server > Profiles > LDAP
-        - Port - 389
-        - Base DN - DC=sber,DC=ru
-        - Bind DN - Administrator@sber.ru
-        - No SSL
-- Enable Group Mapping Device > User Identification > Group Mapping Settings
-        - Choose server profile
-- Verify that the user and group mapping has correctly identified users Device > User Identification > Group Mapping > Group Include List
-- To verify that all of the user attributes have been correctly captured, use the following CLI command:
+Types:
 
-```text
-show user user-attributes user all
-```
+- Cloud - ?
+- Local Database
+- Radius
+- LDAP
+- TACAS+
+- SAML
+- Kerberos - single sign on + keytab
 
-- Verify that the usernames are correctly displayed in the Source User column under Monitor > Logs > Traffic
-- Verify that the users are mapped to the correct usernames in the User Provided by Source column under Monitor > Logs > User-ID.
+Device > Authentication Profile > What to configure:
 
-### Configure User-ID Agent
+- Type
+- MFA profiles, several can be added
+- Allow list
+- Failed attempts
+- User domain
 
-- Configure according to Palo Alto documentation
-- Enter username with domain and password
+### Authentication enforcement object
+
+- Objects > Authentication
+- Is assigned to Authentication policy rules
+- We configure here method, authentication profile, and text messgae for user
+- Methods:
+    - browser-challenge — The firewall transparently obtains user authentication credentials. If you select this action, the Authentication Profile you select must have Kerberos SSO enabled or else you must have configured NTLM in the Captive Portal settings . If Kerberos SSO authentication fails, the firewall falls back to NTLM authentication. If you did not configure NTLM, or NTLM authentication fails, the firewall falls back to web-form authentication
+    - web-form — To authenticate users, the firewall uses the certificate profile you specified when configuring Captive Portal or the Authentication Profile you select in the authentication enforcement object. If you select an Authentication Profile , the firewall ignores any Kerberos SSO settings in the profile and presents a Captive Portal page for the user to enter authentication credentials
+    - no-captive-portal — The firewall evaluates Security policy without authenticating users
+- Authetication profile my be none, then one in Captive portal settings is used
+
+
+### Captive Portal - Authentication Portal
+
+Device > User Identification > Authentication Portal Settings  
+
+- Timers - Idle + How log to store User-IP mapping
+- GlobalProtect Network Port for Inbound Authentication Prompts (UDP) - To facilitate MFA notifications for non-HTTP applications (such as Perforce) on Windows or macOS endpoints, a GlobalProtect app is required. When a session matches an Authentication policy rule, the firewall sends a UDP notification to the GlobalProtect app with an embedded URL link to the Authentication Portal page. The GlobalProtect app then displays this message as a pop up notification to the user
+- SSL/TLS service profile - redirect requests over TLS
+- Authentication profile - global setting, can be overrided by Authentication policy
+- Mode
+    - Transparent - impersonates the original destination URL, issuing an HTTP 401 to invoke authentication. However, because the firewall does not have the real certificate for the destination URL, the browser displays a certificate error to users attempting to access a secure site. Therefore, use this mode only when absolutely necessary, such as in Layer 2 or virtual wire deployments
+    - Redirect - intranet hostname (a hostname with no period in its name) that resolves to the IP address of the Layer 3 interface on the firewall to which web requests are redirected. The firewall intercepts unknown HTTP or HTTPS sessions and redirects them to a Layer 3 interface on the firewall using an HTTP 302 redirect to perform authentication. This is the preferred mode because it provides a better end-user experience (no certificate errors). If you use Kerberos SSO or NTLM authentication, you must use Redirect mode because the browser will provide credentials only to trusted sites. Redirect mode is also required if you use Multi-Factor Authentication to authenticate Captive Portal users
+- Certificate authentication profile - for authenticating users via certificate
+
+### Authentication policy
+
+Basicly it defines whom to show captive portal.
+
+Policies > Authentication
+
+- Source in all forms
+- Destination in all forms
+- Service/URL category
+- Authentication enforcement object
+- Logging
 
 ### Debug
 
@@ -837,9 +932,11 @@ debug dataplane show user all
 ```
 
 Show log for agentkess connection to Active Directory
+
 ```
 less mp-log useridd.log
 ```
+
 Go to the end of the file by pressing Shift+G
 
 ## QOS
@@ -1357,6 +1454,15 @@ Follow logs
 
 ## GlobalProtect
 
+### MFA
+
+ - It is possible to request MFA for a certain application access, not only for VPN connection or User-ID
+ - For example User > External Palo Alto Global Protect Gate way > LAN > Internal MFA Gateway > Application Server
+ - Internal MFA Gateway may request second factor for particular application
+ - Authentication policy is used, which generates captive portal for browser based apps
+ - And sends notifications to global protect client for non browser apps
+ - To facilitate MFA notifications for non-HTTP applications (such as Perforce) on Windows or macOS endpoints, a GlobalProtect app is required. When a session matches an Authentication policy rule, the firewall sends a UDP notification to the GlobalProtect app with an embedded URL link to the Authentication Portal page. The GlobalProtect app then displays this message as a pop up notification to the user
+
 ### Xauth
 
 - Xauth (Extended Authentication within IKE) is what Palo Alto Networks use to support third party VPN software using the Globalprotect Gateway
@@ -1368,3 +1474,21 @@ Follow logs
 
 ## VSYS
 
+## Certificates
+
+### SSL/TLS service profile
+
+- Used by Captive portal, GlobalProtect portals and gateways, inbound traffic on the management (MGT) interface, the URL Admin Override feature, and the User-ID™ syslog listening service
+- Device > Certificate Management > SSL/TLS Service Profile
+- Certificate
+- TLS versions
+
+### Certificate profile
+
+- User and device authentication for Captive Portal, multi-factor authentication (MFA), GlobalProtect, site-to-site IPSec VPN, external dynamic list (EDL) validation, Dynamic DNS (DDNS), User-ID agent and TS agent access, and web interface access to Palo Alto Networks firewalls or Panorama
+- Specify which certificates to use, how to verify certificate revocation status, and how that status constrains access
+- Username field
+- User domain
+- CA certs
+- CRL
+- OCSP - takes precedence over CRL

@@ -2,6 +2,8 @@
 
 ## History
 
+## Concepts
+
 - 
 - IPsec is not a protocol, it's a framework for securing unicast traffic
 - It consists of 3 protocols:
@@ -25,6 +27,7 @@
 - Security Associations are negotiated for both tunnels
 
 ## SA
+
 An SA is a set of IPSec specifications that are negotiated between devices that are establishing an IPSec relationship.  
 An SA can be either unidirectional or bidirectional, depending on the choices made by the network administrator. An SA is uniquely identified by a Security Parameter Index (SPI), an IPv4 or IPv6 destination address, and a security protocol (AH or ESP) identifier.  
 There are two types of SAs: manual and dynamic.  
@@ -96,6 +99,8 @@ In main mode, the initiator and recipient send three two-way exchanges (six mess
 - Third exchange (messages 5 and 6)—Sends and verifies the identities of the initiator and recipient.
 The information transmitted in the third exchange of messages is protected by the encryption algorithm established in the first two exchanges. Thus, the participants’ identities are encrypted and therefore not transmitted “in the clear.”
 
+#### Aggressive mode
+
 
 
 ### IKE Phase 2
@@ -109,5 +114,13 @@ https://datatracker.ietf.org/doc/html/draft-beaulieu-ike-xauth-02
 ## IKEv2
 
 ## ESP
+
+- Transport mode
+- Tunnel mode
+
+### Transport mode
+
+- Transport mode is practically never used, only when 2 firewalls communicate only with each other
+
 
 ## AH
