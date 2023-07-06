@@ -40,6 +40,7 @@
 ### Cortex
 
 Detection, investigation, automation, and response capabilities.
+
 - Cortex XDR - Extended Detection and Response - detection and response platform that runs on integrated endpoint, network, and cloud data.  Immediate response actions. Define indicators of compromise (IOCs) and behavioral indicators of compromise (BIOCs).
 - Cortex XSOAR - extended Security Orchestration, Automation, and Response - automate up to 95 percent of all of the response actions - gets data from XDR and Autofocus
 - Cortex Data Lake - central log storage - Effortlessly run advanced artificial intelligence and ML with cloud-scale data - Constantly learn from new data sources to evolve defenses
@@ -53,14 +54,28 @@ Cortex XDR)
     - Traps running version 5.0+ with the Traps management service
 - AutoFocus - cloud-based threat intelligence service - takes data from every where and provides it for XSOAR, XDR
 
-## NGFW
+## Best Practice Assessment (BPA) tool
 
-- The Palo Alto Networks firewall was designed to use an efficient system known as next-generation processing. Next-generation processing enables packet evaluation, application identification, policy decisions, and content scanning in a single, efficient processing pass - Single Pass Architecture
-- Zone based firewall
-- Full hardware separate mgmt
-- Best Practice Assessment (BPA) tool for Palo Alto Networks firewalls and Panorama. The two components of the BPA tool are the Security Policy Adoption Heatmap and the BPA assessment. The Heatmap **analyzes a Palo Alto Networks deployment**. The Heatmap can filter information by device groups, serial numbers, zones, areas of architecture, and other categories. The results chart the progress of security improvement toward a Zero Trust network.**The BPA assessment compares a firewall or Panorama configuration against best practices** and provides recommendations to strengthen the organization’s security posture by fully adopting the Palo Alto Networks prevention capabilities. More than 200 security checks are performed on the firewall or Panorama configuration
+- BPA is available via Customer Support Portal
+- After you gain access to the BPA, you can generate a BPA report for a Panorama appliance or for a next-generation firewal
+- BPA for Palo Alto Networks firewalls and Panorama
+- If possible, generate BPA reports for Panorama appliances instead of individual next-generation firewalls to gain complete visibility into all of the firewalls in your environment in one report. Generate reports on a regular basis to measure progress toward adopting security capabilities and security best practices
+- The two components of the BPA tool are the Security Policy Adoption Heatmap and the BPA assessment
+- Tech Support Files (Device > Support> Tech Support File or Panorama> Support > Tech Support File) are sent to the portal
+- The BPA assessment compares a firewall or Panorama configuration against best practices and provides recommendations to strengthen the organization’s security posture by fully adopting the Palo Alto Networks prevention capabilities. More than 200 security checks are performed on the firewall or Panorama configuration
+- The Best Practices Assessment Plus (BPA+) fully integrates with BPA to provide customers with the ability to easily remediate failed best practice checks and improve overall adoption and security posture
+- Three class summaries for BPA: Technical, Operational, Management
+
+### Heat map
+
+- For every zone pair, for ezmple Internal > External, it shows in percents adoption rate for all features
+- The Heatmap Measures Adoption Rate. The Heatmap can filter information by device groups, serial numbers, zones, areas of architecture, and other categories. The results chart the progress of security improvement toward a Zero Trust network
+- All security profiles should be applied on all allow rules
+- For most features adoption rate goal is 100%
+- URL filtering and DNS sinkhole usually cannot be 100%
 
 The Heatmap measures the adoption rate of the following Palo Alto Networks firewall features:
+
 - WildFire
 - Threat Prevention
 - Anti-Spyware
@@ -75,14 +90,27 @@ The Heatmap measures the adoption rate of the following Palo Alto Networks firew
 - Service/Port
 - Logging
 
-Main features:
+### BPA report
+
+- Executive summary in Palo Alto web site
+- Detailed HTML report is downloaded
+- Best practises summary: NIST for example
+- Security Profile Adoption
+- Application and User control adoption
+- Logging and zone protection adoption
+
+## Main features
+
 - App-ID
 - Content-ID
 - User-ID
 - Device-ID
 
-Features
+## Features
 
+- The Palo Alto Networks firewall was designed to use an efficient system known as next-generation processing. Next-generation processing enables packet evaluation, application identification, policy decisions, and content scanning in a single, efficient processing pass - Single Pass Architecture
+- Zone based firewall
+- Full hardware separate mgmt
 - 6 Tulip stateful firewall
 - App-ID - Scans traffic to identify the application involved, regardless of the protocol or port number used
 - Content-ID - Scans traffic for security threats (e.g., data leak prevention and URL filtering, viruses, spyware, unwanted file transfers, specific data patterns, vulnerability attacks, and appropriate browsing access
@@ -113,7 +141,7 @@ Features
 - XML API
 - Device ID
 
-Licenses
+## Licenses
 
 - Advanced Threat Protection
 - Advanced URL filtering
@@ -125,7 +153,7 @@ Licenses
 - IoT security
 - Autofocus
 
-IPv6 support
+## IPv6 support
 
 - Neighbor Discovery (ND) is enhanced
 - The firewall by default runs NDP, which uses ICMPv6 packets to **discover and track the link-layer addresses** and status of neighbors on connected links
@@ -140,7 +168,7 @@ IPv6 support
 - After you configure the firewall with the addresses of RDNS servers, the firewall provisions an IPv6 host (the DNS client) with those addresses
 - An IPv6 Router Advertisement can contain multiple DNS Recursive Server Address options, each with the same or different lifetimes
 
-Configuration of IPv6
+## Configuration workflow
 
 - You enable IPv6 on interface
 - You configure address
@@ -149,13 +177,45 @@ Configuration of IPv6
 - You enable RA-Router Advertisment
 - You enable DNS support - include DNS information in Router Advertisment: Recursive DNS servers and lifetime, suffixes and lifetime, lifetime - the maximum length of time the client can use the specific RDNS Server to resolve domain names
 
-Artificial intelligence operations (AIOps)/Telemetry
+## Artificial intelligence operations (AIOps)/Telemetry
 
 - When enabled, Telemetry allows the firewall to collect and forward traffic information to Palo Alto Networks
 - The data collected pertains to applications, threats, device health, and passive DNS information
 - Data is sent to Cortex Data lake
 - Device > Setup > Telemetry + enable Cortex Data Lake
 
+## Management plane and Data Plane
+
+- On physical appliances separate CPU, RAM, SSD for management plane: mgmt interface + console
+- On virtual firewalls, these are still logically segregated
+- The data plane connects directly to the traffic interfaces
+- Field-programmable gate arrays (FPGAs) are used only on data-plane and only on high end devices
+- PA-7000 has special acrchitecture: dedicated log collection and processing is implemented on a separate card, First packet processing and Switch fabric management in management plane
+
+Management plane:
+
+- Configuration management
+- Logging
+- Reporting functions
+- User-ID agent process
+- Route updates
+
+Data plane:
+
+- Signature match processor - exploits (IPS), antivirus, spyware, CC#
+- All Content-ID and App-ID services
+- Security processors
+- Session management
+- Encryption and decryption
+- Compression and decompression
+- Policy enforcement
+- Network processor
+- Route
+- Address Resolution Protocol (ARP)
+- MAC lookup
+- QoS
+- NAT
+- Flow control
 
 ## Zones
 
@@ -214,20 +274,20 @@ Floods:
 
 - L2
 - L3: IP address, zone, virtual router
-- Virtual wire - no routing or switching, no MAC or IP addresses, blocking or allowing of traffic based on the virtual LAN (VLAN) tags
+- Virtual wire - no routing or switching, no MAC or IP addresses, blocking or allowing of traffic based on the virtual LAN (VLAN) tags. You assign 2 physical interfaces to one virtual wire.
 - It ignores any Layer 2 or Layer 3 addresses for switching or routing purposes
 - A virtual wire interface does not use an Interface Management Profile
 - All the firewalls that are shipped from the factory have two Ethernet ports (port 1 and port 2) preconfigured as virtual wire interfaces. These interfaces allow all of the untagged traffic
 - TAP passively monitor traffic flows across a network by using a switch port analyzer (SPAN) or mirror port
-- Subinterfaces: Layer 3, Layer 2, and VWIRE - using 802.1Q
-- VWIRE subinterfaces also allow the use of IP classifiers to further this segregation
+- Subinterfaces: Layer 3, Layer 2, and Virtual Wire - using 802.1Q
+- Virtual Wire Subinterfaces using VLAN tags only: You assign 2 physical interfaces to one virtual wire, on each interface you create sub interface with particular VLAN-ID. The same VLAN tag must not be defined on the parent virtual wire interface and the subinterface.
+- Virtual Wire Deployment with Subinterfaces (VLAN Tags and IP Classifiers): First firewall looks on the VLAN tag and matches against proper subinterface, but several subinterfaces may use the same VLAN - 100, then it uses IP classifier: source IP address and this helps him to match proper subinterface. For return-path traffic, the firewall compares the destination IP address as defined in the IP classifier on the customer-facing subinterface and selects the appropriate virtual wire to route traffic through the accurate subinterface
 - Tunnel interfaces - virtual interfaces for VPN, should be in the same virtual router as physical - separate VPN zone for them is recomended. IP is required only when dynamic routing is used or for tunnel monitoring. Policy based VPN requires Proxy ID on both sides. 
 - Aggregate interfaces - IEEE 802.1AX link aggregation - harwdware media can be mixed - interface type must be the same - 8 groups, some models - 16, 8 interfaces un each group
 - Loopback interfaces - connect to the virtual routers in the firewall, DNS sinkholes, GlobalProtect service interfaces (such as portals and gateways)
 - Decrypt mirror interfaces - routing of copied decrypted traffic through an external interface to another system, such as a data loss prevention (DLP) service
 - VLAN interface
 - SD-WAN - ?
-
 
 ## Packet Flow Sequence
 
@@ -294,7 +354,18 @@ The policy evaluation then uses the 'six tuple' (6-Tuple) to match establishing 
 
 ## Security profiles
 
+- Antivirus
+- Antispyware
+- Vulnerability Protection
+- URL filtering
+- File blocking
+- Wildfire analysis
+- Data filtering
+- DoS protection
+
 <img width="712" alt="image" src="https://github.com/philipp-ov/foundation/assets/116812447/1d86b533-ba26-4894-b550-35aa76e314da">
+
+Concepts
 
 - Stream mode is used for scanning, not file
 - Applied only for allowed rules
@@ -315,7 +386,71 @@ connection.
 - reset-server: For TCP, this action resets the server-side connection. For UDP, it drops the
 connection.
 - reset-both: For TCP, this action resets the connection on both client and server ends. For
-UDP, it drops the connection.
+UDP, it drops the connection
+
+### Antivirus
+
+- Stream
+- Default generates alerts for the SMTP, IMAP, and POP3 protocols while blocking for FTP, HTTP, and Server Message Block (SMB) protocols
+- Minimize traffic inspection between trusted security zones
+- Machine learning to PE - Portable executable, ELF (executable and linked format), and MS Office files and on the PowerShell and shell scripts in real time
+- WildFire-based signatures
+- WildFire inline ML, you must possess an active WildFire subscription
+
+### Anti-Spyware
+
+- Blocks connections to the external C2 servers
+- Default profile uses default action inside a signature
+- Block IP: This action blocks traffic from either a source or a source-destination pair. It is configurable for a specified period of time
+- You can also enable the DNS Sinkholing action in the Anti-Spyware Profiles to enable the firewall to forge a response to a DNS query for a known malicious domain, thus causing the malicious domain name to resolve to an IP address that you define
+- This feature helps to identify infected hosts on the protected network by using DNS traffic. Infected hosts can then be easily identified in the Traffic and Threat logs because any host that attempts to connect to the sinkhole IP address is most likely infected with malware
+
+## Vulnerability Protection
+
+- When the vulnerability protection action profile is set to reset-both, the associated threat log might display action as reset-server. As discussed earlier, this occurs when the firewall detects the threat at the beginning of a session and presents the client with a 503-block page. Since, the block place disallows the connection, only the server-side connection is reset
+- The default Vulnerability Protection Profile protects clients and servers from all known critical-, high-, and medium-severity threats
+
+### URL Filtering
+
+- Default profile that is configured to block threat-prone categories, such as malware, phishing, and adult content
+- Configure user-credential detection so that users can submit credentials only to the sites in specified URL categories
+- With the advanced URL filtering subscription, Inline Categorization enables real-time analysis of URL traffic by using firewall-based or cloud-based ML models, to detect and prevent malicious phishing variants and JavaScript exploits from entering the network
+
+### Data Filtering
+
+- Prevent sensitive information, such as credit card numbers or Social Security numbers, from leaving a protected network
+- Filter on keywords, such as a sensitive project name or the word “confidential.”
+- Predefined patterns: Filter for a list of over 20 predefined patterns, including Social Security numbers, national identity numbers from various nations, credit cards, and other useful patterns
+- Regular expressions: Filter for a string of characters
+- File properties: Filter for file properties and values based on file type
+
+### File Blocking
+
+- Specified session flow direction (inbound/outbound/both)
+- Alert or block on upload or download, and you can specify which applications will be subject to the File Blocking Profile
+- Custom response pages
+- Possible actions
+    - alert
+    - block
+    - continue: After the specified file type is detected, a customizable response page is
+presented to the user. The user can click through the page to download the file. A log is also generated in the Data Filtering log. This type of forwarding action requires user interaction and is therefore only applicable for web traffic
+
+### WildFire Analysis
+
+- Forward unknown files or email links for WildFire analysis
+- Specify files to be forwarded for analysis based on application, file type, and transmission direction (upload or download)
+- WildFire public cloud or the WildFire private cloud (hosted with a WF-500 appliance)
+- WildFire hybrid cloud deployment: WildFire appliance to analyze sensitive files (such as PDFs) locally, less-sensitive file types (such as PE files) or file types that are not supported for WildFire appliance analysis (such as APKs) to be analyzed by the WildFire public cloud
+- Files are not quarantined pending WildFire evaluation. In cases of positive malware findings, the security engineer must use the information collected on the firewall and by WildFire to locate the file internally for remediation
+- WildFire typically renders a verdict on a file within 5 to 10 minutes of receipt
+
+### DoS Protection
+
+- Control the number of sessions between interfaces, zones, addresses, and countries based on aggregate sessions or source and/or destination IP addresses
+- Flood protection: Detects and prevents attacks in which the network is flooded with packets, which results in too many half-open sessions or services being unable to respond to each request. In this case, the source address of the attack is usually spoofed
+- Resource protection: Detects and prevents session exhaustion attacks. In this type of attack, many hosts (bots) are used to establish as many fully established sessions as possible for consuming all of a system’s resources
+- You can enable both types of protection mechanisms in a single DoS Protection profile
+- Threshold settings for the synchronize (SYN), UDP, and Internet Control Message Protocol (ICMP) floods; enables resource protection; and defines the maximum number of concurrent connections. After configuring the DoS Protection profile, you attach it to a DoS policy rule
 
 ## Sessions
 
@@ -339,7 +474,7 @@ Session end reasons
 - decoder
 - aged-out - no ARP of router, routing issues, no reply from server
 - unknown
- 
+
 ## App-ID
 
 - 6-Tuple is checked against the security policy > known application signatures > check if it is SSH, TLS, or SSL > decryption policy (if exists) > checked again for a known application signature inside TLS > the application has not been identified (a maximum of 4 packets after the handshake, or 2,000 bytes) > will use the base protocol to determine which decoder to use to analyze the packets more deeply > unknown-tcp > check policy if unknown is allowed  
@@ -749,7 +884,7 @@ U-Turn NAT - user connects to Internal resource via external IP address and it i
 
 ### User mapping methods
 
-- Server monitoring - User-ID agent, PAN-OS built-in, AD, Exchange, Novell eDirectory
+- Server monitoring - User-ID agent, PAN-OS built-in, AD, Exchange, Novell eDirectory, Sun ONE Directory Server
 - Port mapping - Microsoft Terminal Services - Citrix Environments - Palo Alto Networks Terminal Services agent - the source port of each client connection to map each user to a session. Linux terminal servers do not support the Terminal Services agent and must use the XML API to send user mapping information from login or logout events to User-ID
 - Syslog- The Windows-based User-ID agent and the PAN-OS integrated User-ID agent both use Syslog Parse Profiles to interpret login and logout event messages that are sent to syslog servers from the devices that authenticate users. Such devices include wireless controllers, 802.1x devices, Apple Open Directory servers, proxy servers, and other network access control devices
 - XFF headers - IP address of client in additional header
@@ -856,7 +991,7 @@ AD has to generate logs for Audit Logon, Audit Kerberos Authentication Service, 
 
 ### Authentication portal
 
-MFA profile > Authentication profile > Authentication enforcement object > Authentication Policy + Captive Portal settings in paralell
+MFA profile > Authentication profile > Authentication enforcement object > Authentication Policy + Captive Portal settings in paralell + Authentication sequence in parallel 
 
 ### Multi-Factor authentication
 
@@ -885,6 +1020,13 @@ Device > Authentication Profile > What to configure:
 - Allow list
 - Failed attempts
 - User domain
+
+## Authentication sequence
+
+- Device > Authentication Sequence
+- We can create several
+- We add different authentication profiles to a sequence
+- Order of profiles matter
 
 ### Authentication enforcement object
 
@@ -1474,6 +1616,13 @@ Follow logs
 
 ## VSYS
 
+### Inter-vsys routing
+
+- Special external Zone is created on every VSYS
+- Interface is added to it
+- Routes are added, next hop is VR - and you choose wich one
+- Rules are created to allow communication between VSYS
+
 ## Certificates
 
 ### SSL/TLS service profile
@@ -1492,3 +1641,19 @@ Follow logs
 - CA certs
 - CRL
 - OCSP - takes precedence over CRL
+
+## Service routes
+
+- By default mgmt interface is used for all service communications: DNS, LDAP, updates...
+- It can be configured via any interface separatly for every service route
+- Can be configured per VSYS
+- By default VSYS inherits settings from global
+
+## Management Profiles
+
+- Network > Network Profiles > Interface Mgmt
+- Ping, Telnet, SSH, HTTP, HTTP OCSP, HTTPS, or SNMP
+- Response Pages (for Authentication Portal or URL Admin Override)
+- User-ID (to redistribute data and authentication timestamps)
+- User-ID Syslog Listener-SSL or User-ID Syslog Listener-UDP (to configure User-ID to monitor syslog senders for user mapping over SSL or User Datagram Protocol [UDP]traffic)
+
