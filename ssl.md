@@ -235,6 +235,7 @@ In order to provide the server name, clients MAY include an extension of type "s
 - All policies on NGWF and SSL decryptors are based on SNI or Server certificate, Server certificate is more accurate source. In TLS 1.3 it is encrypted. So it is more difficult to understand what to decrypt and what not
 - Also, reverse DNS lookup may help 
 - Correct application identification is only possible with decryption: gmail site is signed by Google cert and you will not be able to understand what it is exactly without decryption
+- SNI Routing can be uased on load balancers to forward traffic without SSL termination to particular pool
 
 ## HSTS
 

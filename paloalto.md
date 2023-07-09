@@ -354,16 +354,32 @@ The policy evaluation then uses the 'six tuple' (6-Tuple) to match establishing 
 
 ## Security profiles
 
+All Security Profiles are in Objects > Security Profiles  
+10 profiles in total  
+Threat exceptions for antivirus, vulnerability, spyware, and DNS signatures (sub type of AntiSpyware signatures) can be added in a profile  
+For Spyware, Vulnerability signatures  you can change default Action: Drop, Reset....
+
 - Antivirus
 - Antispyware
+    - DNS security
+    - Advanced Threat Protection
 - Vulnerability Protection
 - URL filtering
+    - User credential protection
 - File blocking
 - Wildfire analysis
 - Data filtering
 - DoS protection
+- SCTP protection - Stream Control Transmission Protocol (SCTP) Protection - mobile networks
+- Mobile Network Protection - inspect GTP traffic - mobile networks
 
 <img width="712" alt="image" src="https://github.com/philipp-ov/foundation/assets/116812447/1d86b533-ba26-4894-b550-35aa76e314da">
+
+Three types of signatures:
+
+- Antivirus - malware and viruses, including worms, Trojan horses, and spyware downloads - the daily antivirus content update + this update includes DNS (C2) signatures
+- Anti-spyware - C2 spyware on compromised hosts that try to phone-home or beacon out to an external C2 server - The Applications and Threats content updates
+- Vulnerability - detect exploit system vulnerabilities - The Applications and Threats content updates
 
 Concepts
 
@@ -390,6 +406,14 @@ UDP, it drops the connection
 
 ### Antivirus
 
+- Enable protocol decoders
+- For every decoder 3 types of actions needed to be chosen + Wildfire Inline ML model:
+    - Signature action
+    - Wildfire signature action
+    - Wildfire Inline ML action
+- Choose application exceptions
+- Choose signatures exceptions
+- Configure Wildfire ML
 - Stream
 - Default generates alerts for the SMTP, IMAP, and POP3 protocols while blocking for FTP, HTTP, and Server Message Block (SMB) protocols
 - Minimize traffic inspection between trusted security zones
@@ -399,22 +423,82 @@ UDP, it drops the connection
 
 ### Anti-Spyware
 
+- Several policies in one Profile
+- Signatures are added to Policy by severity and by name and by category
+- One action for all signatures in Policy, or default
+- Signature exceptions: enable or disable + change action
+- DNS exceptions
+- DNS white domains
 - Blocks connections to the external C2 servers
 - Default profile uses default action inside a signature
 - Block IP: This action blocks traffic from either a source or a source-destination pair. It is configurable for a specified period of time
 - You can also enable the DNS Sinkholing action in the Anti-Spyware Profiles to enable the firewall to forge a response to a DNS query for a known malicious domain, thus causing the malicious domain name to resolve to an IP address that you define
 - This feature helps to identify infected hosts on the protected network by using DNS traffic. Infected hosts can then be easily identified in the Traffic and Threat logs because any host that attempts to connect to the sinkhole IP address is most likely infected with malware
+- In this profile DNS Security is also configured - Palo Alto Networks DNS Security service, a cloud-based analytics platform providing your firewall with access to DNS signatures generated using advanced predictive analysis and machine learning, with malicious domain data from a growing threat intelligence sharing community
+- Active DNS Security and Threat Prevention (or Advanced Threat Prevention) subscription is required
+
+Advanced Threat Prevention
+
+- Advanced Threat Prevention is a cloud-delivered security service that works in conjunction with the existing Threat Prevention license to deliver protections for advanced and evasive C2 threats
+- No update packages required
+- ML based engines
+- Uses Wildfire bases + humans
+- Support the analysis of C2-based threats over HTTP, HTTP2, SSL, unknown-UDP, and unknown-TCP applications
+- Advanced Threat Prevention is enabled and configured under inline cloud analysis in the Anti-Spyware Profile
+- In addition to signatre based, inline detection system to prevent unknown and evasive C2 threats
 
 ## Vulnerability Protection
 
+- Create profile, Add rules and exceptions too profile
+- Signatures are added to rule, based on CVE, Vendor ID, Severity, Category
+- Packet capture can be enabled
+- Action for all signatures in a rule or Default
+- Host type can be configured: client or server 
 - When the vulnerability protection action profile is set to reset-both, the associated threat log might display action as reset-server. As discussed earlier, this occurs when the firewall detects the threat at the beginning of a session and presents the client with a 503-block page. Since, the block place disallows the connection, only the server-side connection is reset
 - The default Vulnerability Protection Profile protects clients and servers from all known critical-, high-, and medium-severity threats
 
 ### URL Filtering
 
+- Create profile, add Categories, User credential detection, HTTP header injection, Inline ML
+- For every category in a profile configure action for site access and credential submission
+- Site access actions:
+    - allow
+    - alert
+    - block
+    - continue
+    - override
 - Default profile that is configured to block threat-prone categories, such as malware, phishing, and adult content
 - Configure user-credential detection so that users can submit credentials only to the sites in specified URL categories
 - With the advanced URL filtering subscription, Inline Categorization enables real-time analysis of URL traffic by using firewall-based or cloud-based ML models, to detect and prevent malicious phishing variants and JavaScript exploits from entering the network
+- You can also use URL filtering to enforce safe search settings for your users and prevent credential phishing based on URL category
+- Credential phishing prevention works by scanning username and password submissions to websites and comparing those submissions against valid corporate credentials. You can choose which websites you want to allow or block corporate credential submissions based on the URL category of the website
+- How firewall knows which credentials are prohibited to enter on physhing sites and that they are enterprise:
+    - IP address-to-username mapping - what User-ID has collected, only username is checked
+    - Group mapping (using PAN-OS integrated agent) - firewall gets via LDAP all groups and users and use this data as well
+    - Domain credential filter (using Windows-based agent): The User‐ID agent is installed on a Read-Only Domain Controller. The User‐ID agent collects password hashes that correspond to users for whom you want to enable credential detection, and it sends these mappings to the firewall. The firewall then checks if the source IP address of a session matches a username and if the password submitted to the web page belongs to that username. With this mode, the firewall only blocks or alerts on the submission when the submitted password matches a user password
+- User Credential Detection is enbled in URL Filtering profile
+- Actions for credential detections:
+    - alert - log
+    - allow
+    - block - block page is displayed
+    - continue - Anti Physhing continue page is displayed - then user may enter credentials
+
+In URL filtering Objects > Security Profiles > URL Filtering > HTTP Header Insertion HTTP header insertion is supported  
+The firewall supports header insertion for HTTP/1.x traffic only  
+The firewall does not support header insertion for HTTP/2 traffic  
+HTTP header insertion can only be performed by using the following methods:
+
+- GET
+- POST
+- PUT
+- HEAD
+
+Advanced URL Filtering
+
+- Advanced URL Filtering is a subscription service that works natively with the Palo Alto Networks NGFW
+- Advanced URL Filtering uses ML to analyze URLs in real time and classify them into benign or malicious categories
+- Own analysis, Wildfire
+- Advanced URL Filtering prevents 40 percent more threats than traditional web-filtering databases
 
 ### Data Filtering
 
@@ -426,6 +510,8 @@ UDP, it drops the connection
 
 ### File Blocking
 
+- Create profile, add rules
+- Every rule has application, file types, direction and action
 - Specified session flow direction (inbound/outbound/both)
 - Alert or block on upload or download, and you can specify which applications will be subject to the File Blocking Profile
 - Custom response pages
@@ -437,6 +523,8 @@ presented to the user. The user can click through the page to download the file.
 
 ### WildFire Analysis
 
+- Create profile, add rules
+- Every rule has application, file types, direction and anaylysis type: public cloud or private cloud
 - Forward unknown files or email links for WildFire analysis
 - Specify files to be forwarded for analysis based on application, file type, and transmission direction (upload or download)
 - WildFire public cloud or the WildFire private cloud (hosted with a WF-500 appliance)
@@ -1656,4 +1744,6 @@ Follow logs
 - Response Pages (for Authentication Portal or URL Admin Override)
 - User-ID (to redistribute data and authentication timestamps)
 - User-ID Syslog Listener-SSL or User-ID Syslog Listener-UDP (to configure User-ID to monitor syslog senders for user mapping over SSL or User Datagram Protocol [UDP]traffic)
+
+
 
