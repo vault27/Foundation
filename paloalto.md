@@ -220,10 +220,12 @@ Data plane:
 ## Zones
 
 Firewall types
+
 - Route based firewall - zones are simply an architectural or topological concept that helps identify which areas comprise the global network
 - Zone based firewall - use zones as a means to internally classify the source and destination in its state table  
   
 What we configure in zone:
+
 - Log setting
 - Type
 - Interfaces
@@ -232,6 +234,7 @@ What we configure in zone:
 - Device-ID
 
 Zone types:
+
 - L3
 - L2
 - Tap
@@ -239,6 +242,7 @@ Zone types:
 - Tunnel
 
 Concepts
+
 - One zone per interface
 - Zones are attached to a physical, virtual, or sub interface
 - Intrazone traffic is allowed by default
@@ -251,24 +255,34 @@ Concepts
 - Then Security Policy is checked
 - It is best practice to use zones in all security rules and leveraging a clear naming convention
 - Policy check relies on pre-NAT IP addresses
-- Zone protection profile, flood protection: syn(random early drop - drops random syn packets, syn cookies - are always on) icmp, icmpv6, other ip, udp; reconnaissance - port scan, host sweep. All thresholds here are aggregate for all zone. + there is packet based protection. Then we apply it in zone configuration, usually for outside zone
+- Zone protection profile, usually for outside zone
 
-Zone protection profile
+### Zone protection profile
+
+There are 5 sections in a profile:
 
 - Flood protection
 - Reconnaissance protection - port scans
 - Packet based attack protection - check packet headers and drop undesirable
 - Protocol protection - non-IP protocol-based attacks - block or allow non-IP protocols between security zones on a Layer 2 VLAN or on a virtual wire, or between interfaces within a single zone on a Layer 2 VLAN (Layer 3 interfaces and zones drop non-IP protocols so non-IP Protocol Protection doesn’t apply) - block is based on Ethertype field in Ethernet frame
-- Ethernet SGT protection - droop traffic based on Security Group Tag (SGT) in Ethernet frame, when your firewall is part of a Cisco TrustSec network
+- Ethernet SGT protection - drop traffic based on Security Group Tag (SGT) in Ethernet frame, when your firewall is part of a Cisco TrustSec network - you configure which tags to drop
 
 Floods:
-- Protects from floods: SYN, ICMP, ICMPv6, UDP, and other IP flood attacks
+
+- The firewall measures the aggregate amount of each flood type entering the zone in new connections per second (CPS) and compares the totals to the thresholds you configure in the Zone Protection profile
+- For each flood type, you set three thresholds for new CPS entering the zone
+- You can set a drop Action for SYN floods: Random Early Drop (RED) - simple Drop basically or SYN cookies
+- 5 Flood types configurable: SYN, ICMP, ICMPv6, UDP, and other IP flood attacks
 - Configure thresholds in CPS:
     - Alarm Rate - 15-20 % above normal CPS
     - Activate - start dropping
     - Maximum - 80-90 % load
 - Random Early Drop (RED, also known as Random Early Detection) used for all floods 
 - For SYN - SYN Cookies can be used besides RED
+- SYN Cookies — Causes the firewall to act like a proxy, intercept the SYN, generate a cookie on behalf of the server to which the SYN was directed, and send a SYN-ACK with the cookie to the original source. Only when the source returns an ACK with the cookie to the firewall does the firewall consider the source valid and forward the SYN to the server. This is the preferred Action
+- Random Early Drop drops traffic randomly, so RED may affect legitimate traffic
+- SYN Cookies is more resource-intensive
+- Monitor the firewall, and if SYN Cookies consumes too many resources, switch to RED
 
 ## Interfaces
 
@@ -356,6 +370,7 @@ The policy evaluation then uses the 'six tuple' (6-Tuple) to match establishing 
 
 All Security Profiles are in Objects > Security Profiles  
 10 profiles in total  
+7 are applied in a security policy  
 Threat exceptions for antivirus, vulnerability, spyware, and DNS signatures (sub type of AntiSpyware signatures) can be added in a profile  
 For Spyware, Vulnerability signatures  you can change default Action: Drop, Reset....
 
@@ -369,7 +384,7 @@ For Spyware, Vulnerability signatures  you can change default Action: Drop, Rese
 - File blocking
 - Wildfire analysis
 - Data filtering
-- DoS protection
+- DoS protection - separate DoS policy
 - SCTP protection - Stream Control Transmission Protocol (SCTP) Protection - mobile networks
 - Mobile Network Protection - inspect GTP traffic - mobile networks
 
@@ -447,7 +462,7 @@ Advanced Threat Prevention
 - Advanced Threat Prevention is enabled and configured under inline cloud analysis in the Anti-Spyware Profile
 - In addition to signatre based, inline detection system to prevent unknown and evasive C2 threats
 
-## Vulnerability Protection
+### Vulnerability Protection
 
 - Create profile, Add rules and exceptions too profile
 - Signatures are added to rule, based on CVE, Vendor ID, Severity, Category
@@ -534,6 +549,23 @@ presented to the user. The user can click through the page to download the file.
 
 ### DoS Protection
 
+- In a profile you configure: Type, Flood protection, Resources protection
+- Profile is not applied in security policy, it is applied in separate DoS policy
+- Types:
+    - Aggregated - you want to apply extra constraints on specific subnets, users, or services
+    - Classified - Sets flood thresholds that apply to each individual device specified in a DoS Protection policy rule. For example, if you set a Max Rate of 5,000 CPS, each device specified in the rule can accept up to 5,000 CPS before it drops new connections.
+- 5 Flood protections, as in zone protection profile:
+    - SYN
+    - UDP
+    - ICMP
+    - ICMPv6
+    - Other IP
+- For every flood you configure 4 parametres:
+    - Alarm Rate
+    - Activate Rate
+    - Max Rate
+- For SYN flood you also configure Action: RED or SYN-cookies
+- For resources protection you configure only Max Concurent Sessions
 - Control the number of sessions between interfaces, zones, addresses, and countries based on aggregate sessions or source and/or destination IP addresses
 - Flood protection: Detects and prevents attacks in which the network is flooded with packets, which results in too many half-open sessions or services being unable to respond to each request. In this case, the source address of the attack is usually spoofed
 - Resource protection: Detects and prevents session exhaustion attacks. In this type of attack, many hosts (bots) are used to establish as many fully established sessions as possible for consuming all of a system’s resources
