@@ -630,6 +630,26 @@ This is one if iBGP scaling techniques
 
 ## Configuration
 
+### Change default local preference
+
+It will be added to all routes to all neighbors
+
+```
+R3(config)# router bgp 1
+R3(config-router)# bgp default local-preference 200
+```
+
+### Change local preference per route
+
+```
+R3(config)# ip prefix-list net4 4.4.4.0/24
+R3(config)# route-map PREF permit 10
+R3(config-route-map)# match ip address prefix-list net4
+R3(config-route-map)# set local-preference 300
+R3(config)# router bgp 1
+R3(config)# neighbour 192.168.35.5 route-map PREF in
+```
+
 **Configure different AS number for particular neighbor on Nexus**  
 Peering will be made using 64704 ASN instead of 64703  
 It is very usefull when we connect VRFs in Fabric via external firewall
