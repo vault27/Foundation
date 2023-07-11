@@ -189,7 +189,7 @@ What you need to think through, when you design BGP network
 
 ## Attributes
 
-
+<img width="671" alt="image" src="https://github.com/philipp-ov/foundation/assets/116812447/c5e511a8-6318-4367-9c34-3bacd0ffa26c">
 
 Path attributes fall into four separate categories:
 
@@ -198,35 +198,34 @@ Path attributes fall into four separate categories:
 3. Optional transitive - not all have to support it, the router should silently forward the PA to other routers without needing to consider the meaning of the PA
 4. Optional non-transitive - not all have to support it, the router should remove the PA so that it is not propagated to any peers
 
-Attributes:
+### Well-known mandatory
 
 - AS_PATH
 - NEXT_HOP
-- AGGREGATOR
+- ORIGIN - 
+  - i - originate the prefix through BGP
+  - e - is no longer used
+  - ? - distribute a prefix into BGP from another routing protocol
+
+### Well-known disretionary
+
+- Local Preference - used only in iBGP, used to show the best exit from AS, the higher the better route, default - 100. Default value exists only for routes, which originate from this router and with in AS, if router is received from different AS, local preference is empty
 - ATOMIC_AGGREGATE
-- ORIGIN 
+
+### Optional transitive
+
+- AGGREGATOR
+- COMMUNITIES
+  - no-expert
+  - no-advertise
+  - internet
+  - local-as
+
+### Optional non transitive
+
 - ORIGINATOR_ID
 - CLUSTER_LIST
-
-
-- MP_REACH_NLRI - includes next hop
-- ORIGIN
-- AS_PATH
-- COMMUNITIES
-- EXTENDED_COMMUNITIES
-- NEXT_HOP
-- Multi Exit Discriminator (MED)
-
-
-
-attribute           EBGP                    IBGP  
-ORIGIN             mandatory               mandatory  
-AS_PATH            mandatory               mandatory  
-NEXT_HOP           mandatory               mandatory  
-MULTI_EXIT_DISC    discretionary           discretionary  
-LOCAL_PREF         see Section 5.1.5       required  
-ATOMIC_AGGREGATE   see Section 5.1.6 and 9.1.4  
-AGGREGATOR         discretionary           discretionary  
+- Multi Exit Discriminator (MED) - suggestion to other directly connected networks on which path should be taken if multiple options are available, and the lowest value wins. Transfered from iBGP to eBGP. allow routers in one AS to tell routers in a neighboring AS how good a particular route is. We send a route with lower MED, and this route becomes preferable
 
 ```
 BGP Message
@@ -240,11 +239,6 @@ BGP Message
     Network Layer Reachability Information (NLRI):
         192.0.2.0/24
 ```
-
-- MED - suggestion to other directly connected networks on which path should be taken if multiple options are available, and the lowest value wins. Transfered from iBGP to eBGP. allow routers in one AS to tell routers in a neighboring AS how good a particular route is. We send a route with lower MED, and this route becomes preferable.
-- Origin code can be one of three values: IGP(0, i), EGP(1, e) or Incomplete(2, ?). IGP will be set if you originate the prefix through BGP, EGP is no longer used (it’s an ancient routing protocol), and Incomplete is set when you distribute a prefix into BGP from another routing protocol (like IS-IS or OSPF)
-- Communities - optional
-- Local preference - used only in iBGP, used to show the best exit from AS, the higher the better route, default - 100. Default value exists only for routes, which originate from this router and with in AS, if router is received from different AS, local preference is empty
 
 ## Best path selection
 
