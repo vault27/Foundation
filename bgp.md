@@ -189,6 +189,8 @@ What you need to think through, when you design BGP network
 
 ## Attributes
 
+
+
 Path attributes fall into four separate categories:
 
 1. Well-known mandatory - The PA must be in every BGP Update, all devices have to support it

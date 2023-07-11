@@ -266,6 +266,11 @@ There are 5 sections in a profile:
 - Packet based attack protection - check packet headers and drop undesirable
 - Protocol protection - non-IP protocol-based attacks - block or allow non-IP protocols between security zones on a Layer 2 VLAN or on a virtual wire, or between interfaces within a single zone on a Layer 2 VLAN (Layer 3 interfaces and zones drop non-IP protocols so non-IP Protocol Protection doesn’t apply) - block is based on Ethertype field in Ethernet frame
 - Ethernet SGT protection - drop traffic based on Security Group Tag (SGT) in Ethernet frame, when your firewall is part of a Cisco TrustSec network - you configure which tags to drop
+- L3 & L4 Header Inspection - only when enabled globally - write custom threat (vulnerability) signatures based on Layer 3 and Layer 4 header fields (such as IP flags, acknowledgment numbers, etc)
+    - Device > Setup > Session - enable globally
+    - Configure L3 & L4 Header Inspection in Zone Protection Profile
+    - You configure several rules, for example: destination port, source IP, some field in the header
+    - Add profile to Zone + in Zone enable Enable Net Inspection
 
 Floods:
 
@@ -784,6 +789,7 @@ Concepts:
 - You can make changes on Passive, press Commit and it will go to Active
 
 Failover reasons
+
 - Link monitoring: If an interface goes down, the member fails
 - Path monitoring: If an IP becomes unavailable, the member fails
 - Heartbeat monitoring: The peers periodically send heartbeat packages and hello messages to verify they are up and running
@@ -854,7 +860,8 @@ Supported deployments
 - Layer 2
 - Layer 3 
 
-Configuration overview
+Configuration workflow
+
 - Enable Ping on management interface
 - Configure HA type interface for HA2 link
 - Enable HA and general options: Group-ID, mode, config sync, peer HA1 IP and backup IP: Device > HA > General
@@ -898,18 +905,39 @@ Possible when person makes change to active host, does not commit. Then someone 
 - Recommended if each firewall needs its own routing instances and you require full, real-time redundancy out of both firewalls all the time
 - Active/active mode has faster failover
 - Can handle peak traffic flows better than active/passive mode because both firewalls actively process traffic
+- Session owner: either the firewall that receives the First Packet of a new session from the end host or the firewall that is in active-primary state (the Primary device)
+- If Primary device is configured, but the firewall that receives the first packet is not in active-primary state, the firewall forwards the packet to the peer firewall (the session owner) over the HA3 link
+- The session owner performs all Layer 7 processing, such as App-ID, Content-ID, and threat scanning for the session. The session owner also generates all traffic logs for the session
+- If the session owner fails, the peer firewall becomes the session owner
+- Palo Alto Networks recommends setting the Session Owner to First Packet and the Session Setup to IP Modulo
+- Setting the Session Owner to First Packet reduces traffic across the HA3 link and helps distribute the dataplane load across peers
 
 Supported deployments:
+
 - L3
 - Virtual Wire
 
 Does not support the DHCP client. Furthermore, only the active-primary firewall can function as a DHCP Relay. If the active-secondary firewall receives DHCP broadcast packets, it drops them
 
 4 types of design:
+
 - Floating IP Address and Virtual MAC Address
 - Floating IP Address Bound to Active-Primary Firewall
 - Route-Based Redundancy
 - ARP Load-Sharing
+
+Configuration workflow
+
+- Enable HA
+- Choose Active/Active
+- Choose device ID: 0 or 1 - ?
+- Enable Configsync
+- Configure Peer HA1 IP
+- By default they both work, just syncing configs and sessions
+- If it is needed: Configure Floating IPs
+    - Every IP will be floating or ARP load sharing
+    - Floating IP can be bound to Active Primary Device
+    - OR Device priority can be configured for devices 0 and 1 - ?
 
 ### Virtual MAC address
 
@@ -948,11 +976,13 @@ Does not support the DHCP client. Furthermore, only the active-primary firewall 
 - The new session owner (the firewall that receives the failed over traffic) creates the traffic log
 
 Use cases
+
 - HA peers are spread across multiple data centers
 - One data center is active and the other is standby
 - Horizontal scaling, in which you add HA cluster members to a single data center to scale security and ensure session survivability: Load balancer sends traffic to many NGFWs
 
 Session Synchronization States
+
 - Pending → Synchronization is not triggered yet
 - Unknown. → Device Serial Number and Peer IP is configured but session synchronization process has not started yet
 - In-Progress  → Full session synchronization is running 
@@ -960,6 +990,7 @@ Session Synchronization States
 - Disabled → Session synchronization is disabled to the member or for HA peer
 
 Show logs about HA4 sessions sync
+
 ```
 show log system | match ha4
 ```
@@ -1777,5 +1808,10 @@ Follow logs
 - User-ID (to redistribute data and authentication timestamps)
 - User-ID Syslog Listener-SSL or User-ID Syslog Listener-UDP (to configure User-ID to monitor syslog senders for user mapping over SSL or User Datagram Protocol [UDP]traffic)
 
+## Zero touch provisioning
+
+- Panorama > Plugins to Download
+- Install the most recent version of the ZTP plugin
+- Panorama > Zero Touch Provisioning
 
 
