@@ -1814,4 +1814,37 @@ Follow logs
 - Install the most recent version of the ZTP plugin
 - Panorama > Zero Touch Provisioning
 
+## Bootstraping
 
+- Attach the virtual disk, virtual CD-ROM, or storage bucket to the firewall
+- Firewall scans for a bootstrap package
+- If one exists, the firewall uses the settings defined in the bootstrap package
+- If you have included a Panorama server IP address in the file, the firewall connects with Panorama. If the firewall has Internet connectivity, it contacts the licensing server to update the universally unique identifier (UUID) and obtain the license keys and subscriptions
+- If the firewall does not have internet connectivity, it either uses the license keys that you included in the bootstrap package or connects to Panorama, which retrieves the appropriate licenses and deploys them to the managed firewalls
+- If you intend to pre-register the VM-Series firewalls with Panorama with bootstrapping, you must generate a VM authorization key on Panorama and include the generated key in the init-cfg file
+- The bootstrap package that you create must include the /config, /license, /software, and /content folders, even if empty, as follows:
+    - /config folder: This folder contains the configuration files. The folder can hold two files, init-cfg.txt and bootstrap.xml
+    - /license folder: This folder contains the license keys or authorization codes for the licenses and subscriptions that you intend to activate on the firewalls. If the firewall does not have internet connectivity, you must either manually obtain the license keys from the Palo Alto Networks Support Portal or use the Licensing API to obtain the keys and then save each key in this folder
+    - /software folder: This folder contains the software images that are required to upgrade a newly provisioned VM-Series firewall to the desired PAN-OS version for the network
+    - /content folder: This folder contains the Applications and Threats updates and WildFire updates for the valid subscriptions on the VM-Series firewall. You must include the minimum content versions that are required for the desired PAN-OS version
+    - /plugins folder: This optional folder contains a single VM-Series plugin image
+
+## Authorization, authentication, and device access
+ 
+ - Dynamic roles: After new features are added, the firewall and Panorama automatically update the definitions of dynamic roles
+    - Superuser
+    - Superuser (read-only)
+    - Panorama administrator
+- Custom admin roles definition: After new features are added to the product, you must update the roles with corresponding access privileges
+- Panorama access domains control the access that device group and template administrators have to specific device groups (to manage policies and objects), to templates (to manage network and device settings), and to the web interface of managed firewalls (through context switching). You can define up to 4,000 access domains, and you can manage them locally or by using the RADIUS Vendor-Specific Attributes (VSAs), TACACS+ VSAs, or SAML attributes
+
+Supported authentication types include the following:
+
+- MFA
+- SAML
+- SSO
+- Kerberos 
+- TACACS+ 
+- RADIUS
+- LDAP
+- Local

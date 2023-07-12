@@ -11,6 +11,7 @@
 - RFC 4271 - 2006
 - RFC 2283 - IPv6 - 1998
 - RFC 2858 - MP-BGP
+- RFC 7938 - Use of BGP for Routing in Large-Scale Data Centers: private ASN, single-hop, AS numbering to avoid path hunting, timers hardening, BFD
 
 ## Books
 
@@ -40,7 +41,8 @@
 
 - Routing protocol that is used to exchange network layer reachability information (NLRI) between routing domains
 - Path vector routing protocol
-- BGP is not a routing protocol: BGP is an application used to exchange NLRI, we exchange the route details but not the path details
+- BGP is not a routing protocol: BGP is an application used to exchange NLRI, IPv4, IPv6, l2vpn, VPnv4...All data in a packet is presented in the form of Path attributes, all these make it very flexible
+- For different addresses different AFI/SAFI numbers are used
 - IPV4 NLRI contains..
     - Prefix/len
     - Attributes
@@ -49,16 +51,13 @@
 - Internet de facto protocol, Routing protocol of Intenet, Port 179 TCP, EGP
 - BGP knows the next-hop but not the outgoing interface
 - IGP must be able to perform recursion otherwise the route cannot be used
-- In general, it is an application, which establishes connection and exchange information: IPv4, IPv6, l2vpn, VPnv4...All data in a packet is presented in the form of Path attributes, all these make it very flexible
 - It is not binded to interface, we just configure neighbors and then connect to them according to routing table
 - It does not use metric like IGP to calculate best route, it uses many steps and PAs
 - Only one BGP process can be launched with VRFs and using local-as option to send different AS number
 - If we use VRF, one BGP process, one AS number, different neighbors for different VRFs
-- Path vector protocol
 - Updates are sent only after changes in network
 - Metric: attributes
 - Does not know about all networks, knows only about neighboors
-- Use of BGP for Routing in Large-Scale Data Centers - RFC 7938: private ASN, single-hop, AS numbering to avoid path hunting, timers hardening, BFD
 - Very slow convergance by design, Hello - 60 sec, Dead - 180 sec
 - ECMP to work: AS Path should be absolutely identical
 - The AD Values: eBGP - 20, iBGP - 200
@@ -132,6 +131,7 @@ What you need to think through, when you design BGP network
 ## Capabilities
 
 ## ASN
+
 - Can be 16 bit (2 bytes) and 32 bit (4 bytes)
 - 0 to 65535
 - Reserved: 0, 23456, 65535 - ?
@@ -140,7 +140,7 @@ What you need to think through, when you design BGP network
 - Notation options: ASPLAIN 0 - 4 294 967 294, ASDOT 0 - 65535.65535
 - We can substitute AS number for particular neighbor. For example we can do it, when we connect VRFs in fabric via external Firewall and to avoid "allow as in" option we configure different ASNs for different VRFs to peer with firewall 
 
-## Injecting Routes/Prefixes,Summarization, Redistribution
+## Injecting Routes/Prefixes,Summarization
 
 - If we configure summarization, for example two LANs connected to Leaf, and then if we disconnect one LAN, summerized route will continue propogating and everyone will consider this LAN available. Especially summarization is unacceptable on Spines. This is relevant only with "summer only" option
 - We configure summarization in address family section for Nexus and it works for all neighbors, we specify summarized prefix there wit as-set option and summer only, without summer only option it will advertise all prefixes plus summer
@@ -148,6 +148,10 @@ What you need to think through, when you design BGP network
 - What networks are advertised by default? - none - only received via BGP
 - Network command: Look for a route in the router’s current IP routing table that **exactly** matches the parameters of the network command; if the IP route exists, put the equivalent NLRI into the local BGP table. With this logic, connected routes, static routes, or IGP routes could be taken from the IP routing table and placed into the BGP table for later advertisement. When the router removes that route from its IP routing table, BGP then removes the NLRI from the BGP table, and notifies neighbors that the route has been withdrawn. If auto-summary is enabled, then it matched all of its subnets
 - route-map can be used in network command to manipulate path attributes, including next hop
+
+ ## Redistribution
+
+ - When we configure redistribution from OSPF weight is 32768, Path is ?, Local Pref is not set by default, origin code is Incomplete - ?
 
 ## Route maps
 
