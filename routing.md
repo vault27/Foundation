@@ -158,6 +158,11 @@ Can be changed with distance command
 - iBGP - 200
 - Unreachable - 255
 
+## Redistribution
+
+- Redistribution is configured on that side where we redistribute
+- If we want to redistribute to BGP from OSPF, we configure it in BGP 
+
 ## Routing table
 
 Format:

@@ -239,6 +239,8 @@ In order to provide the server name, clients MAY include an extension of type "s
 
 ## HSTS
 
+
+
 ## Wireshark
 
 SNI filtering

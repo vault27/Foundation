@@ -551,6 +551,7 @@ presented to the user. The user can click through the page to download the file.
 - WildFire hybrid cloud deployment: WildFire appliance to analyze sensitive files (such as PDFs) locally, less-sensitive file types (such as PE files) or file types that are not supported for WildFire appliance analysis (such as APKs) to be analyzed by the WildFire public cloud
 - Files are not quarantined pending WildFire evaluation. In cases of positive malware findings, the security engineer must use the information collected on the firewall and by WildFire to locate the file internally for remediation
 - WildFire typically renders a verdict on a file within 5 to 10 minutes of receipt
+- Wildfire never quarantine files
 
 ### DoS Protection
 
@@ -674,6 +675,7 @@ Profile includes:
 Concepts
 
 - Content-ID is impossible
+- If firewall uses Forward Untrust certificate to decrypt normal website, then this website does not send intermediate certificate and firewall cannot trace its server cert to CA cert
 - App-ID - works partially
 - Decryption policies enable you to specify traffic for decryption according to destination, source, user/user group, or URL category
 - All encrypted traffic is SSL in App-ID
@@ -720,6 +722,10 @@ Configuration:
 - Certificate Authority
 - After cert generation enable in it: Forward Trust Certificate, Forward Untrust Certificate, Trusted Root CA
 - Export cert to client
+
+Palo Alto Networks provides a predefined SSL Decryption Exclusion list that excludes hosts with applications and services that are known to break decryption technically (pinned certificate, an incomplete certificate chain, unsupported ciphers, or mutual authentication) from SSL Decryption by default.  
+You can add more sites to this list. 
+Device > Certificate management > SSL Decryption Exclusion
 
 ## Tags
 
@@ -1232,23 +1238,55 @@ less mp-log useridd.log
 
 Go to the end of the file by pressing Shift+G
 
-## QOS
+## QoS
 
-QoS is enforced on traffic as it egresses the firewall  
-
+QoS is enforced on traffic as it egresses the firewall   
+  
 Unclassified traffic enters firewall > **QoS Policy** assignes **class** to traffic > **QoS Profile** on Egress interface prioritizes traffic accorsing to **QoS class**  
 
-- QoS profile - matching traffic is then shaped based on the QoS profile class settings as it exits the physicalinterface. Each QoS profile rule allows you to configure individual bandwidth and priority settings for up to eight QoS classes, as well as the total bandwidth allowed for the eight classes combined. In every profile you configure priorities for every class. Then you apply a profile to an interface.
+You can also mark traffic in a security policy - in a security rule  
+Enables the firewall to mark traffic with the same DSCP value that was detected at the beginning of a session (in this example, the firewall would mark return traffic with the DSCP AF11 value). While configuring QoS allows you to shape traffic as it egresses the firewall, enabling this option in a Security rule allows the other network devices intermediate to the firewall and the client to continue to enforce priority for DSCP-marked traffic  
+
+- Self-contained system local to the firewall
+- Can consider existing QoS packet markings but does not act directly on them
+- Ingress traffic cannot be managed
+- QoS profile - matching traffic is then shaped based on the QoS profile class settings as it exits the physical interface. Each QoS profile rule allows you to configure individual bandwidth and priority settings for up to eight QoS classes, as well as the total bandwidth allowed for the eight classes combined. In every profile you configure priorities for every class. Then you apply a profile to an interface.
 - QoS policy - define traffic you want to receive QoS treatment and assign that traffic a QoS class. QoS policy rule is applied to traffic after the firewall has enforced all other security policy rules, including Network Address Translation (NAT) rules.
 - QoS egress interface - this is where you apply QoS profile. If you limit Youtube then Egress interface is Internal interface of FW. You apply it in separate section Network > QoS
+- DSCP classification allows you to both honor DSCP values for incoming traffic and mark a session with a DSCP value as session traffic exits the firewall
 
+### QoS policy
+
+Policies > QoS  
 Define a QoS policy rule to match to traffic based on:
+
 - Applications and application groups
 - Source zones, source addresses, and source users
 - Destination zones and destination addresses
 - Services and service groups limited to specific TCP and/or UDP port numbers
 - URL categories, including custom URL categories
 - Differentiated Services Code Point (DSCP) and Type of Service (ToS) values, which are used to indicate  the level of service requested for traffic, such as high priority or best effort delivery
+    - Expedited Forwarding (EF): Can be used to request low loss, low latency, and guaranteed bandwidth for traffic. Packets with EF codepoint values are typically guaranteed the highest-priority delivery
+    - Assured Forwarding (AF): Can be used to provide reliable delivery for applications. Packets with AF codepoint indicate a request for the traffic to receive higher priority treatment than what the best-effort service provides (although packets with an EF codepoint continue to take precedence over those with an AF codepoint)
+    - Class Selector: Can be used to provide backward compatibility with network devices that use the IP precedence field to mark priority traffic
+    - IP Precedence (ToS): Can be used by legacy network devices to mark priority traffic (the IP precedence header field was used to indicate the priority for a packet before the introduction of the DSCP classification)
+    - Custom Codepoint: Can be used to match to traffic by entering a codepoint name and binary value
+
+### QoS profile
+
+Network > Network Profiles > QoS Profile
+
+- For the profile you configure Egress Max and Egress guaranteed 
+- For every class which you defined in QoS Policy you configure Priority, Egress MAX and Egress Guaranteed
+- Egress MAX and Egress Guaranteed are in Mbps or percentage
+- Network > QoS and Adda QoS interface
+- Can be applied only to physical interface
+- You may configure Egress MAX here as well
+- You configure Default QoS profile for regular (ClearText) traffic and Tunnel traffic
+- For both ClearText and Tunnel traffic you can configure many rules with many profiles besides Default, based on Source interface and Source subnet
+- For both ClearText and Tunnel traffic you can configure Egress MAX and Egress Guaranteed
+- Egress guaranteed specifies the amount of bandwidth guaranteed for matching traffic. When the egress-guaranteed bandwidth is exceeded, the firewall passes traffic on a best-effort basis. Bandwidth that is guaranteed but is unused continues to remain available for all of the traffic
+- Egress max specifies the overall bandwidth allocation for matching traffic. The firewall drops the traffic that exceeds the egress max limit set
 
 ## Logging
 
@@ -1339,6 +1377,7 @@ Types:
 Default username/pass - admin/admin  
 
 Configure network
+
 ```
 configure
 set deviceconfig system ip-address <ip address> netmask <netmask> default-gateway <default gateway> dns-setting servers primary <DNS ip address>
@@ -1776,6 +1815,8 @@ Follow logs
 
 ## Certificates
 
+- SCEP - ?
+
 ### SSL/TLS service profile
 
 - Used by Captive portal, GlobalProtect portals and gateways, inbound traffic on the management (MGT) interface, the URL Admin Override feature, and the User-ID™ syslog listening service
@@ -1795,10 +1836,19 @@ Follow logs
 
 ## Service routes
 
+- Device > Setup > Services > Global > Service Route Configuration
+- Can be customized for VSYS
+- Modification of an Interface IP Address to a different IP address or Address Object will not update a corresponding Service Route Source Address
+- You can configure IPv4, IPv6 and Destination Service Route
+- You chhose service and configure Source Interface and Source IP address
 - By default mgmt interface is used for all service communications: DNS, LDAP, updates...
 - It can be configured via any interface separatly for every service route
 - Can be configured per VSYS
 - By default VSYS inherits settings from global
+- You can select a virtual router for a service route in a virtual system; you cannot select the egress interface
+- Destination service routes are available under the Global tab only
+- You can use a destination service route to add a customized redirection of a service that is not supported on the customized list of services
+- A destination service route is a way to set up routing to override the FIB route table. Any settings in the destination service routes override the route table entries. They could be related or unrelated to any service
 
 ## Management Profiles
 
@@ -1818,6 +1868,7 @@ Follow logs
 
 - Attach the virtual disk, virtual CD-ROM, or storage bucket to the firewall
 - Firewall scans for a bootstrap package
+- Each time firewall boots from a factory default state, it checks for the presence of bootstrap volume
 - If one exists, the firewall uses the settings defined in the bootstrap package
 - If you have included a Panorama server IP address in the file, the firewall connects with Panorama. If the firewall has Internet connectivity, it contacts the licensing server to update the universally unique identifier (UUID) and obtain the license keys and subscriptions
 - If the firewall does not have internet connectivity, it either uses the license keys that you included in the bootstrap package or connects to Panorama, which retrieves the appropriate licenses and deploys them to the managed firewalls
@@ -1835,6 +1886,7 @@ Follow logs
     - Superuser
     - Superuser (read-only)
     - Panorama administrator
+- Only superuser dynamic roles can manage firewall admin accounts and create VSYS
 - Custom admin roles definition: After new features are added to the product, you must update the roles with corresponding access privileges
 - Panorama access domains control the access that device group and template administrators have to specific device groups (to manage policies and objects), to templates (to manage network and device settings), and to the web interface of managed firewalls (through context switching). You can define up to 4,000 access domains, and you can manage them locally or by using the RADIUS Vendor-Specific Attributes (VSAs), TACACS+ VSAs, or SAML attributes
 
@@ -1848,3 +1900,67 @@ Supported authentication types include the following:
 - RADIUS
 - LDAP
 - Local
+
+## DHCP
+
+### DHCP Relay
+
+- Network > DHCP > DHCP Relay
+- Maximum of eight external IPv4 DHCP servers and eight external IPv6 DHCP servers
+- A client sends a DHCPDISCOVER message to all configured servers
+- Firewall relays the DHCPOFFER message of the first server that responds back to the requesting client
+- You can add many DHCP relays
+- You configure interface where it will listen for requests + IPv4 Server addresses + IPv6 Server Addresses
+
+## SCEP
+
+- SCEP operation is dynamic in that the enterprise PKI generates a user-specific certificate when the SCEP client requests it and sends the certificate to the SCEP client
+- The SCEP client then transparently deploys the certificate to the client device
+- You can use a SCEP profile with GlobalProtect to assign user-specific client certificates to each GlobalProtect user
+- GlobalProtect portal acts as a SCEP client to the SCEP server in your enterprise PKI
+
+## Global Protect
+
+- By default, you can deploy the GlobalProtect portals and gateways (without HIP checks) without a license
+- If you want to use the advanced GlobalProtect features (HIP checks and related content updates, the GlobalProtect mobile app, IPv6 connections, or a GlobalProtect clientless VPN), you will need a GlobalProtect license (subscription) for each gateway
+- Clients: Windows, MacOS, Linux, iOS, and Android
+- Authentication methods
+    - Local authentication
+    - External authentication
+    - Client certificate authentication
+    - Two-factor authentication
+    - MFA for non-browser-based applications
+    - SSO
+- If a client configuration contains more than one gateway, the app attempts to connect to all the gateways listed in its client configuration
+- You can configure split tunnel traffic based on the access route, destination domain, application, and HTTP/HTTPS video streaming application
+- Split tunnel: Tunnel enterprise SaaS and public cloud applications for comprehensive SaaS application visibility and control, VoIP outside the tunnel, video streaming outside the tunnel
+- The split tunnel rules are applied for the Windows and macOS endpoints in the following order:
+    - Exclude based on the application process name
+    - Include based on the application process name
+    - Domains are excluded
+    - Domains are included
+    - Excluded or included based on the access route
+
+### Configuration workflow
+
+- GlobalProtect Portal
+- GlobalProtect Gateway
+
+### GlobalProtect Portal
+
+- Requires a Layer 3 or loopback interface for the GlobalProtect apps’ connection. If the portal and gateway are on the same firewall, they can use the same interface. The portal must be in a zone that is accessible from outside your network, such as a DMZ
+
+### GlobalProtect Gateway
+
+- The interface and zone requirements for the gateway depend on whether the gateway you are configuring is external or internal, as follows:
+    - External gateways—Requires a Layer 3 or loopback interface and a logical tunnel interface for the app to establish a connection. The Layer 3/loopback interface must be in an external zone, such as a DMZ. A tunnel interface can be in the same zone as the interface connecting to your internal resources (for example, trust). For added security and better visibility, you can create a separate zone, such as corp-vpn. If you create a separate zone for your tunnel interface, you must create security policies that enable traffic to flow between the VPN zone and the trust zone
+    - Internal gateways—Requires a Layer 3 or loopback interface in your trust zone. You can also create a tunnel interface for access to your internal gateways, but this is not required
+
+### HIP
+
+- HIP checks are performed when the app connects to the gateway
+- Subsequent checks are performed hourly
+- Only the latest HIP report is retained on the gateway per endpoint
+
+## Upgrade
+

@@ -9,6 +9,8 @@ In self-signed certificate all data in Subject Name is identical to all data in 
 
 ## OCSP
 
+## SCEP
+
 ## CRL
 
 ## CA
