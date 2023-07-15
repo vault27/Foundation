@@ -2034,3 +2034,13 @@ Supported authentication types include the following:
 
 ## Upgrade
 
+## Web proxy
+
+- Web proxy requires both a valid DNS Security license and the Prisma Access explicit proxy license
+- The web proxy supports two methods for routing traffic: Explicit Proxy, Transparent Proxy
+- The following platforms support web proxy: PA-1400, PA-3400, VM Series (with vCPUs), Panorama using PAN-OS 11.0
+- For the transparent proxy method, the request contains the destination IP address of the web server and the client browser is redirected to the proxy
+- Transparent proxy requires a loopback interface, User-ID configuration in the proxy zone, and specific Destination NAT (DNAT) rules. Transparent proxy does not support X-Authenticated-User (XAU)
+- For the explicit proxy method, the request contains the destination IP address of the configured proxy and the client browser sends requests to the proxy directly
+
+## SSL mirror
