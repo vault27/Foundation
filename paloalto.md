@@ -182,6 +182,7 @@ The Heatmap measures the adoption rate of the following Palo Alto Networks firew
 - Wildfire
 - IoT security
 - Autofocus
+- Threat Prevention- ? 
 
 ## IPv6 support
 
@@ -598,13 +599,22 @@ Platform in general:
 - We can send files via API
 - Updates every day, with Wildfire license 5 mins after appearing
 - Monitor > Logs > WildFire Submissions to see if any internal custom-built programs trigger WildFire signatures
+- WildFire can discover zero-day malware in web traffic (HTTP/HTTPS), email protocols (SMTP, IMAP, and POP), and FTP
+- WildFire cloud—global, regional, and private
+- As soon as the firewall downloads and installs the new signature, the firewall can block the files that contain that malware (or a variant of the malware). Malware signatures do not detect malicious and phishing links; to enforce these links, you must have a PAN-DB URL Filtering license
+- If not done already, enable the firewall to perform decryption and Forward Files for
+Advanced WildFire Analysis Select Device > Setup > Content-ID
 
 Verdicts
 
 - Benign
-- Grayware
+- Grayware - do not pose a direct security threat but might display otherwise obtrusive behavior. Grayware can include adware, spyware, and Browser Helper Objects (BHOs)
 - Phishing
 - Malicious
+
+File sizes
+
+
 
 ### DoS Protection
 
