@@ -105,6 +105,36 @@ The Heatmap measures the adoption rate of the following Palo Alto Networks firew
 - Content-ID
 - User-ID
 - Device-ID
+- Dynamic address groups, user groups, external lists
+
+## Architecture
+
+- Policies: Policies section - all about traffic control
+- Policies use objects and security profiles: Objects section - everything that is used in policies
+- Objects
+    - Addresses, Address groups, Dynamic Address groups
+    - Dynamic User Groups
+    - Applications, Application Groups, Application Filters
+    - Services, services groups
+    - Tags
+    - External Dynamic Lists
+- All about networks is in Network section
+    - Interfaces
+    - Zones
+    - VLANs
+    - Virtual wires
+    - Virtual routers
+    - IPSec tunnels
+    - GRE tunnels
+    - DHCP
+    - DNS proxy
+    - Global Protect
+    - QoS - apply QoS profile to interface
+    - LLDP - copy of CDP - status - enable
+    - Network Profiles: All profiles connected with network: IPSec Crypto, IKE crypto, Monitors, Interface Mgmt, Zone protection, QoS, LLDP, BFD, IKE gateways
+    - SD-WAN
+- All other infrastructure: Device Secion: Users, User-ID, Certificates, HA...
+
 
 ## Features
 
@@ -553,6 +583,29 @@ presented to the user. The user can click through the page to download the file.
 - WildFire typically renders a verdict on a file within 5 to 10 minutes of receipt
 - Wildfire never quarantine files
 
+Platform in general:
+
+- Sandboxing platform
+- Machine learning, static analysis, dynamic analiisis
+- Reporting
+- Integrates with firewalls, traps, Autofocus, unit 42 team, URL filtering
+- Spreads signatures to all platforms
+- Real Time updates for NGFW AV
+- WF-500 applicance can work alone - updated manually
+- Cloud query approach - samples do not leave the network
+- Hybrid approach
+- Integrated Logging, Reporting, and Forensics - via Panorama
+- We can send files via API
+- Updates every day, with Wildfire license 5 mins after appearing
+- Monitor > Logs > WildFire Submissions to see if any internal custom-built programs trigger WildFire signatures
+
+Verdicts
+
+- Benign
+- Grayware
+- Phishing
+- Malicious
+
 ### DoS Protection
 
 - In a profile you configure: Type, Flood protection, Resources protection
@@ -703,7 +756,7 @@ Decryption policy can apply to
 - POP3S
 - SMTPS
 - FTPS
-- SSH - inbound and outband
+- SSH - inbound and outbound - called SSH proxy
 
 SSH decryption does not require certificates  
   
@@ -725,7 +778,9 @@ Configuration:
 
 Palo Alto Networks provides a predefined SSL Decryption Exclusion list that excludes hosts with applications and services that are known to break decryption technically (pinned certificate, an incomplete certificate chain, unsupported ciphers, or mutual authentication) from SSL Decryption by default.  
 You can add more sites to this list. 
-Device > Certificate management > SSL Decryption Exclusion
+Device > Certificate management > SSL Decryption Exclusion  
+  
+Decryption can be performed only on the virtual wire, Layer 2, or Layer 3 interfaces
 
 ## Tags
 
@@ -1045,10 +1100,9 @@ U-Turn NAT - user connects to Internal resource via external IP address and it i
 - Port mapping - Microsoft Terminal Services - Citrix Environments - Palo Alto Networks Terminal Services agent - the source port of each client connection to map each user to a session. Linux terminal servers do not support the Terminal Services agent and must use the XML API to send user mapping information from login or logout events to User-ID
 - Syslog- The Windows-based User-ID agent and the PAN-OS integrated User-ID agent both use Syslog Parse Profiles to interpret login and logout event messages that are sent to syslog servers from the devices that authenticate users. Such devices include wireless controllers, 802.1x devices, Apple Open Directory servers, proxy servers, and other network access control devices
 - XFF headers - IP address of client in additional header
-- Authentication policy and Captive Portal - ny web traffic (HTTP or HTTPS) that matches an Authentication policy rule forces the user to authenticate via one of the following three Captive Portal authentication methods:ny web traffic (HTTP or HTTPS) that matches an Authentication policy rule forces the user to authenticate via one of the following three Captive Portal authentication methods:
+- Authentication policy and Captive Portal - any web traffic (HTTP or HTTPS) that matches an Authentication policy rule forces the user to authenticate via one of the following three Captive Portal authentication methods:
     - Browser challenge: Uses Kerberos or NT LAN Manager (NTLM)
-    - Web form: Uses multi-factor authentication (MFA), security assertion markup
-language (SAML) single sign-on (SSO), Kerberos, terminal access controller access control system plus (TACACS+), remote authentication dial-in user service (RADIUS), LDAP, or local authentications
+    - Web form: Uses multi-factor authentication (MFA), security assertion markup language (SAML) single sign-on (SSO), Kerberos, terminal access controller access control system plus (TACACS+), remote authentication dial-in user service (RADIUS), LDAP, or local authentications
     - Client CA
 - GlobalProtect
 - XML API
@@ -1103,7 +1157,7 @@ Configure User-ID Agent
 
 ### User-ID redistribution
 
-- If you configure an Authentication policy, you have to configure firewall to redistribute mappings + timestamps to other firewalls
+- If you configure an Authentication policy, you have to configure firewall to redistribute mappings + timestamps to other firewalls, time stamps are sent automatically, no additional configuration
 - In Device > Data Redistribution > Agents you can configure other Firewall, Panorama or Windows agent as agent
 - In Device > Data Redistribution > Collector Settings you can configure firewall as a redistribuion point for other firewalls and VSYSs
 - Connection to agent is done via pre-shared key
@@ -1113,6 +1167,26 @@ Configure User-ID Agent
     - HIP
     - Quarantine list
 - You can include/exclude networks for IP-Tag and IP-user in Device > Data Redistribution > Include/Exlcude networks, as I understand it is both for collector and client
+
+### Dynamic User Groups
+
+- Objects > Dynamic User Groups
+- For every group you create match criteria
+- Match criteria: AND OR statements + Tags
+- You click More and add users, for example from AD, connected to firewall
+- Earlier you could use only static user groups
+- You must commit firewall configuration after creating a DUG and adding it to a policy rule
+- You do not have to perform a commit when users are added to or removed from a DUG
+- User membership in a DUG is dynamic and controlled through the tagging and untagging of usernames
+- Usernames can also be tagged and untagged by using the auto-tagging feature in a Log Forwarding Profile
+- PAN-OS XML API commands to tag or untag usernames
+- Event in a log > log forwarding action assignes a tag to a user > User added to a DUG > User is blocked according to a policy
+- Auto-remediation in response to user behavior and activity
+- We can add tieme exiring tags, so in some time user left DUG
+- To dynamically register a tag with a username, you can use Panorama, the XML API, a remote User-ID agent, or the web interface (Objects > Dynamic User Groups and click more)
+- A firewall can forward the username and tag registration information to Panorama, and Panorama can distribute this information to the other firewalls
+- Another example: user goes to URL from anonymous-proxy category, URL filtering logs it and user added to Anonymous group
+
 
 ### Map users to groups via LDAP
 
@@ -1587,20 +1661,6 @@ Show system logs
 ```text
 show log system
 ```
-
-## Wildfire
-
-- Sandboxing platform
-- Machine learning, static analysis, dynamic analiisis
-- Reporting
-- Integrates with firewalls, traps, Autofocus, unit 42 team, URL filtering
-- Spreads signatures to all platforms
-- Real Time updates for NGFW AV
-- WF-500 applicance can work alone - updated manually
-- Cloud query approach - samples do not leave the network
-- Hybrid approach
-- Integrated Logging, Reporting, and Forensics - via Panorama
-- We can send files via API
 
 ## Site-to-Site tunnels
 
