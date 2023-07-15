@@ -614,7 +614,7 @@ Verdicts
 
 File sizes
 
-
+<img width="827" alt="image" src="https://github.com/philipp-ov/foundation/assets/116812447/9b8ad671-00d7-47e8-93f4-78e8e21b953f">
 
 ### DoS Protection
 
