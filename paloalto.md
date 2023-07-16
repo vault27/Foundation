@@ -186,6 +186,10 @@ The Heatmap measures the adoption rate of the following Palo Alto Networks firew
 
 ## IPv6 support
 
+- To enable IPv6 on firewall:
+    - Enable IPv6 on the interface
+    - Add IPv6 address
+    - Device > Setup > Session > Enable IPv6 firewalling
 - Neighbor Discovery (ND) is enhanced
 - The firewall by default runs NDP, which uses ICMPv6 packets to **discover and track the link-layer addresses** and status of neighbors on connected links
 - Provision the IPv6 hosts with the Recursive DNS Server (RDNSS) option and DNS Search List (DNSSL) option, per RFC 6106, IPv6 Router Advertisement Options for DNS Configuration
@@ -602,8 +606,10 @@ Platform in general:
 - WildFire can discover zero-day malware in web traffic (HTTP/HTTPS), email protocols (SMTP, IMAP, and POP), and FTP
 - WildFire cloud—global, regional, and private
 - As soon as the firewall downloads and installs the new signature, the firewall can block the files that contain that malware (or a variant of the malware). Malware signatures do not detect malicious and phishing links; to enforce these links, you must have a PAN-DB URL Filtering license
-- If not done already, enable the firewall to perform decryption and Forward Files for
-Advanced WildFire Analysis Select Device > Setup > Content-ID
+- If not done already, enable the firewall to perform decryption and Forward Files for Advanced WildFire Analysis Select Device > Setup > Content-ID
+- Wildfire check is skipped if: file is signed by a trusted signer, file has matched a previous submission, file larger than 50 mbs
+- WF-500 does not support bare-metal analysis - suspicious files are sent to a real, racked-and-stacked hardware environment where they are detonated, and any response is observed for malicious behavior
+- Wf-500 does not support apk, mac-os, linux, scripts, archives 
 
 Verdicts
 
@@ -673,6 +679,7 @@ Session end reasons
 - Use App-ID instead of service and protocols and port based
 - App-ID without decryption identifies application based on server certificate: CN field, if it is exact, then it will be google-base for example, if there is a wildcard, it will be SSL app
 - Application override - only for trusted traffic - create custom application based on zones, ips, ports... - used to decrease load on NGFW - it does not analyze App for certain traffic
+- To configure App override configure the following:
 - Create a custom app configuring its characteristics:
     - Charachteristics
     - Category and subcategory
@@ -680,9 +687,13 @@ Session end reasons
     - Timeout
     - Port
     - Signatures
+- Add rule to Override policy: Policies > Application Override > Specify source and destination of traffic + port and configure newly created App
+- Application Override bypasses App-ID (including threat and content inspection), create an Application Override policy for only the specific business-critical application, and specify sources and destinations to limit the rule
+- The exception to this is when you override to a pre-defined application that supports threat inspection
+- Application override - used for custom applications
 - Application groups for convenience
 - Application filters - they are dynamic - based on categories or tags
-- Dependenciescan be added to the same rule or other rule
+- Dependencie scan be added to the same rule or other rule
 
 Best pratice Moving from Port-Based to App-ID Security: set of rules that aligns with business goals, thus simplifying administration and reducing the chance of error
     - Assess your business and identify what you need to protect
@@ -694,6 +705,7 @@ Best pratice Moving from Port-Based to App-ID Security: set of rules that aligns
     - Define the initial internet gateway Security policy, Using the application and user group inventory
 
 App-ID database
+
 - Description
 - Depends on Applications
 - Category
@@ -704,6 +716,7 @@ App-ID database
 - Deny action 
 
 App-ID status in logs:
+
 - Icomplete - three-way TCP handshake did not complete OR no enough data after the handshake - is not really an application
 - Insufficient data - not enough data to identify the application - for example one data packet after the handshake
 - unknown-tcp - firewall captured the three-way TCP handshake, but the application was not identified - custom app, no signatures
@@ -1101,6 +1114,12 @@ Supported  Source NAT types:
 No NAT policy for exculsion  
 Use session browser to find NAT rule name  
 U-Turn NAT - user connects to Internal resource via external IP address and it is uturned on the firewall. Due to absence of internal DNS server for example. If we use regular Destination NAT for it, then traffic will be sent back to Internal network and web server will reply directly to client, causing assymetry. To avoid this Source NAT should be used as well, so the reply traffic will be sent to NGFW as well. Place the rule for it above all other
+
+Rule types:
+
+- ipv4
+- nat64
+- nptv6 - IPv6-to-IPv6 Network Prefix Translation 
 
 ## User-ID
 
@@ -2044,3 +2063,12 @@ Supported authentication types include the following:
 - For the explicit proxy method, the request contains the destination IP address of the configured proxy and the client browser sends requests to the proxy directly
 
 ## SSL mirror
+
+## Policy optimizer
+
+- Enable Policy Rule Hit Count
+- Policies > Security > Left Down part of screen
+- Rules without apps
+- Unused apps
+- Unused rules
+- App viewer
