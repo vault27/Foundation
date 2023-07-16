@@ -120,67 +120,6 @@ What you need to think through, when you design BGP network
 - Then they send UPDATE messages with next hop as themselfs. One packet can contain several UPDATE messages and even KEEPALIVE inside. UPDATE message contains PATH ATTRIBUTES: ORIGIN, AS_PATH, MP_REACH_NLRI
 - Only the following routes are sent: network command, redistribute command via route map of local addresses, redistribute from other protocols, routes received via BGP, nothing is sent by default
 
-## Address families
-
-- Originally, BGP was intended for routing of IPv4 prefixes
-- RFC 2858 added Multi-Protocol BGP (MP-BGP) capability by adding an extension called the address family identifier (AFI)
-- Address family shows particular network protocol, for example IPv4, IPv6
-- Additional granularity is provided through a subsequent address-family identifier (SAFI) such as unicast or multicast
-- MBGP achieves this separation by using the BGP path attributes (PAs) MP_REACH_NLRI and MP_UNREACH_NLRI
-- These attributes are carried inside BGP update messages and are used to carry network reachability information for different address families
-- Every address family maintains a separate database and configuration for each protocol (address family + sub-address family) in BGP.
-- BGP includes an AFI and SAFI with every route advertisement to differentiate between the AFI and SAFI databases
-
-## Capabilities
-
-## ASN
-
-- Can be 16 bit (2 bytes) and 32 bit (4 bytes)
-- 0 to 65535
-- Reserved: 0, 23456, 65535 - ?
-- Public: 1 - 64495, 65552 - 4 199 999 999
-- Private: 64512 - 65534, 4 200 000 000 - 4 294 967 294
-- Notation options: ASPLAIN 0 - 4 294 967 294, ASDOT 0 - 65535.65535
-- We can substitute AS number for particular neighbor. For example we can do it, when we connect VRFs in fabric via external Firewall and to avoid "allow as in" option we configure different ASNs for different VRFs to peer with firewall 
-
-## Injecting Routes/Prefixes
-
-- We configure summarization in address family section for Nexus and it works for all neighbors, we specify summarized prefix there wit as-set option and summer only, without summer only option it will advertise all prefixes plus summer
-- No auto-summary is the default
-- What networks are advertised by default? - none - only received via BGP
-- Network command: Look for a route in the router’s current IP routing table that **exactly** matches the parameters of the network command; if the IP route exists, put the equivalent NLRI into the local BGP table. With this logic, connected routes, static routes, or IGP routes could be taken from the IP routing table and placed into the BGP table for later advertisement. When the router removes that route from its IP routing table, BGP then removes the NLRI from the BGP table, and notifies neighbors that the route has been withdrawn. If auto-summary is enabled, then it matched all of its subnets
-- route-map can be used in network command to manipulate path attributes, including next hop
-
-## Summarization
-
-- In BGP world it is called aggegation - it is a whole world with attributes and rules
-- Conserve router resources
-- Accelerated best path calculation
-- Stability: hiding route flaps from downstream routes
-- Most service providers do not except prefixes larger then /24
-- Dynamic route summarization is done vian address-family command 
-    - aggregate-address network subnet-mask [summary-only] [as-set]
-- Example: 172.16.1.0/24, 172.16.2.0/24, 172.16.3.0/24 are aggregated with command: aggregate -address 172.16.0.0 255.255.240.0
-- This command will add to BGP table prefix 172.16.0.0/20 - but it will not delete smaller route
-- summer-only option suppresses the component network prefixes
-- Suppression - when BGP process does not advertise routes (fo example connected) because of aggregation
-- When new summary route is advertised it is advertised without any previous attributes or AS Path. It is sent as if an aggregating router is an originator of route: AS Path contains only AS of aggregating router
-- Atomic-aggregate Path Attribute is added by the aggregator and all other routers see in BGP table: aggregated by 65200 192.168.2.2 
-- Aggregated route appears in BGP table only after at least one viable component route enters BGP table, for example 172.16.1.0/24
-- After enabling aggregation BGP installs aggrgated route to RIB of originating router with gateway Null0 - it is called summary discard route it is created to avoid loops: to sum up agrregated route is in two tables: RIB and BGP, in BGP default route is 0.0.0.0 and in RIB NULL0
-- Component routes are still in BGP table but they have status - s -suppressed
-- If we configure summarization, for example two LANs connected to Leaf, and then if we disconnect one LAN, summerized route will continue propogating and everyone will consider this LAN available. Especially summarization is unacceptable on Spines. This is relevant only with "summer only" option
-
- ## Redistribution
-
- - When we configure redistribution from OSPF weight is 32768, Path is ?, Local Pref is not set by default, origin code is Incomplete - ?
-
-## Route maps
-
-- Route map can be added after network command and after neighbor command
-- network route-map command changes attrivutes before adding prefix to BGP table, except AS path
-- neighbor route-map in|out applies changes to updates, sent or received. It also acts as filter, it can drop update based on match
-
 ## Packet types
 
 - Open - negotiation parametres: BGP version, AS number, RID, Timers...
@@ -211,7 +150,6 @@ What you need to think through, when you design BGP network
  ```
 
 ## Neighbor states
-
 
 ## Path Attributes
 
@@ -245,11 +183,7 @@ Path attributes fall into four separate categories:
 
 - AGGREGATOR - When some routes are aggregated by an aggregator, the aggregator does attache its Router-ID to the aggregated route into the AGGREGATOR_ID attribute
 - COMMUNITIES
-  - no-expert
-  - no-advertise
-  - internet
-  - local-as
-
+ 
 ### Optional non transitive
 
 - ORIGINATOR_ID - new optional, non-transitive BGP attribute of Type code 9.  This attribute is 4 bytes long and it will be created by an RR in reflecting a route.  This attribute will carry the BGP Identifier of the originator of the route in the local AS
@@ -268,30 +202,6 @@ BGP Message
     Network Layer Reachability Information (NLRI):
         192.0.2.0/24
 ```
-
-## Best path selection
-
-**12 steps** 
-First nine are main  
-Remaining 3 are tiebreackers
-
-1. Is next hop reachable?
-2. Weight
-3. Local preference - is set when router receives a route. A higher value is a higher preference
-4. Locally injected routes - injected into BGP locally (using the network command, redistribution, or route summarization)
-5. AS PAth length
-6. Origin code, the less - the better
-7. MED
-8. Neighbor Type: Prefer external BGP (eBGP) routes over internal BGP (iBGP)
-9. IGP metric for reaching the NEXT_HOP, the lower the value, the better the route
-10. The oldest path
-11. Smallest RID
-12. Smallest neighbor ID
-
-The decision for eBGP routes can reach Step 11 if at Step 10 the formerly best route fails and BGP is comparing two other alternate routes.  
-- If the best path for an NLRI is determined in Steps 1 through 9, BGP adds only one BGP route to the IP routing table—the best route, of course
-- If the best path for an NLRI is determined after Step 9, BGP considers placing mul- tiple BGP routes into the IP routing table
-- Even if multiple BGP routes are added to the IP routing table, BGP still chooses only one route per NLRI as the best route; that best route is the only route to that NLRI that BGP will advertise to neighbors
 
 ## Communities
 
@@ -388,6 +298,100 @@ GSHUT Community
 - Similar to IS-IS Overload or OSPF Max Metric LSA
 - Introduce on Cisco IOS XE Release 3.6S
 
+## Best path selection
+
+**12 steps** 
+
+First nine are main  
+Remaining 3 are tiebreackers
+
+1. Is next hop reachable?
+2. Weight
+3. Local preference - is set when router receives a route. A higher value is a higher preference
+4. Locally injected routes - injected into BGP locally (using the network command, redistribution, or route summarization)
+5. AS PAth length
+6. Origin code, the less - the better
+7. MED
+8. Neighbor Type: Prefer external BGP (eBGP) routes over internal BGP (iBGP)
+9. IGP metric for reaching the NEXT_HOP, the lower the value, the better the route
+10. The oldest path
+11. Smallest RID
+12. Smallest neighbor ID
+
+The decision for eBGP routes can reach Step 11 if at Step 10 the formerly best route fails and BGP is comparing two other alternate routes.  
+- If the best path for an NLRI is determined in Steps 1 through 9, BGP adds only one BGP route to the IP routing table—the best route, of course
+- If the best path for an NLRI is determined after Step 9, BGP considers placing mul- tiple BGP routes into the IP routing table
+- Even if multiple BGP routes are added to the IP routing table, BGP still chooses only one route per NLRI as the best route; that best route is the only route to that NLRI that BGP will advertise to neighbors
+
+Community based local preference:  
+
+- They are used for inbound traffic engineering. 
+- Some transit providers allow their customers to influence the local preference in the transit network through the use of BGP communities
+- For example community 174:10 means local preference 10
+
+## Address families
+
+- Originally, BGP was intended for routing of IPv4 prefixes
+- RFC 2858 added Multi-Protocol BGP (MP-BGP) capability by adding an extension called the address family identifier (AFI)
+- Address family shows particular network protocol, for example IPv4, IPv6
+- Additional granularity is provided through a subsequent address-family identifier (SAFI) such as unicast or multicast
+- MBGP achieves this separation by using the BGP path attributes (PAs) MP_REACH_NLRI and MP_UNREACH_NLRI
+- These attributes are carried inside BGP update messages and are used to carry network reachability information for different address families
+- Every address family maintains a separate database and configuration for each protocol (address family + sub-address family) in BGP.
+- BGP includes an AFI and SAFI with every route advertisement to differentiate between the AFI and SAFI databases
+
+## Capabilities
+
+## ASN
+
+- Can be 16 bit (2 bytes) and 32 bit (4 bytes)
+- 0 to 65535
+- Reserved: 0, 23456, 65535 - ?
+- Public: 1 - 64495, 65552 - 4 199 999 999
+- Private: 64512 - 65534, 4 200 000 000 - 4 294 967 294
+- Notation options: ASPLAIN 0 - 4 294 967 294, ASDOT 0 - 65535.65535
+- We can substitute AS number for particular neighbor. For example we can do it, when we connect VRFs in fabric via external Firewall and to avoid "allow as in" option we configure different ASNs for different VRFs to peer with firewall 
+
+## Injecting Routes/Prefixes
+
+- We configure summarization in address family section for Nexus and it works for all neighbors, we specify summarized prefix there wit as-set option and summer only, without summer only option it will advertise all prefixes plus summer
+- No auto-summary is the default
+- What networks are advertised by default? - none - only received via BGP
+- Network command: Look for a route in the router’s current IP routing table that **exactly** matches the parameters of the network command; if the IP route exists, put the equivalent NLRI into the local BGP table. With this logic, connected routes, static routes, or IGP routes could be taken from the IP routing table and placed into the BGP table for later advertisement. When the router removes that route from its IP routing table, BGP then removes the NLRI from the BGP table, and notifies neighbors that the route has been withdrawn. If auto-summary is enabled, then it matched all of its subnets
+- route-map can be used in network command to manipulate path attributes, including next hop
+
+## Summarization
+
+- In BGP world it is called aggegation - it is a whole world with attributes and rules
+- Conserve router resources
+- Accelerated best path calculation
+- Stability: hiding route flaps from downstream routes
+- Most service providers do not except prefixes larger then /24
+- Dynamic route summarization is done vian address-family command 
+    - aggregate-address network subnet-mask [summary-only] [as-set]
+- Example: 172.16.1.0/24, 172.16.2.0/24, 172.16.3.0/24 are aggregated with command: aggregate -address 172.16.0.0 255.255.240.0
+- This command will add to BGP table prefix 172.16.0.0/20 - but it will not delete smaller route
+- summer-only option suppresses the component network prefixes
+- Suppression - when BGP process does not advertise routes (fo example connected) because of aggregation
+- When new summary route is advertised it is advertised without any previous attributes or AS Path. It is sent as if an aggregating router is an originator of route: AS Path contains only AS of aggregating router
+- Atomic-aggregate and Aggregator Path Attributes is added by the aggregator and all other routers see in BGP table: aggregated by 65200 192.168.2.2 
+- Aggregated route appears in BGP table only after at least one viable component route enters BGP table, for example 172.16.1.0/24
+- After enabling aggregation BGP installs aggrgated route to RIB of originating router with gateway Null0 - it is called summary discard route it is created to avoid loops
+- Loops explanation: R1 aggregates 192.168.1.0/24 and 192.168.2.0/24 and sends to everyone 192.168.0.0/16. After this it gets a packet with destination 192.168.3.1 - it does not know about this network - and what it does? It sends it to default gateway! - Bad! And if summary discard route is installed this packaet will be silently dropped :)
+- To sum up agrregated route is in two tables: RIB and BGP, in BGP default route is 0.0.0.0 and in RIB NULL0
+- Component routes are still in BGP table but they have status - s -suppressed
+- If we configure summarization, for example two LANs connected to Leaf, and then if we disconnect one LAN, summerized route will continue propogating and everyone will consider this LAN available. Especially summarization is unacceptable on Spines. This is relevant only with "summer only" option
+
+ ## Redistribution
+
+ - When we configure redistribution from OSPF weight is 32768, Path is ?, Local Pref is not set by default, origin code is Incomplete - ?
+
+## Route maps
+
+- Route map can be added after network command and after neighbor command
+- network route-map command changes attrivutes before adding prefix to BGP table, except AS path
+- neighbor route-map in|out applies changes to updates, sent or received. It also acts as filter, it can drop update based on match
+
 ## Timers
 
 - Advertisment interval - default eBGP 30 sec, iBGP 0 sec - 0 secs for Clos - send updates immediately after receiving
@@ -396,11 +400,6 @@ GSHUT Community
 - Connect - default 30 sec - reconnect interval on Nexus - 12 sec for CLOS - interval after which a dropped BGP connection can automatically reconnect
 - BFD - Tx/Rx 100 ms x 3 - for CLOS
 - MicroBFD if LAG is used - for CLOS
-
-## Community based local preference
-
-They are used for inbound traffic engineering. Some transit providers allow their customers to influence the local preference in the transit network through the use of BGP communities.  
-For example community 174:10 means local preference 10
 
 ## Graceful restart and shutdown
 
@@ -473,7 +472,6 @@ Don't use or advertise the route/s learned via an iBGP neighbor to an eBG neighb
 - It is configured for address family in VRF: import command sets which routes to import from global VPNv4 BGP table and export command sets which RT to set to routes which are exported
 - Term export to mean “redistribute out of the VRF into BGP” and the term import to mean “redistribute into the VRF from BGP.”
 - During import we may decrease routes priority by decreasing local preference or weight (these attributes are local and will not leave AS) with route map after import command
-
 - Type 2 - MAC/IP advertisment route
 
 
