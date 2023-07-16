@@ -29,18 +29,21 @@
   - Route target
 - MP-BGP: MPLS L3VPN, EVPN, IPv6
   - Route distinguisher
-- iBGP
+- eBGP and iBGP
+- iBGP - shares only once to iBGP
   - Full mesh
   - Route reflector
     - Route reflector cluster
     - Virtual route reflector
   - Confiderations
   - IGP recursion
+- eBGP - TTL 1
 
 ## Concepts
 
 - Routing protocol that is used to exchange network layer reachability information (NLRI) between routing domains
 - Path vector routing protocol
+- 2 BGP processes with different AS on one router - ?
 - BGP is not a routing protocol: BGP is an application used to exchange NLRI, IPv4, IPv6, l2vpn, VPnv4...All data in a packet is presented in the form of Path attributes, all these make it very flexible
 - For different addresses different AFI/SAFI numbers are used
 - IPV4 NLRI contains..
@@ -99,7 +102,7 @@ What you need to think through, when you design BGP network
 
 - ASN numbering to exclude path hunting: Spines have the same AS
 - Multipath
-- One BGP session for multiple address families
+- One BGP session for multiple address families - !!!!!!!!!
 - Aggressive timers: Hold - 9, Hello - 3, reconnect - 12
 - BFD
 - Route maps to propogate local prefixes - ?
@@ -110,7 +113,7 @@ What you need to think through, when you design BGP network
 - Redistribute only networks connected to Leafs, looopbacks for instance
 - On Spines we configure dynamic neighboring using peer filter, where we configure which AS we accept from leafs, and listen command to specify networks on which we listen for BGP connections. Listen command is a passive mode. Leafs cannot be configured in this mode, they should be active. Listen command specifies which networks to listen, to which peer group place these neighbores and which AS accept
 
-## Operations
+## Operations workflow
 
 - If everything is fine, only keepalives are sent, nothing inside them
 - When connection starts, routers send OPEN messages with AS number, router id and capabilities list
@@ -140,14 +143,33 @@ What you need to think through, when you design BGP network
 - Notation options: ASPLAIN 0 - 4 294 967 294, ASDOT 0 - 65535.65535
 - We can substitute AS number for particular neighbor. For example we can do it, when we connect VRFs in fabric via external Firewall and to avoid "allow as in" option we configure different ASNs for different VRFs to peer with firewall 
 
-## Injecting Routes/Prefixes,Summarization
+## Injecting Routes/Prefixes
 
-- If we configure summarization, for example two LANs connected to Leaf, and then if we disconnect one LAN, summerized route will continue propogating and everyone will consider this LAN available. Especially summarization is unacceptable on Spines. This is relevant only with "summer only" option
 - We configure summarization in address family section for Nexus and it works for all neighbors, we specify summarized prefix there wit as-set option and summer only, without summer only option it will advertise all prefixes plus summer
 - No auto-summary is the default
 - What networks are advertised by default? - none - only received via BGP
 - Network command: Look for a route in the router’s current IP routing table that **exactly** matches the parameters of the network command; if the IP route exists, put the equivalent NLRI into the local BGP table. With this logic, connected routes, static routes, or IGP routes could be taken from the IP routing table and placed into the BGP table for later advertisement. When the router removes that route from its IP routing table, BGP then removes the NLRI from the BGP table, and notifies neighbors that the route has been withdrawn. If auto-summary is enabled, then it matched all of its subnets
 - route-map can be used in network command to manipulate path attributes, including next hop
+
+## Summarization
+
+- In BGP world it is called aggegation - it is a whole world with attributes and rules
+- Conserve router resources
+- Accelerated best path calculation
+- Stability: hiding route flaps from downstream routes
+- Most service providers do not except prefixes larger then /24
+- Dynamic route summarization is done vian address-family command 
+    - aggregate-address network subnet-mask [summary-only] [as-set]
+- Example: 172.16.1.0/24, 172.16.2.0/24, 172.16.3.0/24 are aggregated with command: aggregate -address 172.16.0.0 255.255.240.0
+- This command will add to BGP table prefix 172.16.0.0/20 - but it will not delete smaller route
+- summer-only option suppresses the component network prefixes
+- Suppression - when BGP process does not advertise routes (fo example connected) because of aggregation
+- When new summary route is advertised it is advertised without any previous attributes or AS Path. It is sent as if an aggregating router is an originator of route: AS Path contains only AS of aggregating router
+- Atomic-aggregate Path Attribute is added by the aggregator and all other routers see in BGP table: aggregated by 65200 192.168.2.2 
+- Aggregated route appears in BGP table only after at least one viable component route enters BGP table, for example 172.16.1.0/24
+- After enabling aggregation BGP installs aggrgated route to RIB of originating router with gateway Null0 - it is called summary discard route it is created to avoid loops: to sum up agrregated route is in two tables: RIB and BGP, in BGP default route is 0.0.0.0 and in RIB NULL0
+- Component routes are still in BGP table but they have status - s -suppressed
+- If we configure summarization, for example two LANs connected to Leaf, and then if we disconnect one LAN, summerized route will continue propogating and everyone will consider this LAN available. Especially summarization is unacceptable on Spines. This is relevant only with "summer only" option
 
  ## Redistribution
 
@@ -191,16 +213,19 @@ What you need to think through, when you design BGP network
 ## Neighbor states
 
 
-## Attributes
+## Path Attributes
 
 <img width="671" alt="image" src="https://github.com/philipp-ov/foundation/assets/116812447/c5e511a8-6318-4367-9c34-3bacd0ffa26c">
 
+10 attributes in total! 
+Only 3 are absolutely mandatory!   
+
 Path attributes fall into four separate categories:
 
-1. Well-known mandatory - The PA must be in every BGP Update, all devices have to support it
-2. Well-known discretionary - he PA is not required in every BGP Update, all devices have to support it: ATOMIC_AGGREGATE
-3. Optional transitive - not all have to support it, the router should silently forward the PA to other routers without needing to consider the meaning of the PA
-4. Optional non-transitive - not all have to support it, the router should remove the PA so that it is not propagated to any peers
+- Well-known mandatory - The PA must be in every BGP Update, all devices have to support it
+- Well-known discretionary - he PA is not required in every BGP Update, all devices have to support it
+- Optional transitive - not all have to support it, the router should silently forward the PA to other routers without needing to consider the meaning of the PA
+- Optional non-transitive - not all have to support it, the router should remove the PA so that it is not propagated to any peers
 
 ### Well-known mandatory
 
@@ -214,11 +239,11 @@ Path attributes fall into four separate categories:
 ### Well-known disretionary
 
 - Local Preference - used only in iBGP, used to show the best exit from AS, the higher the better route, default - 100. Default value exists only for routes, which originate from this router and with in AS, if router is received from different AS, local preference is empty
-- ATOMIC_AGGREGATE
+- ATOMIC_AGGREGATE - The purpose of the attribute is to alert BGP speakers along the path that some information have been lost due to the route aggregation process and that the aggregate path might not be the best path to the destination
 
 ### Optional transitive
 
-- AGGREGATOR
+- AGGREGATOR - When some routes are aggregated by an aggregator, the aggregator does attache its Router-ID to the aggregated route into the AGGREGATOR_ID attribute
 - COMMUNITIES
   - no-expert
   - no-advertise
@@ -227,8 +252,8 @@ Path attributes fall into four separate categories:
 
 ### Optional non transitive
 
-- ORIGINATOR_ID
-- CLUSTER_LIST
+- ORIGINATOR_ID - new optional, non-transitive BGP attribute of Type code 9.  This attribute is 4 bytes long and it will be created by an RR in reflecting a route.  This attribute will carry the BGP Identifier of the originator of the route in the local AS
+- CLUSTER_LIST - is a new, optional, non-transitive BGP attribute of Type code 10.  It is a sequence of CLUSTER_ID values representing the reflection path that the route has passed. When an RR reflects a route, it MUST prepend the local CLUSTER_ID to the CLUSTER_LIST.  If the CLUSTER_LIST is empty, it MUST create a new one.  Using this attribute an RR can identify if the routing information has looped back to the same cluster due to misconfiguration.  If the local CLUSTER_ID is found in the CLUSTER_LIST, the advertisement received SHOULD be ignored - to put it simple - all RRs, via which route passed, should be on this list
 - Multi Exit Discriminator (MED) - suggestion to other directly connected networks on which path should be taken if multiple options are available, and the lowest value wins. Transfered from iBGP to eBGP. allow routers in one AS to tell routers in a neighboring AS how good a particular route is. We send a route with lower MED, and this route becomes preferable
 
 ```
