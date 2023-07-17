@@ -118,6 +118,8 @@ https://datatracker.ietf.org/doc/html/draft-beaulieu-ike-xauth-02
 - Transport mode
 - Tunnel mode
 
+<img width="1151" alt="image" src="https://github.com/philipp-ov/foundation/assets/116812447/dd8e9064-7dde-478f-906f-48ef43077b04">
+
 ### Transport mode
 
 - Transport mode is practically never used, only when 2 firewalls communicate only with each other
