@@ -373,8 +373,7 @@ router ospf 10
 
 ## Loopback intefaces
 
-OSPF treats Loopback interfaces as STUB NETWORKS and advertise them as HOST ROUTES (with mask /32) regardless of their configured/native mask. According to RFC 2328, Host routes are considered to be subnets whose mask is "all ones (0xffffffff)".  
-A router with one loopback interface generates a router-LSA with Type-1 link (stub network).
+OSPF treats Loopback interfaces as STUB NETWORKS and advertise them as HOST ROUTES (with mask /32) regardless of their configured/native mask. According to RFC 2328, Host routes are considered to be subnets whose mask is "all ones (0xffffffff)".A router with one loopback interface generates a router-LSA with Type-1 link (stub network).
 
 ## LSA
 
@@ -387,7 +386,7 @@ LSA types:
 
 - 1 - Router LSA
 - 2 - Network
-- 3 - Net Summary - Created by ABR, represent subnets listed in one's area LSA 1 and 2 to advertise to another area. Defines links(subnets) and costs , but no topology, goes between areas. We see them as “OIA” routes.
+- 3 - Net Summary - Created by ABR, represent subnets listed in one's area LSA 1 and 2 to advertise to another area. Defines links(subnets) and costs, but no topology, goes between areas. We see them as “OIA” routes.
 - 4 - ASBR Summary - The same as LSA 3, but how to reach ASBR router
 - 5 - AS external - created by ASBRs. They are used to propogate external routes - routes, which are redistributed from other protocols or other OSPF process
 - 6 - Group membership, defined for MOSPF, not supported by Cisco IOS

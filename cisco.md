@@ -2,6 +2,35 @@
 
 ## Portfolio
 
+- Management platforms
+    - Meraki Dashboard
+    - DNA center
+- Access Switches
+    - Catalyst 9000 series
+    - Meraki MS switches
+    - Catalyst 1000 Series
+    - Catalyst PON Series
+- Routers
+    - Catalyst 8000 series
+    - Catalyst 8000V
+    - ISR
+    - ASR
+    - NCS
+    - 88 platform
+    - CSR 1000v
+    - Meraki MX
+- Umbrella
+- Webex
+- SD-WAN - Viptella
+
+## Documentation
+
+- Configuration guides in Support >  Cisco IOS and NX-OS Software > Version
+- Technology support page Support > Technology: https://www.cisco.com/c/en/us/tech/index.html
+
+
+## Portfolio
+
 ## IOS
 
 - Monolithic operating system running directly on the hardware

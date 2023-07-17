@@ -190,6 +190,13 @@ Path attributes fall into four separate categories:
 - CLUSTER_LIST - is a new, optional, non-transitive BGP attribute of Type code 10.  It is a sequence of CLUSTER_ID values representing the reflection path that the route has passed. When an RR reflects a route, it MUST prepend the local CLUSTER_ID to the CLUSTER_LIST.  If the CLUSTER_LIST is empty, it MUST create a new one.  Using this attribute an RR can identify if the routing information has looped back to the same cluster due to misconfiguration.  If the local CLUSTER_ID is found in the CLUSTER_LIST, the advertisement received SHOULD be ignored - to put it simple - all RRs, via which route passed, should be on this list
 - Multi Exit Discriminator (MED) - suggestion to other directly connected networks on which path should be taken if multiple options are available, and the lowest value wins. Transfered from iBGP to eBGP. allow routers in one AS to tell routers in a neighboring AS how good a particular route is. We send a route with lower MED, and this route becomes preferable
 
+### Weight
+
+- Only for Cisco
+- Checked in the first place
+- Set for a neighbor or via route map for particular matches
+- The higher - ther better!
+
 ```
 BGP Message
     Type: UPDATE Message
@@ -593,6 +600,7 @@ This is one if iBGP scaling techniques
 - Next-hop, Local-Pref, and MED are kept across Sub-AS eBGP peerings
 - BGP Confederation Loop Prevention: AS CONFED SEQUENCE, AS CONFED SET, these attributes never leave the confederation
 
+
 ### Configuration overview
 
 - Enable router process with AS number - the same on all routers
@@ -654,6 +662,18 @@ This is one if iBGP scaling techniques
 - BGP collectors - collects data from many locations by establishing BGP sessions with many routers around the world. Collectors make dumps periodically: full view and updates, we can download them as gzip archives and open with bgpdump - int his dump we see date, time, router IP, AS_PATH - we can grep prefix
     - RIPEstat - you enter prefix - and get detailed data
 - Real time BGP monitoring - many open source projects
+
+## BGP Route Dampening
+
+- Route dampening is designed to minimize the propagation of flapping routes across an internetwork
+- A route is considered to be flapping when its availability alternates repeatedly
+- Cnfiguration
+
+```
+router bgp as-number
+address-family ipv4 [unicast | multicast | vrf vrf-name ]
+bgp dampening [half-life reuse suppress max-suppress-time ] [route-map map-name ]
+```
 
 ## Configuration
 
