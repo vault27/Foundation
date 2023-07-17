@@ -599,7 +599,9 @@ This is one if iBGP scaling techniques
 - Next-hop self on border routers
 - Next-hop, Local-Pref, and MED are kept across Sub-AS eBGP peerings
 - BGP Confederation Loop Prevention: AS CONFED SEQUENCE, AS CONFED SET, these attributes never leave the confederation
+- Any router in confederation in any sub-AS can form EBGP neighborship with external AS routers
 
+  <img width="856" alt="image" src="https://github.com/philipp-ov/foundation/assets/116812447/a77966f2-0f16-4a17-9c12-e7b121f45da6">
 
 ### Configuration overview
 
