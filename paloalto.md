@@ -1,5 +1,15 @@
 # Palo Alto
 
+## Data Sources
+
+- https://docs.paloaltonetworks.com - all docs in one place
+- https://knowledgebase.paloaltonetworks.com - all difficult questions
+- https://applipedia.paloaltonetworks.com - all information about Apps
+- https://beacon.paloaltonetworks.com - learning center Beacon
+- https://live.paloaltonetworks.com - community, ask your questions
+- https://security.paloaltonetworks.com - Security Advisories
+- Mastering Palo Alto Networks: Build, configure, and deploy network solutions for your infrastructure using features of PAN-OS, 2nd Edition
+
 ## Portfolio
 
 - Strata - Enterprise Security
@@ -135,7 +145,6 @@ The Heatmap measures the adoption rate of the following Palo Alto Networks firew
     - SD-WAN
 - All other infrastructure: Device Secion: Users, User-ID, Certificates, HA...
 
-
 ## Features
 
 - The Palo Alto Networks firewall was designed to use an efficient system known as next-generation processing. Next-generation processing enables packet evaluation, application identification, policy decisions, and content scanning in a single, efficient processing pass - Single Pass Architecture
@@ -171,18 +180,27 @@ The Heatmap measures the adoption rate of the following Palo Alto Networks firew
 - XML API
 - Device ID
 
-## Licenses
+## Subscriptions
 
-- Advanced Threat Protection
-- Advanced URL filtering
-- Global Protect
-- Web Proxy
-- DNS Security
+15 in Total
+
+- URL Filtering
+- Advanced URL filtering - cloud-based ML-powered web security engine to perform ML-based inspection of web traffic in real-time
+- SD-WAN - Panorama + Centralized configuration management, Automatic VPN topology creation, Traffic distribution,Monitoring and troubleshooting
+- Global Protect - By default, you can deploy GlobalProtect portals and gateways (without HIP checks) without a license - HIP checks and related content updates, the GlobalProtect Mobile App, IPv6 connections, or a GlobalProtect Clientless VPN
+- Web Proxy - ?
+- DNS Security - DNS sinkholing capabilities by querying DNS Security, cloud-based service, Threat Prevention license is prerequisite
 - Support
-- Wildfire
-- IoT security
-- Autofocus
-- Threat Prevention- ? 
+- Wildfire - more frequent updates, advanced file type forwarding (APK, PDF, Microsoft Office, and Java Applet), WF-500
+- Advanced Wildfire - access to Intelligent Run-time Memory Analysis: a cloud-based advanced analysis engine that complements static and dynamic analysis, to detect and prevent evasive malware threats
+- IoT security - Internet of Things - discover and maintain a real-time inventory of the IoT devices. automatic generation of policy recommendations to control IoT device traffic, as well as the automatic creation of IoT device attributes for use in firewall policies
+- Autofocus - graphical analysis of firewall traffic logs and identifies potential risks to your network using threat intelligence from the AutoFocus portal
+- Threat Prevention - Antivirus, anti-spyware (command-and-control), and vulnerability protection + basic WildFire
+- Advanced Threat Protection - Threat Prevention + inline cloud-based threat detection and prevention engine
+- Cortex Data Lake - cloud-based, centralized log storage and aggregation
+- Virtual Systems - perpetual license - on PA-3200 - increase the number of virtual systems beyond the base number
+- Enterprise Data Loss Prevention (DLP) - cloud-based protection against unauthorized access, misuse, extraction, and sharing of sensitive information
+- SaaS Security Inline - works with Cortex Data Lake to discover all of the SaaS applications in use on your network
 
 ## IPv6 support
 
@@ -252,7 +270,40 @@ Data plane:
 - NAT
 - Flow control
 
-## Zones
+## Configuration management
+
+- Firewall settings are stored in the XML configuration files that can be archived, restored, and managed
+- A firewall contains both a running configuration that contains all of the settings that are currently active and a candidate configuration
+- The candidate configuration is a copy of the running configuration, which also includes any settings changes that are not yet committed
+- Changes made using the management web interface, the CLI, or the XML API are staged in the candidate until you perform commit
+- During a commit operation, the candidate configuration replaces the running configuration
+- When Panorama has a management relationship with a firewall, Panorama can obtain copies of both Panorama-managed and locally managed configurations
+- After a commit on a local firewall that runs PAN-OS 5.0 or later, a backup is sent of the running configuration to Panorama
+- By default, Panorama stores up to 100 backups for each firewall although this is configurable
+- To store Panorama and firewall configuration backups on an external host, you can schedule exports from Panorama or complete an export on demand
+- The saved configuration files can be restored to the firewall at any time by an administrator by using the Panorama > Managed Devices > Summary
+- You can save configuration and you can commit it
+- You can save changes only by me or you can save changes by everyone
+- You can commit omly be or by everyone
+- You can validate commit
+- You may preview all the changes
+- You may see the changes summary
+- It is recomended to save and backup the running configuration before making any changes
+- The new versions of the running config are generated every time you make a change or click Commit
+-  Revert to last saved config restores the config from .snapshot.xml file - The current candidate configuration is overwritten
+- Revert to running config restores the config from running-config.xml file - The current running configuration is overridden
+- Save named configuration snapshot option saves the candidate configuration to a file - does not override running config - You can either enter a file name or select an existing file to be overwritten. Note that the current active configuration file (running-config.xml) cannot be overwritten
+- Save candidate config - Saves the candidate configuration in flash memory (same as clicking Save at the top of the page)
+- Load named configuration snapshot - Loads a candidate configuration from the active configuration (running-config.xml) or from a previously imported or saved configuration. Select the configuration file to be loaded. The current candidate configuration is overwritten
+- Load configuration version - Loads a specified version of the configuration
+- Export named configuration snapshot - Exports the active configuration (running-config.xml) or a previously saved or imported configuration - you will get a very large XML file
+- Export configuration version - choose among auto saved configurations
+- Import named config snapshot - Imports a configuration file from any network location
+- Import device state (firewall only) - Import the device state information that was exported using the Export device state option. This includes the current running config, Panorama templates, and shared policies. If the device is a Global Protect Portal, the export includes the Certificate Authority (CA) information and the list of satellite devices and their authentication information
+
+## Network
+
+### Zones
 
 Firewall types
 
@@ -324,7 +375,7 @@ Floods:
 - SYN Cookies is more resource-intensive
 - Monitor the firewall, and if SYN Cookies consumes too many resources, switch to RED
 
-## Interfaces
+### Interfaces
 
 - L2
 - L3: IP address, zone, virtual router
@@ -342,6 +393,98 @@ Floods:
 - Decrypt mirror interfaces - routing of copied decrypted traffic through an external interface to another system, such as a data loss prevention (DLP) service
 - VLAN interface
 - SD-WAN - ?
+
+### Routing
+
+- All ingress traffic goes to firewall itself or virtual router object, vlan object or virtual wire object
+- Legacy virtual routers: RIP, OSPF, OSPFv3, BGP, multicast, static routes, redistribution, administrative distances
+- Advanced Route Engine of virtual routers supports the Border Gateway Protocol (BGP) dynamic routing protocol and static routes, can be only one - for large data centers, enterprises, ISPs, and cloud services
+- IPsec tunnels are considered Layer 3 traffic segments for implementation purposes and are handled by virtual routers like any other network segments. Forwarding decisions are made by destination address, not by VPN policy
+- There are limitations for the number of entries in the forwarding tables (forwarding information bases [FIBs]) and the routing tables (routing information bases [RIBs]) in either routing engine
+- Lower administrative distanse is prefered
+- ECMP: 4 routes max: no need to wait for RIB recalculation, load balancing, all links load
+- Route monitoring
+- PBF 
+- Application-specific rules are not recommended for use with PBF because PBF rules might be applied before the firewall has determined the application
+- Virtual routers can route to other virtual routers within the same firewall
+- Each Layer 3 Ethernet, loopback, VLAN, and tunnel interface defined on the firewall must be associated with a virtual router
+- Each model supporting a different maximum of virtual routers
+
+### NAT
+
+Separate policy. Regulated by:
+- Zones
+- Interfaces
+- IP addresses
+- App services - ports
+
+First matched ruled is applied  
+The advantage of specifying the interface in the NAT rule is that the NAT rule is automatically updated to use any address subsequently acquired by the interface.  
+
+Supported  Source NAT types:
+- Static IP
+- Dynamic IP and port
+- Dynamic IP
+
+No NAT policy for exculsion  
+Use session browser to find NAT rule name  
+U-Turn NAT - user connects to Internal resource via external IP address and it is uturned on the firewall. Due to absence of internal DNS server for example. If we use regular Destination NAT for it, then traffic will be sent back to Internal network and web server will reply directly to client, causing assymetry. To avoid this Source NAT should be used as well, so the reply traffic will be sent to NGFW as well. Place the rule for it above all other
+
+Rule types:
+
+- ipv4
+- nat64
+- nptv6 - IPv6-to-IPv6 Network Prefix Translation 
+
+### QoS
+
+QoS is enforced on traffic as it egresses the firewall   
+  
+Unclassified traffic enters firewall > **QoS Policy** assignes **class** to traffic > **QoS Profile** on Egress interface prioritizes traffic accorsing to **QoS class**  
+
+You can also mark traffic in a security policy - in a security rule  
+Enables the firewall to mark traffic with the same DSCP value that was detected at the beginning of a session (in this example, the firewall would mark return traffic with the DSCP AF11 value). While configuring QoS allows you to shape traffic as it egresses the firewall, enabling this option in a Security rule allows the other network devices intermediate to the firewall and the client to continue to enforce priority for DSCP-marked traffic  
+
+- Self-contained system local to the firewall
+- Can consider existing QoS packet markings but does not act directly on them
+- Ingress traffic cannot be managed
+- QoS profile - matching traffic is then shaped based on the QoS profile class settings as it exits the physical interface. Each QoS profile rule allows you to configure individual bandwidth and priority settings for up to eight QoS classes, as well as the total bandwidth allowed for the eight classes combined. In every profile you configure priorities for every class. Then you apply a profile to an interface.
+- QoS policy - define traffic you want to receive QoS treatment and assign that traffic a QoS class. QoS policy rule is applied to traffic after the firewall has enforced all other security policy rules, including Network Address Translation (NAT) rules.
+- QoS egress interface - this is where you apply QoS profile. If you limit Youtube then Egress interface is Internal interface of FW. You apply it in separate section Network > QoS
+- DSCP classification allows you to both honor DSCP values for incoming traffic and mark a session with a DSCP value as session traffic exits the firewall
+
+### QoS policy
+
+Policies > QoS  
+Define a QoS policy rule to match to traffic based on:
+
+- Applications and application groups
+- Source zones, source addresses, and source users
+- Destination zones and destination addresses
+- Services and service groups limited to specific TCP and/or UDP port numbers
+- URL categories, including custom URL categories
+- Differentiated Services Code Point (DSCP) and Type of Service (ToS) values, which are used to indicate  the level of service requested for traffic, such as high priority or best effort delivery
+    - Expedited Forwarding (EF): Can be used to request low loss, low latency, and guaranteed bandwidth for traffic. Packets with EF codepoint values are typically guaranteed the highest-priority delivery
+    - Assured Forwarding (AF): Can be used to provide reliable delivery for applications. Packets with AF codepoint indicate a request for the traffic to receive higher priority treatment than what the best-effort service provides (although packets with an EF codepoint continue to take precedence over those with an AF codepoint)
+    - Class Selector: Can be used to provide backward compatibility with network devices that use the IP precedence field to mark priority traffic
+    - IP Precedence (ToS): Can be used by legacy network devices to mark priority traffic (the IP precedence header field was used to indicate the priority for a packet before the introduction of the DSCP classification)
+    - Custom Codepoint: Can be used to match to traffic by entering a codepoint name and binary value
+
+### QoS profile
+
+Network > Network Profiles > QoS Profile
+
+- For the profile you configure Egress Max and Egress guaranteed 
+- For every class which you defined in QoS Policy you configure Priority, Egress MAX and Egress Guaranteed
+- Egress MAX and Egress Guaranteed are in Mbps or percentage
+- Network > QoS and Adda QoS interface
+- Can be applied only to physical interface
+- You may configure Egress MAX here as well
+- You configure Default QoS profile for regular (ClearText) traffic and Tunnel traffic
+- For both ClearText and Tunnel traffic you can configure many rules with many profiles besides Default, based on Source interface and Source subnet
+- For both ClearText and Tunnel traffic you can configure Egress MAX and Egress Guaranteed
+- Egress guaranteed specifies the amount of bandwidth guaranteed for matching traffic. When the egress-guaranteed bandwidth is exceeded, the firewall passes traffic on a best-effort basis. Bandwidth that is guaranteed but is unused continues to remain available for all of the traffic
+- Egress max specifies the overall bandwidth allocation for matching traffic. The firewall drops the traffic that exceeds the egress max limit set
 
 ## Packet Flow Sequence
 
@@ -907,17 +1050,17 @@ What is not synced?
 ### Links
 
 7 Links in total, all are configured in HA Communications section
-- HA-1 control link (Control Plane) - should be HA type
+- HA-1 control link (Control Plane) - should be HA type or management
     - L3 link, requires IP, mask, gateway - can be spanned via subnets
     - Hello, heartbeats, HA state info, User-ID, config sync
     - ICMP is used to exchange heartbeats between HA peers
-    - Ports used for HA1 — TCP port 28769 and 28260 for clear text communication; port 28 for encrypted communication (SSH over TCP)     
+    - Ports used for HA1 — TCP port 28769 and 28260 for clear text communication; port 28 for encrypted communication (SSH over TCP)
     - Dedicated HA port should be used on big models, if not Management port is used
-    - Monitor Hold Time (ms)— Enter the length of time, in milliseconds, that the firewall will wait before declaring a peer failure      due to a control link failure (range is 1,000 to 60,000; default is 3,000). This option monitors the physical link status of         HA1 ports
+    - Monitor Hold Time (ms)— Enter the length of time, in milliseconds, that the firewall will wait before declaring a peer failure due to a control link failure (range is 1,000 to 60,000; default is 3,000). This option monitors the physical link status of HA1 ports
 - HA-2 data link (Data plane) - HA type
-    - Layer 2 link, ether type 0x7261 by default, available: IP (protocol number 99) or UDP (port 29281), can span subnets.The benefit of using UDP mode is the presence of the UDP checksum to verify the integrity of a session sync message
+    - Layer 2 link, ether type 0x7261 by default, available: IP (protocol number 99) or UDP (port 29281), can span subnets. The benefit of using UDP mode is the presence of the UDP checksum to verify the integrity of a session sync message
     - Session info, forwarding tables, IPSec, ARP
-    - Data flow on the HA2 link is always unidirectional (except for the HA2 keep-alive); it flows from the active or active-primary firewall to the passive or active-secondary firewall. 
+    - Data flow on the HA2 link is always unidirectional (except for the HA2 keep-alive); it flows from the active or active-primary firewall to the passive or active-secondary firewall 
     - HA2 Keep-alive - recomended to enable. To monitor and maintain the HA2 connection. A log will be written in the event of a failure, or in Active/Active mode the action can be set to split datapath to instruct both peers to keep processing traffic while only maintaining a local state table until HA2 returns Plus configure action: Log for Active-passive, Split Datapath for Active/Active - each peer to take ownership of their local state and session tables when it detects an HA2 interface failure
 - HA-1 and HA-2 Backup Links
     - Provide redundancy for the HA1 and the HA2 links
@@ -928,14 +1071,20 @@ What is not synced?
     - The HA1-backup link uses port 28770 and 28260, PA-3200 Series firewalls don’t support an IPv6 address for the HA1-backup link; use an IPv4 address
 - HA-3 - Packet forwarding link - for active/active - HA type?
     - Layer 2 link that uses MAC-in-MAC encapsulation
-    - The firewalls use this link for forwarding packets to the peer during session setup and asymmetric traffic flow. 
+    - The firewalls use this link for forwarding packets to the peer during session setup and asymmetric traffic flow 
     - It does not support Layer 3 addressing or encryption
-    - You cannot configure backup links for the HA3 link, only LAG. 
+    - You cannot configure backup links for the HA3 link, only LAG 
     - The firewall adds a proprietary packet header to packets traversing the HA3 link, so the MTU over this link must be greater than the maximum packet length forwarded
 - HA4
     - Layer 3 type no gateway, no spaning over subnets, HA type
     - Session cache synchronization among all HA cluster members having the same cluster ID + keep-alives between Cluster members
 - HA4 BAckup
+
+### CLoud limitations
+
+- The VM-Series firewall on Azure and VM-Series firewall on AWS only support active/passive HA
+- When you deploy the firewall with the Amazon Elastic Load Balancing (ELB) service on AWS, it does not support HA (in this case, ELB service provides the failover capabilities
+- The VM-Series firewall on Google Cloud Platform does not support traditional HA
 
 ### Active/Passive
 
@@ -1078,48 +1227,6 @@ Show logs about HA4 sessions sync
 ```
 show log system | match ha4
 ```
-
-## Routing
-
-- All ingress traffic goes to firewall itself or virtual router object, vlan object or virtual wire object
-- Legacy virtual routers: RIP, OSPF, OSPFv3, BGP, multicast, static routes, redistribution, administrative distances
-- Advanced Route Engine of virtual routers supports the Border Gateway Protocol (BGP) dynamic routing protocol and static routes, can be only one - for large data centers, enterprises, ISPs, and cloud services
-- IPsec tunnels are considered Layer 3 traffic segments for implementation purposes and are handled by virtual routers like any other network segments. Forwarding decisions are made by destination address, not by VPN policy
-- There are limitations for the number of entries in the forwarding tables (forwarding information bases [FIBs]) and the routing tables (routing information bases [RIBs]) in either routing engine
-- Lower administrative distanse is prefered
-- ECMP: 4 routes max: no need to wait for RIB recalculation, load balancing, all links load
-- Route monitoring
-- PBF 
-- Application-specific rules are not recommended for use with PBF because PBF rules might be applied before the firewall has determined the application
-- Virtual routers can route to other virtual routers within the same firewall
-- Each Layer 3 Ethernet, loopback, VLAN, and tunnel interface defined on the firewall must be associated with a virtual router
-- Each model supporting a different maximum of virtual routers
-
-## NAT
-
-Separate policy. Regulated by:
-- Zones
-- Interfaces
-- IP addresses
-- App services - ports
-
-First matched ruled is applied  
-The advantage of specifying the interface in the NAT rule is that the NAT rule is automatically updated to use any address subsequently acquired by the interface.  
-
-Supported  Source NAT types:
-- Static IP
-- Dynamic IP and port
-- Dynamic IP
-
-No NAT policy for exculsion  
-Use session browser to find NAT rule name  
-U-Turn NAT - user connects to Internal resource via external IP address and it is uturned on the firewall. Due to absence of internal DNS server for example. If we use regular Destination NAT for it, then traffic will be sent back to Internal network and web server will reply directly to client, causing assymetry. To avoid this Source NAT should be used as well, so the reply traffic will be sent to NGFW as well. Place the rule for it above all other
-
-Rule types:
-
-- ipv4
-- nat64
-- nptv6 - IPv6-to-IPv6 Network Prefix Translation 
 
 ## User-ID
 
@@ -1341,56 +1448,6 @@ less mp-log useridd.log
 
 Go to the end of the file by pressing Shift+G
 
-## QoS
-
-QoS is enforced on traffic as it egresses the firewall   
-  
-Unclassified traffic enters firewall > **QoS Policy** assignes **class** to traffic > **QoS Profile** on Egress interface prioritizes traffic accorsing to **QoS class**  
-
-You can also mark traffic in a security policy - in a security rule  
-Enables the firewall to mark traffic with the same DSCP value that was detected at the beginning of a session (in this example, the firewall would mark return traffic with the DSCP AF11 value). While configuring QoS allows you to shape traffic as it egresses the firewall, enabling this option in a Security rule allows the other network devices intermediate to the firewall and the client to continue to enforce priority for DSCP-marked traffic  
-
-- Self-contained system local to the firewall
-- Can consider existing QoS packet markings but does not act directly on them
-- Ingress traffic cannot be managed
-- QoS profile - matching traffic is then shaped based on the QoS profile class settings as it exits the physical interface. Each QoS profile rule allows you to configure individual bandwidth and priority settings for up to eight QoS classes, as well as the total bandwidth allowed for the eight classes combined. In every profile you configure priorities for every class. Then you apply a profile to an interface.
-- QoS policy - define traffic you want to receive QoS treatment and assign that traffic a QoS class. QoS policy rule is applied to traffic after the firewall has enforced all other security policy rules, including Network Address Translation (NAT) rules.
-- QoS egress interface - this is where you apply QoS profile. If you limit Youtube then Egress interface is Internal interface of FW. You apply it in separate section Network > QoS
-- DSCP classification allows you to both honor DSCP values for incoming traffic and mark a session with a DSCP value as session traffic exits the firewall
-
-### QoS policy
-
-Policies > QoS  
-Define a QoS policy rule to match to traffic based on:
-
-- Applications and application groups
-- Source zones, source addresses, and source users
-- Destination zones and destination addresses
-- Services and service groups limited to specific TCP and/or UDP port numbers
-- URL categories, including custom URL categories
-- Differentiated Services Code Point (DSCP) and Type of Service (ToS) values, which are used to indicate  the level of service requested for traffic, such as high priority or best effort delivery
-    - Expedited Forwarding (EF): Can be used to request low loss, low latency, and guaranteed bandwidth for traffic. Packets with EF codepoint values are typically guaranteed the highest-priority delivery
-    - Assured Forwarding (AF): Can be used to provide reliable delivery for applications. Packets with AF codepoint indicate a request for the traffic to receive higher priority treatment than what the best-effort service provides (although packets with an EF codepoint continue to take precedence over those with an AF codepoint)
-    - Class Selector: Can be used to provide backward compatibility with network devices that use the IP precedence field to mark priority traffic
-    - IP Precedence (ToS): Can be used by legacy network devices to mark priority traffic (the IP precedence header field was used to indicate the priority for a packet before the introduction of the DSCP classification)
-    - Custom Codepoint: Can be used to match to traffic by entering a codepoint name and binary value
-
-### QoS profile
-
-Network > Network Profiles > QoS Profile
-
-- For the profile you configure Egress Max and Egress guaranteed 
-- For every class which you defined in QoS Policy you configure Priority, Egress MAX and Egress Guaranteed
-- Egress MAX and Egress Guaranteed are in Mbps or percentage
-- Network > QoS and Adda QoS interface
-- Can be applied only to physical interface
-- You may configure Egress MAX here as well
-- You configure Default QoS profile for regular (ClearText) traffic and Tunnel traffic
-- For both ClearText and Tunnel traffic you can configure many rules with many profiles besides Default, based on Source interface and Source subnet
-- For both ClearText and Tunnel traffic you can configure Egress MAX and Egress Guaranteed
-- Egress guaranteed specifies the amount of bandwidth guaranteed for matching traffic. When the egress-guaranteed bandwidth is exceeded, the firewall passes traffic on a best-effort basis. Bandwidth that is guaranteed but is unused continues to remain available for all of the traffic
-- Egress max specifies the overall bandwidth allocation for matching traffic. The firewall drops the traffic that exceeds the egress max limit set
-
 ## Logging
 
 By default, the logs that the firewall generates reside only in its local storage  
@@ -1442,9 +1499,23 @@ Types:
 
 - Configuration is written to template
 - Template is addded to stack - 8 max
+- Template can be added to different stacks
+- You can use template stack variables to replace IP addresses, group IDs, and interfaces
 - NGFW is connected to max one stack
 - A Panorama administrator can override the template settings at the stack level: add options to stack directly
 - A local administrator can also perform overrides directly on an individual device if necessary - we chose an object and there is a button in the bottom: Override
+- Stack have a configurable priority order to ensure that Panorama pushes only one value for any duplicate setting
+- Different firewall models - different stacks
+
+Configuration
+
+- Create Template: Panorama > Templates > Add - Name + VSYS 
+- Commit to Panorama
+- Fill the template with options via Templates Sections: Network and Device
+- Create a Stack: Panorama > Templates > Add Stack - Assign a template to it + assign devices + default VSYS
+- The Template at the top of the Stack has the highest priority in the presence of overlapping config
+- Commit to Panorama and devices
+
 
 ### Device groups - to control policies and objects
 
@@ -1462,6 +1533,18 @@ Types:
 - One giant device group consists of many subgroups
 - Every device in panorama has its own tag or many tags
 
+### Licensing
+
+- Automatically license a VM-Series firewall when it connects to Panorama
+- Simplifies the license activation and deactivation of VM-Series firewalls in environments that use auto-scaling and automation to deploy and delete firewalls to address changes in the cloud
+
+### Automatic commit recovery
+
+ - If the committed configuration breaks the connection with Panorama, then the firewall automatically fails the commit and the configuration reverts to the previous running configuration
+ - The firewall also checks the connectivity to Panorama every hour to ensure consistent communication
+ - In HA firewall configurations, each HA peer performs the connectivity tests independently
+ - HA configuration syncs might occur only after each HA successfully tests the connectivity to Panorama and verifies its connection
+ - Device > Setup > Panorama Settings > Enable Automatic commit recovery: Number of attempts to check for Panorama connectivity, Interval between retries (sec)
 
 ### Configuration
 
@@ -1474,6 +1557,48 @@ Types:
 - Create a device group
 - Commit and push
 - Go to Policies, select device group and edit edit policy and push it
+
+### Commit actions
+
+- Commit > Commit to Panorama — Activates the changes you made in the configuration of the Panorama management server. This action also commits device group, template, Collector Group, and WildFire cluster and appliance changes to the Panorama configuration without pushing the changes to firewalls, Log Collectors, or WildFire clusters and appliances. Committing just to the Panorama configuration enables you to save the changes that are not ready for activation on the firewalls, Log Collectors, or WildFire clusters and appliances
+- Commit > Push to Devices — Pushes the Panorama running configuration to device groups, templates, Collector Groups, and WildFire clusters and appliances.
+- Commit > Commit and Push — Commits all the configuration changes to the local Panorama configuration and then pushes the Panorama running configuration to device groups, templates, Collector Groups, and WildFire clusters and appliances
+- You can filter pending changes by administrator or location and then commit, push, validate, or preview only those changes
+- Panorama queues all the commit requests so that you can initiate a new commit while a previous commit is in progress
+- Panorama performs the commits in the order in which they are initiated but prioritizes the auto-commits that are initiated by Panorama (such as FQDN refreshes)
+- You can use the Task Manager to clear the commit queue or see details about commits
+
+Commit options when you commit to Panorama:
+
+- Commit All Changes
+- Commit Changes Made By
+- Commit Scope
+- Location Type
+- Object Type
+- Admins
+- Include in Commit
+- Group by Type
+- Preview Changes
+- Change Summary
+- Validate Commit
+
+### Central software upgrades
+
+- Panorama treats the managed firewalls in HA pairs as individual firewalls for software update purposes
+
+### Central signature updates
+
+- A pair of Panorama instances can be used to download software updates. One Panorama with a trusted internet connection can transfer updates to an SCP server while the second Panorama deployed in an isolated network can use the SCP server as a software update server. The second Panorama can then download any updates and then send them to all the managed devices
+-
+
+### Import firewall configs to Panorama
+
+- You cannot manage the setting through both Panorama and the firewall. If you want to exclude certain firewall settings from Panorama management, you can either:
+    - Migrate the entire firewall configuration and then, on Panorama, delete the settings that you will manage locally on firewalls. You can override a template or template stack value that Panorama pushes to a firewall instead of deleting the setting on Panorama
+- Load a partial firewall configuration, including only the settings that you will use Panorama to manage
+- Firewalls do not lose logs during the transition to Panorama management
+
+### Log collectors
 
 ## CLI
 
@@ -2072,3 +2197,69 @@ Supported authentication types include the following:
 - Unused apps
 - Unused rules
 - App viewer
+
+## Autofocus
+
+- It is a web portal
+- It is Enabled in Setup > Management Section: https://autofocus.paloaltonetworks.com:10443
+
+## IoT Security
+
+- Automatically discovers and identifies all network-connected devices and constructs a data-rich, dynamically updating inventory
+- When it detects a device vulnerability or anomalous behavior posing a threat, IoT Security notifies administrators
+- Works with Palo Alto Networks next-generation firewalls, logging service, and update server, and optionally with Panorama and integrated third-party products
+
+## Log forwarding
+
+Is done to filter and forward logs to external storage and also assign tags.  
+Can be done via profile for certain logs and via system settings 
+Cortex Data Lake is also available   
+  
+Can be configured for the following logs in Log Forwarding Profiles - Objects > Log Forwarding:
+
+- Authentication
+- Data Filtering
+- Decryption
+- Traffic
+- Threat
+- Tunnel
+- URL Filtering
+- WildFire Submissions
+
+You create a profile - and many rules in it - every rule for particular log type (traffic) - in filter you configure which logs will be sent, for example only allow  
+All types (other than Panorama) support customization of the message format  
+It is configured in Server Profile  
+You can control which fields are sent + design + arbitrary text: A threat was detected from $src  
+
+In Profile you configure:
+
+- Log type
+- Filter
+- Forward method
+    - Panorama
+    - SNMP - SNMP profile
+    - Syslog - Syslog profile
+    - Email - email profile
+    - HTTP - HTTP profile - via POST method - you configure address, TLS...headers...
+- Built-in actions
+    - According to filter above assign or remove a tag to a src address, dst address, User, X-Forwarded address
+    - Configure timeout
+    - Configure registration: Local, remote or Panorama
+
+All other logs are configured in Device > Log Setting:
+
+- System
+- Config
+- User-ID
+- HIP Match
+- IP-Tag
+
+Here you configure the same as for LOg Forwarding Profile: Forward method and filter  
+  
+Storage and quota
+
+- Device > Setup > Management
+- Quota in percentage
+- Max days
+- Predefined reports
+- Log collector status
