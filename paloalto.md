@@ -2192,6 +2192,9 @@ GlobalProtect has three major components:
 - GlobalProtect gateways
 - GlobalProtect client software
 
+<img width="977" alt="image" src="https://github.com/philipp-ov/foundation/assets/116812447/f3ec9794-9a39-4d33-8ebf-d4e12411c3e6">
+
+
 GlobalProtect authentication event logs in Monitor > Logs > System
 
 ### MFA
