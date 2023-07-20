@@ -145,6 +145,61 @@ The Heatmap measures the adoption rate of the following Palo Alto Networks firew
     - SD-WAN
 - All other infrastructure: Device Secion: Users, User-ID, Certificates, HA...
 
+### Management plane and Data Plane
+
+- On physical appliances separate CPU, RAM, SSD for management plane: mgmt interface + console
+- On virtual firewalls, these are still logically segregated
+- The data plane connects directly to the traffic interfaces
+- Field-programmable gate arrays (FPGAs) are used only on data-plane and only on high end devices
+- PA-7000 has special acrchitecture: dedicated log collection and processing is implemented on a separate card, First packet processing and Switch fabric management in management plane
+
+Management plane:
+
+- Configuration management
+- Logging
+- Reporting functions
+- User-ID agent process
+- Route updates
+
+Data plane:
+
+- Signature match processor - exploits (IPS), antivirus, spyware, CC#
+- All Content-ID and App-ID services
+- Security processors
+- Session management
+- Encryption and decryption
+- Compression and decompression
+- Policy enforcement
+- Network processor
+- Route
+- Address Resolution Protocol (ARP)
+- MAC lookup
+- QoS
+- NAT
+- Flow control
+
+### Bootstraping
+
+- Attach the virtual disk, virtual CD-ROM, or storage bucket to the firewall
+- Firewall scans for a bootstrap package
+- Each time firewall boots from a factory default state, it checks for the presence of bootstrap volume
+- If one exists, the firewall uses the settings defined in the bootstrap package
+- If you have included a Panorama server IP address in the file, the firewall connects with Panorama. If the firewall has Internet connectivity, it contacts the licensing server to update the universally unique identifier (UUID) and obtain the license keys and subscriptions
+- If the firewall does not have internet connectivity, it either uses the license keys that you included in the bootstrap package or connects to Panorama, which retrieves the appropriate licenses and deploys them to the managed firewalls
+- If you intend to pre-register the VM-Series firewalls with Panorama with bootstrapping, you must generate a VM authorization key on Panorama and include the generated key in the init-cfg file
+- The bootstrap package that you create must include the /config, /license, /software, and /content folders, even if empty, as follows:
+    - /config folder: This folder contains the configuration files. The folder can hold two files, init-cfg.txt and bootstrap.xml
+    - /license folder: This folder contains the license keys or authorization codes for the licenses and subscriptions that you intend to activate on the firewalls. If the firewall does not have internet connectivity, you must either manually obtain the license keys from the Palo Alto Networks Support Portal or use the Licensing API to obtain the keys and then save each key in this folder
+    - /software folder: This folder contains the software images that are required to upgrade a newly provisioned VM-Series firewall to the desired PAN-OS version for the network
+    - /content folder: This folder contains the Applications and Threats updates and WildFire updates for the valid subscriptions on the VM-Series firewall. You must include the minimum content versions that are required for the desired PAN-OS version
+    - /plugins folder: This optional folder contains a single VM-Series plugin image
+
+### Packet Flow Sequence
+
+https://knowledgebase.paloaltonetworks.com/KCSArticleDetail?id=kA10g000000ClVHCA0
+
+<img width="1071" alt="image" src="https://user-images.githubusercontent.com/116812447/215520946-0255d873-1931-4799-b57e-4a62d4e48765.png">
+
 ## Features
 
 - The Palo Alto Networks firewall was designed to use an efficient system known as next-generation processing. Next-generation processing enables packet evaluation, application identification, policy decisions, and content scanning in a single, efficient processing pass - Single Pass Architecture
@@ -202,25 +257,6 @@ The Heatmap measures the adoption rate of the following Palo Alto Networks firew
 - Enterprise Data Loss Prevention (DLP) - cloud-based protection against unauthorized access, misuse, extraction, and sharing of sensitive information
 - SaaS Security Inline - works with Cortex Data Lake to discover all of the SaaS applications in use on your network
 
-## IPv6 support
-
-- To enable IPv6 on firewall:
-    - Enable IPv6 on the interface
-    - Add IPv6 address
-    - Device > Setup > Session > Enable IPv6 firewalling
-- Neighbor Discovery (ND) is enhanced
-- The firewall by default runs NDP, which uses ICMPv6 packets to **discover and track the link-layer addresses** and status of neighbors on connected links
-- Provision the IPv6 hosts with the Recursive DNS Server (RDNSS) option and DNS Search List (DNSSL) option, per RFC 6106, IPv6 Router Advertisement Options for DNS Configuration
-- When you configure Layer 3 interfaces, you configure these DNS options on the firewall so it can provision the IPv6 hosts
-- You don’t need a separate DHCPv6 server to provision the hosts
-- The firewall sends IPv6 Router Advertisements (RAs) containing these options to the IPv6 hosts as part of their DNS configuration to fully provision them to reach internet services
-- IPv6 hosts are configured with
-    - The addresses of the RDNS servers that can resolve DNS queries
-    - A list of domain names (suffixes) that the DNS client appends (one at a time) to an unqualified domain name before entering the domain name into a DNS query
-- The IPv6 Router Advertisement for DNS configuration is supported for Ethernet interfaces, subinterfaces, Aggregated Ethernet interfaces, and Layer 3 VLAN interfaces on all of the PAN-OS platforms
-- After you configure the firewall with the addresses of RDNS servers, the firewall provisions an IPv6 host (the DNS client) with those addresses
-- An IPv6 Router Advertisement can contain multiple DNS Recursive Server Address options, each with the same or different lifetimes
-
 ## Configuration workflow
 
 - You enable IPv6 on interface
@@ -236,39 +272,6 @@ The Heatmap measures the adoption rate of the following Palo Alto Networks firew
 - The data collected pertains to applications, threats, device health, and passive DNS information
 - Data is sent to Cortex Data lake
 - Device > Setup > Telemetry + enable Cortex Data Lake
-
-## Management plane and Data Plane
-
-- On physical appliances separate CPU, RAM, SSD for management plane: mgmt interface + console
-- On virtual firewalls, these are still logically segregated
-- The data plane connects directly to the traffic interfaces
-- Field-programmable gate arrays (FPGAs) are used only on data-plane and only on high end devices
-- PA-7000 has special acrchitecture: dedicated log collection and processing is implemented on a separate card, First packet processing and Switch fabric management in management plane
-
-Management plane:
-
-- Configuration management
-- Logging
-- Reporting functions
-- User-ID agent process
-- Route updates
-
-Data plane:
-
-- Signature match processor - exploits (IPS), antivirus, spyware, CC#
-- All Content-ID and App-ID services
-- Security processors
-- Session management
-- Encryption and decryption
-- Compression and decompression
-- Policy enforcement
-- Network processor
-- Route
-- Address Resolution Protocol (ARP)
-- MAC lookup
-- QoS
-- NAT
-- Flow control
 
 ## Configuration management
 
@@ -436,6 +439,25 @@ Rule types:
 - nat64
 - nptv6 - IPv6-to-IPv6 Network Prefix Translation 
 
+### IPv6 support
+
+- To enable IPv6 on firewall:
+    - Enable IPv6 on the interface
+    - Add IPv6 address
+    - Device > Setup > Session > Enable IPv6 firewalling
+- Neighbor Discovery (ND) is enhanced
+- The firewall by default runs NDP, which uses ICMPv6 packets to **discover and track the link-layer addresses** and status of neighbors on connected links
+- Provision the IPv6 hosts with the Recursive DNS Server (RDNSS) option and DNS Search List (DNSSL) option, per RFC 6106, IPv6 Router Advertisement Options for DNS Configuration
+- When you configure Layer 3 interfaces, you configure these DNS options on the firewall so it can provision the IPv6 hosts
+- You don’t need a separate DHCPv6 server to provision the hosts
+- The firewall sends IPv6 Router Advertisements (RAs) containing these options to the IPv6 hosts as part of their DNS configuration to fully provision them to reach internet services
+- IPv6 hosts are configured with
+    - The addresses of the RDNS servers that can resolve DNS queries
+    - A list of domain names (suffixes) that the DNS client appends (one at a time) to an unqualified domain name before entering the domain name into a DNS query
+- The IPv6 Router Advertisement for DNS configuration is supported for Ethernet interfaces, subinterfaces, Aggregated Ethernet interfaces, and Layer 3 VLAN interfaces on all of the PAN-OS platforms
+- After you configure the firewall with the addresses of RDNS servers, the firewall provisions an IPv6 host (the DNS client) with those addresses
+- An IPv6 Router Advertisement can contain multiple DNS Recursive Server Address options, each with the same or different lifetimes
+
 ### QoS
 
 QoS is enforced on traffic as it egresses the firewall   
@@ -452,9 +474,9 @@ Enables the firewall to mark traffic with the same DSCP value that was detected 
 - QoS policy - define traffic you want to receive QoS treatment and assign that traffic a QoS class. QoS policy rule is applied to traffic after the firewall has enforced all other security policy rules, including Network Address Translation (NAT) rules.
 - QoS egress interface - this is where you apply QoS profile. If you limit Youtube then Egress interface is Internal interface of FW. You apply it in separate section Network > QoS
 - DSCP classification allows you to both honor DSCP values for incoming traffic and mark a session with a DSCP value as session traffic exits the firewall
-
-### QoS policy
-
+  
+QoS policy  
+  
 Policies > QoS  
 Define a QoS policy rule to match to traffic based on:
 
@@ -469,9 +491,9 @@ Define a QoS policy rule to match to traffic based on:
     - Class Selector: Can be used to provide backward compatibility with network devices that use the IP precedence field to mark priority traffic
     - IP Precedence (ToS): Can be used by legacy network devices to mark priority traffic (the IP precedence header field was used to indicate the priority for a packet before the introduction of the DSCP classification)
     - Custom Codepoint: Can be used to match to traffic by entering a codepoint name and binary value
-
-### QoS profile
-
+  
+QoS profile  
+  
 Network > Network Profiles > QoS Profile
 
 - For the profile you configure Egress Max and Egress guaranteed 
@@ -486,11 +508,30 @@ Network > Network Profiles > QoS Profile
 - Egress guaranteed specifies the amount of bandwidth guaranteed for matching traffic. When the egress-guaranteed bandwidth is exceeded, the firewall passes traffic on a best-effort basis. Bandwidth that is guaranteed but is unused continues to remain available for all of the traffic
 - Egress max specifies the overall bandwidth allocation for matching traffic. The firewall drops the traffic that exceeds the egress max limit set
 
-## Packet Flow Sequence
+### Service routes
 
-https://knowledgebase.paloaltonetworks.com/KCSArticleDetail?id=kA10g000000ClVHCA0
+- Device > Setup > Services > Global > Service Route Configuration
+- Can be customized for VSYS
+- Modification of an Interface IP Address to a different IP address or Address Object will not update a corresponding Service Route Source Address
+- You can configure IPv4, IPv6 and Destination Service Route
+- You chhose service and configure Source Interface and Source IP address
+- By default mgmt interface is used for all service communications: DNS, LDAP, updates...
+- It can be configured via any interface separatly for every service route
+- Can be configured per VSYS
+- By default VSYS inherits settings from global
+- You can select a virtual router for a service route in a virtual system; you cannot select the egress interface
+- Destination service routes are available under the Global tab only
+- You can use a destination service route to add a customized redirection of a service that is not supported on the customized list of services
+- A destination service route is a way to set up routing to override the FIB route table. Any settings in the destination service routes override the route table entries. They could be related or unrelated to any service
 
-<img width="1071" alt="image" src="https://user-images.githubusercontent.com/116812447/215520946-0255d873-1931-4799-b57e-4a62d4e48765.png">
+### DHCP Relay
+
+- Network > DHCP > DHCP Relay
+- Maximum of eight external IPv4 DHCP servers and eight external IPv6 DHCP servers
+- A client sends a DHCPDISCOVER message to all configured servers
+- Firewall relays the DHCPOFFER message of the first server that responds back to the requesting client
+- You can add many DHCP relays
+- You configure interface where it will listen for requests + IPv4 Server addresses + IPv6 Server Addresses
 
 ## Policies
 
@@ -548,6 +589,15 @@ The policy evaluation then uses the 'six tuple' (6-Tuple) to match establishing 
 4. Destination Port
 5. Source Zone
 6. Protocol
+
+### Policy optimizer
+
+- Enable Policy Rule Hit Count
+- Policies > Security > Left Down part of screen
+- Rules without apps
+- Unused apps
+- Unused rules
+- App viewer
 
 ## Security profiles
 
@@ -684,6 +734,7 @@ Advanced Threat Prevention
 In URL filtering Objects > Security Profiles > URL Filtering > HTTP Header Insertion HTTP header insertion is supported  
 The firewall supports header insertion for HTTP/1.x traffic only  
 The firewall does not support header insertion for HTTP/2 traffic  
+HTTP Header Insertion for certain SaaS applications that can prevent users from accessing private instances of a SaaS application while having access to the organization’s sanctioned environment  
 HTTP header insertion can only be performed by using the following methods:
 
 - GET
@@ -790,6 +841,10 @@ File sizes
 - You can enable both types of protection mechanisms in a single DoS Protection profile
 - Threshold settings for the synchronize (SYN), UDP, and Internet Control Message Protocol (ICMP) floods; enables resource protection; and defines the maximum number of concurrent connections. After configuring the DoS Protection profile, you attach it to a DoS policy rule
 
+Global Packet Buffer Protection—The firewall monitors sessions from all of the zones (regardless of whether Packet Buffer Protection is enabled in a zone) and how those sessions utilize the packet buffer. You must configure Packet Buffer Protection globally (Device > Setup > Session Settings) to protect the firewall and to enable it on individual zones. When packet buffer consumption reaches the configured Activate percentage, the firewall uses Random Early Drop (RED) to drop packets from the offending sessions (the firewall doesn’t drop complete sessions at the global level)  
+
+Per-Zone Packet Buffer Protection—Enable Packet Buffer Protection on each zone (Network > Zones) to layer in a second level of protection. When packet buffer consumption crosses the Activate threshold and global protection begins to apply RED to session traffic, the Block Hold Time timer starts. The Block Hold Time is the amount of time in seconds that the offending session can continue before the firewall blocks the entire session. The offending session remains blocked until the Block Duration time expires
+
 ## Sessions
 
 Session types
@@ -799,6 +854,7 @@ Session states
 - INIT
 
 Session end reasons
+
 - threat
 - policy-deny
 - decrypt-cert-validation
@@ -894,6 +950,16 @@ Profile includes:
 Concepts
 
 - Content-ID is impossible
+- The firewall can’t decrypt traffic inside an SSH tunnel
+- You can block all the SSH tunnel traffic by configuring a Security policy rule for the application ssh-tunnel with the Action set to Deny (along with a Security policy rule to allow traffic from the ssh application)
+- When you apply an SSH Decryption profile to traffic, for each channel in the connection, the firewall examines the App-ID of the traffic and identifies the channel type. The channel type can be one of the following:
+    - session
+    - X11
+    - forwarded-tcpip
+    - direct-tcpip
+- When the channel type is session, the firewall identifies the traffic as allowed SSH traffic, such as SFTP or SCP
+- When the channel type is X11, forwarded-tcpip, or direct-tcpip, the firewall identifies the traffic as SSH tunneling traffic and blocks it
+- It is recomended to configure Decryption profile: block unsupported versions and algorithms for SSH
 - If firewall uses Forward Untrust certificate to decrypt normal website, then this website does not send intermediate certificate and firewall cannot trace its server cert to CA cert
 - App-ID - works partially
 - Decryption policies enable you to specify traffic for decryption according to destination, source, user/user group, or URL category
@@ -945,6 +1011,7 @@ Configuration:
 Palo Alto Networks provides a predefined SSL Decryption Exclusion list that excludes hosts with applications and services that are known to break decryption technically (pinned certificate, an incomplete certificate chain, unsupported ciphers, or mutual authentication) from SSL Decryption by default.  
 You can add more sites to this list. 
 Device > Certificate management > SSL Decryption Exclusion  
+You can also force some of these sites to be decrypted
   
 Decryption can be performed only on the virtual wire, Layer 2, or Layer 3 interfaces
 
@@ -993,7 +1060,6 @@ Sberbank case: script sends via XML API Tag + IP, based on this Tag IP is added 
 - Used in Policy: Source/Destination Address, URL category
 - Configure DNS Sinkholing for a List of Custom Domains
 - Use an External Dynamic List in a URL Filtering Profile
-
 
 ## HA
 
@@ -1089,6 +1155,7 @@ What is not synced?
 ### Active/Passive
 
 Supported deployments
+
 - Virtual wire
 - Layer 2
 - Layer 3 
@@ -1448,30 +1515,6 @@ less mp-log useridd.log
 
 Go to the end of the file by pressing Shift+G
 
-## Logging
-
-By default, the logs that the firewall generates reside only in its local storage  
-Everything is in a Log Forwarding profile  
-Objects > Log Forwarding  
-Profile is attached to Security, Authentication, DoS Protection, and Tunnel Inspection policy rules  
-
-- Several rules in one profile
-- We configure all in one profile and then apply it to all rules, for example we can negate DNS and ICMP int it: ICMP and DNS are logged only locally to NGFW to lesses load on Panorama
-- Also in this profile we configure to send logs simulteniusly to Syslog and Panorama
-- Separate rule for logging blocks
-- Log Forwarding Profile is configured for every rule:
-        - Log type: Authentication, Data Filtering, GTP, SCTP, Threat, Traffic, Tunnel, URL Filtering, and WildFire
-        - Filtration - based on any field in a log: App, Bytes In....
-        - Forward Method
-                - Panorama
-                - SNMP (profile)
-                - Email (profile)
-                - Syslog (profile)
-                - HTTP (profile)
-        - Add/del tag for src/dst address or User
-
-All other logs forwarding: Device > Log Settings - System, Configuration, User-ID....
-
 ## Panorama
 
 Features:
@@ -1741,39 +1784,86 @@ Sync config to remote peer
 request high-availability sync-to-remote running-config
 ```
 
-## Packet capture
+## Logs
 
-- Packets are captured on the dataplane vs on the interface
-- Packet captures are session-based, so a single filter is capable of capturing both client2server and server2client
-- Offloaded sessions can't be captured so offloading may need to be disabled temporarily. An offloaded session will display 'layer7 processing: completed' in the show session details
-- When filtering is enabled, new sessions are marked for filtering and can be captured, but existing sessions are not being filtered and may need to be restarted to be able to capture them
-- Allowed traffic can be seen in the following stages: Firewall, Transmit, Receive
-- Dropped traffic can be seen in the following stages: Receive, Drop
-- Receive stage is good to use if we need to make sure that traffic reaches FW in general
-- Transmit stage is good to make sure that traffic successfully passed and left FW and how it was NATed
+By default, the logs that the firewall generates reside only in its local storage  
+Everything is in a Log Forwarding profile  
+Objects > Log Forwarding  
+Profile is attached to Security, Authentication, DoS Protection, and Tunnel Inspection policy rules  
 
-**Filters**
+- Several rules in one profile
+- We configure all in one profile and then apply it to all rules, for example we can negate DNS and ICMP int it: ICMP and DNS are logged only locally to NGFW to lesses load on Panorama
+- Also in this profile we configure to send logs simulteniusly to Syslog and Panorama
+- Separate rule for logging blocks
+- Log Forwarding Profile is configured for every rule:
+        - Log type: Authentication, Data Filtering, GTP, SCTP, Threat, Traffic, Tunnel, URL Filtering, and WildFire
+        - Filtration - based on any field in a log: App, Bytes In....
+        - Forward Method
+                - Panorama
+                - SNMP (profile)
+                - Email (profile)
+                - Syslog (profile)
+                - HTTP (profile)
+        - Add/del tag for src/dst address or User
 
-- Filters are not mandatory
+All other logs forwarding: Device > Log Settings - System, Configuration, User-ID....
 
-**Stages**
+### Log forwarding
 
-- drop stage is where packets get discarded. The reasons may vary and, for this part, the global counters may help identify if the drop was due to a policy deny, a detected threat, or something else
-- receive stage captures the packets as they ingress the firewall before they go into the firewall engine. When NAT is configured, these packets will be pre-NAT - only incoming packets
-- transmit stage captures packets how they egress out of the firewall engine. If NAT is configured, these will be post-NAT - only outgoing packets
-- firewall stage captures packets in the firewall stage - only incoming packets before NAT
+Is done to filter and forward logs to external storage and also assign tags.  
+Can be done via profile for certain logs and via system settings 
+Cortex Data Lake is also available   
+  
+Can be configured for the following logs in Log Forwarding Profiles - Objects > Log Forwarding:
 
-If Ping is allowed you will see the following:
-- Nothing in drop stage
-- In Receive stage: Incoming packets before NAT on all interfaces involved for both request and response, no outgoing packets - only incoming
-- In Firewall stage: The same as in Receive, if there is no filtering
-- In Transmit stage: only outgoing packets after NAT
+- Authentication
+- Data Filtering
+- Decryption
+- Traffic
+- Threat
+- Tunnel
+- URL Filtering
+- WildFire Submissions
 
-If ping is allowed you will see the following:
-- Receive and drop stages are the same - all incoming requests are received and dropped
-- No Firewall and Transmit stages
+You create a profile - and many rules in it - every rule for particular log type (traffic) - in filter you configure which logs will be sent, for example only allow  
+All types (other than Panorama) support customization of the message format  
+It is configured in Server Profile  
+You can control which fields are sent + design + arbitrary text: A threat was detected from $src  
 
-## Log filtering
+In Profile you configure:
+
+- Log type
+- Filter
+- Forward method
+    - Panorama
+    - SNMP - SNMP profile
+    - Syslog - Syslog profile
+    - Email - email profile
+    - HTTP - HTTP profile - via POST method - you configure address, TLS...headers...
+- Built-in actions
+    - According to filter above assign or remove a tag to a src address, dst address, User, X-Forwarded address
+    - Configure timeout
+    - Configure registration: Local, remote or Panorama
+
+All other logs are configured in Device > Log Setting:
+
+- System
+- Config
+- User-ID
+- HIP Match
+- IP-Tag
+
+Here you configure the same as for LOg Forwarding Profile: Forward method and filter  
+  
+Storage and quota
+
+- Device > Setup > Management
+- Quota in percentage
+- Max days
+- Predefined reports
+- Log collector status
+
+### Log filtering
 
 Logical operators
 
@@ -1808,6 +1898,14 @@ Date and time
 Before date: (receive_time leq '2015/08/31 08:30:00’)
 After date: (receive_time geq '2015/08/31 08:30:00')
 
+### Pre defined reports
+
+- Device > Setup > Management > Logging and Reporting Settings - configuration
+- These reports typically run once per day and summarize all the activity on the firewall
+- Monitor > Reports
+- Monitor > PDF Reports > SaaS Application Usage - applications that store data in external locations
+- 
+
 ## Troubleshooting
 
 Show system logs
@@ -1815,6 +1913,66 @@ Show system logs
 ```text
 show log system
 ```
+
+- Some appliances support transiever monitoring via CLI
+- Enable Log at session start for security rule for connectivity troubleshooting
+- ACC > SSL Activity: successful and unsuccessful decryption activity in your network, including decryption failures, TLS versions, key exchanges, and the amount and type of decrypted and undecrypted traffic
+- Monitor > Logs > Decryption: comprehensive information about individual sessions that match a Decryption policy, use a No Decryption policy for traffic you don’t decrypt, and GlobalProtect sessions when you enable Decryption logging in GlobalProtect Portal or GlobalProtect Gateways configuration
+- SSL Decryption Exclusion List -  from Palo Alto - Automatically Updated
+- Local Decryption Exclusion Cache - automatically adds the servers that local users encounter that break decryption for technical reasons and excludes them from decryption - when Decryption Profile allows unsupported modes
+- Custom Report Templates for Decryption
+
+Show service routes
+
+```
+debug dataplane internal vif route 250
+
+193.190.138.68 via 172.16.31.244 dev eth3.1  src 172.16.31.244
+<>199.167.52.13 via 172.16.31.244 dev eth3.1  src 172.16.31.244
+195.200.224.66 via 172.16.31.244 dev eth3.1  src 172.16.31.244
+```
+
+### Packet capture
+
+Packet capture types:
+
+- Custom Packet Capture
+- Threat Packet Capture
+- Application Packet Capture 
+- Management Interface Packet Capture
+- GTP Event Packet Capture
+
+Custom packet cupture concepts:
+
+- Packets are captured on the dataplane vs on the interface
+- Packet captures are session-based, so a single filter is capable of capturing both client2server and server2client
+- Offloaded sessions can't be captured so offloading may need to be disabled temporarily. An offloaded session will display 'layer7 processing: completed' in the show session details
+- When filtering is enabled, new sessions are marked for filtering and can be captured, but existing sessions are not being filtered and may need to be restarted to be able to capture them
+- Allowed traffic can be seen in the following stages: Firewall, Transmit, Receive
+- Dropped traffic can be seen in the following stages: Receive, Drop
+- Receive stage is good to use if we need to make sure that traffic reaches FW in general
+- Transmit stage is good to make sure that traffic successfully passed and left FW and how it was NATed
+
+**Filters**
+
+- Filters are not mandatory
+
+**Stages**
+
+- drop stage is where packets get discarded. The reasons may vary and, for this part, the global counters may help identify if the drop was due to a policy deny, a detected threat, or something else
+- receive stage captures the packets as they ingress the firewall before they go into the firewall engine. When NAT is configured, these packets will be pre-NAT - only incoming packets
+- transmit stage captures packets how they egress out of the firewall engine. If NAT is configured, these will be post-NAT - only outgoing packets
+- firewall stage captures packets in the firewall stage - only incoming packets before NAT
+
+If Ping is allowed you will see the following:
+- Nothing in drop stage
+- In Receive stage: Incoming packets before NAT on all interfaces involved for both request and response, no outgoing packets - only incoming
+- In Firewall stage: The same as in Receive, if there is no filtering
+- In Transmit stage: only outgoing packets after NAT
+
+If ping is allowed you will see the following:
+- Receive and drop stages are the same - all incoming requests are received and dropped
+- No Firewall and Transmit stages
 
 ## Site-to-Site tunnels
 
@@ -1982,6 +2140,21 @@ Follow logs
 > tail follow yes mp-log cryptod.log
 ```
 
+Detailed Debug
+
+```
+debug ike global on debug
+> less mp-log ikemgr.log
+```
+
+IKE negotiation capture. Messages 5 and 6 onwards in the main mode and all the packets in the quick mode have their data payload encrypted
+
+```
+> debug ike pcap on
+> view-pcap no-dns-lookup yes no-port-lookup yes debug-pcap ikemgr.pcap
+> debug ike pcap off
+```
+
 ### GRE tunnels
 
 - The firewall encapsulates the tunneled packet in a GRE packet, and so the additional 24 bytes of GRE header automatically result in a smaller MSS in the MTU. If you don’t change the IPv4 MSS adjustment size for the interface, the firewall reduces the MTU by 64 bytes by default (40 bytes of IP header + 24 bytes of GRE header)
@@ -1998,7 +2171,28 @@ Follow logs
     Keepalive
 - You don’t need a Security policy rule for the GRE traffic that the firewall encapsulates. However, when the firewall receives GRE traffic, it generates a session and applies all of the policies to the GRE IP header in addition to the encapsulated traffic. The firewall treats the received GRE packet like any other packet
 
+Show counters for GRE tunnels:
+
+```
+show counter global filter value all | match flow_gre
+```
+
+Run "show log system" with the filter of tunnel name  
+  
+Check the GRE session
+
+- Filter by using session filter protocol 47
+- Find the session ID and filter for session ID
+
 ## GlobalProtect
+
+GlobalProtect has three major components:
+
+- GlobalProtect portal
+- GlobalProtect gateways
+- GlobalProtect client software
+
+GlobalProtect authentication event logs in Monitor > Logs > System
 
 ### MFA
 
@@ -2048,22 +2242,6 @@ Follow logs
 - CRL
 - OCSP - takes precedence over CRL
 
-## Service routes
-
-- Device > Setup > Services > Global > Service Route Configuration
-- Can be customized for VSYS
-- Modification of an Interface IP Address to a different IP address or Address Object will not update a corresponding Service Route Source Address
-- You can configure IPv4, IPv6 and Destination Service Route
-- You chhose service and configure Source Interface and Source IP address
-- By default mgmt interface is used for all service communications: DNS, LDAP, updates...
-- It can be configured via any interface separatly for every service route
-- Can be configured per VSYS
-- By default VSYS inherits settings from global
-- You can select a virtual router for a service route in a virtual system; you cannot select the egress interface
-- Destination service routes are available under the Global tab only
-- You can use a destination service route to add a customized redirection of a service that is not supported on the customized list of services
-- A destination service route is a way to set up routing to override the FIB route table. Any settings in the destination service routes override the route table entries. They could be related or unrelated to any service
-
 ## Management Profiles
 
 - Network > Network Profiles > Interface Mgmt
@@ -2077,22 +2255,6 @@ Follow logs
 - Panorama > Plugins to Download
 - Install the most recent version of the ZTP plugin
 - Panorama > Zero Touch Provisioning
-
-## Bootstraping
-
-- Attach the virtual disk, virtual CD-ROM, or storage bucket to the firewall
-- Firewall scans for a bootstrap package
-- Each time firewall boots from a factory default state, it checks for the presence of bootstrap volume
-- If one exists, the firewall uses the settings defined in the bootstrap package
-- If you have included a Panorama server IP address in the file, the firewall connects with Panorama. If the firewall has Internet connectivity, it contacts the licensing server to update the universally unique identifier (UUID) and obtain the license keys and subscriptions
-- If the firewall does not have internet connectivity, it either uses the license keys that you included in the bootstrap package or connects to Panorama, which retrieves the appropriate licenses and deploys them to the managed firewalls
-- If you intend to pre-register the VM-Series firewalls with Panorama with bootstrapping, you must generate a VM authorization key on Panorama and include the generated key in the init-cfg file
-- The bootstrap package that you create must include the /config, /license, /software, and /content folders, even if empty, as follows:
-    - /config folder: This folder contains the configuration files. The folder can hold two files, init-cfg.txt and bootstrap.xml
-    - /license folder: This folder contains the license keys or authorization codes for the licenses and subscriptions that you intend to activate on the firewalls. If the firewall does not have internet connectivity, you must either manually obtain the license keys from the Palo Alto Networks Support Portal or use the Licensing API to obtain the keys and then save each key in this folder
-    - /software folder: This folder contains the software images that are required to upgrade a newly provisioned VM-Series firewall to the desired PAN-OS version for the network
-    - /content folder: This folder contains the Applications and Threats updates and WildFire updates for the valid subscriptions on the VM-Series firewall. You must include the minimum content versions that are required for the desired PAN-OS version
-    - /plugins folder: This optional folder contains a single VM-Series plugin image
 
 ## Authorization, authentication, and device access
  
@@ -2114,17 +2276,6 @@ Supported authentication types include the following:
 - RADIUS
 - LDAP
 - Local
-
-## DHCP
-
-### DHCP Relay
-
-- Network > DHCP > DHCP Relay
-- Maximum of eight external IPv4 DHCP servers and eight external IPv6 DHCP servers
-- A client sends a DHCPDISCOVER message to all configured servers
-- Firewall relays the DHCPOFFER message of the first server that responds back to the requesting client
-- You can add many DHCP relays
-- You configure interface where it will listen for requests + IPv4 Server addresses + IPv6 Server Addresses
 
 ## SCEP
 
@@ -2176,7 +2327,41 @@ Supported authentication types include the following:
 - Subsequent checks are performed hourly
 - Only the latest HIP report is retained on the gateway per endpoint
 
-## Upgrade
+## Upgrades
+
+### Signature updates
+
+- Device > Dynamic Updates
+
+### Upgrade Standalone
+
+- Make a backup
+- If you have enabled User-ID, after you upgrade, the firewall clears the current IP address-to-username and group mappings
+- Ensure that the firewall is running the latest content release version
+- Device > Software and click Check Now
+- Download
+- Click istall
+- Reboot
+- Firewall clears the User-ID mappings, then connects to the User-ID sources to repopulate the mappings
+
+```
+show user ip-user-mapping all
+show user group list
+```
+
+- Check sessions: Monitor > Session Browser
+
+### Upgrade HA pair
+
+- Disable preemption 
+- Suspend and upgrade the active HA peer first
+- Reboot
+- Verify that the device you just upgraded is in sync with the peer
+- Unsuspend: Device > High Availability > Operational Commands and Make local device functional for high availability
+- Suspend Secondary
+- Upgrade
+- Reboot
+- Reenable preemption
 
 ## Web proxy
 
@@ -2189,15 +2374,6 @@ Supported authentication types include the following:
 
 ## SSL mirror
 
-## Policy optimizer
-
-- Enable Policy Rule Hit Count
-- Policies > Security > Left Down part of screen
-- Rules without apps
-- Unused apps
-- Unused rules
-- App viewer
-
 ## Autofocus
 
 - It is a web portal
@@ -2208,58 +2384,3 @@ Supported authentication types include the following:
 - Automatically discovers and identifies all network-connected devices and constructs a data-rich, dynamically updating inventory
 - When it detects a device vulnerability or anomalous behavior posing a threat, IoT Security notifies administrators
 - Works with Palo Alto Networks next-generation firewalls, logging service, and update server, and optionally with Panorama and integrated third-party products
-
-## Log forwarding
-
-Is done to filter and forward logs to external storage and also assign tags.  
-Can be done via profile for certain logs and via system settings 
-Cortex Data Lake is also available   
-  
-Can be configured for the following logs in Log Forwarding Profiles - Objects > Log Forwarding:
-
-- Authentication
-- Data Filtering
-- Decryption
-- Traffic
-- Threat
-- Tunnel
-- URL Filtering
-- WildFire Submissions
-
-You create a profile - and many rules in it - every rule for particular log type (traffic) - in filter you configure which logs will be sent, for example only allow  
-All types (other than Panorama) support customization of the message format  
-It is configured in Server Profile  
-You can control which fields are sent + design + arbitrary text: A threat was detected from $src  
-
-In Profile you configure:
-
-- Log type
-- Filter
-- Forward method
-    - Panorama
-    - SNMP - SNMP profile
-    - Syslog - Syslog profile
-    - Email - email profile
-    - HTTP - HTTP profile - via POST method - you configure address, TLS...headers...
-- Built-in actions
-    - According to filter above assign or remove a tag to a src address, dst address, User, X-Forwarded address
-    - Configure timeout
-    - Configure registration: Local, remote or Panorama
-
-All other logs are configured in Device > Log Setting:
-
-- System
-- Config
-- User-ID
-- HIP Match
-- IP-Tag
-
-Here you configure the same as for LOg Forwarding Profile: Forward method and filter  
-  
-Storage and quota
-
-- Device > Setup > Management
-- Quota in percentage
-- Max days
-- Predefined reports
-- Log collector status
