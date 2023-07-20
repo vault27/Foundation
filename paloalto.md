@@ -1932,6 +1932,12 @@ debug dataplane internal vif route 250
 195.200.224.66 via 172.16.31.244 dev eth3.1  src 172.16.31.244
 ```
 
+NAT troubleshooting:  
+test nat-policy-match + traffic logs and session browser  
+
+Security Policy troubleshooting:  
+test security-policy match + traffic logs and the session browser
+
 ### Packet capture
 
 Packet capture types:
@@ -1940,7 +1946,12 @@ Packet capture types:
 - Threat Packet Capture
 - Application Packet Capture 
 - Management Interface Packet Capture
-- GTP Event Packet Capture
+- GTP Event Packet Capture  
+  
+Security profiles which have packet capture:   
+Antivirus  
+Vulnerability protection  
+AntiSpyware  
 
 Custom packet cupture concepts:
 
