@@ -9,6 +9,9 @@
 - https://live.paloaltonetworks.com - community, ask your questions
 - https://security.paloaltonetworks.com - Security Advisories
 - Mastering Palo Alto Networks: Build, configure, and deploy network solutions for your infrastructure using features of PAN-OS, 2nd Edition
+- GlobalProtect Administrator's Guide - 670 pages - whole world
+- PAN-OS® Administrator’s Guide - 1542 pages
+- Panorama Admin Guide
 
 ## Portfolio
 
@@ -273,7 +276,9 @@ https://knowledgebase.paloaltonetworks.com/KCSArticleDetail?id=kA10g000000ClVHCA
 - Data is sent to Cortex Data lake
 - Device > Setup > Telemetry + enable Cortex Data Lake
 
-## Configuration management
+## Maintenance
+
+### Configuration management
 
 - Firewall settings are stored in the XML configuration files that can be archived, restored, and managed
 - A firewall contains both a running configuration that contains all of the settings that are currently active and a candidate configuration
@@ -281,7 +286,7 @@ https://knowledgebase.paloaltonetworks.com/KCSArticleDetail?id=kA10g000000ClVHCA
 - Changes made using the management web interface, the CLI, or the XML API are staged in the candidate until you perform commit
 - During a commit operation, the candidate configuration replaces the running configuration
 - When Panorama has a management relationship with a firewall, Panorama can obtain copies of both Panorama-managed and locally managed configurations
-- After a commit on a local firewall that runs PAN-OS 5.0 or later, a backup is sent of the running configuration to Panorama
+- After a commit on a local firewall a backup is sent of the running configuration to Panorama
 - By default, Panorama stores up to 100 backups for each firewall although this is configurable
 - To store Panorama and firewall configuration backups on an external host, you can schedule exports from Panorama or complete an export on demand
 - The saved configuration files can be restored to the firewall at any time by an administrator by using the Panorama > Managed Devices > Summary
@@ -293,7 +298,7 @@ https://knowledgebase.paloaltonetworks.com/KCSArticleDetail?id=kA10g000000ClVHCA
 - You may see the changes summary
 - It is recomended to save and backup the running configuration before making any changes
 - The new versions of the running config are generated every time you make a change or click Commit
--  Revert to last saved config restores the config from .snapshot.xml file - The current candidate configuration is overwritten
+- Revert to last saved config restores the config from .snapshot.xml file - The current candidate configuration is overwritten
 - Revert to running config restores the config from running-config.xml file - The current running configuration is overridden
 - Save named configuration snapshot option saves the candidate configuration to a file - does not override running config - You can either enter a file name or select an existing file to be overwritten. Note that the current active configuration file (running-config.xml) cannot be overwritten
 - Save candidate config - Saves the candidate configuration in flash memory (same as clicking Save at the top of the page)
@@ -303,6 +308,10 @@ https://knowledgebase.paloaltonetworks.com/KCSArticleDetail?id=kA10g000000ClVHCA
 - Export configuration version - choose among auto saved configurations
 - Import named config snapshot - Imports a configuration file from any network location
 - Import device state (firewall only) - Import the device state information that was exported using the Export device state option. This includes the current running config, Panorama templates, and shared policies. If the device is a Global Protect Portal, the export includes the Certificate Authority (CA) information and the list of satellite devices and their authentication information
+
+### Backup
+
+- 
 
 ## Network
 
@@ -540,11 +549,11 @@ Network > Network Profiles > QoS Profile
 - QoS
 - Policy Based Forwarding
 - Decryption
-- Tunnel inspection
+- Tunnel inspection - inspect GRE, non-encrypted IPSec, GTP-U, VXLAN
 - Application Override
-- Authentication
-- DoS protection
-- SD-WAN
+- Authentication - whom to show captive portal
+- DoS protection - ?
+- SD-WAN - ?
 
 ### Security policy options
 
@@ -1519,16 +1528,29 @@ Go to the end of the file by pressing Shift+G
 
 Features:
 
-- Policy management
-- Device health: Panorama > Managed Devices > Health
-- Objects configurations: addreses, profiles...
-- NGFW configuration - SNMP, User-ID, LDAP, NTP...
+- Centralized view on all activities via ACC:
+    - Network
+    - Threat
+    - Blocked
+    - Tunnel
+    - Global Protect
+    - SSL 
+- Centrall logging via Monitor
+    - All logs - send logs to Panorama is enabled in Log Forwarding profile and configurable on per rule basis
+    - External Logs - TrapsTM ESM Server logs (security events on the endpoints)
+    - Automated correlation engine
+    - AppScope - all possible App Analytics
+    - PDF reports
+- Policy management - all types of policies via Device Groups
+- Objects managment - All types - via Device Groups
+- All Network Configurations via Templates and Stacks
+- All Device configurations via Templates and Stacks
+- Detailed device health: Panorama > Managed Devices > Health
 - Database updates and software updates
-- Logforwarding control
-- Centralized visibility
-- Network security insights
-- Automated threat response
-- Enterprise-level reporting and administration
+- Super detailed Admin Profiles, what they can do: Web, CLI, API
+- Access domains: devices, device groups, templates - what admins can access
+- Data redistribution: other can connect to Panorama, Panorama can connect to agents
+- Log collectors + Groups
 
 Types:
 
@@ -1536,10 +1558,13 @@ Types:
 - Log Collector
 - Panorama: both
 
-### Templates, stacks - to control configuration and updates
+### Templates & stacks - 
  
  <img width="576" alt="image" src="https://github.com/philipp-ov/foundation/assets/116812447/813aef71-ce9f-401e-80a9-81e34f4c42c3">
 
+- To control configuration and updates
+- All Device parts and Network parts
+- Template is a copy of firewall's configuration interface
 - Configuration is written to template
 - Template is addded to stack - 8 max
 - Template can be added to different stacks
@@ -1547,18 +1572,10 @@ Types:
 - NGFW is connected to max one stack
 - A Panorama administrator can override the template settings at the stack level: add options to stack directly
 - A local administrator can also perform overrides directly on an individual device if necessary - we chose an object and there is a button in the bottom: Override
-- Stack have a configurable priority order to ensure that Panorama pushes only one value for any duplicate setting
+- After you override locally, and new push from Panorama, this parameter will remain overrrided
+- There is no possibility to see on Panorama on which Firewalls what was overrided
+- Stack have a configurable priority order to ensure that Panorama pushes only one value for any duplicate setting. If there is the same object in 2 templates, object from the uppest template in the stack will be installed, for example interface management profile, no options for this profile from lower template will be installed
 - Different firewall models - different stacks
-
-Configuration
-
-- Create Template: Panorama > Templates > Add - Name + VSYS 
-- Commit to Panorama
-- Fill the template with options via Templates Sections: Network and Device
-- Create a Stack: Panorama > Templates > Add Stack - Assign a template to it + assign devices + default VSYS
-- The Template at the top of the Stack has the highest priority in the presence of overlapping config
-- Commit to Panorama and devices
-
 
 ### Device groups - to control policies and objects
 
@@ -1573,8 +1590,24 @@ Configuration
 - User-ID master in HA-group during adding to Device Group - This will be the only firewall in the device group from which Panorama gathers username and user group information
 - Local rules are not touched, we just pre and post
 - Rule is installed by default on all devices in device group, but we can choose exact firewalls or based on tags
+- For every rule we can choose where to install: one particular firewall, device groups, tags...
 - One giant device group consists of many subgroups
 - Every device in panorama has its own tag or many tags
+- The master device is the firewall from which Panorama gathers user ID information for use in policies
+- Rules from upper Devices Groups automatically appears in lower Device Groups Policies
+- You attach devices only to lower Device Groups, because Device can be attached only to one Device Group
+- You cannot override or change rules arrived from Panorama
+- If you create an address object on Panorama, you can disable override and make it shared: for other VSYSs and Device Groups
+- If you create an address on Panorama and do not use it in rules, it will be installed to device anyway
+
+### Configuration
+
+- Create Template: Panorama > Templates > Add - Name + VSYS 
+- Commit to Panorama
+- Fill the template with options via Templates Sections: Network and Device
+- Create a Stack: Panorama > Templates > Add Stack - Assign a template to it + assign devices + default VSYS
+- The Template at the top of the Stack has the highest priority in the presence of overlapping config
+- Commit to Panorama and devices
 
 ### Licensing
 
@@ -1592,7 +1625,8 @@ Configuration
 ### Configuration
 
 - Add Panorama and Secondary Panorama IP on device
-- Insert auth key from Panorama: Panorama > Device Registration Auth Key 
+- Insert auth key from Panorama: Panorama > Device Registration Auth Key
+- Push two buttons to enable policy and device configuration
 - Commit
 - Do the same for secondary device OR if it is already was in cluster, all setting will be commited from active device, except Auth key - it should be added manually
 - Add both devices to Panorama > Managed devices using serials
@@ -1600,6 +1634,19 @@ Configuration
 - Create a device group
 - Commit and push
 - Go to Policies, select device group and edit edit policy and push it
+- Create templates - all configurations are there - Panorama > Templates
+- Combine them into stack - Panorama > Templates - add devices to Stack
+
+### Remove firewall from Panorama
+
+- Device > Setup > Management > Panorama Settings
+- Disable Panorama Policy and Objects
+- Disable Panorama Device and Network Template
+- When you disable - everything what arrived from Panorama - will be deleted
+- You may import everything from Panorama before disabling
+- Delete Panorama IP
+- Save all these actions is only possible using auth key from panorama
+
 
 ### Commit actions
 
@@ -1779,9 +1826,30 @@ To place the suspended local HA peer back into a functional state
 request high-availability state functional
 ```
 
-Sync config to remote peer
+### Sync config to remote peer
+
 ```
 request high-availability sync-to-remote running-config
+```
+
+### Show network connections
+
+For example with Panorama
+
+```
+admin@PA-1-1(active-primary)> show netstat all yes numeric-hosts yes numeric-ports yes | match 10.2.23.154
+tcp        0      0 10.2.55.119:50914       10.2.23.154:3978        ESTABLISHED
+tcp        0      0 10.2.55.119:34314       10.2.23.154:3978        TIME_WAIT  
+```
+
+### Show Panorama status
+
+```
+admin@PA-1-1(active-primary)> show panorama-status 
+
+Panorama Server 1 : 10.2.23.154
+    Connected     : no
+    HA state      : disconnected
 ```
 
 ## Logs
@@ -2300,6 +2368,9 @@ Supported authentication types include the following:
 
 ## Global Protect
 
+- GlobalProtect is an SSL VPN client that also supports IPSec
+- You can have one portal per GlobalProtect deployment and as many gateways as
+needed
 - By default, you can deploy the GlobalProtect portals and gateways (without HIP checks) without a license
 - If you want to use the advanced GlobalProtect features (HIP checks and related content updates, the GlobalProtect mobile app, IPv6 connections, or a GlobalProtect clientless VPN), you will need a GlobalProtect license (subscription) for each gateway
 - Clients: Windows, MacOS, Linux, iOS, and Android
@@ -2319,6 +2390,7 @@ Supported authentication types include the following:
     - Domains are excluded
     - Domains are included
     - Excluded or included based on the access route
+- All interaction between the GlobalProtect components occurs over an SSL/TLS connection
 
 ### Configuration workflow
 
@@ -2327,13 +2399,35 @@ Supported authentication types include the following:
 
 ### GlobalProtect Portal
 
+- Provides clients with a download portal to get the client package, provides configuration to the agents once installed, and provides a Clientless VPN
 - Requires a Layer 3 or loopback interface for the GlobalProtect apps’ connection. If the portal and gateway are on the same firewall, they can use the same interface. The portal must be in a zone that is accessible from outside your network, such as a DMZ
+- Network > GlobalProtect > Portals
+- Create and configure:
+    - Interface
+    - IP
+    - TLS service profile
+    - Client auth rule - Specify OS, Auth profile - the same as for captive portal, Allow list
+    - Custom checks for Windows and Mac
+    - 
 
 ### GlobalProtect Gateway
 
 - The interface and zone requirements for the gateway depend on whether the gateway you are configuring is external or internal, as follows:
     - External gateways—Requires a Layer 3 or loopback interface and a logical tunnel interface for the app to establish a connection. The Layer 3/loopback interface must be in an external zone, such as a DMZ. A tunnel interface can be in the same zone as the interface connecting to your internal resources (for example, trust). For added security and better visibility, you can create a separate zone, such as corp-vpn. If you create a separate zone for your tunnel interface, you must create security policies that enable traffic to flow between the VPN zone and the trust zone
     - Internal gateways—Requires a Layer 3 or loopback interface in your trust zone. You can also create a tunnel interface for access to your internal gateways, but this is not required
+- Each firewall can have multiple gateways, but they can't share an IP address
+- Network > GlobalProtect > Gateways
+- Create and configure:
+    - Interface
+    - IP
+    - TLS service profile
+    - Client auth rule - Specify OS, Auth profile - the same as for captive portal, Allow list
+    - Exclude video traffic from Tunnel
+    - Tunnel interface
+    - IPsec crypto
+    - Split tunnel
+    - IP-Pool
+    - DNS servers
 
 ### HIP
 
