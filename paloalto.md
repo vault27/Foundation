@@ -1546,11 +1546,13 @@ Features:
 - All Network Configurations via Templates and Stacks
 - All Device configurations via Templates and Stacks
 - Detailed device health: Panorama > Managed Devices > Health
-- Database updates and software updates
+- Databases, licenses and software updates
 - Super detailed Admin Profiles, what they can do: Web, CLI, API
 - Access domains: devices, device groups, templates - what admins can access
 - Data redistribution: other can connect to Panorama, Panorama can connect to agents
 - Log collectors + Groups
+- Zero touch provisioning
+- Plugins: AWS, Azure, ACI, TrustSec, DLP, SD-WAN, NSX, vCenter, 
 
 Types:
 
@@ -1558,10 +1560,10 @@ Types:
 - Log Collector
 - Panorama: both
 
-### Templates & stacks - 
+### Templates & stacks
  
  <img width="576" alt="image" src="https://github.com/philipp-ov/foundation/assets/116812447/813aef71-ce9f-401e-80a9-81e34f4c42c3">
-
+  
 - To control configuration and updates
 - All Device parts and Network parts
 - Template is a copy of firewall's configuration interface
@@ -1609,10 +1611,17 @@ Types:
 - The Template at the top of the Stack has the highest priority in the presence of overlapping config
 - Commit to Panorama and devices
 
-### Licensing
+### Licensing + Software Upgrades + Dynamic Updates
 
+- Panorama > Device Deployment 
 - Automatically license a VM-Series firewall when it connects to Panorama
 - Simplifies the license activation and deactivation of VM-Series firewalls in environments that use auto-scaling and automation to deploy and delete firewalls to address changes in the cloud
+- Panorama > Device Deployment > Licenses > Activate
+- Support licenses can be activated only locally on FW
+- Panorama treats the managed firewalls in HA pairs as individual firewalls for software update purposes
+- A pair of Panorama instances can be used to download software updates. One Panorama with a trusted internet connection can transfer updates to an SCP server while the second Panorama deployed in an isolated network can use the SCP server as a software update server. The second Panorama can then download any updates and then send them to all the managed devices
+- Panorama > Device Deployment > Software
+- Panorama > Device Deployment > Dynamic Updates
 
 ### Automatic commit recovery
 
@@ -1671,15 +1680,6 @@ Commit options when you commit to Panorama:
 - Preview Changes
 - Change Summary
 - Validate Commit
-
-### Central software upgrades
-
-- Panorama treats the managed firewalls in HA pairs as individual firewalls for software update purposes
-
-### Central signature updates
-
-- A pair of Panorama instances can be used to download software updates. One Panorama with a trusted internet connection can transfer updates to an SCP server while the second Panorama deployed in an isolated network can use the SCP server as a software update server. The second Panorama can then download any updates and then send them to all the managed devices
--
 
 ### Import firewall configs to Panorama
 
