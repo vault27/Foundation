@@ -333,11 +333,11 @@ What we configure in zone:
 
 Zone types:
 
-- L3
-- L2
-- Tap
-- Virtualwire
-- Tunnel
+- L3: L3 interfaces, VLAN, Loopback, Tunnel
+- L2: L2 interfaces
+- Tap: tap interfaces
+- Virtualwire: virtual wire interfaces
+- Tunnel: no interfaces, 
 
 Concepts
 
@@ -414,13 +414,17 @@ Floods:
 - IPsec tunnels are considered Layer 3 traffic segments for implementation purposes and are handled by virtual routers like any other network segments. Forwarding decisions are made by destination address, not by VPN policy
 - There are limitations for the number of entries in the forwarding tables (forwarding information bases [FIBs]) and the routing tables (routing information bases [RIBs]) in either routing engine
 - Lower administrative distanse is prefered
-- ECMP: 4 routes max: no need to wait for RIB recalculation, load balancing, all links load
+- ECMP: 4 routes max: no need to wait for RIB recalculation, load balancing, all links load, disabled by default
 - Route monitoring
 - PBF 
 - Application-specific rules are not recommended for use with PBF because PBF rules might be applied before the firewall has determined the application
 - Virtual routers can route to other virtual routers within the same firewall
 - Each Layer 3 Ethernet, loopback, VLAN, and tunnel interface defined on the firewall must be associated with a virtual router
 - Each model supporting a different maximum of virtual routers
+- To prioritise one OSPF path over another we have to lower its interface metric, the lower the metric the better
+- If we have 2 redundant links between 2 PAs with OSPF there might be assymetry in traffic - pings work fine
+- OSPF cost is called metric here
+- 2 reduntant IPSec tunnels + OSPF - if main fails - it takes 5 pings to rebuild routing table
 
 ### NAT
 
@@ -1579,6 +1583,21 @@ Types:
 - Stack have a configurable priority order to ensure that Panorama pushes only one value for any duplicate setting. If there is the same object in 2 templates, object from the uppest template in the stack will be installed, for example interface management profile, no options for this profile from lower template will be installed
 - Different firewall models - different stacks
 
+### Variables
+
+- They are created in order not to create 200 templates with different IPs inside
+- Used in: Static routes, interface IPs, Server profiles, DNS servers....
+- You can use variables to replace:
+    - An IP address (includes IP Netmask, IP Range, and FQDN) in all areas of the configuration.
+    - Interfaces in an IKE Gateway configuration (Interface) and in an HA configuration (Group ID).
+    - Configuration elements in your SD-WAN configuration (AS Number, QoS Profile, Egress Max, Link Tag).
+- Panorama > Templates > Manage Variables > Create Variables
+- Variables need to begin with '$': $DNS=1.1.1.1/32
+- Use this variable in proper configurations
+- You can import CSV with values for variables into Stack, depending on a device
+- In CSV you configure variable name, which you already created + variable type (IP/netmask for example) + value for each firewall - Serial/Hostname
+
+
 ### Device groups - to control policies and objects
 
 - Device groups: for controlling all policies + all objects
@@ -1600,7 +1619,8 @@ Types:
 - You attach devices only to lower Device Groups, because Device can be attached only to one Device Group
 - You cannot override or change rules arrived from Panorama
 - If you create an address object on Panorama, you can disable override and make it shared: for other VSYSs and Device Groups
-- If you create an address on Panorama and do not use it in rules, it will be installed to device anyway
+- If you create an address on Panorama and do not use it in rules, it will be installed to device anywayt is enabled in Parent Group
+- If the same object is in Parent group, you cannot create it in Child group, override is required, if i
 
 ### Configuration
 
@@ -1622,6 +1642,7 @@ Types:
 - A pair of Panorama instances can be used to download software updates. One Panorama with a trusted internet connection can transfer updates to an SCP server while the second Panorama deployed in an isolated network can use the SCP server as a software update server. The second Panorama can then download any updates and then send them to all the managed devices
 - Panorama > Device Deployment > Software
 - Panorama > Device Deployment > Dynamic Updates
+- 
 
 ### Automatic commit recovery
 
@@ -1687,6 +1708,9 @@ Commit options when you commit to Panorama:
     - Migrate the entire firewall configuration and then, on Panorama, delete the settings that you will manage locally on firewalls. You can override a template or template stack value that Panorama pushes to a firewall instead of deleting the setting on Panorama
 - Load a partial firewall configuration, including only the settings that you will use Panorama to manage
 - Firewalls do not lose logs during the transition to Panorama management
+- Prepare according to official plan
+- Panorama > Setup > Operations, click Import device configuration to Panorama, and select the Device
+- Migrate HA pair: Disable configuration synchronization between the HA peers, 
 
 ### Log collectors
 
@@ -1694,7 +1718,25 @@ Commit options when you commit to Panorama:
 
 Default username/pass - admin/admin  
 
-Configure network
+### Show all system data
+
+```
+show system info
+```
+
+### Show Top - management plane
+
+```
+show system resources
+```
+
+### Check if web server is running
+
+```
+show system software status | match appweb
+```
+
+### Configure network
 
 ```
 configure
@@ -1705,13 +1747,21 @@ commit
 show interface management
 ```
 
-Show routing table
+### Show routing table
+
 ```
 show routing route
 show routing fib
 ```
 
-Show sessions - with NAT data
+### Test route
+
+```
+admin@Palto-1(active)> test routing fib-lookup ip 98.139.183.24 virtual-router default
+```
+
+### Show sessions - with NAT data
+
 ```
 show session all filter application ping
 
@@ -1723,7 +1773,8 @@ Vsys                                          Dst[Dport]/Zone (translated IP[Por
 vsys1                                          1.1.1.1[26]/Outside  (1.1.1.1[26])
 ```
 
-Show detailed info about session: NAT, app, rule names, vsys, interfaces, bytes, type, state, user, QoS, end reason, logging...
+### Show detailed info about session: NAT, app, rule names, vsys, interfaces, bytes, type, state, user, QoS, end reason, logging...
+
 ```
 admin@PA-1-1> show session id 25
 
@@ -1776,12 +1827,14 @@ Session              25
         end-reason                           : aged-out
 ```
 
-Clear session
+### Clear session
+
 ```
 clear session id 27240
 ```
 
-Show NAT policy
+### Show NAT policy
+
 ```
 admin@PA-1-1> show running nat-policy
 
@@ -1798,13 +1851,51 @@ admin@PA-1-1> show running nat-policy
 }
 ```
 
-Ping
+### Ping
+
 ```
 ping source 10.2.62.150 host 10.2.62.1
 ```
 
-Show MAC addresses
-The MAC addresses of the HA1 interfaces, which are on the control plane and synchronize the configuration of the devices are unique. The MAC addresses of the HA2 interfaces, which are on the data plane and synchronize the active sessions mirror each other.
+### Reboot
+
+```
+request restart system
+```
+
+### Debug silent packet drop
+
+```
+debug dataplane packet-diag set filter match destination 192.168.1.100
+debug dataplane packet-diag set filter on
+show counter global filter packet-filter  yes delta yes severity drop
+```
+
+### Check connection to URL database
+
+```
+show url-cloud status
+```
+
+### Show Wildfire submissions
+
+```
+debug wildfire upload -log show
+```
+
+### Disable hardware offload 
+
+In order to capture traffic  
+Supported on the following firewalls: PA-3200 Series, PA-5200 Series,and PA-7000 Series firewall
+
+```
+admin@PA-7050>set session offload no
+```
+
+### Show MAC addresses
+
+The MAC addresses of the HA1 interfaces, which are on the control plane and synchronize the configuration of the devices are unique. The MAC addresses of the HA2 interfaces, which are on the data plane and synchronize the active sessions mirror each other
+
 ```
 show interface all - including VMAC for Active-Passive HA cluster
 ethernet1/5             20    1000/full/up              00:1b:17:00:0b:14
@@ -1813,15 +1904,16 @@ HA Group ID = 0b Hex (11 Decimal) and Interface ID = 14 Hex (20 Decimal)
 show interface ethernet1/1
 show high-availability state - The following command displays the MAC addresses of an HA cluster
 show high-availability virtual-address - displays VMAC and VIP for Active-Active HA cluster
-
 ```
 
-To place the local HA peer into a suspended state and temporarily disable HA functionality on it
+### Switch to suspended state
+
 ```
 request high-availability state suspend
 ```
 
-To place the suspended local HA peer back into a functional state
+### Switch to functional state
+
 ```
 request high-availability state functional
 ```
@@ -1850,6 +1942,12 @@ admin@PA-1-1(active-primary)> show panorama-status
 Panorama Server 1 : 10.2.23.154
     Connected     : no
     HA state      : disconnected
+```
+
+### Reset to factory configuration
+
+```
+request system private-data-reset
 ```
 
 ## Logs
@@ -2069,11 +2167,11 @@ How traffic is routed:
 
 - Option 1: You create a tunnel, no IPs, you create static routes specifing only interface, and it works
 - Option 2: You create a tunnel, configure IPs on both ends, use dynamic routing or static routing, and it works
-- Option 3: You create a tunnel, configure Proxy-IDs, and it works, without IPs, without routing - policy based VPN - only with third party devices, legacy - as I understand does not work on Palo Alto to Palo Alto
+- Option 3: You create a tunnel, configure Proxy-IDs, and it works, without IPs, without routing - policy based VPN - only with third party devices, legacy - as I understand does not work on Palo Alto to Palo Alto - on Palo Alto you need to comfigure routes any way
 
 Concepts
 
-- The tunnel interface must belong to a security zone to apply policy, and it must be assigned to a virtual router 
+- The tunnel interface must belong to a security zone to apply policy, and it must be assigned to a virtual router
 - Tunnel interface and the physical interface are assigned to the same virtual router
 - Tunnel interface can be in VPN zone and physical interface in External zone, for example
 - An IP address is only required if you want to enable tunnel monitoring or if you are using a dynamic routing protocol to route traffic across the tunnel
@@ -2083,6 +2181,11 @@ Concepts
 - On Palo Alto OSPF works without enabling GRE....somehow
 - Monitor profile can be used to monitor IPSec tunnel or next hop device, failover action is available
 - The tunnel comes up only when there is interesting traffic destined to the tunnel
+- Default life time of Phase 2 tunnel is 3600 sec
+- Life time can be in Kbytes as well
+- Only one Phase 2 tunnel is used between 2 sites, because Proxy-IDs are 0.0.0.0/0, so separate tunnel is not created for every separate connection
+- For every site you need IKE Gateway and tunnel.x interface
+- Remote Peer IP in IKE Gateway can be dynamic, but in this case we need to configure ID for remote peer, for example domain name
 
 #### Policy-based VPN and Proxy-ID
 
@@ -2167,6 +2270,10 @@ If we need another site, we:
 - Tunnel.1 is configured for Primary VPN tunnel
 - Tunnel.2 is configured for Secondary VPN tunnel 
 - Both tunnel interfaces are configured under Security Zone "L3-VPN"
+- Every site has 2 tunnels to HQ
+- Via OSPF manual metric configuration we choose main tunnel
+- If main tunnel fails, by default it takes 5 pings to switch to secondary tunnel!
+- When we enable main tunnel back - no pings lost, we just switch back to main tunnel
 
 There are three methods to do VPN tunnel traffic automatic failover. Any one of the below methods can be used. 
 
@@ -2176,57 +2283,81 @@ There are three methods to do VPN tunnel traffic automatic failover. Any one of 
 
 #### Verify
 
-Test gateway
+**Test gateway**
 
 ```
 test vpn ike-sa gateway <gateway_name>
 ```
 
-Show IKE phase 1
+**Show IKE phase 1**
 
 ```
-show vpn ike-sa gateway <gateway_name>
+admin@PA-1-1(active-primary)> show vpn ike-sa gateway Peer2
+
+IKEv1 phase-1 SAs
+GwID/client IP  Peer-Address           Gateway Name                                                    Role Mode Algorithm             Established     Expiration      V  ST Xt Phase2
+--------------  ------------           ------------                                                    ---- ---- ---------             -----------     ----------      -  -- -- ------
+1               10.2.100.72            Peer2                                                           Resp Main PSK/ DH2/A128/SHA1    Aug.03 01:12:31 Aug.03 09:12:31 v1 13 1  3      
+
+Show IKEv1 IKE SA: Total 2 gateways found. 1 ike sa found.
+
+
+IKEv1 phase-2 SAs
+Gateway Name                                                    TnID     Tunnel                 GwID/IP          Role Algorithm          SPI(in)  SPI(out) MsgID    ST Xt 
+------------                                                    ----     ------                 -------          ---- ---------          -------  -------- -----    -- -- 
+Peer2                                                           1        Branch-1               1                Init ESP/ DH2/tunl/SHA1 CE8B7B8B E4DB6687 88990189 9  1   
+
+Show IKEv1 phase2 SA: Total 2 gateways found. 1 ike sa found.
+
+
+There is no IKEv2 SA found.
 ```
 
-Test IKE Phase 2
+**Test IKE Phase 2**
 
 ```
 test vpn ipsec-sa tunnel <tunnel_name>
 ```
 
-Show IKE Phase 2
+**Show IKE Phase 2**
 
 ```
-show vpn ipsec-sa tunnel <tunnel_name>
+admin@PA-1-1(active-primary)> show vpn ipsec-sa tunnel Branch-1
+
+GwID/client IP  TnID   Peer-Address           Tunnel(Gateway)                                                                                                                  Algorithm          SPI(in)  SPI(out) life(Sec/KB)             remain-time(Sec)        
+--------------  ----   ------------           ---------------                                                                                                                  ---------          -------  -------- ------------             ----------------        
+1               1      10.2.100.72            Branch-1(Peer2)                                                                                                                  ESP/A128/SHA1      CE8B7B8B E4DB6687 3600/Unlimited           2076                     
+
+Show IPSec SA: Total 1 tunnels found. 1 ipsec sa found.
 ```
 
-Show general info about all tunnels:total amount, IPs, interfaces
+**Show general info about all tunnels:total amount, IPs, interfaces**
 
 ```
 show vpn flow
 ```
 
-Filter the logs in System section
+**Filter the logs in System section**
 
 ```
 subtype eq vpn
 ```
 
-Follow logs
+**Follow logs**
 
 ```
 > tail follow yes mp-log ikemgr.log
 > tail follow yes mp-log cryptod.log
 ```
 
-Detailed Debug
+**Detailed Debug**
 
 ```
 debug ike global on debug
 > less mp-log ikemgr.log
 ```
 
-IKE negotiation capture. Messages 5 and 6 onwards in the main mode and all the packets in the quick mode have their data payload encrypted
+**IKE negotiation capture. Messages 5 and 6 onwards in the main mode and all the packets in the quick mode have their data payload encrypted**
 
 ```
 > debug ike pcap on
@@ -2324,6 +2455,19 @@ GlobalProtect authentication event logs in Monitor > Logs > System
 - CRL
 - OCSP - takes precedence over CRL
 
+### Firewall Features Using Certificates
+
+- TLS decryption
+- MGTM interface auth
+- GlobalProtect
+    - Portal Auth
+    - Gateway Auth
+    - Mobile Security Manager Auth
+- Captive Portal Auth
+- IPSec IKE Auth
+- HA Auth
+- Secure Syslog Auth
+
 ## Management Profiles
 
 - Network > Network Profiles > Interface Mgmt
@@ -2396,6 +2540,19 @@ needed
 
 - GlobalProtect Portal
 - GlobalProtect Gateway
+  
+
+- Configure certs for portal and gateway
+- Configure SSL service profile for portal and gateway
+- Then LDAP server profile, sAMAccountName
+- Authentication profile
+- Next is portal: Network > GlobalProtect > Portals
+- Download GlobalProtect client: Device > GlobalProtect client
+- Next tunnel interface: Network > Interfaces > Tunnel, separate zone for VPN
+- IP pool
+- Access route
+- Next, gateway
+- Next connect
 
 ### GlobalProtect Portal
 
@@ -2492,3 +2649,17 @@ show user group list
 - Automatically discovers and identifies all network-connected devices and constructs a data-rich, dynamically updating inventory
 - When it detects a device vulnerability or anomalous behavior posing a threat, IoT Security notifies administrators
 - Works with Palo Alto Networks next-generation firewalls, logging service, and update server, and optionally with Panorama and integrated third-party products
+
+## Security Policy to Excel
+
+- Export your current running configuration:  In the web-interface you go to Device -> Setup -> Operations -> Export named configuration snapshot
+-  Open the configuration snapshot with a compatible text-editor (as Notepad++ for example)
+- Search for string <security> (press Strg+H in most ext-editors) and deleted everything before the tag
+- Search for string </security> (press Strg+H in most ext-editors) and deleted everything after the tag You now should have everything between <security> and </security>. Save the file (for security ;))
+- Delete all tags <member> and </member>: Press Strg+H again for search and replace. Search for string <member> and replace it with nothing (delete it!). Do the same for the string </member>
+- Save the file as an XML document
+- Open Excel and import the XML file by clicking: Data -> Import –> other Sources –> XML-Dataimport and choose the XML file
+- As a result you should see your complete ruleset, where every rule is in exactly one row. However, there were slight layout problems caused by blanks in front of the address objects
+- You can easily fix that by using the replace-function again, and replace the blanks with nothing
+- As a side-note:  You can use that procedure also for importing the address-objects of your PAN-Firewall. In that case you have to import everything between <address> and </address> tags
+- Side-Note 2: For additional XML settings you may want to activate the developers tab in Excel. It offers you additional features when working with XML data

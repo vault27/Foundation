@@ -101,11 +101,15 @@ The information transmitted in the third exchange of messages is protected by th
 
 #### Aggressive mode
 
+### IKE Phase 1
+
+- To build a tunnel 4 parametres are needed: Authentication, key exchange, encryption, MAC: PSK/DH2/A128/SHA1 + mode for IKEv1: main or aggressive + lifetime
 
 
 ### IKE Phase 2
 
 - Messages include Proxy-IDs: local networks, remote network, protocol, name - they should match on both sides
+- To build a tunnel 3 parametres are needed: Protocol (ESP/AH), encryption, MAC: ESP/A128/SHA1 + lifetime
 
 ### Xauth - Extended Authentication within IKE
 

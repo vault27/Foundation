@@ -51,7 +51,9 @@ Everything I need to know about OSPF in one place.
 
 - Open standard, IGP, Link-state, classless (VLSM, Summarization), Dikstra SPF Algorithm, guaranties loop free, hierarchi through areas - large scalability, topology summarization, interopeability between vendors
 - Router knows all network and builds a tree - The algorithm places each router at the root of a tree
-- This protocol is all about interfaces: priority, area, cost - everyfing is connected with the interface, it even did not send routes, it sends information about interface: IP address, mask, cost...
+- This protocol is all about interfaces: priority, area, cost, network type - everyfing is connected with the interface, it even did not send routes, it sends information about interface: IP address, mask, cost...
+- It does not send routes, it sends LSAs
+- It does not receives routes, every router calculates them by itself
 - OSPF runs directly over IPv4, using its own protocol 89, which is reserved for OSPF by the Internet Assigned Numbers Authority (IANA)
 - Each router has its own view of the topology even though all the routers build a shortest path tree which uses the same link-state database
 - OSPF is very good for traffic engineering in ISP with MPLS
@@ -74,7 +76,8 @@ Everything I need to know about OSPF in one place.
 - Next-hop field - supports the advertisment of routes with a different next-hop router than the advertising router
 - Manual route summarization - summarization is supported on ABR only
 - If there is an topology change - router sends LSA, if no changes LSAs are sent every 30 mins
-- Each router stores the data, composed of individual link-state advertisements (LSA) , in its own copy of the link-state database (LSDB) . Then, the router applies the Shortest Path First (SPF) algorithm to the LSDB to determine the best (lowest-cost) route for each reachable subnet (prefix/length) 
+- Each router stores the data, composed of individual link-state advertisements (LSA) , in its own copy of the link-state database (LSDB) . Then, the router applies the Shortest Path First (SPF) algorithm to the LSDB to determine the best (lowest-cost) route for each reachable subnet (prefix/length)
+- Two routers can have 2 neighborships via different interfaces - and it is ok - router ID is the same
 
 ## Design
 
