@@ -783,7 +783,11 @@ Advanced URL Filtering
     - continue: After the specified file type is detected, a customizable response page is
 presented to the user. The user can click through the page to download the file. A log is also generated in the Data Filtering log. This type of forwarding action requires user interaction and is therefore only applicable for web traffic
 
-### WildFire Analysis
+### WildFire
+
+Operation workflow
+
+<img width="889" alt="image" src="https://github.com/philipp-ov/foundation/assets/116812447/acccb91d-fb34-40a9-a1df-d1f151054bb2">
 
 - Create profile, add rules
 - Every rule has application, file types, direction and anaylysis type: public cloud or private cloud
