@@ -3,9 +3,13 @@
 Most mathematical activity involves the discovery of properties of abstract objects and the use of pure reason to prove them.
 
 - Number theory
-- Algebra
+- Algebra - branch of elementary mathematics which is concerned with relation of  variables and constants
+    - The origin of algebra was traced by Babylonians in 1900BC
+    - The Persian mathematician Al-Khwarizmi is referred as the ‘father of algebra’
+    - Branch of mathematics in which arithmetical operations and formal manipulations are applied to abstract symbols rather than specific numbers.
 - Geometry
 - Analysis
+- Arithmetic - elementary part of mathematics that consists of the study of the properties of the traditional operations on numbers—addition, subtraction, multiplication, division, exponentiation, and extraction of roots
 
 ## History
 
@@ -81,6 +85,10 @@ b - base
 
 - Base - 10 - digits - 0 - 9
 - Every number is a sequence of digits
+- Decimals are the numbers, which consist of two parts namely, a whole number part and a fractional part separated by a decimal point or radix
+- The two different types of decimals are:
+    - Terminating decimals (or) Non-recurring decimals
+    - Non-terminating decimals (or) Recurring decimals
 
 #### Decimal to binary conversion
 
@@ -108,3 +116,11 @@ by 2                (Digit)
 ```
 
 ## Number types
+
+- Real
+- Natural - the non-negative integers {0, 1, 2, 3, ...}. Natural numbers including 0 are also sometimes called whole numbers
+- Rational
+- Integer - Positive and negative counting numbers, as well as zero: {..., −3, −2, −1, 0, 1, 2, 3, ...}
+    - Even and odd
+    - Prime - A positive integer with exactly two positive divisors: itself and 1. The primes form an infinite sequence 2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, ...
+    - 

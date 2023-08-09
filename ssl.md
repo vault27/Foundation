@@ -262,3 +262,22 @@ Show only server hellos
 ```
 tls.handshake.type == 2
 ```
+
+## Client authentication
+
+- When a server indicates a requirement for the client to submit its certificate, the client must send both its certificate, and a digitally-signed hash value. This hash value is signed (i.e. encrypted) with the client's private key
+- Server has to have the same CA, which was used to create client's cert
+- Server checks the validity of CA + that client indeed has private key
+- If someones decide to decrypt an re-encrypt - it will not possible, because interceptor does not have client's private key
+- Such connections usually compltetely bypassed
+
+## Decryption
+
+Why decryption fails:
+
+- Untrusted server certificate
+- Expired certificate
+- Pinned certificate to client
+- Client authentication
+- Unsupported ciphers
+- Custom app

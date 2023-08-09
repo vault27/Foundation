@@ -311,7 +311,18 @@ https://knowledgebase.paloaltonetworks.com/KCSArticleDetail?id=kA10g000000ClVHCA
 
 ### Backup
 
-- 
+### Content updates
+
+- Applications and Threats Content Updates
+- Whether your organization is mission-critical or security-first (or a mix of both)
+- The Best Practices for Applications and Threats Content Updates
+- Device > Dynamic Updates
+- Schedule for Applications and Threat content updates
+- Installation Threshold for content releases - Content releases must be available on the Palo Alto Networks update server at least this amount of time before the firewall can retrieve the release and perform the Action you configured
+- New App-ID Threshold. The firewall only retrieves content updates that contain new App-IDs after they have been available for this amount of time
+- Commit
+- Critical content alerts are logged as system log entries with the following Type and Event: (subtype eq content) and (eventid eq palo-alto-networks-message)
+- Configure log forwarding
 
 ## Network
 
@@ -789,16 +800,6 @@ Operation workflow
 
 <img width="889" alt="image" src="https://github.com/philipp-ov/foundation/assets/116812447/acccb91d-fb34-40a9-a1df-d1f151054bb2">
 
-- Create profile, add rules
-- Every rule has application, file types, direction and anaylysis type: public cloud or private cloud
-- Forward unknown files or email links for WildFire analysis
-- Specify files to be forwarded for analysis based on application, file type, and transmission direction (upload or download)
-- WildFire public cloud or the WildFire private cloud (hosted with a WF-500 appliance)
-- WildFire hybrid cloud deployment: WildFire appliance to analyze sensitive files (such as PDFs) locally, less-sensitive file types (such as PE files) or file types that are not supported for WildFire appliance analysis (such as APKs) to be analyzed by the WildFire public cloud
-- Files are not quarantined pending WildFire evaluation. In cases of positive malware findings, the security engineer must use the information collected on the firewall and by WildFire to locate the file internally for remediation
-- WildFire typically renders a verdict on a file within 5 to 10 minutes of receipt
-- Wildfire never quarantine files
-
 Platform in general:
 
 - Sandboxing platform
@@ -820,7 +821,19 @@ Platform in general:
 - If not done already, enable the firewall to perform decryption and Forward Files for Advanced WildFire Analysis Select Device > Setup > Content-ID
 - Wildfire check is skipped if: file is signed by a trusted signer, file has matched a previous submission, file larger than 50 mbs
 - WF-500 does not support bare-metal analysis - suspicious files are sent to a real, racked-and-stacked hardware environment where they are detonated, and any response is observed for malicious behavior
-- Wf-500 does not support apk, mac-os, linux, scripts, archives 
+- Wf-500 does not support apk, mac-os, linux, scripts, archives
+- Files are not quarantined pending WildFire evaluation. In cases of positive malware findings, the security engineer must use the information collected on the firewall and by WildFire to locate the file internally for remediation
+- WildFire typically renders a verdict on a file within 5 to 10 minutes of receipt
+- Wildfire never quarantine files
+
+Configuration workflow
+
+- Create profile, add rules
+- Every rule has application, file types, direction and anaylysis type: public cloud or private cloud
+- Forward unknown files or email links for WildFire analysis
+- Specify files to be forwarded for analysis based on application, file type, and transmission direction (upload or download)
+- WildFire public cloud or the WildFire private cloud (hosted with a WF-500 appliance)
+- WildFire hybrid cloud deployment: WildFire appliance to analyze sensitive files (such as PDFs) locally, less-sensitive file types (such as PE files) or file types that are not supported for WildFire appliance analysis (such as APKs) to be analyzed by the WildFire public cloud
 
 Verdicts
 
@@ -832,6 +845,22 @@ Verdicts
 File sizes
 
 <img width="827" alt="image" src="https://github.com/philipp-ov/foundation/assets/116812447/9b8ad671-00d7-47e8-93f4-78e8e21b953f">
+
+Licenses
+
+- The basic WildFire service is included as part of the Palo Alto Networks next generation firewall and does not require an Advanced WildFire or WildFire subscription
+- Firewall can forward portable executable (PE) files for analysis, and can retrieve Advanced WildFire signatures only with antivirus and/or Threat Prevention updates which are made available every 24-48 hours
+- WildFire license
+    - Advanced WildFire signature updates - Real time
+    - Advanced WildFire Inline ML
+    - Advanced file type forwarding: APKs, Flash files, PDFs, Microsoft Office files, Java Applets, Java files (.jar and .class), and HTTP/HTTPS email links contained in SMTP and POP3 email messages
+    - WildFire private cloud analysis does not support APK, Mac OS X, Linux (ELF), archive (RAR/7-Zip), and script (JS, BAT, VBS, Shell Script, PS1, and HTA) files
+    - WildFire API
+    - Local WildFire appliance
+- Advanced WildFire subscription
+    - Advanced cloud-based detector
+- Standalone subscription that provides API-only access
+
 
 ### DoS Protection
 
@@ -891,6 +920,9 @@ Session end reasons
 - 6-Tuple is checked against the security policy > known application signatures > check if it is SSH, TLS, or SSL > decryption policy (if exists) > checked again for a known application signature inside TLS > the application has not been identified (a maximum of 4 packets after the handshake, or 2,000 bytes) > will use the base protocol to determine which decoder to use to analyze the packets more deeply > unknown-tcp > check policy if unknown is allowed  
 - SSL > Web-Browsing > flickr > flickr-uploading: NGFW continiously watches at traffic app, the more data it gets, then identificationis changed
 - The application decoder will continuously scan the session for expected and deviant behavior, in case the application changes to a sub-application or a malicious actor is trying to tunnel a different application or protocol over the existing session
+- App-ID database does not require license for upgrade
+- New App-IDs are released on the third Tuesday of every month
+- Application and threat signatures are delivered in a single package
 - If the protocol is unknown, App-ID will apply heuristics
 - Use App-ID instead of service and protocols and port based
 - App-ID without decryption identifies application based on server certificate: CN field, if it is exact, then it will be google-base for example, if there is a wildcard, it will be SSL app
@@ -2428,6 +2460,17 @@ GlobalProtect authentication event logs in Monitor > Logs > System
 - The Palo Alto Network firewall uses the OpenSSL crypto library
 - Globalprotect IPsec crypto profiles aren't used for the X-auth clients
 - Troubleshooting of the tunnel is done much the same way as any IPSec tunnel would be troubleshot
+
+### GlobalProtect Satellite 
+
+- Simplifies the deployment of traditional hub and spoke VPNs, enabling you to quickly deploy enterprise networks with several branch offices with a minimum amount of configuration required on the remote satellite devices. This solution uses certificates for device authentication and IPSec to secure data
+- The setup includes configuring the portal, gateway, and satellite
+- Generate a Root CA Certificate on the Portal (Self signed) and a Server Certificate used for Portal and Gateway certificate signed by the above Root CA
+- Export the Root CA (CACert) in PEM format, without the private key, and import it to the satellite device (Device > Certificate Management > Certificates > Import). This certificate on the Satellite is used to validate the Portal/ Gateway Certifcate against the CACert
+- Configure a portal (Network -> GlobalProtect -> Portals -> Add) and add the interface that will act as Portal/Gateway
+- Add satelite in Portal configuration in special Satelite Section: Name + Serial or User/pass + Gateways
+- Configure Gateway + configure Satellite there as well
+- Configure Satelite itself: Create a new IPSec tunnel config and select the type as GlobalProtect Satellite. Add the tunnel interface, portal config, and the interface that can reach the portal address
 
 ## VSYS
 
