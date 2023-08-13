@@ -437,32 +437,6 @@ Floods:
 - OSPF cost is called metric here
 - 2 reduntant IPSec tunnels + OSPF - if main fails - it takes 5 pings to rebuild routing table
 
-### NAT
-
-Separate policy. Regulated by:
-- Zones
-- Interfaces
-- IP addresses
-- App services - ports
-
-First matched ruled is applied  
-The advantage of specifying the interface in the NAT rule is that the NAT rule is automatically updated to use any address subsequently acquired by the interface.  
-
-Supported  Source NAT types:
-- Static IP
-- Dynamic IP and port
-- Dynamic IP
-
-No NAT policy for exculsion  
-Use session browser to find NAT rule name  
-U-Turn NAT - user connects to Internal resource via external IP address and it is uturned on the firewall. Due to absence of internal DNS server for example. If we use regular Destination NAT for it, then traffic will be sent back to Internal network and web server will reply directly to client, causing assymetry. To avoid this Source NAT should be used as well, so the reply traffic will be sent to NGFW as well. Place the rule for it above all other
-
-Rule types:
-
-- ipv4
-- nat64
-- nptv6 - IPv6-to-IPv6 Network Prefix Translation 
-
 ### IPv6 support
 
 - To enable IPv6 on firewall:
@@ -481,56 +455,6 @@ Rule types:
 - The IPv6 Router Advertisement for DNS configuration is supported for Ethernet interfaces, subinterfaces, Aggregated Ethernet interfaces, and Layer 3 VLAN interfaces on all of the PAN-OS platforms
 - After you configure the firewall with the addresses of RDNS servers, the firewall provisions an IPv6 host (the DNS client) with those addresses
 - An IPv6 Router Advertisement can contain multiple DNS Recursive Server Address options, each with the same or different lifetimes
-
-### QoS
-
-QoS is enforced on traffic as it egresses the firewall   
-  
-Unclassified traffic enters firewall > **QoS Policy** assignes **class** to traffic > **QoS Profile** on Egress interface prioritizes traffic accorsing to **QoS class**  
-
-You can also mark traffic in a security policy - in a security rule  
-Enables the firewall to mark traffic with the same DSCP value that was detected at the beginning of a session (in this example, the firewall would mark return traffic with the DSCP AF11 value). While configuring QoS allows you to shape traffic as it egresses the firewall, enabling this option in a Security rule allows the other network devices intermediate to the firewall and the client to continue to enforce priority for DSCP-marked traffic  
-
-- Self-contained system local to the firewall
-- Can consider existing QoS packet markings but does not act directly on them
-- Ingress traffic cannot be managed
-- QoS profile - matching traffic is then shaped based on the QoS profile class settings as it exits the physical interface. Each QoS profile rule allows you to configure individual bandwidth and priority settings for up to eight QoS classes, as well as the total bandwidth allowed for the eight classes combined. In every profile you configure priorities for every class. Then you apply a profile to an interface.
-- QoS policy - define traffic you want to receive QoS treatment and assign that traffic a QoS class. QoS policy rule is applied to traffic after the firewall has enforced all other security policy rules, including Network Address Translation (NAT) rules.
-- QoS egress interface - this is where you apply QoS profile. If you limit Youtube then Egress interface is Internal interface of FW. You apply it in separate section Network > QoS
-- DSCP classification allows you to both honor DSCP values for incoming traffic and mark a session with a DSCP value as session traffic exits the firewall
-  
-QoS policy  
-  
-Policies > QoS  
-Define a QoS policy rule to match to traffic based on:
-
-- Applications and application groups
-- Source zones, source addresses, and source users
-- Destination zones and destination addresses
-- Services and service groups limited to specific TCP and/or UDP port numbers
-- URL categories, including custom URL categories
-- Differentiated Services Code Point (DSCP) and Type of Service (ToS) values, which are used to indicate  the level of service requested for traffic, such as high priority or best effort delivery
-    - Expedited Forwarding (EF): Can be used to request low loss, low latency, and guaranteed bandwidth for traffic. Packets with EF codepoint values are typically guaranteed the highest-priority delivery
-    - Assured Forwarding (AF): Can be used to provide reliable delivery for applications. Packets with AF codepoint indicate a request for the traffic to receive higher priority treatment than what the best-effort service provides (although packets with an EF codepoint continue to take precedence over those with an AF codepoint)
-    - Class Selector: Can be used to provide backward compatibility with network devices that use the IP precedence field to mark priority traffic
-    - IP Precedence (ToS): Can be used by legacy network devices to mark priority traffic (the IP precedence header field was used to indicate the priority for a packet before the introduction of the DSCP classification)
-    - Custom Codepoint: Can be used to match to traffic by entering a codepoint name and binary value
-  
-QoS profile  
-  
-Network > Network Profiles > QoS Profile
-
-- For the profile you configure Egress Max and Egress guaranteed 
-- For every class which you defined in QoS Policy you configure Priority, Egress MAX and Egress Guaranteed
-- Egress MAX and Egress Guaranteed are in Mbps or percentage
-- Network > QoS and Adda QoS interface
-- Can be applied only to physical interface
-- You may configure Egress MAX here as well
-- You configure Default QoS profile for regular (ClearText) traffic and Tunnel traffic
-- For both ClearText and Tunnel traffic you can configure many rules with many profiles besides Default, based on Source interface and Source subnet
-- For both ClearText and Tunnel traffic you can configure Egress MAX and Egress Guaranteed
-- Egress guaranteed specifies the amount of bandwidth guaranteed for matching traffic. When the egress-guaranteed bandwidth is exceeded, the firewall passes traffic on a best-effort basis. Bandwidth that is guaranteed but is unused continues to remain available for all of the traffic
-- Egress max specifies the overall bandwidth allocation for matching traffic. The firewall drops the traffic that exceeds the egress max limit set
 
 ### Service routes
 
@@ -592,6 +516,7 @@ Network > Network Profiles > QoS Profile
 - Top to down
 - Left to right
 - New rule is created under currently selected rule
+- Mandatory match criterias: Source Zone and Destination Zone
 - More specific rules first
 - Exceptions to policy rules must appear before the general policy
 - Step 1: check security policy
@@ -622,6 +547,195 @@ The policy evaluation then uses the 'six tuple' (6-Tuple) to match establishing 
 - Unused apps
 - Unused rules
 - App viewer
+
+### NAT
+
+Separate policy. Regulated by:
+- Zones
+- Interfaces
+- IP addresses
+- App services - ports
+
+First matched ruled is applied  
+The advantage of specifying the interface in the NAT rule is that the NAT rule is automatically updated to use any address subsequently acquired by the interface.  
+
+Supported  Source NAT types:
+- Static IP
+- Dynamic IP and port
+- Dynamic IP
+
+No NAT policy for exculsion  
+Use session browser to find NAT rule name  
+U-Turn NAT - user connects to Internal resource via external IP address and it is uturned on the firewall. Due to absence of internal DNS server for example. If we use regular Destination NAT for it, then traffic will be sent back to Internal network and web server will reply directly to client, causing assymetry. To avoid this Source NAT should be used as well, so the reply traffic will be sent to NGFW as well. Place the rule for it above all other
+
+Rule types:
+
+- ipv4
+- nat64
+- nptv6 - IPv6-to-IPv6 Network Prefix Translation
+
+### QoS
+
+QoS is enforced on traffic as it egresses the firewall   
+  
+Unclassified traffic enters firewall > **QoS Policy** assignes **class** to traffic > **QoS Profile** on Egress interface prioritizes traffic accorsing to **QoS class**  
+
+You can also mark traffic in a security policy - in a security rule  
+Enables the firewall to mark traffic with the same DSCP value that was detected at the beginning of a session (in this example, the firewall would mark return traffic with the DSCP AF11 value). While configuring QoS allows you to shape traffic as it egresses the firewall, enabling this option in a Security rule allows the other network devices intermediate to the firewall and the client to continue to enforce priority for DSCP-marked traffic  
+
+- Self-contained system local to the firewall
+- Can consider existing QoS packet markings but does not act directly on them
+- Ingress traffic cannot be managed
+- QoS profile - matching traffic is then shaped based on the QoS profile class settings as it exits the physical interface. Each QoS profile rule allows you to configure individual bandwidth and priority settings for up to eight QoS classes, as well as the total bandwidth allowed for the eight classes combined. In every profile you configure priorities for every class. Then you apply a profile to an interface.
+- QoS policy - define traffic you want to receive QoS treatment and assign that traffic a QoS class. QoS policy rule is applied to traffic after the firewall has enforced all other security policy rules, including Network Address Translation (NAT) rules.
+- QoS egress interface - this is where you apply QoS profile. If you limit Youtube then Egress interface is Internal interface of FW. You apply it in separate section Network > QoS
+- DSCP classification allows you to both honor DSCP values for incoming traffic and mark a session with a DSCP value as session traffic exits the firewall
+  
+QoS policy  
+  
+Policies > QoS  
+Define a QoS policy rule to match to traffic based on:
+
+- Applications and application groups
+- Source zones, source addresses, and source users
+- Destination zones and destination addresses
+- Services and service groups limited to specific TCP and/or UDP port numbers
+- URL categories, including custom URL categories
+- Differentiated Services Code Point (DSCP) and Type of Service (ToS) values, which are used to indicate  the level of service requested for traffic, such as high priority or best effort delivery
+    - Expedited Forwarding (EF): Can be used to request low loss, low latency, and guaranteed bandwidth for traffic. Packets with EF codepoint values are typically guaranteed the highest-priority delivery
+    - Assured Forwarding (AF): Can be used to provide reliable delivery for applications. Packets with AF codepoint indicate a request for the traffic to receive higher priority treatment than what the best-effort service provides (although packets with an EF codepoint continue to take precedence over those with an AF codepoint)
+    - Class Selector: Can be used to provide backward compatibility with network devices that use the IP precedence field to mark priority traffic
+    - IP Precedence (ToS): Can be used by legacy network devices to mark priority traffic (the IP precedence header field was used to indicate the priority for a packet before the introduction of the DSCP classification)
+    - Custom Codepoint: Can be used to match to traffic by entering a codepoint name and binary value
+  
+QoS profile  
+  
+Network > Network Profiles > QoS Profile
+
+- For the profile you configure Egress Max and Egress guaranteed 
+- For every class which you defined in QoS Policy you configure Priority, Egress MAX and Egress Guaranteed
+- Egress MAX and Egress Guaranteed are in Mbps or percentage
+- Network > QoS and Adda QoS interface
+- Can be applied only to physical interface
+- You may configure Egress MAX here as well
+- You configure Default QoS profile for regular (ClearText) traffic and Tunnel traffic
+- For both ClearText and Tunnel traffic you can configure many rules with many profiles besides Default, based on Source interface and Source subnet
+- For both ClearText and Tunnel traffic you can configure Egress MAX and Egress Guaranteed
+- Egress guaranteed specifies the amount of bandwidth guaranteed for matching traffic. When the egress-guaranteed bandwidth is exceeded, the firewall passes traffic on a best-effort basis. Bandwidth that is guaranteed but is unused continues to remain available for all of the traffic
+- Egress max specifies the overall bandwidth allocation for matching traffic. The firewall drops the traffic that exceeds the egress max limit set
+
+### Policy Based Forwarding
+
+### Decryption
+
+Three types of decryption policies
+
+- SSL Forward Proxy to control outbound SSL traffic
+- SSL Inbound Inspection to control inbound SSL traffic
+- SSH Proxy to control tunneled SSH traffic
+
+Three types of certificates are used
+
+- Forward Trust (used for SSL Forward Proxy decryption)
+- Forward Untrust (used for SSL Forward Proxy decryption)
+- SSL Inbound Inspection - The certificates of the servers on your network for which you want to perform SSL Inbound Inspection of traffic destined for those servers. Import the server certificates onto the firewall
+
+Decryption policy can apply to
+
+- HTTPS
+- IMAPS
+- POP3S
+- SMTPS
+- FTPS
+- SSH - inbound and outbound - called SSH proxy - does not require certificates
+
+Without decryption:
+
+- Application in traffic logs: SSL or Youtube base (Based on cert or SNI)
+- No Decrypted tick in log details
+- URL filtering works, but does not show block page, just drops
+- Safe search enforcement does not work
+- App-ID does work partially: server cert
+- Content-ID does not work
+- The firewall can’t decrypt traffic inside an SSH tunnel
+
+Policy includes:
+
+- Source (IP, Zone, User, Device)
+- Destination (Zone, address, device)
+- Service/URL category
+- DECRYPT OR NOT
+- Type of decryption: Forward, Inbound or SSH
+- Decryption profile
+- Logging
+
+Profile includes:
+
+- Expired certs, untrusted certs
+- Unsupported ciphers
+- Client auth
+- Key exchange algorithms, Protocols version, Encryption algorithms, Authentication algorithms
+- Unsupported versions and algorithms in SSH
+
+Concepts
+
+- You can block all the SSH tunnel traffic by configuring a Security policy rule for the application ssh-tunnel with the Action set to Deny (along with a Security policy rule to allow traffic from the ssh application)
+- When you apply an SSH Decryption profile to traffic, for each channel in the connection, the firewall examines the App-ID of the traffic and identifies the channel type. The channel type can be one of the following:
+    - session
+    - X11
+    - forwarded-tcpip
+    - direct-tcpip
+- When the channel type is session, the firewall identifies the traffic as allowed SSH traffic, such as SFTP or SCP
+- When the channel type is X11, forwarded-tcpip, or direct-tcpip, the firewall identifies the traffic as SSH tunneling traffic and blocks it
+- It is recomended to configure Decryption profile: block unsupported versions and algorithms for SSH
+- If firewall uses Forward Untrust certificate to decrypt normal website, then this website does not send intermediate certificate and firewall cannot trace its server cert to CA cert
+- Decryption policies enable you to specify traffic for decryption according to destination, source, user/user group, or URL category
+- Untrusted servers are sighned using special forward untrust certificate - ensures that clients are prompted with a certificate warning when attempting to access sites hosted by a server with untrusted certificates
+- Decryption policy rules are compared against the traffic in sequence, so more specific rules must precede the more general ones
+- The key used to decrypt SSH sessions is generated automatically on the firewall during bootup. With SSH decryption enabled, the firewall decrypts SSH traffic and blocks or restricts it based on your decryption policy and Decryption Profile settings. The traffic is re-encrypted as it exits the firewall
+- Decryption can be performed only on the virtual wire, Layer 2, or Layer 3 interfaces
+- Decrypting traffic based on URL categories is a best practice for both URL Filtering and Decryption
+
+Configuration:  
+
+We configure policy based on profile  
+In profile we configure all SSL settings - avoid weak ciphers and protocols  
+Than we mark one cert as forward proxy  
+
+- Policies > Decryption
+- Name: Sber
+- Source address: 192.168.1.0/24
+- Action: Decrypt
+- Type: SSL Forward Proxy
+- Decryption profile: Default
+- Device > Certificate Management > Certificates
+- Name: sber.ru
+- Common Name: sber.ru
+- Signed by - empty
+- Certificate Authority
+- After cert generation enable in it: Forward Trust Certificate, Forward Untrust Certificate, Trusted Root CA
+- Export cert to client
+
+Palo Alto Networks provides a predefined SSL Decryption Exclusion list that excludes hosts with applications and services that are known to break decryption technically (pinned certificate, an incomplete certificate chain, unsupported ciphers, or mutual authentication) from SSL Decryption by default  
+You can add more sites to this list  
+**Device > Certificate management > SSL Decryption Exclusion**  
+You can also force some of these sites to be decrypted
+
+### Tunnel Inspection
+
+### Application Override
+
+### Authentication policy
+
+Basicly it defines whom to show captive portal.
+
+Policies > Authentication
+
+- Source in all forms
+- Destination in all forms
+- Service/URL category
+- Authentication enforcement object
+- Logging
 
 ## Security profiles
 
@@ -731,29 +845,66 @@ Advanced Threat Prevention
 
 ### URL Filtering
 
-- Create profile, add Categories, User credential detection, HTTP header injection, Inline ML
-- For every category in a profile configure action for site access and credential submission
-- Site access actions:
-    - allow
-    - alert
-    - block
-    - continue
-    - override
-- Default profile that is configured to block threat-prone categories, such as malware, phishing, and adult content
+- Works without decryption, but does not show Block Page - just drops
+- Without decryption Application in URL filtering logs is always SSL  
+- By default, categories set to allow do not generate URL filtering log entries. The exception is if you configure log forwarding
+- If you want the firewall to log traffic to categories that you allow but would like more visibility into, set Site Access for these categories to alert in your URL Filtering profiles
+- We cannot see domains in traffic logs
+- Separate logs vault: Monitor > URL Filtering
+- In traffic logs blocked URLs will appear as Allow action, but session end reason will be Threat
+- Device > Setup > Content-ID > URL-filtering >  Category lookup timeout (sec) + all other timers are there
+- Device > Setup > Content-ID > URL Admin Override - enter password, after this user can with this password visit the URL - To create a URL admin override, set the action for a category to override
+- You can also use URL categories as match criteria in Security policy rules
+- You can also use URL categories to enforce different types of policy, such as Authentication, Decryption, QoS, and Security
+- Every URL can have up to four categories
+
+What it does:
+
+- For every category 2 options: Site Access (alert, allow, block, continue, override, none) and User Credential Submission (alert, allow, block, continue)
+- Safe Search Enforcement
+- Log container page only
+- HTTP header logging: User-Agent, Referer, X-Forwarded-For
+- User Credential Detection Options + logging it with particular severity
+- HTTP Header Insertion
+- Inline ML or Advanced URL filtering
+- Custom URL categories
+
+#### Control access to site
+
+Actions for site access:
+
+- alert - log
+- allow
+- block - block page is displayed
+- continue - Block page is displayed - then user access site
+- override - Displays a response page that prompts the user to enter a valid password to gain access to the site. Configure URL Admin Override settings (Device > Setup > Content ID) to manage password and other override settings
+- none - custom URL category only
+
+#### Credential detection
+
 - Configure user-credential detection so that users can submit credentials only to the sites in specified URL categories
-- With the advanced URL filtering subscription, Inline Categorization enables real-time analysis of URL traffic by using firewall-based or cloud-based ML models, to detect and prevent malicious phishing variants and JavaScript exploits from entering the network
-- You can also use URL filtering to enforce safe search settings for your users and prevent credential phishing based on URL category
 - Credential phishing prevention works by scanning username and password submissions to websites and comparing those submissions against valid corporate credentials. You can choose which websites you want to allow or block corporate credential submissions based on the URL category of the website
 - How firewall knows which credentials are prohibited to enter on physhing sites and that they are enterprise:
     - IP address-to-username mapping - what User-ID has collected, only username is checked
     - Group mapping (using PAN-OS integrated agent) - firewall gets via LDAP all groups and users and use this data as well
     - Domain credential filter (using Windows-based agent): The User‐ID agent is installed on a Read-Only Domain Controller. The User‐ID agent collects password hashes that correspond to users for whom you want to enable credential detection, and it sends these mappings to the firewall. The firewall then checks if the source IP address of a session matches a username and if the password submitted to the web page belongs to that username. With this mode, the firewall only blocks or alerts on the submission when the submitted password matches a user password
-- User Credential Detection is enbled in URL Filtering profile
-- Actions for credential detections:
-    - alert - log
-    - allow
-    - block - block page is displayed
-    - continue - Anti Physhing continue page is displayed - then user may enter credentials
+- Windows User-ID agent configured with the User-ID credential service add-on
+
+Actions for credential detections:
+
+- alert - log
+- allow
+- block - block page is displayed
+- continue - Anti Physhing continue page is displayed - then user may enter credentials
+
+#### Safe search enforcement
+
+- Palo Alto Networks enforces filtering based only on search engine providers filtering mechanisms
+- If users search using Google, Bing, Yahoo, Yandex, or YouTube search engines and they did not set their safe search setting to the strictest setting, then your firewall responds in one of two ways
+    - Blocks Search Results When Strict Safe Search Is Off (Default
+    - Forces Strict Safe Search - The firewall automatically and transparently enforces the strictest safe search settings
+
+#### HTTP Header Insertion
 
 In URL filtering Objects > Security Profiles > URL Filtering > HTTP Header Insertion HTTP header insertion is supported  
 The firewall supports header insertion for HTTP/1.x traffic only  
@@ -766,12 +917,37 @@ HTTP header insertion can only be performed by using the following methods:
 - PUT
 - HEAD
 
-Advanced URL Filtering
+#### Custom categories
+
+- Objects > Custom objects > URL Category
+- URL list
+- Category match: specifying two or more PAN-DB categories of which the new category will consist, allows you to target enforcement for a website or page that matches all of the categories specified in the custom URL category object
+
+#### Inline ML or Advanced URL Filtering
 
 - Advanced URL Filtering is a subscription service that works natively with the Palo Alto Networks NGFW
 - Advanced URL Filtering uses ML to analyze URLs in real time and classify them into benign or malicious categories
+- The inline web security engine enables real-time analysis and categorization of URLs that are not present in PAN-DB, Palo Alto Networks cloud-based URL database
+- URLs Analyzed in real-time using the cloud-based Advanced URL Filtering detection modules. This is in addition to URLs being compared to entries in PAN-DB. The ML-powered web protection engine detects and blocks the malicious websites that PAN-DB cannot
+- URLs Inspected for phishing and malicious JavaScript using local inline categorization, a firewall-based analysis solution, which can block unknown malicious web pages in real-time
+- If network security requirements in your enterprise prohibit the firewalls from directly accessing the Internet, Palo Alto Networks provides an offline URL filtering solution with the PAN-DB private cloud. You can deploy a PAN-DB private cloud on one or more M-600 appliances that function as PAN-DB servers within your network; however, the private cloud does not support any of the cloud-based URL analysis features provided by the Advanced URL Filtering solution
 - Own analysis, Wildfire
 - Advanced URL Filtering prevents 40 percent more threats than traditional web-filtering databases
+- Select Inline ML and define an Action for each inline ML model
+- Add URL exceptions to your URL Filtering profile if you encounter false-positives
+
+#### Using URL Categories as Match Criteria vs. Applying URL Filtering Profile to a Security Policy Rule
+
+Use URL categories as match criteria in the following cases:
+
+- To create an exception to URL category enforcement
+- To assign a particular action to a custom or predefined URL category. For example, you can create a Security policy rule that allows access to sites in the personal sites and blogs category.
+
+Use a URL Filtering profile in the following cases:
+
+- To record traffic to URL categories in URL filtering logs
+- To specify more granular actions, such as alert, on traffic for a specific category
+- To configure a response page that displays when users access a blocked or blocked-continue website.
 
 ### Data Filtering
 
@@ -941,7 +1117,7 @@ Session end reasons
 - Application override - used for custom applications
 - Application groups for convenience
 - Application filters - they are dynamic - based on categories or tags
-- Dependencie scan be added to the same rule or other rule
+- Custom application signature is always prefereable over downloaded
 
 Best pratice Moving from Port-Based to App-ID Security: set of rules that aligns with business goals, thus simplifying administration and reducing the chance of error
     - Assess your business and identify what you need to protect
@@ -971,98 +1147,6 @@ App-ID status in logs:
  - unknown-udp - custom app, no signatures
  - unknown-p2p - generic P2P heuristics
  - Not-applicable - port is blocked
-
-## Decryption
-
-We configure policy based on profile  
-In profile we configure all SSL settings - avoid weak ciphers and protocols  
-Than we mark one cert as forward proxy  
-
-Policy includes:
-
-- Source (IP, Zone, User, Device)
-- Destination (Zone, address, device)
-- Service/URL category
-- DECRYPT OR NOT
-- Type of decryption: Forward, Inbound or SSH
-- Decryption profile
-- Logging
-
-Profile includes:
-
-- Expired certs, untrusted certs
-- Unsupported ciphers
-- Client auth
-- Key exchange algorithms, Protocols version, Encryption algorithms, Authentication algorithms
-- Unsupported versions and algorithms in SSH
-
-Concepts
-
-- Content-ID is impossible
-- The firewall can’t decrypt traffic inside an SSH tunnel
-- You can block all the SSH tunnel traffic by configuring a Security policy rule for the application ssh-tunnel with the Action set to Deny (along with a Security policy rule to allow traffic from the ssh application)
-- When you apply an SSH Decryption profile to traffic, for each channel in the connection, the firewall examines the App-ID of the traffic and identifies the channel type. The channel type can be one of the following:
-    - session
-    - X11
-    - forwarded-tcpip
-    - direct-tcpip
-- When the channel type is session, the firewall identifies the traffic as allowed SSH traffic, such as SFTP or SCP
-- When the channel type is X11, forwarded-tcpip, or direct-tcpip, the firewall identifies the traffic as SSH tunneling traffic and blocks it
-- It is recomended to configure Decryption profile: block unsupported versions and algorithms for SSH
-- If firewall uses Forward Untrust certificate to decrypt normal website, then this website does not send intermediate certificate and firewall cannot trace its server cert to CA cert
-- App-ID - works partially
-- Decryption policies enable you to specify traffic for decryption according to destination, source, user/user group, or URL category
-- All encrypted traffic is SSL in App-ID
-- Sometomes it can identify traffic without decryption using server cert
-- Untrusted servers are sighned using special forward untrust certificate - ensures that clients are prompted with a certificate warning when attempting to access sites hosted by a server with untrusted certificates
-- Decryption policy rules are compared against the traffic in sequence, so more specific rules must precede the more general ones
-- The key used to decrypt SSH sessions is generated automatically on the firewall during bootup. With SSH decryption enabled, the firewall decrypts SSH traffic and blocks or restricts it based on your decryption policy and Decryption Profile settings. The traffic is re-encrypted as it exits the firewall
-
-Three types of decryption policies
-
-- SSL Forward Proxy to control outbound SSL traffic
-- SSL Inbound Inspection to control inbound SSL traffic
-- SSH Proxy to control tunneled SSH traffic
-
-Three types of certificates are used
-
-- Forward Trust (used for SSL Forward Proxy decryption)
-- Forward Untrust (used for SSL Forward Proxy decryption)
-- SSL Inbound Inspection - The certificates of the servers on your network for which you want to perform SSL Inbound Inspection of traffic destined for those servers. Import the server certificates onto the firewall
-
-Decryption policy can apply to
-
-- HTTPS
-- IMAPS
-- POP3S
-- SMTPS
-- FTPS
-- SSH - inbound and outbound - called SSH proxy
-
-SSH decryption does not require certificates  
-  
-Configuration:
-
-- Policies > Decryption
-- Name: Sber
-- Source address: 192.168.1.0/24
-- Action: Decrypt
-- Type: SSL Forward Proxy
-- Decryption profile: Default
-- Device > Certificate Management > Certificates
-- Name: sber.ru
-- Common Name: sber.ru
-- Signed by - empty
-- Certificate Authority
-- After cert generation enable in it: Forward Trust Certificate, Forward Untrust Certificate, Trusted Root CA
-- Export cert to client
-
-Palo Alto Networks provides a predefined SSL Decryption Exclusion list that excludes hosts with applications and services that are known to break decryption technically (pinned certificate, an incomplete certificate chain, unsupported ciphers, or mutual authentication) from SSL Decryption by default.  
-You can add more sites to this list. 
-Device > Certificate management > SSL Decryption Exclusion  
-You can also force some of these sites to be decrypted
-  
-Decryption can be performed only on the virtual wire, Layer 2, or Layer 3 interfaces
 
 ## Tags
 
@@ -1536,18 +1620,6 @@ Device > User Identification > Authentication Portal Settings
     - Redirect - intranet hostname (a hostname with no period in its name) that resolves to the IP address of the Layer 3 interface on the firewall to which web requests are redirected. The firewall intercepts unknown HTTP or HTTPS sessions and redirects them to a Layer 3 interface on the firewall using an HTTP 302 redirect to perform authentication. This is the preferred mode because it provides a better end-user experience (no certificate errors). If you use Kerberos SSO or NTLM authentication, you must use Redirect mode because the browser will provide credentials only to trusted sites. Redirect mode is also required if you use Multi-Factor Authentication to authenticate Captive Portal users
 - Certificate authentication profile - for authenticating users via certificate
 
-### Authentication policy
-
-Basicly it defines whom to show captive portal.
-
-Policies > Authentication
-
-- Source in all forms
-- Destination in all forms
-- Service/URL category
-- Authentication enforcement object
-- Logging
-
 ### Debug
 
 Show logged in users
@@ -1592,7 +1664,8 @@ Features:
 - Data redistribution: other can connect to Panorama, Panorama can connect to agents
 - Log collectors + Groups
 - Zero touch provisioning
-- Plugins: AWS, Azure, ACI, TrustSec, DLP, SD-WAN, NSX, vCenter, 
+- Plugins: AWS, Azure, ACI, TrustSec, DLP, SD-WAN, NSX, vCenter
+- A CLI command will forward the pre-existing logs to Panorama from firewalls
 
 Types:
 
@@ -1633,10 +1706,14 @@ Types:
 - You can import CSV with values for variables into Stack, depending on a device
 - In CSV you configure variable name, which you already created + variable type (IP/netmask for example) + value for each firewall - Serial/Hostname
 
-
 ### Device groups - to control policies and objects
 
 - Device groups: for controlling all policies + all objects
+- By default Panorama pushes all shared objects to firewalls whether or not any shared or device group policy rules reference the objects
+- On lower-end models, such as the PA-220, consider pushing only the relevant shared objects to the managed firewalls. This is because the number of objects that can be stored on the lower-end models is considerably lower than that of the mid- to high-end models
+- Panorama > Setup > Management > Panorama Settings > Share Unused Address and Service Objects with Devices - enabled by default
+- By default lower device groups take precedence over upper device groups, if the same objects exist
+- Objects defined in ancestors will take higher precedence - when you perform a device group commit, the ancestor values replace any override values
 - Tags can be applied to devices when add them to panorama
 - Then these tags are used as targets in rule instead of sending to all devices in device group
 - One NGFW only in one Device Group
@@ -2009,6 +2086,13 @@ Profile is attached to Security, Authentication, DoS Protection, and Tunnel Insp
         - Add/del tag for src/dst address or User
 
 All other logs forwarding: Device > Log Settings - System, Configuration, User-ID....
+
+### CLI System logs
+
+```
+less mp-log ms.log
+tail follow yes mp-log paninstaller_content.log
+```
 
 ### Log forwarding
 
@@ -2430,6 +2514,26 @@ Check the GRE session
 - Filter by using session filter protocol 47
 - Find the session ID and filter for session ID
 
+### LSVPN
+
+- The LSVPN does not require a GlobalProtect subscription
+- Enable SSL Between GlobalProtect LSVPN Components
+- Configure the Portal to Authenticate Satellites
+- Configure GlobalProtect Gateways for LSVPN
+- Configure the GlobalProtect Portal for LSVPN
+- Prepare the Satellite to Join the LSVPN
+
+#### GlobalProtect Satellite 
+
+- Simplifies the deployment of traditional hub and spoke VPNs, enabling you to quickly deploy enterprise networks with several branch offices with a minimum amount of configuration required on the remote satellite devices. This solution uses certificates for device authentication and IPSec to secure data
+- The setup includes configuring the portal, gateway, and satellite
+- Generate a Root CA Certificate on the Portal (Self signed) and a Server Certificate used for Portal and Gateway certificate signed by the above Root CA
+- Export the Root CA (CACert) in PEM format, without the private key, and import it to the satellite device (Device > Certificate Management > Certificates > Import). This certificate on the Satellite is used to validate the Portal/ Gateway Certifcate against the CACert
+- Configure a portal (Network -> GlobalProtect -> Portals -> Add) and add the interface that will act as Portal/Gateway
+- Add satelite in Portal configuration in special Satelite Section: Name + Serial or User/pass + Gateways
+- Configure Gateway + configure Satellite there as well
+- Configure Satelite itself: Create a new IPSec tunnel config and select the type as GlobalProtect Satellite. Add the tunnel interface, portal config, and the interface that can reach the portal address
+
 ## GlobalProtect
 
 GlobalProtect has three major components:
@@ -2440,8 +2544,11 @@ GlobalProtect has three major components:
 
 <img width="977" alt="image" src="https://github.com/philipp-ov/foundation/assets/116812447/f3ec9794-9a39-4d33-8ebf-d4e12411c3e6">
 
+### Features
 
-GlobalProtect authentication event logs in Monitor > Logs > System
+- GlobalProtect authentication event logs in Monitor > Logs > System
+- Separate GlobalProtect log
+- 
 
 ### MFA
 
@@ -2460,17 +2567,6 @@ GlobalProtect authentication event logs in Monitor > Logs > System
 - The Palo Alto Network firewall uses the OpenSSL crypto library
 - Globalprotect IPsec crypto profiles aren't used for the X-auth clients
 - Troubleshooting of the tunnel is done much the same way as any IPSec tunnel would be troubleshot
-
-### GlobalProtect Satellite 
-
-- Simplifies the deployment of traditional hub and spoke VPNs, enabling you to quickly deploy enterprise networks with several branch offices with a minimum amount of configuration required on the remote satellite devices. This solution uses certificates for device authentication and IPSec to secure data
-- The setup includes configuring the portal, gateway, and satellite
-- Generate a Root CA Certificate on the Portal (Self signed) and a Server Certificate used for Portal and Gateway certificate signed by the above Root CA
-- Export the Root CA (CACert) in PEM format, without the private key, and import it to the satellite device (Device > Certificate Management > Certificates > Import). This certificate on the Satellite is used to validate the Portal/ Gateway Certifcate against the CACert
-- Configure a portal (Network -> GlobalProtect -> Portals -> Add) and add the interface that will act as Portal/Gateway
-- Add satelite in Portal configuration in special Satelite Section: Name + Serial or User/pass + Gateways
-- Configure Gateway + configure Satellite there as well
-- Configure Satelite itself: Create a new IPSec tunnel config and select the type as GlobalProtect Satellite. Add the tunnel interface, portal config, and the interface that can reach the portal address
 
 ## VSYS
 

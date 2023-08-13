@@ -4,7 +4,6 @@
 
 ## Concepts
 
-- 
 - IPsec is not a protocol, it's a framework for securing unicast traffic
 - It consists of 3 protocols:
     - ESP 
