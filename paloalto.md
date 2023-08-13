@@ -397,6 +397,7 @@ Floods:
 - Random Early Drop drops traffic randomly, so RED may affect legitimate traffic
 - SYN Cookies is more resource-intensive
 - Monitor the firewall, and if SYN Cookies consumes too many resources, switch to RED
+- Port Scan Protection is available only in zone protection profile, not in DoS profile
 
 ### Interfaces
 
@@ -736,6 +737,28 @@ Policies > Authentication
 - Service/URL category
 - Authentication enforcement object
 - Logging
+
+### DoS Protection
+
+- Control the systems to which the firewall applies DoS protection
+- What action to take when traffic matches the criteria
+- How to log DoS traffic
+- Use Zone Protection profiles to protect entire zones against floods and other attacks. DoS Protection policy rules provide granular matching criteria so that you have the flexibility to define exactly what you want to protect
+- Specifying services limits DoS protection to those services, but doesn’t block other services
+- You can Schedule when a DoS Protection policy rule is active
+- One use case for scheduling is to apply different flood thresholds at different times of the day or week
+
+Actions:
+
+- Deny — The firewall denies access and doesn’t apply a DoS Protection profile. Traffic that matches the rule is blocked.
+- Allow - The firewall permits access and doesn’t apply a DoS Protection profile. Traffic that matches the rule is allowed.
+- Protect — The firewall protects the devices defined in the DoS Protection policy rule by applying the specified DoS Protection profile or profiles thresholds to traffic that matches the rule. A rule can have one aggregate DoS Protection profile and one classified DoS Protection profile, and for classified profiles, you can use the source IP, destination IP, or both to increment the flood threshold counters, as described in Classified Versus Aggregate DoS Protection. Incoming packets count against both DoS Protection profile thresholds if the they match the rule. 
+
+The Allow and Deny actions enable you to make exceptions within larger groups
+
+
+
+### SD-WAN
 
 ## Security profiles
 
