@@ -1092,13 +1092,75 @@ Per-Zone Packet Buffer Protection—Enable Packet Buffer Protection on each zone
 
 ## Sessions
 
-Session types
-- FLOW
+- Session is defined by two uni-directional flows each uniquely identified by a 6-tuple key: source-address, destination-address, source-port, destination-port, protocol, and security-zone
+- First flow as client-to-server(c2s) and the returning flow as server-to-client(s2c)
 
-Session states
-- INIT
+Show all sessions
 
-Session end reasons
+```
+show session all
+```
+
+Show one session in details
+- Offload yes - Marks the traffic for which the application has been identified already and it will be processed in hardware.
+- Layer7 processing - If enabled, then App-ID has been enabled on the traffic flow and the application is constantly identified. If Layer7 processing is set to complete, then the application has been identified
+
+```
+show session id [ID]
+```
+
+Show general configuration and statistics
+
+```
+show session info
+```
+
+Show maximum number of sessions for each VSYS
+
+```
+show session meter
+```
+
+### Session types
+
+- Flow - Regular type of session where the flow is the same between c2s and s2c (ex. HTTP, Telnet, SSH)
+- Predict - This type is applied to sessions that are created when Layer7 Application Layer Gateway (ALG) is required. The application has been identified and there is need for a new session to be allowed on the firewall without any additional security rule (ex. FTP active/passive, voice protocols h323/sip etc). These sessions may be created with a 0 as source/destination IP/port, since that information may not be known yet. Packets that match the Predict sessions will then change to normal FLOW session
+
+Show all predict sessions - show only the predict sessions that are currently pending to be matched by packets
+
+```
+show session all filter type predict
+```
+
+### Session flow
+
+- Init > Opening > Active > Discard/Closing > Closed > Free
+- If the session timeout has been reached, the session will timeout and transition to Closing
+- If the traffic has been denied due to a security rule or a threat has been detected(with the action set to drop), the session will transition to Discard
+
+### Stable session states
+
+- INIT - Every session begins, by default, in INIT state. A session in the INIT state is part of the free pool and can be used at anytime. The session may been used previously, but has now been returned back into the free pool
+- ACTIVE - Any session that matches a particular traffic flow, and has been processed for inspection and forwarding.
+- DISCARD - Traffic that has been matched by a session but is denied due to a security policy, threat detection
+
+### Transient session states
+
+Sessions in Transient states are difficult to see as they make the transition to one of the Stable states very quickly
+
+- Opening
+- Closing
+- Closed
+- Free
+
+### Session Flags
+
+- NS - There has been Source NAT applied on the session
+- ND - There has been Destination NAT applied on the session
+- NB -There has been Both Source + Destination NAT applied on the session
+- No flag - There is no NAT applied on the session.
+
+### Session end reasons
 
 - threat
 - policy-deny
@@ -1113,6 +1175,19 @@ Session end reasons
 - decoder
 - aged-out - no ARP of router, routing issues, no reply from server
 - unknown
+
+### Session timeouts
+
+- Timeout - The specific timeout configured for the application
+- Time to live - The time left until the session will expire. In the example, there are 2 seconds left until the session will expire and session state will change
+- Session in session ager - For each session there is a flow ager, which is an aging process that keeps track of the lifetime of sessions. As long as the session is Active and time to live did not reach 0 sec, the session in session ager will be marked as True
+
+### Sessions in HA deployment
+
+The user can tell if a session has not been created on the local firewall by looking at the session synced from HA peer from
+>show session id
+
+A session created locally on the firewall will have the False value and one created on the peer device and synchronized to the local firewall will have the True value
 
 ## App-ID
 
