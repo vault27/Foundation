@@ -1528,6 +1528,16 @@ show log system | match ha4
 
 ## User-ID
 
+Can be used in:
+
+- Authentication policy
+- Decryption policy
+- DoS policy
+- Policy-Based Forwarding Policy
+- QoS policy
+- Security policy
+- Tunnel inspection policy
+
 ### User mapping methods
 
 - Server monitoring - User-ID agent, PAN-OS built-in, AD, Exchange, Novell eDirectory, Sun ONE Directory Server
@@ -1555,10 +1565,12 @@ show log system | match ha4
 
 ### Agentless (PAN-OS)
 
-Use Agentless (PAN-OS)
 - If you have a small-to-medium deployment with few users and 10 or fewer domain controllers or exchange servers
 - If you want to share the PAN-OS-sourced mappings from Microsoft Active Directory (AD), Captive Portal, or GlobalProtect with other PA devices (maximum 255 devices)
 - Saves network bandwidth
+- Uses WinRM or WMI
+- Retrieve less data then User-ID agent
+- Accept and parse Syslog
 
 Configure
 
@@ -1570,6 +1582,7 @@ Configure
 ### User-ID Agent (Windows)
 
 Use User-ID Agent (Windows)
+
 - If you have a medium-to-large deployment with many users or more than 10 domain controllers
 - If you have a multi-domain setup with a large number of servers to monitor
 - Save processing cycles on the firewall’s management plane
@@ -1580,6 +1593,9 @@ Concepts
 - User-ID agent is launched under the same User name as it connects to AD
 - During the initial connection, the agent transfers the most recent 50,000 events from the log to map users
 - On each subsequent connection, the agent transfers events with a timestamp later than the last communication with the domain controller
+- Accepts and parses Syslog
+- It is not recomended to install it on a domain controller
+- Windows Log Forwarding - multiple domain controllers export their login events to a single domain member from which a User-ID agent collects the user mapping information
 
 Configure User-ID Agent
 
@@ -1704,7 +1720,6 @@ Device > Authentication Profile > What to configure:
     - no-captive-portal — The firewall evaluates Security policy without authenticating users
 - Authetication profile my be none, then one in Captive portal settings is used
 
-
 ### Captive Portal - Authentication Portal
 
 Device > User Identification > Authentication Portal Settings  
@@ -1718,21 +1733,65 @@ Device > User Identification > Authentication Portal Settings
     - Redirect - intranet hostname (a hostname with no period in its name) that resolves to the IP address of the Layer 3 interface on the firewall to which web requests are redirected. The firewall intercepts unknown HTTP or HTTPS sessions and redirects them to a Layer 3 interface on the firewall using an HTTP 302 redirect to perform authentication. This is the preferred mode because it provides a better end-user experience (no certificate errors). If you use Kerberos SSO or NTLM authentication, you must use Redirect mode because the browser will provide credentials only to trusted sites. Redirect mode is also required if you use Multi-Factor Authentication to authenticate Captive Portal users
 - Certificate authentication profile - for authenticating users via certificate
 
+### Selecting Users and Groups for Security Policy
+
+- Any
+- Pre-logon - with Global-Protect
+- Known-user - any identified by User-ID
+- Unknown - user cannot be identified by User-ID
+- Select - specific user or group
+
 ### Debug
 
-Show logged in users
+**Show logged in users**
 
 ```text
 debug dataplane show user all
 ```
 
-Show log for agentkess connection to Active Directory
+**Show log for agentless connection to Active Directory**
 
 ```
 less mp-log useridd.log
 ```
 
 Go to the end of the file by pressing Shift+G
+
+**User-ID agents stats**
+
+```
+show user user-id-agent statistics  
+```
+
+**Show User-IP mappings**
+
+```
+show user ip-user-mapping all
+```
+
+**Server monitor situation**
+
+```
+show user server-monitor state all
+```
+
+**Show users and their LDAP groups**
+
+```
+show user user-ids all
+```
+
+**Show users in a group**
+
+```
+show user group name "cn=internet,cn=users,dc=skynet,dc=ru"
+```
+
+**Restart User-ID service**
+
+```
+debug software restart process user-id
+```
 
 ## Panorama
 
