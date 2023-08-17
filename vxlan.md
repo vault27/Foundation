@@ -419,6 +419,7 @@ Cisco Live BRKDCN-2012 - VXLAN vPC: Design and Best Practices
 - When PC VTEP consistency check failed: The NVE loopback interface will be admin shutdown on the VPC secondary VTEP
 
 ### MC-LAG EVPN Active/Active Multihoming
+
 - RFC 7432
 - N switches can be used, it is better then vPC with only 2
 - No need in peer link
@@ -439,6 +440,17 @@ Cisco Live BRKDCN-2012 - VXLAN vPC: Design and Best Practices
     - Load balancing
     - Loops for broadcast traffic - it is solved with route types 4
     - Convergence - changing routes if something fails
+
+## Distributed fabric
+
+- Geo distributed or in different campuses or rooms
+- Merge 2 Data Centres
+- It allows to stretch L2 between cities!
+- Three options available:
+  - Multi-fabric - not popular, L2 is required, between fabrics no VxLAN, only L2, many VLANs, this L2 is usually implemented via difficult L3 (VPLS). Fabrics are absolutely disconnected, they dont know anything about each over.
+  - Multi-pod - just another hierarchy level, one big fabric, shared underlay and overlay, hierarchy is only in underlay. VxLAN encapsulation between sites. This is approach to scale fabric, not to connect 2 different ones. Fate sharing.
+  - Multi-site - The most popular. VxLAN encapsulation between sites.
+
 
 ## Configuration
 
