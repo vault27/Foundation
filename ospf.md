@@ -398,6 +398,14 @@ LSA types:
 - 9 - Intra area prefix LSA
 - 10 - 11 - Opaque
 
+How LSA is sent:
+
+- OSPF header
+- LSU
+  - LSA 1
+  - LSA 2
+  - LSA ...
+
 ### LSA-1
 
 Is sent inside the area, every router generates LSA-1 for every enabled interface  
@@ -417,6 +425,33 @@ Sent by DR. Only inside area.
 - Netmask - 255.255.255.252
 - IPs of all attched routers
 
+### LSA-3
+
+- Is sent by ABR, contains all prefixes available in neighbor area
+- For example ABR sends everything he gets from Area 1 to Area 0 interfaces
+- Every prefix contains network, mask, metric
+- Metric depends on how far ABR is from prefix
+- LSA-3 does not contain area, from which it arrived
+- All LSA-3 routes are marked as INTER in OSPF RIB
+- Advertising Router in LSA is ABR
+
+LSA-3 example for one prefix
+
+```
+LSA-type 3 (Summary-LSA (IP network)), len 28
+    .000 0000 0000 0001 = LS Age (seconds): 1
+    0... .... .... .... = Do Not Age Flag: 0
+    Options: 0x22, (DC) Demand Circuits, (E) External Routing
+    LS Type: Summary-LSA (IP network) (3)
+    Link State ID: 192.168.4.0
+    Advertising Router: 192.168.1.2
+    Sequence Number: 0x80000001
+    Checksum: 0xf068
+    Length: 28
+    Netmask: 255.255.255.0
+    TOS: 0
+    Metric: 10
+```
 
 ## Link types
 
@@ -738,9 +773,9 @@ ip ospf 1 area 1
 
 ## Verification
 
-### Verification of interfaces
+### Interfaces
 
-Show OSPF interfaces in detail: up/down/disabled/timers/DR/BDR/area/
+**Show OSPF interfaces in detail: up/down/disabled/timers/DR/BDR/area/**
 
 ```
 Router#show ip ospf interface
@@ -768,7 +803,7 @@ Ethernet0/3 is up, line protocol is up
   Suppress hello for 0 neighbor(s)
 ```
 
-List interfaces, where OSPF is enabled based on network command, omitting passive interfaces.
+**List interfaces, where OSPF is enabled based on network command, omitting passive interfaces.**
 
 ```
 show ip ospf interface brief
@@ -782,7 +817,7 @@ Et0/3        1     0               192.168.1.1/30     10    DR    1/1
 - Nbrs F - fully adjacent neighbors  
 - Nbrs C - number of neighbors in 2Way state
 
-### Verification of neighbors
+### Neighbors
 
 Show neighbor table: neighbor priority, state of adjecency, DR state of neighbor, dead time, address, local interface
 
@@ -793,9 +828,9 @@ Neighbor ID     Pri   State           Dead Time   Address         Interface
 192.168.1.2       1   FULL/BDR        00:00:33    192.168.1.2     Ethernet0/3
 ```
 
-### Verification of Routes
+### Routes
 
-Show OSPF routes installed to RIB
+**Show OSPF routes installed to RIB**
 
 ```
 Router#show ip route ospf
@@ -818,6 +853,99 @@ O        10.1.3.0/24 [110/20] via 192.168.1.2, 3d23h, Ethernet0/3
 - 110 - administrative distance
 - 20 - OSPF cost
 
+**Show all OSPF routes in OSPF RIB**
+
+```
+Router#show ip ospf rib
+
+            OSPF Router with ID (192.168.1.1) (Process ID 1)
+
+
+		Base Topology (MTID 0)
+
+OSPF local RIB
+Codes: * - Best, > - Installed in global RIB
+
+*   10.1.1.0/24, Intra, cost 10, area 0, Connected
+      via 10.1.1.1, Ethernet0/1
+*>  10.1.3.0/24, Intra, cost 20, area 0
+      via 192.168.1.2, Ethernet0/3
+*   192.168.1.0/30, Intra, cost 10, area 0, Connected
+      via 192.168.1.1, Ethernet0/3
+*>  192.168.4.0/24, Inter, cost 20, area 0
+      via 192.168.1.2, Ethernet0/3
+*>  192.168.5.0/24, Inter, cost 30, area 0
+      via 192.168.1.2, Ethernet0/3
+```
+
+### Database
+
+**Show how many LSAs of each type in a database**
+
+```
+Router#show ip ospf database database-summary
+
+            OSPF Router with ID (192.168.1.1) (Process ID 1)
+
+Area 0 database summary
+  LSA Type      Count    Delete   Maxage
+  Router        2        0        0
+  Network       1        0        0
+  Summary Net   2        0        0
+  Summary ASBR  0        0        0
+  Type-7 Ext    0        0        0
+    Prefixes redistributed in Type-7  0
+  Opaque Link   0        0        0
+  Opaque Area   0        0        0
+  Subtotal      5        0        0
+
+Process 1 database summary
+  LSA Type      Count    Delete   Maxage
+  Router        2        0        0
+  Network       1        0        0
+  Summary Net   2        0        0
+  Summary ASBR  0        0        0
+  Type-7 Ext    0        0        0
+  Opaque Link   0        0        0
+  Opaque Area   0        0        0
+  Type-5 Ext    0        0        0
+      Prefixes redistributed in Type-5  0
+  Opaque AS     0        0        0
+  Non-self      3
+  Total         5        0        0
+```
+
+**Show all LSA-3**
+
+```
+Router#show ip ospf database summary
+
+            OSPF Router with ID (192.168.1.1) (Process ID 1)
+
+		Summary Net Link States (Area 0)
+
+  LS age: 1707
+  Options: (No TOS-capability, DC, Upward)
+  LS Type: Summary Links(Network)
+  Link State ID: 192.168.4.0 (summary Network Number)
+  Advertising Router: 192.168.1.2
+  LS Seq Number: 80000001
+  Checksum: 0xF068
+  Length: 28
+  Network Mask: /24
+	MTID: 0 	Metric: 10
+
+  LS age: 1707
+  Options: (No TOS-capability, DC, Upward)
+  LS Type: Summary Links(Network)
+  Link State ID: 192.168.5.0 (summary Network Number)
+  Advertising Router: 192.168.1.2
+  LS Seq Number: 80000001
+  Checksum: 0x4A04
+  Length: 28
+  Network Mask: /24
+        MTID: 0 	Metric: 20
+```
 Show how many types OSPF was launched and area type
 
 ```

@@ -8,6 +8,11 @@
 - https://beacon.paloaltonetworks.com - learning center Beacon
 - https://live.paloaltonetworks.com - community, ask your questions
 - https://security.paloaltonetworks.com - Security Advisories
+- https://www.paloaltonetworks.com/services/education - education services
+- https://www.paloaltonetworks.com/resources/reference-architectures - reference architechtures
+- https://knowledgebase.paloaltonetworks.com/KCSArticleDetail?id=kA10g000000Clc8CAC - Panorama Sizing and Design Guide
+- https://cp.certmetrics.com/paloaltonetworks/en/login - Certification Management
+- https://home.pearsonvue.com/paloaltonetworks - Pearson Vue Palo Alto
 - Mastering Palo Alto Networks: Build, configure, and deploy network solutions for your infrastructure using features of PAN-OS, 2nd Edition
 - GlobalProtect Administrator's Guide - 670 pages - whole world
 - PAN-OS® Administrator’s Guide - 1542 pages
@@ -434,9 +439,15 @@ Floods:
 - Each Layer 3 Ethernet, loopback, VLAN, and tunnel interface defined on the firewall must be associated with a virtual router
 - Each model supporting a different maximum of virtual routers
 - To prioritise one OSPF path over another we have to lower its interface metric, the lower the metric the better
+- Metric is used for all routing protocols, including static routes
+- For static routes we can configure metric and administrative distance during creation
 - If we have 2 redundant links between 2 PAs with OSPF there might be assymetry in traffic - pings work fine
 - OSPF cost is called metric here
 - 2 reduntant IPSec tunnels + OSPF - if main fails - it takes 5 pings to rebuild routing table
+- Static routes support BFD and Path monitoring
+- Path monitoring is configured inside route: Src IP, Dst IP, Ping interval, Ping Count, can be several rules, Any or All logic, preemtive hold time min: number of minutes a downed path monitor must remain in Up state before the firewall reinstalls the static route into the RIB - to avoid flapping
+- There is a special static routes monitoring tab in routing stats
+- Policy rules do not influence these pings
 
 ### IPv6 support
 
@@ -2726,6 +2737,8 @@ GlobalProtect has three major components:
 - Troubleshooting of the tunnel is done much the same way as any IPSec tunnel would be troubleshot
 
 ## VSYS
+
+- If several VSYSes are connected via extermal equipment then there is an issue - to many sessions!
 
 ### Inter-vsys routing
 
