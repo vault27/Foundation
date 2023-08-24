@@ -448,6 +448,79 @@ Floods:
 - Path monitoring is configured inside route: Src IP, Dst IP, Ping interval, Ping Count, can be several rules, Any or All logic, preemtive hold time min: number of minutes a downed path monitor must remain in Up state before the firewall reinstalls the static route into the RIB - to avoid flapping
 - There is a special static routes monitoring tab in routing stats
 - Policy rules do not influence these pings
+- Redistribution example: create redistribution profile, choose static, enter required destination prefix, choose redistribute, set priority: Profiles are matched in order (lowest number first), apply this path to OSPF and set metric that will be sent to OSPF
+
+### PBF
+
+- Separate policy
+
+Show all PBF rules
+
+```
+> show pbf rule all
+
+Rule       ID    Rule State Action   Egress IF/VSYS  NextHop                                 NextHop Status
+========== ===== ========== ======== =============== ======================================= ==============
+ISP2_webac 1     Active     Forward  ethernet1/2     172.16.31.1                             UP     
+```
+
+Show all PBF policy 
+
+```
+> show running pbf-policy
+
+ISP2_webaccess {
+        id 1;
+        from trust;
+        source any;
+        destination any;
+        user any;
+        application/service [ ftp/tcp/any/21 web-browsing/tcp/any/80 ];
+        action Forward;
+        symmetric-return no;
+        forwarding-egress-IF/VSYS ethernet1/2;
+        next-hop 172.16.31.1;
+        terminal no;
+}
+```
+
+Test PBF policy
+
+```
+> test pbf-policy-match from trust application web-browsing source 192.168.0.7 destination 93.184.216.34 protocol 6 destination-port 80
+
+ISP2_webaccess {
+        id 1;
+        from trust;
+        source any;
+        destination any;
+        user any;
+        application/service [ ftp/tcp/any/21 web-browsing/tcp/any/80 ];
+        action Forward;
+        symmetric-return no;
+        forwarding-egress-IF/VSYS ethernet1/2;
+        next-hop 172.16.31.1;
+        terminal no;
+```
+
+Show all sessions for PBF policy
+
+```
+> show session all filter pbf-rule ISP2_webaccess
+
+--------------------------------------------------------------------------------
+ID          Application    State   Type Flag  Src[Sport]/Zone/Proto (translated IP[Port])
+Vsys                                          Dst[Dport]/Zone (translated IP[Port])
+--------------------------------------------------------------------------------
+9873         web-browsing   ACTIVE  FLOW  NS   192.168.0.7[4015]/trust/6  (172.16.31.2[7914])
+vsys1                                          93.184.216.34[80]/ISP2  (93.184.216.34[80])
+```
+
+### Dual ISP design
+
+- One default gateway to ISP-1 with metric 10 - primary one
+- Second default gateway to ISP-2 metric 50 - backup one
+- Add a rule to Policy Based Forwarding Policy: non-crytical applications send to ISP2, attach a monitoring profile, then if ISP2 is down, PBF rule will be disabled
 
 ### IPv6 support
 
@@ -1310,6 +1383,15 @@ Types:
 - Active/Standby
 - Active/Active
 - Cluster
+- HA Lite
+
+HA Lite:
+
+- Active/Passive
+- PA-200
+- No sessions sync
+- No HA-2
+- Synchronization of IPsec security associations
 
 Concepts:
 
@@ -2231,6 +2313,12 @@ Panorama Server 1 : 10.2.23.154
 request system private-data-reset
 ```
 
+### Export tcpdump
+
+```
+scp export mgmt-pcap from mgmt.pcap to < username@host:path>
+```
+
 ## Logs
 
 By default, the logs that the firewall generates reside only in its local storage  
@@ -2765,8 +2853,9 @@ GlobalProtect has three major components:
 - Username field
 - User domain
 - CA certs
-- CRL
-- OCSP - takes precedence over CRL
+- CRL - use or not
+- OCSP - takes precedence over CRL - use or not
+- Block session if cert is unknown, if cert is expired
 
 ### Firewall Features Using Certificates
 
@@ -2825,6 +2914,26 @@ Supported authentication types include the following:
 
 ## Global Protect
 
+### High level picture
+
+- Client connects with browser to Portal and authenticates there
+- Downloads Agent for his OS
+- Install Agent and connects to Portal
+- Portal sends him all configs + list of gateways
+- Client connects to gateway with received configs
+- Gateway configures agent in terms of networking
+- Split tunnel, IP pool and DNS are defined in Gateway
+- All settings, sent by Portal and Gateway are defined based on matching criteria, mostly Username and OS and Region
+- User have to trust portal and gateway certs
+- Protocol used: IPSec - if IPSec is selected in Agent config in Gateway
+- Routes are added to client without gateway, just using interface
+- Interface mask is 255.255.255.255
+- If IPSec is used, All encrypted Data is sent via UDP port 4501: IPSec + NAT-T
+- In route table pool for clients appeares as static route via tunnel interface configured in gateway
+- Than we can redistribute this static route to OSPF for example, so all LAN hosts may access Globalprotect clients
+
+### Concepts
+
 - GlobalProtect is an SSL VPN client that also supports IPSec
 - You can have one portal per GlobalProtect deployment and as many gateways as
 needed
@@ -2849,11 +2958,35 @@ needed
     - Excluded or included based on the access route
 - All interaction between the GlobalProtect components occurs over an SSL/TLS connection
 
-### Configuration workflow
+### Portal configuration    
 
-- GlobalProtect Portal
-- GlobalProtect Gateway
-  
+- Create GlobalProtect Portal: **Network > Global Protect > Portals**
+- Specify: Interface, IP, Logging, Page, TLS profile, Many Client Authentication Rules, Certificate Profile, Portal Data Collection, Agent, Clientless VPN, Satelite
+- Many Client Authentication Rules - Every rule is responsible for its own OS or browser + auth profile + use cert or not. Example: Windows - local auth, no certs; MAC users - LDAP auth, certs maybe used
+    - Certificate Profile - To authenticate users based on a client certificate or a smart card/CAC
+         - To authenticate the user, one of the certificate fields, such as the Subject Name field, must identify the username
+         - To authenticate the endpoint, the Subject field of the certificate must identify the device type instead of the username. (With the pre-logon connect methods, the portal or gateway authenticates the endpoint before the user logs in
+- User/Pass and certificate can be used together or either one
+- Portal Data Collection: Registry Keys from Windows, plist for MAC, Certificate Profile that specifies the machines certificates that you want to collect
+- Agent - After a GlobalProtect user connects to the portal and is authenticated by the GlobalProtect portal, the portal sends the agent configuration to the app. The portal uses the OS of the endpoint and the username or group name to determine which agent configuration to deploy + Serial Number + Certificate + Registry Checks + Plists. Several rules can be added. The portal starts to search for a match at the top of the list. When it finds a match, the portal sends the configuration to the app
+- Clientless VPN
+- Satelite
+- After you configured Portal user can access it with browser and download required Agent
+
+### Agent configuration for portal
+
+- Trusted root CAs - add to client
+- Agent User Override Key - change or disable client
+- Many Agent config rules
+- Define which components require 2 factor auth: portal, internal gateways, external gateways...
+- Config selection criteria: OS,User, Group, Serail Number, Machine certificate, registry keys, plists - Any by default
+- Internal gateways - if required
+- External gateways: IP, FQDN, Source region(any maybe), Priority
+- App configuration: very many options!
+- HIP data collection
+
+
+test
 
 - Configure certs for portal and gateway
 - Configure SSL service profile for portal and gateway
