@@ -72,59 +72,6 @@ Cortex XDR)
     - Traps running version 5.0+ with the Traps management service
 - AutoFocus - cloud-based threat intelligence service - takes data from every where and provides it for XSOAR, XDR
 
-## Best Practice Assessment (BPA) tool
-
-- BPA is available via Customer Support Portal
-- After you gain access to the BPA, you can generate a BPA report for a Panorama appliance or for a next-generation firewal
-- BPA for Palo Alto Networks firewalls and Panorama
-- If possible, generate BPA reports for Panorama appliances instead of individual next-generation firewalls to gain complete visibility into all of the firewalls in your environment in one report. Generate reports on a regular basis to measure progress toward adopting security capabilities and security best practices
-- The two components of the BPA tool are the Security Policy Adoption Heatmap and the BPA assessment
-- Tech Support Files (Device > Support> Tech Support File or Panorama> Support > Tech Support File) are sent to the portal
-- The BPA assessment compares a firewall or Panorama configuration against best practices and provides recommendations to strengthen the organization’s security posture by fully adopting the Palo Alto Networks prevention capabilities. More than 200 security checks are performed on the firewall or Panorama configuration
-- The Best Practices Assessment Plus (BPA+) fully integrates with BPA to provide customers with the ability to easily remediate failed best practice checks and improve overall adoption and security posture
-- Three class summaries for BPA: Technical, Operational, Management
-
-### Heat map
-
-- For every zone pair, for ezmple Internal > External, it shows in percents adoption rate for all features
-- The Heatmap Measures Adoption Rate. The Heatmap can filter information by device groups, serial numbers, zones, areas of architecture, and other categories. The results chart the progress of security improvement toward a Zero Trust network
-- All security profiles should be applied on all allow rules
-- For most features adoption rate goal is 100%
-- URL filtering and DNS sinkhole usually cannot be 100%
-
-The Heatmap measures the adoption rate of the following Palo Alto Networks firewall features:
-
-- WildFire
-- Threat Prevention
-- Anti-Spyware
-- DNS Sinkhole
-- Antivirus
-- Vulnerability Protection
-- URL Filtering
-- File Blocking
-- Data Filtering
-- User-ID
-- App-ID
-- Service/Port
-- Logging
-
-### BPA report
-
-- Executive summary in Palo Alto web site
-- Detailed HTML report is downloaded
-- Best practises summary: NIST for example
-- Security Profile Adoption
-- Application and User control adoption
-- Logging and zone protection adoption
-
-## Main features
-
-- App-ID
-- Content-ID
-- User-ID
-- Device-ID
-- Dynamic address groups, user groups, external lists
-
 ## Architecture
 
 - Policies: Policies section - all about traffic control
@@ -188,6 +135,8 @@ Data plane:
 
 ### Bootstraping
 
+Bootstrap allows you to automatically config, upgrade, update signatures, license a device during initial boot.
+
 - Attach the virtual disk, virtual CD-ROM, or storage bucket to the firewall
 - Firewall scans for a bootstrap package
 - Each time firewall boots from a factory default state, it checks for the presence of bootstrap volume
@@ -210,6 +159,11 @@ https://knowledgebase.paloaltonetworks.com/KCSArticleDetail?id=kA10g000000ClVHCA
 
 ## Features
 
+- App-ID
+- Content-ID
+- User-ID
+- Device-ID
+- Dynamic address groups, user groups, external lists
 - The Palo Alto Networks firewall was designed to use an efficient system known as next-generation processing. Next-generation processing enables packet evaluation, application identification, policy decisions, and content scanning in a single, efficient processing pass - Single Pass Architecture
 - Zone based firewall
 - Full hardware separate mgmt
@@ -285,6 +239,15 @@ https://knowledgebase.paloaltonetworks.com/KCSArticleDetail?id=kA10g000000ClVHCA
 
 ### Configuration management
 
+Configuration files:
+
+- running-config.xml
+- .snapshot.xml - save the candidate configuration as a default snapshot file
+- custom-named snapshot file
+- configuration versions, generated after every commit
+
+Concepts:
+
 - Firewall settings are stored in the XML configuration files that can be archived, restored, and managed
 - A firewall contains both a running configuration that contains all of the settings that are currently active and a candidate configuration
 - The candidate configuration is a copy of the running configuration, which also includes any settings changes that are not yet committed
@@ -295,26 +258,38 @@ https://knowledgebase.paloaltonetworks.com/KCSArticleDetail?id=kA10g000000ClVHCA
 - By default, Panorama stores up to 100 backups for each firewall although this is configurable
 - To store Panorama and firewall configuration backups on an external host, you can schedule exports from Panorama or complete an export on demand
 - The saved configuration files can be restored to the firewall at any time by an administrator by using the Panorama > Managed Devices > Summary
-- You can save configuration and you can commit it
-- You can save changes only by me or you can save changes by everyone
-- You can commit omly be or by everyone
-- You can validate commit
-- You may preview all the changes
-- You may see the changes summary
-- It is recomended to save and backup the running configuration before making any changes
 - The new versions of the running config are generated every time you make a change or click Commit
-- Revert to last saved config restores the config from .snapshot.xml file - The current candidate configuration is overwritten
-- Revert to running config restores the config from running-config.xml file - The current running configuration is overridden
-- Save named configuration snapshot option saves the candidate configuration to a file - does not override running config - You can either enter a file name or select an existing file to be overwritten. Note that the current active configuration file (running-config.xml) cannot be overwritten
-- Save candidate config - Saves the candidate configuration in flash memory (same as clicking Save at the top of the page)
-- Load named configuration snapshot - Loads a candidate configuration from the active configuration (running-config.xml) or from a previously imported or saved configuration. Select the configuration file to be loaded. The current candidate configuration is overwritten
-- Load configuration version - Loads a specified version of the configuration
-- Export named configuration snapshot - Exports the active configuration (running-config.xml) or a previously saved or imported configuration - you will get a very large XML file
-- Export configuration version - choose among auto saved configurations
-- Import named config snapshot - Imports a configuration file from any network location
-- Import device state (firewall only) - Import the device state information that was exported using the Export device state option. This includes the current running config, Panorama templates, and shared policies. If the device is a Global Protect Portal, the export includes the Certificate Authority (CA) information and the list of satellite devices and their authentication information
+- When you edit a setting and click OK, the firewall updates the candidate configuration, but does not save a backup snapshot
+
+In the right upper corner you can:
+
+- Сommit: all or by me: candidate-config > running-config
+- Preview all the changes: exact changes in xml configuration
+- Changes summary: high level picture
+- Validate commit
+- Lock: take it or view
+- Save changes: all or by me - .snapshot.xml - you can use it lately in "Revert to last saved config" - the same as do "Save candidate config" in Device > Setup > Operations - it will be saved after reboot
+- Revert changes: all or by me - put everything back, what you changed, but did not commited
 
 ### Backup
+
+- Device > Setup > Operations
+- Revert
+    - Revert to last saved config - restores the config from snapshot.xml file - The current candidate configuration is overwritten - you need to do Commit after this
+    - Revert to running config restores the config from running-config.xml file - The current running configuration is overridden
+- Save
+    - Save named configuration snapshot - saves the candidate configuration to a file - does not override running config - You can either enter a file name or select an existing file to be overwritten. Note that the current active configuration file (running-config.xml) cannot be overwritten
+    - Save candidate config - Saves the candidate configuration in flash memory (same as clicking Save at the top of the page)
+- Load
+    - Load named configuration snapshot - Loads a candidate configuration from the active configuration (running-config.xml) or from a previously imported or saved configuration. Select the configuration file to be loaded. The current candidate configuration is overwritten
+    - Load configuration version - Loads a specified version of the configuration
+- Export
+    - Export named configuration snapshot - Exports the active configuration (running-config.xml) or a previously saved or imported configuration - you will get a very large XML file
+    - Export configuration version - choose among auto saved configurations
+    - Export device state - tgz archive - not available in Panorama - running configuration, device group and template settings pushed from Panorama, certificate information, a list of satellites, and satellite authentication information
+- Import    
+    - Import named config snapshot - Imports a configuration file from any network location
+    - Import device state (firewall only) - Import the device state information that was exported using the Export device state option. This includes the current running config, Panorama templates, and shared policies. If the device is a Global Protect Portal, the export includes the Certificate Authority (CA) information and the list of satellite devices and their authentication information
 
 ### Content updates
 
@@ -328,6 +303,89 @@ https://knowledgebase.paloaltonetworks.com/KCSArticleDetail?id=kA10g000000ClVHCA
 - Commit
 - Critical content alerts are logged as system log entries with the following Type and Event: (subtype eq content) and (eventid eq palo-alto-networks-message)
 - Configure log forwarding
+
+### Signature updates
+
+- Device > Dynamic Updates
+
+### Upgrade Standalone
+
+- Make a backup
+- If you have enabled User-ID, after you upgrade, the firewall clears the current IP address-to-username and group mappings
+- Ensure that the firewall is running the latest content release version
+- Device > Software and click Check Now
+- Download
+- Click istall
+- Reboot
+- Firewall clears the User-ID mappings, then connects to the User-ID sources to repopulate the mappings
+
+```
+show user ip-user-mapping all
+show user group list
+```
+
+- Check sessions: Monitor > Session Browser
+
+### Upgrade HA pair
+
+- Disable preemption 
+- Suspend and upgrade the active HA peer first
+- Reboot
+- Verify that the device you just upgraded is in sync with the peer
+- Unsuspend: Device > High Availability > Operational Commands and Make local device functional for high availability
+- Suspend Secondary
+- Upgrade
+- Reboot
+- Reenable preemption
+
+### Performance monitoring
+
+- Resource widget: both datalane and management CPU
+
+### Best Practice Assessment (BPA) tool
+
+- BPA is available via Customer Support Portal
+- After you gain access to the BPA, you can generate a BPA report for a Panorama appliance or for a next-generation firewal
+- BPA for Palo Alto Networks firewalls and Panorama
+- If possible, generate BPA reports for Panorama appliances instead of individual next-generation firewalls to gain complete visibility into all of the firewalls in your environment in one report. Generate reports on a regular basis to measure progress toward adopting security capabilities and security best practices
+- The two components of the BPA tool are the Security Policy Adoption Heatmap and the BPA assessment
+- Tech Support Files (Device > Support> Tech Support File or Panorama> Support > Tech Support File) are sent to the portal
+- The BPA assessment compares a firewall or Panorama configuration against best practices and provides recommendations to strengthen the organization’s security posture by fully adopting the Palo Alto Networks prevention capabilities. More than 200 security checks are performed on the firewall or Panorama configuration
+- The Best Practices Assessment Plus (BPA+) fully integrates with BPA to provide customers with the ability to easily remediate failed best practice checks and improve overall adoption and security posture
+- Three class summaries for BPA: Technical, Operational, Management
+
+### Heat map
+
+- For every zone pair, for ezmple Internal > External, it shows in percents adoption rate for all features
+- The Heatmap Measures Adoption Rate. The Heatmap can filter information by device groups, serial numbers, zones, areas of architecture, and other categories. The results chart the progress of security improvement toward a Zero Trust network
+- All security profiles should be applied on all allow rules
+- For most features adoption rate goal is 100%
+- URL filtering and DNS sinkhole usually cannot be 100%
+
+The Heatmap measures the adoption rate of the following Palo Alto Networks firewall features:
+
+- WildFire
+- Threat Prevention
+- Anti-Spyware
+- DNS Sinkhole
+- Antivirus
+- Vulnerability Protection
+- URL Filtering
+- File Blocking
+- Data Filtering
+- User-ID
+- App-ID
+- Service/Port
+- Logging
+
+### BPA report
+
+- Executive summary in Palo Alto web site
+- Detailed HTML report is downloaded
+- Best practises summary: NIST for example
+- Security Profile Adoption
+- Application and User control adoption
+- Logging and zone protection adoption
 
 ## Network
 
@@ -417,7 +475,7 @@ Floods:
 - Virtual Wire Subinterfaces using VLAN tags only: You assign 2 physical interfaces to one virtual wire, on each interface you create sub interface with particular VLAN-ID. The same VLAN tag must not be defined on the parent virtual wire interface and the subinterface.
 - Virtual Wire Deployment with Subinterfaces (VLAN Tags and IP Classifiers): First firewall looks on the VLAN tag and matches against proper subinterface, but several subinterfaces may use the same VLAN - 100, then it uses IP classifier: source IP address and this helps him to match proper subinterface. For return-path traffic, the firewall compares the destination IP address as defined in the IP classifier on the customer-facing subinterface and selects the appropriate virtual wire to route traffic through the accurate subinterface
 - Tunnel interfaces - virtual interfaces for VPN, should be in the same virtual router as physical - separate VPN zone for them is recomended. IP is required only when dynamic routing is used or for tunnel monitoring. Policy based VPN requires Proxy ID on both sides. 
-- Aggregate interfaces - IEEE 802.1AX link aggregation - harwdware media can be mixed - interface type must be the same - 8 groups, some models - 16, 8 interfaces un each group
+- Aggregate interfaces - IEEE 802.1AX link aggregation - harwdware media can be mixed - interface type must be the same - 8 groups, some models - 16, 8 interfaces un each group - naming: ae.1-8
 - Loopback interfaces - connect to the virtual routers in the firewall, DNS sinkholes, GlobalProtect service interfaces (such as portals and gateways)
 - Decrypt mirror interfaces - routing of copied decrypted traffic through an external interface to another system, such as a data loss prevention (DLP) service
 - VLAN interface
@@ -764,6 +822,7 @@ Profile includes:
 
 Concepts
 
+- We can use Decryption policy with action No decrypt in order to Block untrusted certs + Expired certs
 - You can block all the SSH tunnel traffic by configuring a Security policy rule for the application ssh-tunnel with the Action set to Deny (along with a Security policy rule to allow traffic from the ssh application)
 - When you apply an SSH Decryption profile to traffic, for each channel in the connection, the firewall examines the App-ID of the traffic and identifies the channel type. The channel type can be one of the following:
     - session
@@ -2110,6 +2169,12 @@ commit
 show interface management
 ```
 
+### Show data-plane CPU load
+
+```
+show running resource-monitor
+```
+
 ### Show routing table
 
 ```
@@ -2905,6 +2970,8 @@ Supported authentication types include the following:
 - LDAP
 - Local
 
+Roles are available in RADIUS Vendor-Specific Attributes (VSAs), TACACS+ VSAs, or SAML attributes.
+
 ## SCEP
 
 - SCEP operation is dynamic in that the enterprise PKI generates a user-specific certificate when the SCEP client requests it and sends the certificate to the SCEP client
@@ -3038,42 +3105,6 @@ test
 - Subsequent checks are performed hourly
 - Only the latest HIP report is retained on the gateway per endpoint
 
-## Upgrades
-
-### Signature updates
-
-- Device > Dynamic Updates
-
-### Upgrade Standalone
-
-- Make a backup
-- If you have enabled User-ID, after you upgrade, the firewall clears the current IP address-to-username and group mappings
-- Ensure that the firewall is running the latest content release version
-- Device > Software and click Check Now
-- Download
-- Click istall
-- Reboot
-- Firewall clears the User-ID mappings, then connects to the User-ID sources to repopulate the mappings
-
-```
-show user ip-user-mapping all
-show user group list
-```
-
-- Check sessions: Monitor > Session Browser
-
-### Upgrade HA pair
-
-- Disable preemption 
-- Suspend and upgrade the active HA peer first
-- Reboot
-- Verify that the device you just upgraded is in sync with the peer
-- Unsuspend: Device > High Availability > Operational Commands and Make local device functional for high availability
-- Suspend Secondary
-- Upgrade
-- Reboot
-- Reenable preemption
-
 ## Web proxy
 
 - Web proxy requires both a valid DNS Security license and the Prisma Access explicit proxy license
@@ -3089,6 +3120,7 @@ show user group list
 
 - It is a web portal
 - It is Enabled in Setup > Management Section: https://autofocus.paloaltonetworks.com:10443
+- It should be licensed
 
 ## IoT Security
 
