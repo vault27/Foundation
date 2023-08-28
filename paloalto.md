@@ -208,7 +208,7 @@ https://knowledgebase.paloaltonetworks.com/KCSArticleDetail?id=kA10g000000ClVHCA
 - Web Proxy - ?
 - DNS Security - DNS sinkholing capabilities by querying DNS Security, cloud-based service, Threat Prevention license is prerequisite
 - Support
-- Wildfire - more frequent updates, advanced file type forwarding (APK, PDF, Microsoft Office, and Java Applet), WF-500
+- Wildfire - more frequent updates, advanced file type forwarding (APK, PDF, Microsoft Office, and Java Applet), WF-500, 10000 samples per day
 - Advanced Wildfire - access to Intelligent Run-time Memory Analysis: a cloud-based advanced analysis engine that complements static and dynamic analysis, to detect and prevent evasive malware threats
 - IoT security - Internet of Things - discover and maintain a real-time inventory of the IoT devices. automatic generation of policy recommendations to control IoT device traffic, as well as the automatic creation of IoT device attributes for use in firewall policies
 - Autofocus - graphical analysis of firewall traffic logs and identifies potential risks to your network using threat intelligence from the AutoFocus portal
@@ -899,8 +899,6 @@ Actions:
 
 The Allow and Deny actions enable you to make exceptions within larger groups
 
-
-
 ### SD-WAN
 
 ## Security profiles
@@ -1023,6 +1021,7 @@ Advanced Threat Prevention
 - You can also use URL categories as match criteria in Security policy rules
 - You can also use URL categories to enforce different types of policy, such as Authentication, Decryption, QoS, and Security
 - Every URL can have up to four categories
+- Brightcloud database can also be used
 
 What it does:
 
@@ -1229,9 +1228,9 @@ Licenses
 - You can enable both types of protection mechanisms in a single DoS Protection profile
 - Threshold settings for the synchronize (SYN), UDP, and Internet Control Message Protocol (ICMP) floods; enables resource protection; and defines the maximum number of concurrent connections. After configuring the DoS Protection profile, you attach it to a DoS policy rule
 
-Global Packet Buffer Protection—The firewall monitors sessions from all of the zones (regardless of whether Packet Buffer Protection is enabled in a zone) and how those sessions utilize the packet buffer. You must configure Packet Buffer Protection globally (Device > Setup > Session Settings) to protect the firewall and to enable it on individual zones. When packet buffer consumption reaches the configured Activate percentage, the firewall uses Random Early Drop (RED) to drop packets from the offending sessions (the firewall doesn’t drop complete sessions at the global level)  
+Global Packet Buffer Protection — The firewall monitors sessions from all of the zones (regardless of whether Packet Buffer Protection is enabled in a zone) and how those sessions utilize the packet buffer. You must configure Packet Buffer Protection globally (Device > Setup > Session Settings) to protect the firewall and to enable it on individual zones. When packet buffer consumption reaches the configured Activate percentage, the firewall uses Random Early Drop (RED) to drop packets from the offending sessions (the firewall doesn’t drop complete sessions at the global level)  
 
-Per-Zone Packet Buffer Protection—Enable Packet Buffer Protection on each zone (Network > Zones) to layer in a second level of protection. When packet buffer consumption crosses the Activate threshold and global protection begins to apply RED to session traffic, the Block Hold Time timer starts. The Block Hold Time is the amount of time in seconds that the offending session can continue before the firewall blocks the entire session. The offending session remains blocked until the Block Duration time expires
+Per-Zone Packet Buffer Protection — Enable Packet Buffer Protection on each zone (Network > Zones) to layer in a second level of protection. When packet buffer consumption crosses the Activate threshold and global protection begins to apply RED to session traffic, the Block Hold Time timer starts. The Block Hold Time is the amount of time in seconds that the offending session can continue before the firewall blocks the entire session. The offending session remains blocked until the Block Duration time expires
 
 ## Sessions
 
@@ -1949,32 +1948,34 @@ debug software restart process user-id
 
 Features:
 
-- Centralized view on all activities via ACC:
+- Centralized view on all activities via **ACC**:
     - Network
     - Threat
     - Blocked
     - Tunnel
     - Global Protect
     - SSL 
-- Centrall logging via Monitor
+- Centrall logging via **Monitor**
     - All logs - send logs to Panorama is enabled in Log Forwarding profile and configurable on per rule basis
     - External Logs - TrapsTM ESM Server logs (security events on the endpoints)
     - Automated correlation engine
     - AppScope - all possible App Analytics
     - PDF reports
-- Policy management - all types of policies via Device Groups
-- Objects managment - All types - via Device Groups
-- All Network Configurations via Templates and Stacks
-- All Device configurations via Templates and Stacks
-- Detailed device health: Panorama > Managed Devices > Health
-- Databases, licenses and software updates
-- Super detailed Admin Profiles, what they can do: Web, CLI, API
-- Access domains: devices, device groups, templates - what admins can access
+- Device management: **Panorama > Managed Devices > Summary**, Health: **Panorama > Managed Devices > Health**, Troubleshooting policies + Connectivity: **Panorama > Managed Devices > Troubleshooting**
+- Policies + Objects management - all types of policies via **Device Groups: Panorama > Device Groups, Policies, Objects**
+- All Network Configurations + Device configurations via **Network, Device, Panorama > Templates**
+- Databases, licenses and software updates: **Panorama > Device Deployment**
+- Import device config to new Template and Device Group: **Panorama > Setup > Operations > Import device configuration to Panorama**
+- Super detailed Admin Profiles, what they can do: Web, CLI, API - **Panorama > Admin Roles**
+- Access domains: devices, device groups, templates - what admins can access - **Panorama > Access Domain**
 - Data redistribution: other can connect to Panorama, Panorama can connect to agents
 - Log collectors + Groups
+- Many predefined reports + granular log storage control 
 - Zero touch provisioning
 - Plugins: AWS, Azure, ACI, TrustSec, DLP, SD-WAN, NSX, vCenter
 - A CLI command will forward the pre-existing logs to Panorama from firewalls
+- **Panorama > Device Quarantine** - list of all devices on quaratine, manual in Panorama via serial, manual via logs, automatic action based on logs
+- Share Unused Address and Service Objects with Devices + Ancestor are stronger then descendants: **Panorama > Setup > Management > Panorama Settings**
 
 Types:
 
@@ -2001,6 +2002,15 @@ Types:
 - Stack have a configurable priority order to ensure that Panorama pushes only one value for any duplicate setting. If there is the same object in 2 templates, object from the uppest template in the stack will be installed, for example interface management profile, no options for this profile from lower template will be installed
 - Different firewall models - different stacks
 
+It is impossible to configure with templates:
+
+- Configure a device block list
+- Clear logs.
+- Enable operational modes such as normal mode, multi-vsys mode, or FIPS-CC mode.
+- Configure the IP addresses of firewalls in an HA pair.
+- Configure a master key and diagnostics.
+- Compare configuration files (Config Audit).
+
 ### Variables
 
 - They are created in order not to create 200 templates with different IPs inside
@@ -2017,6 +2027,7 @@ Types:
 
 ### Device groups - to control policies and objects
 
+- To create a device group: Name, parent group, devices, User-ID master device - The device selected as the Master Device is used to gather user information.  The gathered user and group mapping information is used for shared policy configiration. It is required if you want to use users in a policy, Cloud Identity Engine
 - Device groups: for controlling all policies + all objects
 - By default Panorama pushes all shared objects to firewalls whether or not any shared or device group policy rules reference the objects
 - On lower-end models, such as the PA-220, consider pushing only the relevant shared objects to the managed firewalls. This is because the number of objects that can be stored on the lower-end models is considerably lower than that of the mid- to high-end models
@@ -2135,6 +2146,11 @@ Commit options when you commit to Panorama:
 - Migrate HA pair: Disable configuration synchronization between the HA peers, 
 
 ### Log collectors
+
+### Health monitoring
+
+- Panorama > Managed devices > Health
+- Throughput, sessions, connections, packets, interfaces, logging rate, memory, CPU (management plane, data plane), packet buffers, HA, Cluster
 
 ## CLI
 

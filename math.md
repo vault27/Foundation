@@ -21,6 +21,9 @@ Most mathematical activity involves the discovery of properties of abstract obje
 - Quatient - a result obtained by dividing one quantity by another - the answer to the division problem
 - Dividend - a number beeing devided on pieces
 - Divisor - the number by which the dividend is devided
+- Number
+- Numeral - So the number is an idea, the numeral is how we write it
+- Digit
 
 ## Numeral systems
 
@@ -92,7 +95,8 @@ b - base
 
 #### Decimal to binary conversion
 
-Conversion steps:-
+Conversion steps:
+
 - Divide the number by 2.
 - Get the integer quotient for the next iteration.
 - Get the remainder for the binary digit.
@@ -119,8 +123,7 @@ by 2                (Digit)
 
 - Real
 - Natural - the non-negative integers {0, 1, 2, 3, ...}. Natural numbers including 0 are also sometimes called whole numbers
-- Rational
+- Rational -  number that can be expressed as the quotient or fraction p/q of two integers, a numerator p and a non-zero denominator. For example, -3/7 is a rational number, as is every integer (e.g., 5 = 5/1)
 - Integer - Positive and negative counting numbers, as well as zero: {..., −3, −2, −1, 0, 1, 2, 3, ...}
     - Even and odd
     - Prime - A positive integer with exactly two positive divisors: itself and 1. The primes form an infinite sequence 2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, ...
-    - 
