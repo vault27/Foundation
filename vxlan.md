@@ -455,6 +455,14 @@ Cisco Live BRKDCN-2012 - VXLAN vPC: Design and Best Practices
 
 Via transit Leaf nodes
 
+<img width="1421" alt="image" src="https://github.com/philipp-ov/foundation/assets/116812447/12330cae-4aea-462d-ae06-81b7b690f371">
+
+Via Super Spines
+
+<img width="563" alt="image" src="https://github.com/philipp-ov/foundation/assets/116812447/04907972-06c8-4309-bc13-e4e7937c0f4c">
+
+
+
 
 
 
