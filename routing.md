@@ -161,7 +161,9 @@ Can be changed with distance command
 ## Redistribution
 
 - Redistribution is configured on that side where we redistribute
-- If we want to redistribute to BGP from OSPF, we configure it in BGP 
+- If we want to redistribute to BGP from OSPF, we configure it in BGP
+- When we use redistribution, espeacially double mutual: ospf > bgp > ospf - loops are possible - why? - tags are used to help?
+- 
 
 ## Routing table
 
