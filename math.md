@@ -127,3 +127,8 @@ by 2                (Digit)
 - Integer - Positive and negative counting numbers, as well as zero: {..., −3, −2, −1, 0, 1, 2, 3, ...}
     - Even and odd
     - Prime - A positive integer with exactly two positive divisors: itself and 1. The primes form an infinite sequence 2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, ...
+
+## Division
+
+- Long devision
+- 8/4=2: 8 - dividend, 4 - divisor, 2 - quotient

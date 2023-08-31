@@ -449,7 +449,13 @@ Cisco Live BRKDCN-2012 - VXLAN vPC: Design and Best Practices
 - Three options available:
   - Multi-fabric - not popular, L2 is required, between fabrics no VxLAN, only L2, many VLANs, this L2 is usually implemented via difficult L3 (VPLS). Fabrics are absolutely disconnected, they dont know anything about each over.
   - Multi-pod - just another hierarchy level, one big fabric, shared underlay and overlay, hierarchy is only in underlay. VxLAN encapsulation between sites. This is approach to scale fabric, not to connect 2 different ones. Fate sharing.
-  - Multi-site - The most popular. VxLAN encapsulation between sites.
+  - Multi-site - The most popular. VxLAN encapsulation between sites
+
+### Multi-pod physical connection types
+
+Via transit Leaf nodes
+
+
 
 
 ## Configuration
