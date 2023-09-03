@@ -61,5 +61,10 @@ https://bgpfilterguide.nlnog.net/guides/bogon_prefixes
 
 ### ARP
 
+## MTU
+
+- Some applications put DF bit and packet cannot be fragmented - for such apps MTU should be proper configured along all path
+
+
 
 

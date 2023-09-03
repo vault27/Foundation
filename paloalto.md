@@ -37,6 +37,7 @@
       - OpenStack
       - VMware ESXi, VMware NSX, and VMware vCloud Air
 - Panorama
+- CN-Series - for Kubernetes - secure traffic between pods in different trust zones and namespaces, for protection against known and zero-day malware, and to block data exfiltration from your containerized environments
 
 ### Prisma
 
@@ -313,7 +314,7 @@ In the right upper corner you can:
 - Make a backup
 - If you have enabled User-ID, after you upgrade, the firewall clears the current IP address-to-username and group mappings
 - Ensure that the firewall is running the latest content release version
-- Device > Software and click Check Now
+- **Device > Software** and click Check Now
 - Download
 - Click istall
 - Reboot
@@ -324,15 +325,15 @@ show user ip-user-mapping all
 show user group list
 ```
 
-- Check sessions: Monitor > Session Browser
+- Check sessions: **Monitor > Session Browser**
 
 ### Upgrade HA pair
 
-- Disable preemption 
+- Disable preemption
 - Suspend and upgrade the active HA peer first
 - Reboot
 - Verify that the device you just upgraded is in sync with the peer
-- Unsuspend: Device > High Availability > Operational Commands and Make local device functional for high availability
+- Unsuspend: **Device > High Availability > Operational Commands and Make local device functional for high availability**
 - Suspend Secondary
 - Upgrade
 - Reboot
@@ -483,6 +484,10 @@ Floods:
 
 ### Routing
 
+- All forwarding is based on FIB, FIB is generated based on RIB
+- Another Virtual Router can be used as next hop, then packet will be forwarded according to that VR FIB
+- Other possible next hops: FQDN, Discard - for black hole, None - for Tunnel interfaces
+- Route tables for static routes: Unicast, Multicast, Both
 - All ingress traffic goes to firewall itself or virtual router object, vlan object or virtual wire object
 - Legacy virtual routers: RIP, OSPF, OSPFv3, BGP, multicast, static routes, redistribution, administrative distances
 - Advanced Route Engine of virtual routers supports the Border Gateway Protocol (BGP) dynamic routing protocol and static routes, can be only one - for large data centers, enterprises, ISPs, and cloud services
@@ -605,7 +610,7 @@ vsys1                                          93.184.216.34[80]/ISP2  (93.184.2
 - Can be customized for VSYS
 - Modification of an Interface IP Address to a different IP address or Address Object will not update a corresponding Service Route Source Address
 - You can configure IPv4, IPv6 and Destination Service Route
-- You chhose service and configure Source Interface and Source IP address
+- You choose service and configure Source Interface and Source IP address
 - By default mgmt interface is used for all service communications: DNS, LDAP, updates...
 - It can be configured via any interface separatly for every service route
 - Can be configured per VSYS
@@ -956,7 +961,8 @@ UDP, it drops the connection
 
 ### Antivirus
 
-- Enable protocol decoders
+- Protect against viruses, worms, trojans, spyware downloads
+- Enable protocol decoders: ftp, http, imap, pop3, smb, smtp
 - For every decoder 3 types of actions needed to be chosen + Wildfire Inline ML model:
     - Signature action
     - Wildfire signature action
@@ -964,11 +970,11 @@ UDP, it drops the connection
 - Choose application exceptions
 - Choose signatures exceptions
 - Configure Wildfire ML
-- Stream
+- Stream-based malware prevention engine, which inspects traffic the moment the first packet is received - good performance
 - Default generates alerts for the SMTP, IMAP, and POP3 protocols while blocking for FTP, HTTP, and Server Message Block (SMB) protocols
 - Minimize traffic inspection between trusted security zones
-- Machine learning to PE - Portable executable, ELF (executable and linked format), and MS Office files and on the PowerShell and shell scripts in real time
-- WildFire-based signatures
+- Machine learning is used to identify malware in real time in: Portable executable, ELF (executable and linked format), and MS Office files, PowerShell, shell scripts
+- WildFire-based signatures are used in addition to Antivirus
 - WildFire inline ML, you must possess an active WildFire subscription
 
 ### Anti-Spyware
@@ -1948,6 +1954,7 @@ debug software restart process user-id
 
 Features:
 
+- Dashboard: configurable widgets, configurable device groups, configurable devices
 - Centralized view on all activities via **ACC**:
     - Network
     - Threat
@@ -1968,20 +1975,40 @@ Features:
 - Import device config to new Template and Device Group: **Panorama > Setup > Operations > Import device configuration to Panorama**
 - Super detailed Admin Profiles, what they can do: Web, CLI, API - **Panorama > Admin Roles**
 - Access domains: devices, device groups, templates - what admins can access - **Panorama > Access Domain**
-- Data redistribution: other can connect to Panorama, Panorama can connect to agents
-- Log collectors + Groups
+- Data redistribution: other can connect to Panorama, Panorama can connect to agents: **Panorama > Data Redistribution**, Agents/Clients/Include,Exclude networks
+- Log collectors + Groups: **Panorama > Managed Collectors, Collector Groups**
 - Many predefined reports + granular log storage control 
 - Zero touch provisioning
 - Plugins: AWS, Azure, ACI, TrustSec, DLP, SD-WAN, NSX, vCenter
 - A CLI command will forward the pre-existing logs to Panorama from firewalls
 - **Panorama > Device Quarantine** - list of all devices on quaratine, manual in Panorama via serial, manual via logs, automatic action based on logs
 - Share Unused Address and Service Objects with Devices + Ancestor are stronger then descendants: **Panorama > Setup > Management > Panorama Settings**
+- High Availability: passive one is passive and just synchronize with active: **Panorama > High Availability**, Same Model version and mode, Peer IP, Peer Serial, Priority
+- Panorama Interconnect: manages up to 64 Panorama Nodes: Panorama Interconnect plugin. You must install the plugin on the Panorama Controller, and all Panorama Nodes
+- Wildfire Clusters + Appliances: **Panorama > Managed Wildfire Clusters, Appliances**
+- **Panorama > Scheduled Confif Push** - Date/Time/One-time/Recurring/Device Groups/Templates
+- **Panorama > Log Ingestion Profile** - receive logs from external sources, attach the log ingestion profile to a Log Collector group
+- **Panorama > Policy Recomendation > IoT + SaaS** - ?
 
 Types:
 
 - Management Only
 - Log Collector
 - Panorama: both
+
+### Migrate Firewall to Panorama
+
+- Add new device
+- Import configuration
+- Fine-tune the configuration
+- Commit to Panorama
+- Push the device state
+- Commit the device groups and templates
+
+If you migrate HA pair:
+
+- Disable automatic sync between peers
+- Add both firewalls to Panorama
 
 ### Templates & stacks
  
@@ -2005,11 +2032,20 @@ Types:
 It is impossible to configure with templates:
 
 - Configure a device block list
-- Clear logs.
-- Enable operational modes such as normal mode, multi-vsys mode, or FIPS-CC mode.
-- Configure the IP addresses of firewalls in an HA pair.
-- Configure a master key and diagnostics.
-- Compare configuration files (Config Audit).
+- Clear logs
+- Enable operational modes such as normal mode, multi-vsys mode, or FIPS-CC mode
+- Configure the IP addresses of firewalls in an HA pair
+- Configure a master key and diagnostics
+- Compare configuration files (Config Audit)
+
+Configuration
+
+- Create Template: **Panorama > Templates > Add - Name + VSYS**
+- Commit to Panorama
+- Fill the template with options via Templates Sections: Network and Device
+- Create a Stack: **Panorama > Templates > Add Stack** - Assign a template to it + assign devices + default VSYS
+- The Template at the top of the Stack has the highest priority in the presence of overlapping config
+- Commit to Panorama and devices
 
 ### Variables
 
@@ -2055,15 +2091,6 @@ It is impossible to configure with templates:
 - If you create an address on Panorama and do not use it in rules, it will be installed to device anywayt is enabled in Parent Group
 - If the same object is in Parent group, you cannot create it in Child group, override is required, if i
 
-### Configuration
-
-- Create Template: Panorama > Templates > Add - Name + VSYS 
-- Commit to Panorama
-- Fill the template with options via Templates Sections: Network and Device
-- Create a Stack: Panorama > Templates > Add Stack - Assign a template to it + assign devices + default VSYS
-- The Template at the top of the Stack has the highest priority in the presence of overlapping config
-- Commit to Panorama and devices
-
 ### Licensing + Software Upgrades + Dynamic Updates
 
 - Panorama > Device Deployment 
@@ -2075,7 +2102,6 @@ It is impossible to configure with templates:
 - A pair of Panorama instances can be used to download software updates. One Panorama with a trusted internet connection can transfer updates to an SCP server while the second Panorama deployed in an isolated network can use the SCP server as a software update server. The second Panorama can then download any updates and then send them to all the managed devices
 - Panorama > Device Deployment > Software
 - Panorama > Device Deployment > Dynamic Updates
-- 
 
 ### Automatic commit recovery
 
@@ -2088,17 +2114,21 @@ It is impossible to configure with templates:
 ### Configuration
 
 - Add Panorama and Secondary Panorama IP on device
-- Insert auth key from Panorama: Panorama > Device Registration Auth Key
+- Insert auth key from Panorama: **Panorama > Device Registration Auth Key**
 - Push two buttons to enable policy and device configuration
 - Commit
 - Do the same for secondary device OR if it is already was in cluster, all setting will be commited from active device, except Auth key - it should be added manually
-- Add both devices to Panorama > Managed devices using serials
-- Group HA pair in panorama  
+- Add both devices to **Panorama > Managed devices** using serials
+- Group HA pair in panorama
+- Panorama manages HA devices as separate, but we can group them for visual convenience, anyway, panorama will send settings to each firewall
+- Panorama configurations are not synced between HA pair
 - Create a device group
 - Commit and push
 - Go to Policies, select device group and edit edit policy and push it
-- Create templates - all configurations are there - Panorama > Templates
-- Combine them into stack - Panorama > Templates - add devices to Stack
+- Device group is configurable for every rule
+- Create templates - all configurations are there - **Panorama > Templates**
+- Combine them into stack - **Panorama > Templates** - add devices to Stack
+- You can add audit comment for every rule edit and then use audit comment archive to see all comment for all rule changes + you can make audit comment mandatory
 
 ### Remove firewall from Panorama
 
@@ -2146,6 +2176,12 @@ Commit options when you commit to Panorama:
 - Migrate HA pair: Disable configuration synchronization between the HA peers, 
 
 ### Log collectors
+
+- You can use Panorama as management server + send all logs to it, or you can send logs to log collectors (Panorama) and from them management Panorama will request all required data, you can also send logs to Cortex Data Lake
+- Log collectors can be combined into groups - up to 16 in one
+- Log collector mode is enabled via CLI and then device does not have Web interface  any more, it is controlled via Panorama management device
+- Logs may store on firewall and Panorama may query them for reports
+
 
 ### Health monitoring
 

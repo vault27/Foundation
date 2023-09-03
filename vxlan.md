@@ -465,6 +465,22 @@ Via Transit Leafs 2
 
 <img width="703" alt="image" src="https://github.com/philipp-ov/foundation/assets/116812447/99938ada-d979-4ab0-a609-17e6b3f27f25">
 
+### Multi-pod Underlay routing considerations
+
+- All Pods are in 1 routing domain - fate sharing - any failure will affect the entire network
+- Different routing protocols between pods: OSPF - BGP - OSPF: double redistribution, issue with loops possible
+- Divide single routing domain: Areas in OSPF
+- MTU between PODs should be increased on 54 bytes
+
+## Multi-site
+
+- Several fabrics are connected via separate DCI fabric
+- Under, Overlay are isolated, u can still span L2
+- BUM traffic runs between sites
+- Border Gateways - Key Functional Components - connected to Spines above them - 2 gateways per fabric
+- Site internal fabric - local fabric itself
+- Site external DCI - fabric between sites - L3 connectivity between BGWs + increased MTU
+- Multi-site also supports integration an migration of legacy networks: you connect to BGW usual network and it sees VxLAN hosts and VxLAN hosts see usual hosts
 
 
 
