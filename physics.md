@@ -13,6 +13,25 @@ Electromagnetic radiation types:
 - X-rays
 - Gamma rays
 
+The terms light, electromagnetic waves, and radiation all refer to the same physical phenomenon: electromagnetic energy.  
+This energy can be described by frequency, wavelength, or energy. All three are related mathematically such that if you know one, you can calculate the other two. Radio and microwaves are usually described in terms of frequency (Hertz), infrared and visible light in terms of wavelength (meters), and x-rays and gamma rays in terms of energy (electron volts). This is a scientific convention that allows the convenient use of units that have numbers that are neither too large nor too small.
+
+Electricity can be static, like the energy that can make your hair stand on end. Magnetism can also be static, as it is in a refrigerator magnet. A changing magnetic field will induce a changing electric field and vice-versa—the two are linked. These changing fields form electromagnetic waves. Electromagnetic waves differ from mechanical waves in that they do not require a medium to propagate. This means that electromagnetic waves can travel not only through air and solid materials, but also through the vacuum of space.  
+  
+In the 1860's and 1870's, a Scottish scientist named James Clerk Maxwell developed a scientific theory to explain electromagnetic waves. He noticed that electrical fields and magnetic fields can couple together to form electromagnetic waves. He summarized this relationship between electricity and magnetism into what are now referred to as "Maxwell's Equations."
+
+In 1888 Heinrich Hertz, a German physicist, applied Maxwell's theories to the production and reception of radio waves. The unit of frequency of a radio wave -- one cycle per second -- is named the hertz, in honor of Heinrich Hertz.
+
+His experiment with radio waves solved two problems. First, he had demonstrated in the concrete, what Maxwell had only theorized — that the velocity of radio waves was equal to the velocity of light! This proved that radio waves were a form of light! Second, Hertz found out how to make the electric and magnetic fields detach themselves from wires and go free as Maxwell's waves — electromagnetic waves.
+
+The number of crests that pass a given point within one second is described as the frequency of the wave.  
+
+One wave—or cycle—per second is called a Hertz (Hz)  
+
+The distance between crests is the wavelength
+
+The shortest wavelengths are just fractions of the size of an atom, while the longest wavelengths scientists currently study can be larger than the diameter of our planet!
+
 ## Communications
 
 - Digital communications  
