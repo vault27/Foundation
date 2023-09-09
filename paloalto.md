@@ -17,6 +17,7 @@
 - GlobalProtect Administrator's Guide - 670 pages - whole world
 - PAN-OS® Administrator’s Guide - 1542 pages
 - Panorama Admin Guide
+- https://docs.paloaltonetworks.com/compatibility-matrix - Compatibility Matrix
 
 ## Portfolio
 
@@ -182,7 +183,7 @@ https://knowledgebase.paloaltonetworks.com/KCSArticleDetail?id=kA10g000000ClVHCA
   - Wildfire - send file to cloud for check
   - Data Filtering - in files, patterns, credit card numbers
 - Traps
-- DoS - different protocols floods, port scans - can be configured for zone and in separate policy. In separate policy is configured per application using DOS profile
+- DoS - in three places! Zone protection profiles - protect whole zones + port scan protection only there. Separate DoS policy. DoS security profile applied to Security rule!
 - NAT
 - VPN
 - QoS
@@ -194,8 +195,9 @@ https://knowledgebase.paloaltonetworks.com/KCSArticleDetail?id=kA10g000000ClVHCA
 - IP Tags
 - VM Monitoring
 - Dynamic Address Groups
-- Dynamic Extrnal Lists
-- XML API
+- Dynamic External Lists
+- XML API - full control of every aspect of your security, and build deep integrations with a variety of other systems. You can make XML API calls directly to the firewall, directly to Panorama, or to a firewall via Panorama
+- REST API - simplifies access to resources as high-level URIs. You can use this API to create, change, and delete resources
 - Device ID
 
 ## Subscriptions
@@ -513,72 +515,6 @@ Floods:
 - Policy rules do not influence these pings
 - Redistribution example: create redistribution profile, choose static, enter required destination prefix, choose redistribute, set priority: Profiles are matched in order (lowest number first), apply this path to OSPF and set metric that will be sent to OSPF
 
-### PBF
-
-- Separate policy
-
-Show all PBF rules
-
-```
-> show pbf rule all
-
-Rule       ID    Rule State Action   Egress IF/VSYS  NextHop                                 NextHop Status
-========== ===== ========== ======== =============== ======================================= ==============
-ISP2_webac 1     Active     Forward  ethernet1/2     172.16.31.1                             UP     
-```
-
-Show all PBF policy 
-
-```
-> show running pbf-policy
-
-ISP2_webaccess {
-        id 1;
-        from trust;
-        source any;
-        destination any;
-        user any;
-        application/service [ ftp/tcp/any/21 web-browsing/tcp/any/80 ];
-        action Forward;
-        symmetric-return no;
-        forwarding-egress-IF/VSYS ethernet1/2;
-        next-hop 172.16.31.1;
-        terminal no;
-}
-```
-
-Test PBF policy
-
-```
-> test pbf-policy-match from trust application web-browsing source 192.168.0.7 destination 93.184.216.34 protocol 6 destination-port 80
-
-ISP2_webaccess {
-        id 1;
-        from trust;
-        source any;
-        destination any;
-        user any;
-        application/service [ ftp/tcp/any/21 web-browsing/tcp/any/80 ];
-        action Forward;
-        symmetric-return no;
-        forwarding-egress-IF/VSYS ethernet1/2;
-        next-hop 172.16.31.1;
-        terminal no;
-```
-
-Show all sessions for PBF policy
-
-```
-> show session all filter pbf-rule ISP2_webaccess
-
---------------------------------------------------------------------------------
-ID          Application    State   Type Flag  Src[Sport]/Zone/Proto (translated IP[Port])
-Vsys                                          Dst[Dport]/Zone (translated IP[Port])
---------------------------------------------------------------------------------
-9873         web-browsing   ACTIVE  FLOW  NS   192.168.0.7[4015]/trust/6  (172.16.31.2[7914])
-vsys1                                          93.184.216.34[80]/ISP2  (93.184.216.34[80])
-```
-
 ### Dual ISP design
 
 - One default gateway to ISP-1 with metric 10 - primary one
@@ -631,6 +567,8 @@ vsys1                                          93.184.216.34[80]/ISP2  (93.184.2
 
 ## Policies
 
+**10 in total**
+
 - Security
 - NAT
 - QoS
@@ -642,7 +580,9 @@ vsys1                                          93.184.216.34[80]/ISP2  (93.184.2
 - DoS protection - ?
 - SD-WAN - ?
 
-### Security policy options
+### Security policy 
+
+Options
 
 - Source
   - Zone
@@ -659,7 +599,7 @@ vsys1                                          93.184.216.34[80]/ISP2  (93.184.2
 - GlobalProtect Host Information Profile (HIP)
 - Security Profiles (Content-ID) - use signatures to identify known threats. Unknown threats are identified by WildFire
 
-### Security policy concepts
+Concepts
 
 - Top to down
 - Left to right
@@ -680,6 +620,7 @@ vsys1                                          93.184.216.34[80]/ISP2  (93.184.2
 - Drop - silently, Deny - notify with ICMP + in App-Id data base there is a prefereable Deny action, Reset - send RST
 
 The policy evaluation then uses the 'six tuple' (6-Tuple) to match establishing sessions to security rules:
+
 1. Source IP
 2. Source Port
 3. Destination IP
@@ -687,7 +628,7 @@ The policy evaluation then uses the 'six tuple' (6-Tuple) to match establishing 
 5. Source Zone
 6. Protocol
 
-### Policy optimizer
+Policy optimizer
 
 - Enable Policy Rule Hit Count
 - Policies > Security > Left Down part of screen
@@ -708,6 +649,7 @@ First matched ruled is applied
 The advantage of specifying the interface in the NAT rule is that the NAT rule is automatically updated to use any address subsequently acquired by the interface.  
 
 Supported  Source NAT types:
+
 - Static IP
 - Dynamic IP and port
 - Dynamic IP
@@ -741,7 +683,7 @@ Enables the firewall to mark traffic with the same DSCP value that was detected 
   
 QoS policy  
   
-Policies > QoS  
+**Policies > QoS**  
 Define a QoS policy rule to match to traffic based on:
 
 - Applications and application groups
@@ -749,21 +691,22 @@ Define a QoS policy rule to match to traffic based on:
 - Destination zones and destination addresses
 - Services and service groups limited to specific TCP and/or UDP port numbers
 - URL categories, including custom URL categories
-- Differentiated Services Code Point (DSCP) and Type of Service (ToS) values, which are used to indicate  the level of service requested for traffic, such as high priority or best effort delivery
-    - Expedited Forwarding (EF): Can be used to request low loss, low latency, and guaranteed bandwidth for traffic. Packets with EF codepoint values are typically guaranteed the highest-priority delivery
-    - Assured Forwarding (AF): Can be used to provide reliable delivery for applications. Packets with AF codepoint indicate a request for the traffic to receive higher priority treatment than what the best-effort service provides (although packets with an EF codepoint continue to take precedence over those with an AF codepoint)
-    - Class Selector: Can be used to provide backward compatibility with network devices that use the IP precedence field to mark priority traffic
-    - IP Precedence (ToS): Can be used by legacy network devices to mark priority traffic (the IP precedence header field was used to indicate the priority for a packet before the introduction of the DSCP classification)
+- Differentiated Services Code Point (DSCP) and Type of Service (ToS) codepoints, consist of codepoint type and value, which are used to indicate  the level of service requested for traffic, such as high priority or best effort delivery
+    - Expedited Forwarding (EF) Type: Can be used to request low loss, low latency, and guaranteed bandwidth for traffic. Packets with EF codepoint values are typically guaranteed the highest-priority delivery - one value only
+    - Assured Forwarding (AF): Can be used to provide reliable delivery for applications. Packets with AF codepoint indicate a request for the traffic to receive higher priority treatment than what the best-effort service provides (although packets with an EF codepoint continue to take precedence over those with an AF codepoint) - many possible values
+    - Class Selector: Can be used to provide backward compatibility with network devices that use the IP precedence field to mark priority traffic - 8 possible values
+    - IP Precedence (ToS): Can be used by legacy network devices to mark priority traffic (the IP precedence header field was used to indicate the priority for a packet before the introduction of the DSCP classification) - 8 possible values
     - Custom Codepoint: Can be used to match to traffic by entering a codepoint name and binary value
+- At the end you define a class for this traffic: 1 of 8 + schedule
   
-QoS profile  
+QoS profile
   
-Network > Network Profiles > QoS Profile
+**Network > Network Profiles > QoS Profile**
 
 - For the profile you configure Egress Max and Egress guaranteed 
 - For every class which you defined in QoS Policy you configure Priority, Egress MAX and Egress Guaranteed
 - Egress MAX and Egress Guaranteed are in Mbps or percentage
-- Network > QoS and Adda QoS interface
+- **Network > QoS**: combine interface + profile
 - Can be applied only to physical interface
 - You may configure Egress MAX here as well
 - You configure Default QoS profile for regular (ClearText) traffic and Tunnel traffic
@@ -773,6 +716,80 @@ Network > Network Profiles > QoS Profile
 - Egress max specifies the overall bandwidth allocation for matching traffic. The firewall drops the traffic that exceeds the egress max limit set
 
 ### Policy Based Forwarding
+
+- Separate policy: **Policy > Policy Based Forwarding**
+- Source conditions: Zone, Interface, Address, User + Negate
+- Destination conditions: Address, Application, Service + Negate
+- Actions: Forward, Discard, No PBF - for exceptions
+- Egress interface, Next hop
+- Monitor based on monitor profile and destination address
+- Enforce Symmetric Return or Return to Sender feature: This feature forwards the packet to the MAC address from where the SYN or lost packet was received
+- Example: Request from Internet client arrives via ISP1, but reply is sent via ISP2 - because it is a default route
+- We create a PBF rule: source interface of ISP1, destination address of Internal server, Action forward to interface where Internal server is connected, enable "Enforce Symmetric Return" and add Next Hop Address of ISP1
+- After this sessions from ISP1 to internal server will be monitored and return traffic will be sent to MAC address of ISP1 router, despite the default route to ISP2
+- Adding Next Hop Address is not mandatory - for example when Internet client is on the same subnet
+
+**Show all PBF rules**
+
+```
+> show pbf rule all
+
+Rule       ID    Rule State Action   Egress IF/VSYS  NextHop                                 NextHop Status
+========== ===== ========== ======== =============== ======================================= ==============
+ISP2_webac 1     Active     Forward  ethernet1/2     172.16.31.1                             UP     
+```
+
+**Show all PBF policy**
+
+```
+> show running pbf-policy
+
+ISP2_webaccess {
+        id 1;
+        from trust;
+        source any;
+        destination any;
+        user any;
+        application/service [ ftp/tcp/any/21 web-browsing/tcp/any/80 ];
+        action Forward;
+        symmetric-return no;
+        forwarding-egress-IF/VSYS ethernet1/2;
+        next-hop 172.16.31.1;
+        terminal no;
+}
+```
+
+**Test PBF policy**
+
+```
+> test pbf-policy-match from trust application web-browsing source 192.168.0.7 destination 93.184.216.34 protocol 6 destination-port 80
+
+ISP2_webaccess {
+        id 1;
+        from trust;
+        source any;
+        destination any;
+        user any;
+        application/service [ ftp/tcp/any/21 web-browsing/tcp/any/80 ];
+        action Forward;
+        symmetric-return no;
+        forwarding-egress-IF/VSYS ethernet1/2;
+        next-hop 172.16.31.1;
+        terminal no;
+```
+
+**Show all sessions for PBF policy**
+
+```
+> show session all filter pbf-rule ISP2_webaccess
+
+--------------------------------------------------------------------------------
+ID          Application    State   Type Flag  Src[Sport]/Zone/Proto (translated IP[Port])
+Vsys                                          Dst[Dport]/Zone (translated IP[Port])
+--------------------------------------------------------------------------------
+9873         web-browsing   ACTIVE  FLOW  NS   192.168.0.7[4015]/trust/6  (172.16.31.2[7914])
+vsys1                                          93.184.216.34[80]/ISP2  (93.184.216.34[80])
+```
 
 ### Decryption
 
@@ -888,6 +905,9 @@ Policies > Authentication
 
 ### DoS Protection
 
+Describes to which traffic apply DOS protection profile - aggregate or classified or both + Logging + Schedule+  
+DoS profiles are the same as for Security Profile  
+
 - Control the systems to which the firewall applies DoS protection
 - What action to take when traffic matches the criteria
 - How to log DoS traffic
@@ -902,7 +922,12 @@ Actions:
 - Allow - The firewall permits access and doesn’t apply a DoS Protection profile. Traffic that matches the rule is allowed.
 - Protect — The firewall protects the devices defined in the DoS Protection policy rule by applying the specified DoS Protection profile or profiles thresholds to traffic that matches the rule. A rule can have one aggregate DoS Protection profile and one classified DoS Protection profile, and for classified profiles, you can use the source IP, destination IP, or both to increment the flood threshold counters, as described in Classified Versus Aggregate DoS Protection. Incoming packets count against both DoS Protection profile thresholds if the they match the rule. 
 
-The Allow and Deny actions enable you to make exceptions within larger groups
+The Allow and Deny actions enable you to make exceptions within larger groups  
+  
+**DoS profile Objects > Security Profiles > DoS Protection**
+
+- Two types: Aggregate or Classified
+
 
 ### SD-WAN
 
@@ -1457,7 +1482,7 @@ HA Lite:
 - No HA-2
 - Synchronization of IPsec security associations
 
-Concepts:
+HA Concepts:
 
 - Up to 16 firewalls as peer members of an HA cluster
 - Configure HA then everything else: Interfaces, policies....
@@ -1471,8 +1496,8 @@ Concepts:
 
 Failover reasons
 
-- Link monitoring: If an interface goes down, the member fails
-- Path monitoring: If an IP becomes unavailable, the member fails
+- Link monitoring: If an interface goes down, the member fails - you just create Link Group - add there many interfaces - Any of them or All should fail to trigger failover
+- Path monitoring: If an IP becomes unavailable, the member fails - you create a path group with a list of IP addresses - separate for VLAN, Virtual Wire, Virtual router - all or any should fail
 - Heartbeat monitoring: The peers periodically send heartbeat packages and hello messages to verify they are up and running
 - Hardware monitoring: The member continually performs packet path health monitoring on its own hardware and fails if a malfunction is detected
 
@@ -1851,7 +1876,7 @@ Types:
 - SAML
 - Kerberos - single sign on + keytab
 
-Device > Authentication Profile > What to configure:
+**Device > Authentication Profile** > What to configure:
 
 - Type
 - MFA profiles, several can be added
@@ -1861,7 +1886,7 @@ Device > Authentication Profile > What to configure:
 
 ## Authentication sequence
 
-- Device > Authentication Sequence
+- **Device > Authentication Sequence**
 - We can create several
 - We add different authentication profiles to a sequence
 - Order of profiles matter
@@ -1973,7 +1998,7 @@ Features:
 - All Network Configurations + Device configurations via **Network, Device, Panorama > Templates**
 - Databases, licenses and software updates: **Panorama > Device Deployment**
 - Import device config to new Template and Device Group: **Panorama > Setup > Operations > Import device configuration to Panorama**
-- Super detailed Admin Profiles, what they can do: Web, CLI, API - **Panorama > Admin Roles**
+- Super detailed Admin Profiles, what they can do: Web, CLI, API - **Panorama > Admin Roles** - 
 - Access domains: devices, device groups, templates - what admins can access - **Panorama > Access Domain**
 - Data redistribution: other can connect to Panorama, Panorama can connect to agents: **Panorama > Data Redistribution**, Agents/Clients/Include,Exclude networks
 - Log collectors + Groups: **Panorama > Managed Collectors, Collector Groups**
@@ -3001,15 +3026,47 @@ GlobalProtect has three major components:
 - Install the most recent version of the ZTP plugin
 - Panorama > Zero Touch Provisioning
 
-## Authorization, authentication, and device access
+## Administrators, types, roles
  
- - Dynamic roles: After new features are added, the firewall and Panorama automatically update the definitions of dynamic roles
-    - Superuser
-    - Superuser (read-only)
-    - Panorama administrator
-- Only superuser dynamic roles can manage firewall admin accounts and create VSYS
-- Custom admin roles definition: After new features are added to the product, you must update the roles with corresponding access privileges
-- Panorama access domains control the access that device group and template administrators have to specific device groups (to manage policies and objects), to templates (to manage network and device settings), and to the web interface of managed firewalls (through context switching). You can define up to 4,000 access domains, and you can manage them locally or by using the RADIUS Vendor-Specific Attributes (VSAs), TACACS+ VSAs, or SAML attributes
+ - **Device > Administrators**
+ - **Device > Admin Roles**
+ 
+ When you create an Admin for PA you need specify the following:
+
+ - Name
+ - Authentication profile: LDAP, Tacacs, Radius...
+ - Password, if there is no Authentication profile
+ - Use only client certificate authentication (Web)
+ - Use Public Key Authentication (SSH)
+ - Type:
+    - **Dynamic**
+    - **Role based**
+- Type of Dynamic, if Dynamic is chosen
+- Admin Role Profile, if Role based is chosen
+- Password profile, if there is no Authentication profile
+
+Dynamic types, After new features are added, the firewall and Panorama automatically update the definitions of dynamic types:
+
+- Super user - can manage firewall admin accounts and create VSYS
+- Super user read-only
+- Device administrator - full access to all firewall settings except for defining new accounts or virtual systems
+- Device administrator read-only
+
+Admin Role Profiles, After new features are added to the product, you must update the roles with corresponding access privileges.  
+The firewall has three predefined roles you can use for common criteria purposes:
+
+- auditadmin
+- cryptoadmin
+- securityadmin
+
+Create **custom** roles to limit administrator access to only what each type of administrator needs. For each type of administrator, enable, disable, or set read-only access for Web UI, XML API, Command Line, and REST API access.  
+  
+For Command Line only 4 options exist in Role Configuration:
+
+- superuser
+- superreader
+- deviceadmin - Has full access to all firewall settings except for defining new accounts or virtual systems
+- devicereader
 
 Supported authentication types include the following:
 
@@ -3048,6 +3105,8 @@ Roles are available in RADIUS Vendor-Specific Attributes (VSAs), TACACS+ VSAs, o
 - Routes are added to client without gateway, just using interface
 - Interface mask is 255.255.255.255
 - If IPSec is used, All encrypted Data is sent via UDP port 4501: IPSec + NAT-T
+- If IPSec is not used, Everything goes via 443 and TLS
+- GlobalProtect is slower on SSL VPN because SSL requires more overhead than IPSec. Also, Transmission Control Protocol (TCP) is more prone to latency than User Datagram Protocol (UDP), which is used in IPsec GlobalProtect
 - In route table pool for clients appeares as static route via tunnel interface configured in gateway
 - Than we can redistribute this static route to OSPF for example, so all LAN hosts may access Globalprotect clients
 
@@ -3099,7 +3158,8 @@ needed
 - Many Agent config rules
 - Define which components require 2 factor auth: portal, internal gateways, external gateways...
 - Config selection criteria: OS,User, Group, Serail Number, Machine certificate, registry keys, plists - Any by default
-- Internal gateways - if required
+- Internal gateways - if required - When the user attempts to log in, the app does a reverse DNS lookup of an internal host using the specified IP Address
+to the specified Hostname - if result is positive, internal gateway is used. Internal gateways are useful in sensitive environments where authenticated access to critical resources is required
 - External gateways: IP, FQDN, Source region(any maybe), Priority
 - App configuration: very many options!
 - HIP data collection
@@ -3138,7 +3198,7 @@ test
     - External gateways—Requires a Layer 3 or loopback interface and a logical tunnel interface for the app to establish a connection. The Layer 3/loopback interface must be in an external zone, such as a DMZ. A tunnel interface can be in the same zone as the interface connecting to your internal resources (for example, trust). For added security and better visibility, you can create a separate zone, such as corp-vpn. If you create a separate zone for your tunnel interface, you must create security policies that enable traffic to flow between the VPN zone and the trust zone
     - Internal gateways—Requires a Layer 3 or loopback interface in your trust zone. You can also create a tunnel interface for access to your internal gateways, but this is not required
 - Each firewall can have multiple gateways, but they can't share an IP address
-- Network > GlobalProtect > Gateways
+- **Network > GlobalProtect > Gateways**
 - Create and configure:
     - Interface
     - IP
@@ -3150,6 +3210,8 @@ test
     - Split tunnel
     - IP-Pool
     - DNS servers
+    - IPSec or SSL
+    - Satelite
 
 ### HIP
 

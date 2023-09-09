@@ -1,5 +1,15 @@
 # Physics
 
+## Electricity
+
+- Greek philosopher Thales of Miletus - rubbing amber with animal fur would attract objects like feathers
+- 1600 - William Gilbert - Neo-Latin electricus, meaning "like amber" - De Magnete
+- 1745 - Leyden jar - early capacitor, or a device for storing an electric charge
+- 1752 - kite, lightning
+- 1800 - Alessandro Volta - first electric battery, known as the 'voltaic pile'
+
+## Electromagnetic radiation
+
 Electromagnetic radiation - waves of electromagnetic field  
 Electromagnetic field -  field produced by moving electric charges
   

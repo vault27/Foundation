@@ -131,4 +131,4 @@ by 2                (Digit)
 ## Division
 
 - Long devision
-- 8/4=2: 8 - dividend, 4 - divisor, 2 - quotient
+- 8/3=2: 8 - dividend, 3 - divisor, 2 - quotient, 2 - remainder
