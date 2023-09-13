@@ -171,6 +171,7 @@ Protocol  Address          Age (min)  Hardware Addr   Type   Interface
 Internet  10.0.3.1              211   6c41.0ead.2bc4  ARPA   Vlan19
 Internet  10.0.3.165              -   4ce1.75e8.31c4  ARPA   Vlan19
 ```
+## Interfaces
 
 Show all ports status
 ```
@@ -188,7 +189,11 @@ Port         Name               Status       Vlan       Duplex  Speed Type
 Gi1/0/22     d.bandaletov_NAC   connected    423        a-full a-1000 10/100/1000BaseTX
 ```
 
+Show description of all interfaces to understand what goes where
 
+```
+show int description
+```
 
 
 
