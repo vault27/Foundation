@@ -1,5 +1,7 @@
 # Palo Alto
 
+All you need to know about Palo Alto firewalls and for PCNSE exam in short and structured form
+
 ## Data Sources
 
 - https://docs.paloaltonetworks.com - all docs in one place
