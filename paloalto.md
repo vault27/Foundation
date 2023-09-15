@@ -13,7 +13,7 @@
 - https://knowledgebase.paloaltonetworks.com/KCSArticleDetail?id=kA10g000000Clc8CAC - Panorama Sizing and Design Guide
 - https://cp.certmetrics.com/paloaltonetworks/en/login - Certification Management
 - https://home.pearsonvue.com/paloaltonetworks - Pearson Vue Palo Alto
-- Mastering Palo Alto Networks: Build, configure, and deploy network solutions for your infrastructure using features of PAN-OS, 2nd Edition
+- Book "Mastering Palo Alto Networks: Build, configure, and deploy network solutions for your infrastructure using features of PAN-OS", 2nd Edition
 - GlobalProtect Administrator's Guide - 670 pages - whole world
 - PAN-OS® Administrator’s Guide - 1542 pages
 - Panorama Admin Guide
@@ -483,6 +483,52 @@ Floods:
 - Decrypt mirror interfaces - routing of copied decrypted traffic through an external interface to another system, such as a data loss prevention (DLP) service
 - VLAN interface
 - SD-WAN - ?
+
+**MAC addresses + speed/duplex**
+
+The MAC addresses of the HA1 interfaces, which are on the control plane and synchronize the configuration of the devices are unique.   
+The MAC addresses of the HA2 interfaces, which are on the data plane and synchronize the active sessions mirror each other
+
+```
+show interface all - including VMAC for Active-Passive HA cluster
+ethernet1/5             20    1000/full/up              00:1b:17:00:0b:14
+HA Group ID = 0b Hex (11 Decimal) and Interface ID = 14 Hex (20 Decimal)
+
+show interface ethernet1/1
+show high-availability state - The following command displays the MAC addresses of an HA cluster
+show high-availability virtual-address - displays VMAC and VIP for Active-Active HA cluster
+```
+
+**Physical media connected to a port**
+
+```
+show system state filter-pretty sys.s(x).p(y).phy [x=slot number and y=port number]
+show system state filter-pretty sys.s1.p1.phy
+sys.s1.p1.phy: {
+link-partner: { },
+media: CAT5,
+type: Ethernet,
+}
+```
+
+**Interface counters**
+
+```
+show system state filter-pretty sys.s(x).p(y).stats [x=slot number and y=port number]
+show system state filter-pretty sys.s1.p1.stats
+sys.s1.p1.stats: {
+rx-broadcast: 0,
+rx-bytes: 0,
+rx-multicast: 0,
+rx-unicast: 0,
+tx-broadcast: 0,
+tx-bytes: 0,
+tx-multicast: 0,
+tx-unicast: 0,
+}
+```
+
+
 
 ### Routing
 
@@ -2395,20 +2441,6 @@ Supported on the following firewalls: PA-3200 Series, PA-5200 Series,and PA-7000
 
 ```
 admin@PA-7050>set session offload no
-```
-
-### Show MAC addresses
-
-The MAC addresses of the HA1 interfaces, which are on the control plane and synchronize the configuration of the devices are unique. The MAC addresses of the HA2 interfaces, which are on the data plane and synchronize the active sessions mirror each other
-
-```
-show interface all - including VMAC for Active-Passive HA cluster
-ethernet1/5             20    1000/full/up              00:1b:17:00:0b:14
-HA Group ID = 0b Hex (11 Decimal) and Interface ID = 14 Hex (20 Decimal)
-
-show interface ethernet1/1
-show high-availability state - The following command displays the MAC addresses of an HA cluster
-show high-availability virtual-address - displays VMAC and VIP for Active-Active HA cluster
 ```
 
 ### Switch to suspended state
