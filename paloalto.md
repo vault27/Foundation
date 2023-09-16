@@ -597,6 +597,7 @@ tx-unicast: 0,
 
 - Device > Setup > Services > Global > Service Route Configuration
 - Can be customized for VSYS
+- Virtual systems that do not have specific service routes configured inherit the global service and service route settings for the firewall
 - Modification of an Interface IP Address to a different IP address or Address Object will not update a corresponding Service Route Source Address
 - You can configure IPv4, IPv6 and Destination Service Route
 - You choose service and configure Source Interface and Source IP address
