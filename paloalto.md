@@ -197,6 +197,11 @@ https://knowledgebase.paloaltonetworks.com/KCSArticleDetail?id=kA10g000000ClVHCA
 - Dynamic External Lists
 - XML API - full control of every aspect of your security, and build deep integrations with a variety of other systems. You can make XML API calls directly to the firewall, directly to Panorama, or to a firewall via Panorama
 - REST API - simplifies access to resources as high-level URIs. You can use this API to create, change, and delete resources
+- VSYS
+- FIPS mode
+- Decryption mirror
+- Decryption broker
+- Best Practice Assessment (BPA)
 
 ## Subscriptions
 
