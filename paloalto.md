@@ -184,7 +184,10 @@ https://knowledgebase.paloaltonetworks.com/KCSArticleDetail?id=kA10g000000ClVHCA
 - Traps
 - DoS - in three places! Zone protection profiles - protect whole zones + port scan protection only there. Separate DoS policy. DoS security profile applied to Security rule!
 - NAT
-- VPN
+- Site-to-site IPSec or GRE or GRE inside IPSec tunnels
+- Global Protect RA VPN via IPSec or SSL
+- Global Protect Satelite
+- Global Protect HIP
 - QoS
 - SD-WAN
 - DHCP
