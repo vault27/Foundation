@@ -300,6 +300,7 @@ In the right upper corner you can:
 
 - Applications and Threats Content Updates
 - Whether your organization is mission-critical or security-first (or a mix of both)
+- 6 to 12 hours for content updates to be dynamically updated in security-first network
 - The Best Practices for Applications and Threats Content Updates
 - Device > Dynamic Updates
 - Schedule for Applications and Threat content updates
@@ -1211,8 +1212,8 @@ Use a URL Filtering profile in the following cases:
 - Possible actions
     - alert
     - block
-    - continue: After the specified file type is detected, a customizable response page is
-presented to the user. The user can click through the page to download the file. A log is also generated in the Data Filtering log. This type of forwarding action requires user interaction and is therefore only applicable for web traffic
+    - continue: After the specified file type is detected, a customizable response page is presented to the user. The user can click through the page to download the file. A log is also generated in the Data Filtering log. This type of forwarding action requires user interaction and is therefore only applicable for web traffic
+- Monitor > Logs > Data Filtering - All File Block logs are here
 
 ### WildFire
 
