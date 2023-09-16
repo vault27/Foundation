@@ -137,7 +137,7 @@ Data plane:
 - NAT
 - Flow control
 
-### Bootstraping
+## Bootstraping
 
 Bootstrap allows you to automatically config, upgrade, update signatures, license a device during initial boot.
 
@@ -155,7 +155,7 @@ Bootstrap allows you to automatically config, upgrade, update signatures, licens
     - /content folder: This folder contains the Applications and Threats updates and WildFire updates for the valid subscriptions on the VM-Series firewall. You must include the minimum content versions that are required for the desired PAN-OS version
     - /plugins folder: This optional folder contains a single VM-Series plugin image
 
-### Packet Flow Sequence
+## Packet Flow Sequence
 
 https://knowledgebase.paloaltonetworks.com/KCSArticleDetail?id=kA10g000000ClVHCA0
 
@@ -204,7 +204,7 @@ https://knowledgebase.paloaltonetworks.com/KCSArticleDetail?id=kA10g000000ClVHCA
 
 ## Subscriptions
 
-15 in Total
+**15 in Total**
 
 - URL Filtering
 - Advanced URL filtering - cloud-based ML-powered web security engine to perform ML-based inspection of web traffic in real-time
