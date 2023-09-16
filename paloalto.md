@@ -31,30 +31,30 @@ All you need to know about Palo Alto firewalls and for PCNSE exam in short and s
 
 - PA-220, PA-800, PA-3200, PA-5200, and PA-7000 Series
 - VM-Series: 50, 100, 300, 500, 700
-      - Amazon Web Services
-      - Cisco ACI
-      - Citrix NetScaler SDX
-      - Google CloudPlatform
-      - Kernel-based Virtual Machine (KVM)
-      - Microsoft Azure and Microsoft Hyper-V
-      - OpenStack
-      - VMware ESXi, VMware NSX, and VMware vCloud Air
+  - Amazon Web Services
+  - Cisco ACI
+  - Citrix NetScaler SDX
+  - Google CloudPlatform
+  - Kernel-based Virtual Machine (KVM)
+  - Microsoft Azure and Microsoft Hyper-V
+  - OpenStack
+  - VMware ESXi, VMware NSX, and VMware vCloud Air
 - Panorama
 - CN-Series - for Kubernetes - secure traffic between pods in different trust zones and namespaces, for protection against known and zero-day malware, and to block data exfiltration from your containerized environments
 
 ### Prisma
 
 - Prisma Cloud - Cloud Security Posture Management (CSPM) - Prisma Cloud taps into the cloud providers’ APIs for read-only access to network traffic, user activity, and the configuration of systems and services.
-      - Alibaba Cloud
-      - Amazon Web Services
-      - Docker EE
-      - Google CloudPlatform
-      - IBM Cloud
-      - Kubernetes
-      - Microsoft Azure
-      - Rancher
-      - Red Hat OpenShift
-      - VMware Tanzu
+  - Alibaba Cloud
+  - Amazon Web Services
+  - Docker EE
+  - Google CloudPlatform
+  - IBM Cloud
+  - Kubernetes
+  - Microsoft Azure
+  - Rancher
+  - Red Hat OpenShift
+  - VMware Tanzu
 - Prisma Access Secure Access Service Edge (SASE) - Users connect to Prisma Access to access the internet and cloud and data center applications safely, regardless of their location
 - Prisma SaaS - multimode CASB service that allows you to govern any sanctioned software as a service (SaaS) application - complete visibility and granular enforcement across all user, folder, and file activity within the sanctioned SaaS applications
 - VM-Series ML-powered NGFWs
@@ -63,7 +63,7 @@ All you need to know about Palo Alto firewalls and for PCNSE exam in short and s
 
 Detection, investigation, automation, and response capabilities.
 
-- Cortex XDR - Extended Detection and Response - detection and response platform that runs on integrated endpoint, network, and cloud data.  Immediate response actions. Define indicators of compromise (IOCs) and behavioral indicators of compromise (BIOCs).
+- Cortex XDR - Extended Detection and Response - detection and response platform that runs on integrated endpoint, network, and cloud data.  Immediate response actions. Define indicators of compromise (IOCs) and behavioral indicators of compromise (BIOCs)
 - Cortex XSOAR - extended Security Orchestration, Automation, and Response - automate up to 95 percent of all of the response actions - gets data from XDR and Autofocus
 - Cortex Data Lake - central log storage - Effortlessly run advanced artificial intelligence and ML with cloud-scale data - Constantly learn from new data sources to evolve defenses
 - The following products can utilize Cortex Data Lake:
@@ -76,7 +76,7 @@ Cortex XDR)
     - Traps running version 5.0+ with the Traps management service
 - AutoFocus - cloud-based threat intelligence service - takes data from every where and provides it for XSOAR, XDR
 
-## Architecture
+## Configuration hierarchy
 
 - Policies: Policies section - all about traffic control
 - Policies use objects and security profiles: Objects section - everything that is used in policies
@@ -104,7 +104,7 @@ Cortex XDR)
     - SD-WAN
 - All other infrastructure: Device Secion: Users, User-ID, Certificates, HA...
 
-### Management plane and Data Plane
+## Management plane and Data Plane
 
 - On physical appliances separate CPU, RAM, SSD for management plane: mgmt interface + console
 - On virtual firewalls, these are still logically segregated
