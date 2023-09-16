@@ -163,9 +163,6 @@ https://knowledgebase.paloaltonetworks.com/KCSArticleDetail?id=kA10g000000ClVHCA
 
 ## Features
 
-- App-ID
-- Content-ID
-- User-ID
 - Device-ID
 - Dynamic address groups, user groups, external lists
 - The Palo Alto Networks firewall was designed to use an efficient system known as next-generation processing. Next-generation processing enables packet evaluation, application identification, policy decisions, and content scanning in a single, efficient processing pass - Single Pass Architecture
@@ -200,7 +197,6 @@ https://knowledgebase.paloaltonetworks.com/KCSArticleDetail?id=kA10g000000ClVHCA
 - Dynamic External Lists
 - XML API - full control of every aspect of your security, and build deep integrations with a variety of other systems. You can make XML API calls directly to the firewall, directly to Panorama, or to a firewall via Panorama
 - REST API - simplifies access to resources as high-level URIs. You can use this API to create, change, and delete resources
-- Device ID
 
 ## Subscriptions
 
