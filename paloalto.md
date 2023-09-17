@@ -228,15 +228,6 @@ https://knowledgebase.paloaltonetworks.com/KCSArticleDetail?id=kA10g000000ClVHCA
 - Enterprise Data Loss Prevention (DLP) - cloud-based protection against unauthorized access, misuse, extraction, and sharing of sensitive information
 - SaaS Security Inline - works with Cortex Data Lake to discover all of the SaaS applications in use on your network
 
-## Configuration workflow
-
-- You enable IPv6 on interface
-- You configure address
-- You enable Duplicate Address Detection
-- You enable  NDP Monitoring - you can view the IPv6 addresses of devices on the link local network, their MAC address, associated username from User-ID, eachability Status of the address, and Last Reported date and time the NDP monitor received a Router Advertisement from this IPv6 address
-- You enable RA-Router Advertisment
-- You enable DNS support - include DNS information in Router Advertisment: Recursive DNS servers and lifetime, suffixes and lifetime, lifetime - the maximum length of time the client can use the specific RDNS Server to resolve domain names
-
 ## Artificial intelligence operations (AIOps)/Telemetry
 
 - When enabled, Telemetry allows the firewall to collect and forward traffic information to Palo Alto Networks
@@ -534,9 +525,6 @@ tx-multicast: 0,
 tx-unicast: 0,
 }
 ```
-
-
-
 ### Routing
 
 - All forwarding is based on FIB, FIB is generated based on RIB
@@ -574,7 +562,7 @@ tx-unicast: 0,
 - Second default gateway to ISP-2 metric 50 - backup one
 - Add a rule to Policy Based Forwarding Policy: non-crytical applications send to ISP2, attach a monitoring profile, then if ISP2 is down, PBF rule will be disabled
 
-### IPv6 support
+### IPv6
 
 - To enable IPv6 on firewall:
     - Enable IPv6 on the interface
@@ -592,6 +580,15 @@ tx-unicast: 0,
 - The IPv6 Router Advertisement for DNS configuration is supported for Ethernet interfaces, subinterfaces, Aggregated Ethernet interfaces, and Layer 3 VLAN interfaces on all of the PAN-OS platforms
 - After you configure the firewall with the addresses of RDNS servers, the firewall provisions an IPv6 host (the DNS client) with those addresses
 - An IPv6 Router Advertisement can contain multiple DNS Recursive Server Address options, each with the same or different lifetimes
+
+**IPv6 Configuration workflow**
+
+- You enable IPv6 on interface
+- You configure address
+- You enable Duplicate Address Detection
+- You enable  NDP Monitoring - you can view the IPv6 addresses of devices on the link local network, their MAC address, associated username from User-ID, eachability Status of the address, and Last Reported date and time the NDP monitor received a Router Advertisement from this IPv6 address
+- You enable RA-Router Advertisment
+- You enable DNS support - include DNS information in Router Advertisment: Recursive DNS servers and lifetime, suffixes and lifetime, lifetime - the maximum length of time the client can use the specific RDNS Server to resolve domain names
 
 ### Service routes
 
