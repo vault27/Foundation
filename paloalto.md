@@ -954,6 +954,70 @@ Policies > Authentication
 - Authentication enforcement object
 - Logging
 
+### Authentication portal
+
+MFA profile > Authentication profile > Authentication enforcement object > Authentication Policy + Captive Portal settings in paralell + Authentication sequence in parallel 
+
+### Multi-Factor authentication
+
+- Device > Server Profiles > Muli Factor Authentication
+- Create a profile
+- Configure Certificate profile, choose vendor (DUO for example) and configure options for vendor
+- The MFA factors that the firewall supports include push, Short Message Service (SMS), voice, and one-time password (OTP) authentication
+- These profiles are connected as Factors to Authentication profile, several Factors can be addded
+
+### Authentication profile
+
+Types:
+
+- Cloud - ?
+- Local Database
+- Radius
+- LDAP
+- TACAS+
+- SAML
+- Kerberos - single sign on + keytab
+
+**Device > Authentication Profile** > What to configure:
+
+- Type
+- MFA profiles, several can be added
+- Allow list
+- Failed attempts
+- User domain
+
+## Authentication sequence
+
+- **Device > Authentication Sequence**
+- We can create several
+- We add different authentication profiles to a sequence
+- Order of profiles matter
+
+### Authentication enforcement object
+
+- Objects > Authentication
+- Is assigned to Authentication policy rules
+- We configure here method, authentication profile, and text messgae for user
+- Methods:
+    - browser-challenge — The firewall transparently obtains user authentication credentials. If you select this action, the Authentication Profile you select must have Kerberos SSO enabled or else you must have configured NTLM in the Captive Portal settings . If Kerberos SSO authentication fails, the firewall falls back to NTLM authentication. If you did not configure NTLM, or NTLM authentication fails, the firewall falls back to web-form authentication
+    - web-form — To authenticate users, the firewall uses the certificate profile you specified when configuring Captive Portal or the Authentication Profile you select in the authentication enforcement object. If you select an Authentication Profile , the firewall ignores any Kerberos SSO settings in the profile and presents a Captive Portal page for the user to enter authentication credentials
+    - no-captive-portal — The firewall evaluates Security policy without authenticating users
+- Authetication profile my be none, then one in Captive portal settings is used
+
+### Captive Portal - Authentication Portal
+
+Device > User Identification > Authentication Portal Settings  
+
+- Timers - Idle + How log to store User-IP mapping
+- GlobalProtect Network Port for Inbound Authentication Prompts (UDP) - To facilitate MFA notifications for non-HTTP applications (such as Perforce) on Windows or macOS endpoints, a GlobalProtect app is required. When a session matches an Authentication policy rule, the firewall sends a UDP notification to the GlobalProtect app with an embedded URL link to the Authentication Portal page. The GlobalProtect app then displays this message as a pop up notification to the user
+- SSL/TLS service profile - redirect requests over TLS
+- Authentication profile - global setting, can be overrided by Authentication policy
+- Mode
+    - Transparent - impersonates the original destination URL, issuing an HTTP 401 to invoke authentication. However, because the firewall does not have the real certificate for the destination URL, the browser displays a certificate error to users attempting to access a secure site. Therefore, use this mode only when absolutely necessary, such as in Layer 2 or virtual wire deployments
+    - Redirect - intranet hostname (a hostname with no period in its name) that resolves to the IP address of the Layer 3 interface on the firewall to which web requests are redirected. The firewall intercepts unknown HTTP or HTTPS sessions and redirects them to a Layer 3 interface on the firewall using an HTTP 302 redirect to perform authentication. This is the preferred mode because it provides a better end-user experience (no certificate errors). If you use Kerberos SSO or NTLM authentication, you must use Redirect mode because the browser will provide credentials only to trusted sites. Redirect mode is also required if you use Multi-Factor Authentication to authenticate Captive Portal users
+- Certificate authentication profile - for authenticating users via certificate
+
+
 ### DoS Protection
 
 Describes to which traffic apply DOS protection profile - aggregate or classified or both + Logging + Schedule+  
