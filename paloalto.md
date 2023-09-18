@@ -954,19 +954,18 @@ Policies > Authentication
 - Authentication enforcement object
 - Logging
 
-### Authentication portal
+The following logical objects are used to support Authentication Policy:  
+**MFA profile > Authentication profile > Authentication enforcement object > Authentication Policy + Captive Portal settings in paralell + Authentication sequence in parallel**
 
-MFA profile > Authentication profile > Authentication enforcement object > Authentication Policy + Captive Portal settings in paralell + Authentication sequence in parallel 
+#### Multi-Factor authentication
 
-### Multi-Factor authentication
-
-- Device > Server Profiles > Muli Factor Authentication
+- **Device > Server Profiles > Muli Factor Authentication**
 - Create a profile
 - Configure Certificate profile, choose vendor (DUO for example) and configure options for vendor
 - The MFA factors that the firewall supports include push, Short Message Service (SMS), voice, and one-time password (OTP) authentication
 - These profiles are connected as Factors to Authentication profile, several Factors can be addded
 
-### Authentication profile
+#### Authentication profile
 
 Types:
 
@@ -980,33 +979,33 @@ Types:
 
 **Device > Authentication Profile** > What to configure:
 
-- Type
+- Type - ?
 - MFA profiles, several can be added
 - Allow list
 - Failed attempts
 - User domain
 
-## Authentication sequence
+#### Authentication sequence
 
 - **Device > Authentication Sequence**
 - We can create several
 - We add different authentication profiles to a sequence
 - Order of profiles matter
 
-### Authentication enforcement object
+#### Authentication enforcement object
 
-- Objects > Authentication
+- **Objects > Authentication**
 - Is assigned to Authentication policy rules
-- We configure here method, authentication profile, and text messgae for user
+- We configure here method, authentication profile, and text message for user
 - Methods:
     - browser-challenge — The firewall transparently obtains user authentication credentials. If you select this action, the Authentication Profile you select must have Kerberos SSO enabled or else you must have configured NTLM in the Captive Portal settings . If Kerberos SSO authentication fails, the firewall falls back to NTLM authentication. If you did not configure NTLM, or NTLM authentication fails, the firewall falls back to web-form authentication
     - web-form — To authenticate users, the firewall uses the certificate profile you specified when configuring Captive Portal or the Authentication Profile you select in the authentication enforcement object. If you select an Authentication Profile , the firewall ignores any Kerberos SSO settings in the profile and presents a Captive Portal page for the user to enter authentication credentials
     - no-captive-portal — The firewall evaluates Security policy without authenticating users
 - Authetication profile my be none, then one in Captive portal settings is used
 
-### Captive Portal - Authentication Portal
+#### Captive Portal - Authentication Portal
 
-Device > User Identification > Authentication Portal Settings  
+**Device > User Identification > Authentication Portal Settings**  
 
 - Timers - Idle + How log to store User-IP mapping
 - GlobalProtect Network Port for Inbound Authentication Prompts (UDP) - To facilitate MFA notifications for non-HTTP applications (such as Perforce) on Windows or macOS endpoints, a GlobalProtect app is required. When a session matches an Authentication policy rule, the firewall sends a UDP notification to the GlobalProtect app with an embedded URL link to the Authentication Portal page. The GlobalProtect app then displays this message as a pop up notification to the user
