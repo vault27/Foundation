@@ -2200,18 +2200,21 @@ Configuration
 - You can import CSV with values for variables into Stack, depending on a device
 - In CSV you configure variable name, which you already created + variable type (IP/netmask for example) + value for each firewall - Serial/Hostname
 
-### Device groups - to control policies and objects
+### Device groups 
 
+- To control policies and objects
 - To create a device group: Name, parent group, devices, User-ID master device - The device selected as the Master Device is used to gather user information.  The gathered user and group mapping information is used for shared policy configiration. It is required if you want to use users in a policy, Cloud Identity Engine
 - Device groups: for controlling all policies + all objects
 - By default Panorama pushes all shared objects to firewalls whether or not any shared or device group policy rules reference the objects
 - On lower-end models, such as the PA-220, consider pushing only the relevant shared objects to the managed firewalls. This is because the number of objects that can be stored on the lower-end models is considerably lower than that of the mid- to high-end models
-- Panorama > Setup > Management > Panorama Settings > Share Unused Address and Service Objects with Devices - enabled by default
+- **Panorama > Setup > Management > Panorama Settings > Share Unused Address and Service Objects with Devices** - enabled by default
 - By default lower device groups take precedence over upper device groups, if the same objects exist
 - Objects defined in ancestors will take higher precedence - when you perform a device group commit, the ancestor values replace any override values
 - Tags can be applied to devices when add them to panorama
 - Then these tags are used as targets in rule instead of sending to all devices in device group
 - One NGFW only in one Device Group
+- Every device Group contains its Policies and Objects
+- Before editing Policies and Objects we we choose device group
 - You can create a device group hierarchy to nest device groups in a hierarchy of up to four levels, with the lower-level groups inheriting the settings (policy rules and objects) of the higher-level groups
 - Adds pre rules and post rules, which are read only on NGFW
 - Devices must be added to device group
@@ -2227,8 +2230,13 @@ Configuration
 - You attach devices only to lower Device Groups, because Device can be attached only to one Device Group
 - You cannot override or change rules arrived from Panorama
 - If you create an address object on Panorama, you can disable override and make it shared: for other VSYSs and Device Groups
-- If you create an address on Panorama and do not use it in rules, it will be installed to device anywayt is enabled in Parent Group
-- If the same object is in Parent group, you cannot create it in Child group, override is required, if i
+- If you create an address on Panorama and do not use it in rules, it will be installed to device anyway
+- If the same object is in Parent group, you cannot create it in Child group, override is required
+- All device groups are members of shared group
+- 1024 device groups is maximum
+- We can assign a reference template to a device group to see zones and interface when we create rules in policy
+- When we create an object, we can make it Shared, it will be in Shared group and will be accessible for all device groups. We can also disable override for it, so lower hirerchy firewalls and groups will not be able to overrride it
+- Objects in Shared group never can be overrriden
 
 ### Licensing + Software Upgrades + Dynamic Updates
 
