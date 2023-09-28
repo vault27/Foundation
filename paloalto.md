@@ -1779,6 +1779,7 @@ Configuration workflow
 - Each firewall has separate IP addresses, sessions are synced
 - If firewall fails, then based on routing protocol traffic is not sent to it
 - No need to configure virtual MAC address/floating IP address, arp load sharing, failover conditions
+  
 <img width="602" alt="image" src="https://user-images.githubusercontent.com/116812447/215494580-eeaed00c-52a0-479c-b8db-909f8cce27fc.png">
 
 ### ARP load sharing
