@@ -13,6 +13,7 @@ All you need to know about Palo Alto firewalls and for PCNSE exam in short and s
 - https://www.paloaltonetworks.com/services/education - education services
 - https://www.paloaltonetworks.com/resources/reference-architectures - reference architechtures
 - https://knowledgebase.paloaltonetworks.com/KCSArticleDetail?id=kA10g000000Clc8CAC - Panorama Sizing and Design Guide
+- PAN-OS CLI Quick Start Guide
 - https://cp.certmetrics.com/paloaltonetworks/en/login - Certification Management
 - https://home.pearsonvue.com/paloaltonetworks - Pearson Vue Palo Alto
 - Book "Mastering Palo Alto Networks: Build, configure, and deploy network solutions for your infrastructure using features of PAN-OS", 2nd Edition
