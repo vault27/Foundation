@@ -1642,6 +1642,17 @@ What is not synced?
 - Slot configuration
 - For VMs: HYpervisor, number of CPU cores
 
+### HA states
+
+- Initial - A/P or A/A
+- Active - A/P
+- Passive - A/P
+- Active-Primary - A/A
+- Active-Secondary - A/A - A firewall in active-secondary state does not support DHCP relay
+- Tetntative - A/A - Failure, monitored object (a link or path), firewall leaves suspended or non-functional state
+- Non-Functional - A/P or A/A - Failure - In active/passive mode, all of the causes listed for Tentative state cause non-functional state
+- Suspended - A/P or A/A - manually disabled
+  
 ### Links
 
 7 Links in total, all are configured in HA Communications section
