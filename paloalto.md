@@ -2596,11 +2596,32 @@ All other logs forwarding: Device > Log Settings - System, Configuration, User-I
 
 ### CLI System logs
 
+Every log section has many files.
+
+- mp-log - management plane
+- dp-log - data plane
+
 ```
+less mp-log <value>
+less plugins-log <value>
+less mp-global <value>
+less dp-log <value>
+less mp-backtrace <value>
+less dp-backtrace <value>
+less webserver-log <value>
+less appweb-log <value>
+less custom-page <value>
+less agent-log <value>
+less db-log <value>
+
 less mp-log ms.log
 tail follow yes mp-log paninstaller_content.log
 ```
 
+- shift+g will take you to the end of the file (regular 'g' will take you to start of file)
+- /<keyword> to search , while in search use 'n' to go to the next or 'N' (shift+n) to go to the previous
+- only use arrow keys to scroll up or down
+  
 ### Log forwarding
 
 Is done to filter and forward logs to external storage and also assign tags.  
