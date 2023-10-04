@@ -854,6 +854,18 @@ router bgp 64701
 
 ## Verification
 
+**Show all BGP neighbors in one VRF**
+
+```
+show bgp vrf user all summary 
+```
+
+**Show all BGP neighbors for all VRFs**
+
+```
+sh ip bgp all summary
+```
+
 **Show BGP config**
 
 ```
