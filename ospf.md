@@ -156,7 +156,7 @@ OSPF header is included in any OSPF packet
 - Destination IP: 224.0.0.5 - all OSPF routers, 224.0.0.6 - DRs
 - IP type: 89
 - Message type: Hello - 1
-- Router ID - unique within OSPF domain and processes
+- Router ID - unique within OSPF domain and processes - source router - not origin
 - Area ID - 0.0.0.0 - The OSPF area that the OSPF interface belongs to. It is a 32-bit number that can be written in dotted-decimal format (0.0.1.0) or decimal (256)
 - Auth Data
 
@@ -382,6 +382,7 @@ OSPF treats Loopback interfaces as STUB NETWORKS and advertise them as HOST ROUT
 
 - All LSAs contain Link state ID and Advertising router(RID)
 - Only a router that has originated a particular LSA is allowed to modify it or withdraw it
+- So Link State ID, Advertising Router, Metric are not changed! Metric is not accumulated!
 - Other routers must process and flood this LSA within its defined flooding scope if they recognize the LSA’s type and contents, but they must not ever change its contents, block it, or drop it before its maximum lifetime has expired
 - Summarization and route filtering can be done in a very limited fashion, unlike in distance vector protocols, where summarization and route filtering can be performed at any point in the network
 
@@ -408,14 +409,24 @@ How LSA is sent:
 
 ### LSA-1
 
-Is sent inside the area, every router generates LSA-1 for every enabled interface  
-In one LSA-1 can be several number of links  
-We see this as “O” routes in the routing table
+- Is sent inside the area, every router generates LSA-1 for every enabled interface  
+- In one LSA-1 can be several number of links  
+- We see this as “O” routes in the routing table
+- Links can be stub or transit - if there are other routers on a link
+
+Example of stub link LSA:
 
 - Link ID - 10.1.1.0
 - Link Data - 255.255.255.0
-- Link type - 3 - Stub network, 2 - transit - when there are other routers on the link
+- Link type - 3 - Stub network
 - Metric - 10
+
+Example of transit link LSA:
+
+- Link ID: 192.168.3.1 - IP address of Designated Router
+- Link Data: 192.168.3.2
+- Link Type: 2 - Connection to a transit network
+- Metric: 10
 
 ### LSA-2
 
@@ -984,3 +995,24 @@ To prove whether the virtual link works, a neighbor relationship between C1 and 
 ```
 show ip ospf virtual-links
 ```
+
+## Wireshark display filters
+
+Show only LSU packets
+
+```
+ospf and ip.src==192.168.2.2 and ospf.msg.lsupdate
+```
+
+Show only LSA-1
+
+```
+ospf.lsa == 1
+```
+
+Show packets from particular source router - not origin router, but router who sent packet
+
+```
+ospf.srcrouter == 192.168.3.1 
+```
+
