@@ -135,24 +135,6 @@ Data plane:
 - NAT
 - Flow control
 
-### Bootstraping
-
-Bootstrap allows you to automatically config, upgrade, update signatures, license a device during initial boot.
-
-- Attach the virtual disk, virtual CD-ROM, or storage bucket to the firewall
-- Firewall scans for a bootstrap package
-- Each time firewall boots from a factory default state, it checks for the presence of bootstrap volume
-- If one exists, the firewall uses the settings defined in the bootstrap package
-- If you have included a Panorama server IP address in the file, the firewall connects with Panorama. If the firewall has Internet connectivity, it contacts the licensing server to update the universally unique identifier (UUID) and obtain the license keys and subscriptions
-- If the firewall does not have internet connectivity, it either uses the license keys that you included in the bootstrap package or connects to Panorama, which retrieves the appropriate licenses and deploys them to the managed firewalls
-- If you intend to pre-register the VM-Series firewalls with Panorama with bootstrapping, you must generate a VM authorization key on Panorama and include the generated key in the init-cfg file
-- The bootstrap package that you create must include the /config, /license, /software, and /content folders, even if empty, as follows:
-    - /config folder: This folder contains the configuration files. The folder can hold two files, init-cfg.txt and bootstrap.xml
-    - /license folder: This folder contains the license keys or authorization codes for the licenses and subscriptions that you intend to activate on the firewalls. If the firewall does not have internet connectivity, you must either manually obtain the license keys from the Palo Alto Networks Support Portal or use the Licensing API to obtain the keys and then save each key in this folder
-    - /software folder: This folder contains the software images that are required to upgrade a newly provisioned VM-Series firewall to the desired PAN-OS version for the network
-    - /content folder: This folder contains the Applications and Threats updates and WildFire updates for the valid subscriptions on the VM-Series firewall. You must include the minimum content versions that are required for the desired PAN-OS version
-    - /plugins folder: This optional folder contains a single VM-Series plugin image
-
 ### Packet Flow Sequence
 
 https://knowledgebase.paloaltonetworks.com/KCSArticleDetail?id=kA10g000000ClVHCA0
@@ -293,6 +275,28 @@ In the right upper corner you can:
 - Import    
     - Import named config snapshot - Imports a configuration file from any network location
     - Import device state (firewall only) - Import the device state information that was exported using the Export device state option. This includes the current running config, Panorama templates, and shared policies. If the device is a Global Protect Portal, the export includes the Certificate Authority (CA) information and the list of satellite devices and their authentication information
+
+### Bootstraping
+
+Bootstrap allows you to automatically config, upgrade, update signatures, license a device during initial boot.
+
+- Attach the virtual disk, virtual CD-ROM, or storage bucket to the firewall
+- ext3 and FAT-32 are supported for USB
+- Firewall scans for a bootstrap package
+- Each time firewall boots from a factory default state, it checks for the presence of bootstrap volume
+- If one exists, the firewall uses the settings defined in the bootstrap package
+- If you have included a Panorama server IP address in the file, the firewall connects with Panorama. If the firewall has Internet connectivity, it contacts the licensing server to update the universally unique identifier (UUID) and obtain the license keys and subscriptions
+- If the firewall does not have internet connectivity, it either uses the license keys that you included in the bootstrap package or connects to Panorama, which retrieves the appropriate licenses and deploys them to the managed firewalls
+- If you intend to pre-register the VM-Series firewalls with Panorama with bootstrapping, you must generate a VM authorization key on Panorama and include the generated key in the init-cfg file
+- The bootstrap package that you create must include the /config, /license, /software, and /content folders, even if empty, as follows:
+    - /config folder: This folder contains the configuration files. The folder can hold two files, init-cfg.txt and bootstrap.xml
+        - When you include init-cfg.txt file and the bootstrap.xml file in the bootstrap package, the firewall merges the configurations of those files, and if any settings overlap, the firewall uses the values defined in the init-cfg.txt file
+        - init-cfg.txt - management interface IP address type (static or DHCP), IP address (IPv4 only or both IPv4 and IPv6), netmask, and default gateway
+        - bootstrap.xml - optional - omplete configuration for the firewall - if you do not use Panorama - manually or export the running configuration (running-config.xml) from an existing firewall 
+    - /license folder: This folder contains the license keys or authorization codes for the licenses and subscriptions that you intend to activate on the firewalls. If the firewall does not have internet connectivity, you must either manually obtain the license keys from the Palo Alto Networks Support Portal or use the Licensing API to obtain the keys and then save each key in this folder
+    - /software folder: This folder contains the software images that are required to upgrade a newly provisioned VM-Series firewall to the desired PAN-OS version for the network
+    - /content folder: This folder contains the Applications and Threats updates and WildFire updates for the valid subscriptions on the VM-Series firewall. You must include the minimum content versions that are required for the desired PAN-OS version
+    - /plugins folder: This optional folder contains a single VM-Series plugin image
 
 ### Content updates
 
@@ -891,6 +895,14 @@ You can also force some of these sites to be decrypted
 
 ### Application Override
 
+- Source zone and source address
+- Destination zone and address
+- TCP or UDP + port
+- Assign it to particular application
+- Create custom app: Objects > Applications
+- Categories, Signatures, Protocols
+- You can use custom application in regular policy or in Application Override Policy
+
 ### Authentication policy
 
 Basicly it defines whom to show captive portal.
@@ -1175,6 +1187,7 @@ Operation workflow
 Platform in general:
 
 - Sandboxing platform
+- 1000 samples max manually per day
 - Machine learning, static analysis, dynamic analiisis
 - Reporting
 - Integrates with firewalls, traps, Autofocus, unit 42 team, URL filtering
@@ -1810,7 +1823,7 @@ Configure User-ID Agent
 - You must commit firewall configuration after creating a DUG and adding it to a policy rule
 - You do not have to perform a commit when users are added to or removed from a DUG
 - User membership in a DUG is dynamic and controlled through the tagging and untagging of usernames
-- Usernames can also be tagged and untagged by using the auto-tagging feature in a Log Forwarding Profile
+- Usernames can also be tagged and untagged by using the auto-tagging feature in a Log Forwarding §
 - PAN-OS XML API commands to tag or untag usernames
 - Event in a log > log forwarding action assignes a tag to a user > User added to a DUG > User is blocked according to a policy
 - Auto-remediation in response to user behavior and activity
@@ -1893,18 +1906,18 @@ Types:
 
 ### Authentication enforcement object
 
-- Objects > Authentication
+- **Objects > Authentication**
 - Is assigned to Authentication policy rules
-- We configure here method, authentication profile, and text messgae for user
+- We configure here method, authentication profile, and text messege for user
 - Methods:
     - browser-challenge — The firewall transparently obtains user authentication credentials. If you select this action, the Authentication Profile you select must have Kerberos SSO enabled or else you must have configured NTLM in the Captive Portal settings . If Kerberos SSO authentication fails, the firewall falls back to NTLM authentication. If you did not configure NTLM, or NTLM authentication fails, the firewall falls back to web-form authentication
     - web-form — To authenticate users, the firewall uses the certificate profile you specified when configuring Captive Portal or the Authentication Profile you select in the authentication enforcement object. If you select an Authentication Profile , the firewall ignores any Kerberos SSO settings in the profile and presents a Captive Portal page for the user to enter authentication credentials
     - no-captive-portal — The firewall evaluates Security policy without authenticating users
-- Authetication profile my be none, then one in Captive portal settings is used
+- Authetication profile may be none, then one in Captive portal settings is used
 
 ### Captive Portal - Authentication Portal
 
-Device > User Identification > Authentication Portal Settings  
+**Device > User Identification > Authentication Portal Settings**
 
 - Timers - Idle + How log to store User-IP mapping
 - GlobalProtect Network Port for Inbound Authentication Prompts (UDP) - To facilitate MFA notifications for non-HTTP applications (such as Perforce) on Windows or macOS endpoints, a GlobalProtect app is required. When a session matches an Authentication policy rule, the firewall sends a UDP notification to the GlobalProtect app with an embedded URL link to the Authentication Portal page. The GlobalProtect app then displays this message as a pop up notification to the user
@@ -2968,7 +2981,28 @@ GlobalProtect has three major components:
 
 ## VSYS
 
+- Virtual systems are supported on PA-3200 Series, PA-5200 Series, and PA-7000 Series firewalls, the number varies by platform
+- Device > Setup > Management and edit the General Settings > Multi Virtual System Capability
+- Device > Virtual Systems > Add  > virtual system ID 1-255
+- The default is vsys1. You cannot delete vsys1 because it is relevant to the internal hierarchy on the firewall; vsys1 appears even on firewall models that don’t support multiple virtual systems
+- Allow forwarding of decrypted content if you want to allow the firewall to forward decrypted content to an outside service. For example, you must enable this option for the firewall to be able to send decrypted content to WildFire for analysis
+- Add interfaces virtual routers, virtual wires, or VLANs
+- Visible Virtual System field, check all virtual systems that should be made visible to the virtual system being configured
+- Optional - Limit the resource allocations for sessions, rules(security, NAT, Decryption, QoS, Application Override, PBF, Authentication, DoS), and VPN tunnels allowed for the virtual system
+- Optional - Configure a virtual system as a User-ID hub to Share User-ID Mappings Across Virtual Systems
 - If several VSYSes are connected via extermal equipment then there is an issue - to many sessions!
+
+Switch CLI to VSYS
+
+```
+set system setting target-vsys <vsys-id>
+```
+Inter VSYS routing
+
+- Enable visibility between VSYSs
+- Create Zone with type external on both VSYS and add appropriate VSYS to it
+- Create rules in Security policies which allow traffic to and External zones
+- In virtual router create routes which point to virtual router of other VSYS
 
 ### Inter-vsys routing
 

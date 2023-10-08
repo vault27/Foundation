@@ -1,12 +1,54 @@
 # Physics
 
+Electiricity
+Electronics
+
+, electro magnetism, electromagnetic radiation, signals, communcations, information theory
+
 ## Electricity
 
 - Greek philosopher Thales of Miletus - rubbing amber with animal fur would attract objects like feathers
 - 1600 - William Gilbert - Neo-Latin electricus, meaning "like amber" - De Magnete
 - 1745 - Leyden jar - early capacitor, or a device for storing an electric charge
-- 1752 - kite, lightning
+- 1752 - kite, lightning, Franklin - Positive and negative on batteries - from Franklin times - He robbed glass with cloth and then if someone touches glass - he gets a shock  - Fraklin described it as flow of fluid from positive to negative. - This is conventional current.
+- Joseph Thompson - called this fluid an electron - so flow is from negative to positive. When you robb a glass with the cloth - you revove electrons from the glass - and then electrons go from human to glass. It was called electron flow. So electrons go fron negative to positive.
+- AC - electrons change direction every second - is used for transforming electricity
+- DC - used in electrin circuts - DC is easier to control and allows circuits to be smaller and more compact
 - 1800 - Alessandro Volta - first electric battery, known as the 'voltaic pile'
+
+### Voltage
+
+- It is a pressure which pushes electrons
+- Two cells consequently - it will double the voltage - 1.5 * 2 = 3V
+- Two cells in paralell  - voltage is the same - but the lamp will work longer
+- We can measure voltage even witgour circut and electron flow
+- The more voltage the more current
+
+### Current
+
+- Flow of electrons
+- Via copper - very good conductor
+- Rubber - insulator
+- Flows from + to -
+- To make electrons moving we need to apply a voltage
+- We cannot measure current without circut and electron flow
+- If too many electrons are sent via wire - it will burn
+- Ampers
+- The more electrons - the more current is
+- One Amp is equal to One Coulomb per second
+- Current measurment is done in-line
+- One Coulomb = Six quintillion, two hundred and forty two quadrilion electrons per second 6,424,000,000,000,000,000 6.24×10^18
+- The current is absolutely the same in any part of the socket
+- Resistor reduce the current - resistor always heat
+
+## Electronics
+
+- Electronics is a subfield of electrical engineering
+
+## Electronic components
+
+- Fuse - breaks because of heat and prevents damage of expensive components
+- Circut breaker - overload protection + short circut protection
 
 ## Electromagnetic radiation
 
@@ -68,6 +110,13 @@ The data are represented as an electromagnetic signal:
 - Radiowave
 - Microwave
 - Infrared signal
+
+## Signal
+
+- Function that conveys information about a phenomenon
+- A signal is any variation of a medium that conveys information
+- Any observable change in a quantity over space or time (a time series), even if it does not carry information: in time can change speed of the bike, voltage, current - then we draw a graph of these changes in time
+- In electronics and telecommunications, signal refers to any time-varying voltage, current, or electromagnetic wave that carries information
 
 ## Analog signal
 
