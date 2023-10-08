@@ -854,6 +854,27 @@ router bgp 64701
 
 ## Verification
 
+**Show all BGP neighbors in one VRF**
+
+```
+show bgp vrf user all summary 
+```
+
+**Show all BGP neighbors for all VRFs**
+
+```
+sh ip bgp all summary
+```
+
+**Show BGP config**
+
+```
+show run | section bgp
+router bgp 4294963200
+ bgp router-id 10.90.2.1
+....
+```
+
 **Show BGP table for global VRF or VRF**  
 It shows all BGP routes both best and secondary with all the options: Path,Weight, Local Pref, Next Hop, Status, Path type, Origin Code
 

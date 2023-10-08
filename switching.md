@@ -112,6 +112,44 @@ interface Ethernet1/2
 switch(config)# port-channel load-balance
 ```
 
+### Verification
+
+Show port-channel overview on Catalyst. Status, Layer-2 or Layer-3, protocol LACP or PAGP
+
+```
+show etherchannel summary 
+Flags:  D - down        P - bundled in port-channel
+        I - stand-alone s - suspended
+        H - Hot-standby (LACP only)
+        R - Layer3      S - Layer2
+        U - in use      f - failed to allocate aggregator
+
+        M - not in use, minimum links not met
+        u - unsuitable for bundling
+        w - waiting to be aggregated
+        d - default port
+
+        A - formed by Auto LAG
+
+
+Number of channel-groups in use: 11
+Number of aggregators:           11
+
+Group  Port-channel  Protocol    Ports
+------+-------------+-----------+-----------------------------------------------
+10     Po10(SU)        LACP        Hu1/0/50(P)     Hu1/0/52(P)     
+20     Po20(SU)        LACP        Twe1/0/1(D)     Twe1/0/13(P)    
+22     Po22(SD)        LACP        Twe1/0/2(D)     
+24     Po24(SU)        LACP        Twe1/0/3(P)     Twe1/0/15(P)    
+26     Po26(SU)        LACP        Twe1/0/4(P)     Twe1/0/16(P)    
+28     Po28(SU)        LACP        Twe1/0/5(P)     Twe1/0/17(P)    
+30     Po30(SU)        LACP        Twe1/0/6(P)     Twe1/0/18(P)    
+32     Po32(SU)        LACP        Twe1/0/7(P)     Twe1/0/19(P)    
+34     Po34(SU)        LACP        Twe1/0/8(P)     Twe1/0/20(P)    
+40     Po40(SU)        LACP        Twe1/0/11(P)    Twe1/0/23(P)    
+41     Po41(SU)        LACP        Twe1/0/12(P)    Twe1/0/24(P)    
+```
+
 ## ESI
 
 - Works above VxLAN EVPN

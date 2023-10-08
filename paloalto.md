@@ -1,5 +1,7 @@
 # Palo Alto
 
+All you need to know about Palo Alto firewalls and for PCNSE exam in short and structured form
+
 ## Data Sources
 
 - https://docs.paloaltonetworks.com - all docs in one place
@@ -11,13 +13,15 @@
 - https://www.paloaltonetworks.com/services/education - education services
 - https://www.paloaltonetworks.com/resources/reference-architectures - reference architechtures
 - https://knowledgebase.paloaltonetworks.com/KCSArticleDetail?id=kA10g000000Clc8CAC - Panorama Sizing and Design Guide
+- PAN-OS CLI Quick Start Guide
 - https://cp.certmetrics.com/paloaltonetworks/en/login - Certification Management
 - https://home.pearsonvue.com/paloaltonetworks - Pearson Vue Palo Alto
-- Mastering Palo Alto Networks: Build, configure, and deploy network solutions for your infrastructure using features of PAN-OS, 2nd Edition
+- Book "Mastering Palo Alto Networks: Build, configure, and deploy network solutions for your infrastructure using features of PAN-OS", 2nd Edition
 - GlobalProtect Administrator's Guide - 670 pages - whole world
 - PAN-OS® Administrator’s Guide - 1542 pages
 - Panorama Admin Guide
 - https://docs.paloaltonetworks.com/compatibility-matrix - Compatibility Matrix
+- Palo Alto General Logs and Log files that are in the managment, data and control planes overview/review - https://live.paloaltonetworks.com/t5/general-topics/knowledge-sharing-palo-alto-general-logs-and-log-files-that-are/td-p/410110
 
 ## Portfolio
 
@@ -29,30 +33,30 @@
 
 - PA-220, PA-800, PA-3200, PA-5200, and PA-7000 Series
 - VM-Series: 50, 100, 300, 500, 700
-      - Amazon Web Services
-      - Cisco ACI
-      - Citrix NetScaler SDX
-      - Google CloudPlatform
-      - Kernel-based Virtual Machine (KVM)
-      - Microsoft Azure and Microsoft Hyper-V
-      - OpenStack
-      - VMware ESXi, VMware NSX, and VMware vCloud Air
+  - Amazon Web Services
+  - Cisco ACI
+  - Citrix NetScaler SDX
+  - Google CloudPlatform
+  - Kernel-based Virtual Machine (KVM)
+  - Microsoft Azure and Microsoft Hyper-V
+  - OpenStack
+  - VMware ESXi, VMware NSX, and VMware vCloud Air
 - Panorama
 - CN-Series - for Kubernetes - secure traffic between pods in different trust zones and namespaces, for protection against known and zero-day malware, and to block data exfiltration from your containerized environments
 
 ### Prisma
 
 - Prisma Cloud - Cloud Security Posture Management (CSPM) - Prisma Cloud taps into the cloud providers’ APIs for read-only access to network traffic, user activity, and the configuration of systems and services.
-      - Alibaba Cloud
-      - Amazon Web Services
-      - Docker EE
-      - Google CloudPlatform
-      - IBM Cloud
-      - Kubernetes
-      - Microsoft Azure
-      - Rancher
-      - Red Hat OpenShift
-      - VMware Tanzu
+  - Alibaba Cloud
+  - Amazon Web Services
+  - Docker EE
+  - Google CloudPlatform
+  - IBM Cloud
+  - Kubernetes
+  - Microsoft Azure
+  - Rancher
+  - Red Hat OpenShift
+  - VMware Tanzu
 - Prisma Access Secure Access Service Edge (SASE) - Users connect to Prisma Access to access the internet and cloud and data center applications safely, regardless of their location
 - Prisma SaaS - multimode CASB service that allows you to govern any sanctioned software as a service (SaaS) application - complete visibility and granular enforcement across all user, folder, and file activity within the sanctioned SaaS applications
 - VM-Series ML-powered NGFWs
@@ -61,7 +65,7 @@
 
 Detection, investigation, automation, and response capabilities.
 
-- Cortex XDR - Extended Detection and Response - detection and response platform that runs on integrated endpoint, network, and cloud data.  Immediate response actions. Define indicators of compromise (IOCs) and behavioral indicators of compromise (BIOCs).
+- Cortex XDR - Extended Detection and Response - detection and response platform that runs on integrated endpoint, network, and cloud data.  Immediate response actions. Define indicators of compromise (IOCs) and behavioral indicators of compromise (BIOCs)
 - Cortex XSOAR - extended Security Orchestration, Automation, and Response - automate up to 95 percent of all of the response actions - gets data from XDR and Autofocus
 - Cortex Data Lake - central log storage - Effortlessly run advanced artificial intelligence and ML with cloud-scale data - Constantly learn from new data sources to evolve defenses
 - The following products can utilize Cortex Data Lake:
@@ -74,7 +78,7 @@ Cortex XDR)
     - Traps running version 5.0+ with the Traps management service
 - AutoFocus - cloud-based threat intelligence service - takes data from every where and provides it for XSOAR, XDR
 
-## Architecture
+## Configuration hierarchy
 
 - Policies: Policies section - all about traffic control
 - Policies use objects and security profiles: Objects section - everything that is used in policies
@@ -102,7 +106,7 @@ Cortex XDR)
     - SD-WAN
 - All other infrastructure: Device Secion: Users, User-ID, Certificates, HA...
 
-### Management plane and Data Plane
+## Management plane and Data Plane
 
 - On physical appliances separate CPU, RAM, SSD for management plane: mgmt interface + console
 - On virtual firewalls, these are still logically segregated
@@ -135,7 +139,25 @@ Data plane:
 - NAT
 - Flow control
 
-### Packet Flow Sequence
+## Bootstraping
+
+Bootstrap allows you to automatically config, upgrade, update signatures, license a device during initial boot.
+
+- Attach the virtual disk, virtual CD-ROM, or storage bucket to the firewall
+- Firewall scans for a bootstrap package
+- Each time firewall boots from a factory default state, it checks for the presence of bootstrap volume
+- If one exists, the firewall uses the settings defined in the bootstrap package
+- If you have included a Panorama server IP address in the file, the firewall connects with Panorama. If the firewall has Internet connectivity, it contacts the licensing server to update the universally unique identifier (UUID) and obtain the license keys and subscriptions
+- If the firewall does not have internet connectivity, it either uses the license keys that you included in the bootstrap package or connects to Panorama, which retrieves the appropriate licenses and deploys them to the managed firewalls
+- If you intend to pre-register the VM-Series firewalls with Panorama with bootstrapping, you must generate a VM authorization key on Panorama and include the generated key in the init-cfg file
+- The bootstrap package that you create must include the /config, /license, /software, and /content folders, even if empty, as follows:
+    - /config folder: This folder contains the configuration files. The folder can hold two files, init-cfg.txt and bootstrap.xml
+    - /license folder: This folder contains the license keys or authorization codes for the licenses and subscriptions that you intend to activate on the firewalls. If the firewall does not have internet connectivity, you must either manually obtain the license keys from the Palo Alto Networks Support Portal or use the Licensing API to obtain the keys and then save each key in this folder
+    - /software folder: This folder contains the software images that are required to upgrade a newly provisioned VM-Series firewall to the desired PAN-OS version for the network
+    - /content folder: This folder contains the Applications and Threats updates and WildFire updates for the valid subscriptions on the VM-Series firewall. You must include the minimum content versions that are required for the desired PAN-OS version
+    - /plugins folder: This optional folder contains a single VM-Series plugin image
+
+## Packet Flow Sequence
 
 https://knowledgebase.paloaltonetworks.com/KCSArticleDetail?id=kA10g000000ClVHCA0
 
@@ -143,9 +165,6 @@ https://knowledgebase.paloaltonetworks.com/KCSArticleDetail?id=kA10g000000ClVHCA
 
 ## Features
 
-- App-ID
-- Content-ID
-- User-ID
 - Device-ID
 - Dynamic address groups, user groups, external lists
 - The Palo Alto Networks firewall was designed to use an efficient system known as next-generation processing. Next-generation processing enables packet evaluation, application identification, policy decisions, and content scanning in a single, efficient processing pass - Single Pass Architecture
@@ -167,7 +186,10 @@ https://knowledgebase.paloaltonetworks.com/KCSArticleDetail?id=kA10g000000ClVHCA
 - Traps
 - DoS - in three places! Zone protection profiles - protect whole zones + port scan protection only there. Separate DoS policy. DoS security profile applied to Security rule!
 - NAT
-- VPN
+- Site-to-site IPSec or GRE or GRE inside IPSec tunnels
+- Global Protect RA VPN via IPSec or SSL
+- Global Protect Satelite
+- Global Protect HIP
 - QoS
 - SD-WAN
 - DHCP
@@ -180,11 +202,15 @@ https://knowledgebase.paloaltonetworks.com/KCSArticleDetail?id=kA10g000000ClVHCA
 - Dynamic External Lists
 - XML API - full control of every aspect of your security, and build deep integrations with a variety of other systems. You can make XML API calls directly to the firewall, directly to Panorama, or to a firewall via Panorama
 - REST API - simplifies access to resources as high-level URIs. You can use this API to create, change, and delete resources
-- Device ID
+- VSYS
+- FIPS mode
+- Decryption mirror
+- Decryption broker
+- Best Practice Assessment (BPA)
 
 ## Subscriptions
 
-15 in Total
+**15 in Total**
 
 - URL Filtering
 - Advanced URL filtering - cloud-based ML-powered web security engine to perform ML-based inspection of web traffic in real-time
@@ -203,15 +229,6 @@ https://knowledgebase.paloaltonetworks.com/KCSArticleDetail?id=kA10g000000ClVHCA
 - Virtual Systems - perpetual license - on PA-3200 - increase the number of virtual systems beyond the base number
 - Enterprise Data Loss Prevention (DLP) - cloud-based protection against unauthorized access, misuse, extraction, and sharing of sensitive information
 - SaaS Security Inline - works with Cortex Data Lake to discover all of the SaaS applications in use on your network
-
-## Configuration workflow
-
-- You enable IPv6 on interface
-- You configure address
-- You enable Duplicate Address Detection
-- You enable  NDP Monitoring - you can view the IPv6 addresses of devices on the link local network, their MAC address, associated username from User-ID, eachability Status of the address, and Last Reported date and time the NDP monitor received a Router Advertisement from this IPv6 address
-- You enable RA-Router Advertisment
-- You enable DNS support - include DNS information in Router Advertisment: Recursive DNS servers and lifetime, suffixes and lifetime, lifetime - the maximum length of time the client can use the specific RDNS Server to resolve domain names
 
 ## Artificial intelligence operations (AIOps)/Telemetry
 
@@ -276,32 +293,11 @@ In the right upper corner you can:
     - Import named config snapshot - Imports a configuration file from any network location
     - Import device state (firewall only) - Import the device state information that was exported using the Export device state option. This includes the current running config, Panorama templates, and shared policies. If the device is a Global Protect Portal, the export includes the Certificate Authority (CA) information and the list of satellite devices and their authentication information
 
-### Bootstraping
-
-Bootstrap allows you to automatically config, upgrade, update signatures, license a device during initial boot.
-
-- Attach the virtual disk, virtual CD-ROM, or storage bucket to the firewall
-- ext3 and FAT-32 are supported for USB
-- Firewall scans for a bootstrap package
-- Each time firewall boots from a factory default state, it checks for the presence of bootstrap volume
-- If one exists, the firewall uses the settings defined in the bootstrap package
-- If you have included a Panorama server IP address in the file, the firewall connects with Panorama. If the firewall has Internet connectivity, it contacts the licensing server to update the universally unique identifier (UUID) and obtain the license keys and subscriptions
-- If the firewall does not have internet connectivity, it either uses the license keys that you included in the bootstrap package or connects to Panorama, which retrieves the appropriate licenses and deploys them to the managed firewalls
-- If you intend to pre-register the VM-Series firewalls with Panorama with bootstrapping, you must generate a VM authorization key on Panorama and include the generated key in the init-cfg file
-- The bootstrap package that you create must include the /config, /license, /software, and /content folders, even if empty, as follows:
-    - /config folder: This folder contains the configuration files. The folder can hold two files, init-cfg.txt and bootstrap.xml
-        - When you include init-cfg.txt file and the bootstrap.xml file in the bootstrap package, the firewall merges the configurations of those files, and if any settings overlap, the firewall uses the values defined in the init-cfg.txt file
-        - init-cfg.txt - management interface IP address type (static or DHCP), IP address (IPv4 only or both IPv4 and IPv6), netmask, and default gateway
-        - bootstrap.xml - optional - omplete configuration for the firewall - if you do not use Panorama - manually or export the running configuration (running-config.xml) from an existing firewall 
-    - /license folder: This folder contains the license keys or authorization codes for the licenses and subscriptions that you intend to activate on the firewalls. If the firewall does not have internet connectivity, you must either manually obtain the license keys from the Palo Alto Networks Support Portal or use the Licensing API to obtain the keys and then save each key in this folder
-    - /software folder: This folder contains the software images that are required to upgrade a newly provisioned VM-Series firewall to the desired PAN-OS version for the network
-    - /content folder: This folder contains the Applications and Threats updates and WildFire updates for the valid subscriptions on the VM-Series firewall. You must include the minimum content versions that are required for the desired PAN-OS version
-    - /plugins folder: This optional folder contains a single VM-Series plugin image
-
 ### Content updates
 
 - Applications and Threats Content Updates
 - Whether your organization is mission-critical or security-first (or a mix of both)
+- 6 to 12 hours for content updates to be dynamically updated in security-first network
 - The Best Practices for Applications and Threats Content Updates
 - Device > Dynamic Updates
 - Schedule for Applications and Threat content updates
@@ -488,6 +484,49 @@ Floods:
 - VLAN interface
 - SD-WAN - ?
 
+**MAC addresses + speed/duplex**
+
+The MAC addresses of the HA1 interfaces, which are on the control plane and synchronize the configuration of the devices are unique.   
+The MAC addresses of the HA2 interfaces, which are on the data plane and synchronize the active sessions mirror each other
+
+```
+show interface all - including VMAC for Active-Passive HA cluster
+ethernet1/5             20    1000/full/up              00:1b:17:00:0b:14
+HA Group ID = 0b Hex (11 Decimal) and Interface ID = 14 Hex (20 Decimal)
+
+show interface ethernet1/1
+show high-availability state - The following command displays the MAC addresses of an HA cluster
+show high-availability virtual-address - displays VMAC and VIP for Active-Active HA cluster
+```
+
+**Physical media connected to a port**
+
+```
+show system state filter-pretty sys.s(x).p(y).phy [x=slot number and y=port number]
+show system state filter-pretty sys.s1.p1.phy
+sys.s1.p1.phy: {
+link-partner: { },
+media: CAT5,
+type: Ethernet,
+}
+```
+
+**Interface counters**
+
+```
+show system state filter-pretty sys.s(x).p(y).stats [x=slot number and y=port number]
+show system state filter-pretty sys.s1.p1.stats
+sys.s1.p1.stats: {
+rx-broadcast: 0,
+rx-bytes: 0,
+rx-multicast: 0,
+rx-unicast: 0,
+tx-broadcast: 0,
+tx-bytes: 0,
+tx-multicast: 0,
+tx-unicast: 0,
+}
+```
 ### Routing
 
 - All forwarding is based on FIB, FIB is generated based on RIB
@@ -525,7 +564,7 @@ Floods:
 - Second default gateway to ISP-2 metric 50 - backup one
 - Add a rule to Policy Based Forwarding Policy: non-crytical applications send to ISP2, attach a monitoring profile, then if ISP2 is down, PBF rule will be disabled
 
-### IPv6 support
+### IPv6
 
 - To enable IPv6 on firewall:
     - Enable IPv6 on the interface
@@ -544,10 +583,20 @@ Floods:
 - After you configure the firewall with the addresses of RDNS servers, the firewall provisions an IPv6 host (the DNS client) with those addresses
 - An IPv6 Router Advertisement can contain multiple DNS Recursive Server Address options, each with the same or different lifetimes
 
+**IPv6 Configuration workflow**
+
+- You enable IPv6 on interface
+- You configure address
+- You enable Duplicate Address Detection
+- You enable  NDP Monitoring - you can view the IPv6 addresses of devices on the link local network, their MAC address, associated username from User-ID, eachability Status of the address, and Last Reported date and time the NDP monitor received a Router Advertisement from this IPv6 address
+- You enable RA-Router Advertisment
+- You enable DNS support - include DNS information in Router Advertisment: Recursive DNS servers and lifetime, suffixes and lifetime, lifetime - the maximum length of time the client can use the specific RDNS Server to resolve domain names
+
 ### Service routes
 
 - Device > Setup > Services > Global > Service Route Configuration
 - Can be customized for VSYS
+- Virtual systems that do not have specific service routes configured inherit the global service and service route settings for the firewall
 - Modification of an Interface IP Address to a different IP address or Address Object will not update a corresponding Service Route Source Address
 - You can configure IPv4, IPv6 and Destination Service Route
 - You choose service and configure Source Interface and Source IP address
@@ -895,14 +944,6 @@ You can also force some of these sites to be decrypted
 
 ### Application Override
 
-- Source zone and source address
-- Destination zone and address
-- TCP or UDP + port
-- Assign it to particular application
-- Create custom app: Objects > Applications
-- Categories, Signatures, Protocols
-- You can use custom application in regular policy or in Application Override Policy
-
 ### Authentication policy
 
 Basicly it defines whom to show captive portal.
@@ -914,6 +955,69 @@ Policies > Authentication
 - Service/URL category
 - Authentication enforcement object
 - Logging
+
+The following logical objects are used to support Authentication Policy:  
+**MFA profile > Authentication profile > Authentication enforcement object > Authentication Policy + Captive Portal settings in paralell + Authentication sequence in parallel**
+
+#### Multi-Factor authentication
+
+- **Device > Server Profiles > Muli Factor Authentication**
+- Create a profile
+- Configure Certificate profile, choose vendor (DUO for example) and configure options for vendor
+- The MFA factors that the firewall supports include push, Short Message Service (SMS), voice, and one-time password (OTP) authentication
+- These profiles are connected as Factors to Authentication profile, several Factors can be addded
+
+#### Authentication profile
+
+Types:
+
+- Cloud - ?
+- Local Database
+- Radius
+- LDAP
+- TACAS+
+- SAML
+- Kerberos - single sign on + keytab
+
+**Device > Authentication Profile** > What to configure:
+
+- Type - ?
+- MFA profiles, several can be added
+- Allow list
+- Failed attempts
+- User domain
+
+#### Authentication sequence
+
+- **Device > Authentication Sequence**
+- We can create several
+- We add different authentication profiles to a sequence
+- Order of profiles matter
+
+#### Authentication enforcement object
+
+- **Objects > Authentication**
+- Is assigned to Authentication policy rules
+- We configure here method, authentication profile, and text message for user
+- Methods:
+    - browser-challenge — The firewall transparently obtains user authentication credentials. If you select this action, the Authentication Profile you select must have Kerberos SSO enabled or else you must have configured NTLM in the Captive Portal settings . If Kerberos SSO authentication fails, the firewall falls back to NTLM authentication. If you did not configure NTLM, or NTLM authentication fails, the firewall falls back to web-form authentication
+    - web-form — To authenticate users, the firewall uses the certificate profile you specified when configuring Captive Portal or the Authentication Profile you select in the authentication enforcement object. If you select an Authentication Profile , the firewall ignores any Kerberos SSO settings in the profile and presents a Captive Portal page for the user to enter authentication credentials
+    - no-captive-portal — The firewall evaluates Security policy without authenticating users
+- Authetication profile my be none, then one in Captive portal settings is used
+
+#### Captive Portal - Authentication Portal
+
+**Device > User Identification > Authentication Portal Settings**  
+
+- Timers - Idle + How log to store User-IP mapping
+- GlobalProtect Network Port for Inbound Authentication Prompts (UDP) - To facilitate MFA notifications for non-HTTP applications (such as Perforce) on Windows or macOS endpoints, a GlobalProtect app is required. When a session matches an Authentication policy rule, the firewall sends a UDP notification to the GlobalProtect app with an embedded URL link to the Authentication Portal page. The GlobalProtect app then displays this message as a pop up notification to the user
+- SSL/TLS service profile - redirect requests over TLS
+- Authentication profile - global setting, can be overrided by Authentication policy
+- Mode
+    - Transparent - impersonates the original destination URL, issuing an HTTP 401 to invoke authentication. However, because the firewall does not have the real certificate for the destination URL, the browser displays a certificate error to users attempting to access a secure site. Therefore, use this mode only when absolutely necessary, such as in Layer 2 or virtual wire deployments
+    - Redirect - intranet hostname (a hostname with no period in its name) that resolves to the IP address of the Layer 3 interface on the firewall to which web requests are redirected. The firewall intercepts unknown HTTP or HTTPS sessions and redirects them to a Layer 3 interface on the firewall using an HTTP 302 redirect to perform authentication. This is the preferred mode because it provides a better end-user experience (no certificate errors). If you use Kerberos SSO or NTLM authentication, you must use Redirect mode because the browser will provide credentials only to trusted sites. Redirect mode is also required if you use Multi-Factor Authentication to authenticate Captive Portal users
+- Certificate authentication profile - for authenticating users via certificate
+
 
 ### DoS Protection
 
@@ -1175,8 +1279,8 @@ Use a URL Filtering profile in the following cases:
 - Possible actions
     - alert
     - block
-    - continue: After the specified file type is detected, a customizable response page is
-presented to the user. The user can click through the page to download the file. A log is also generated in the Data Filtering log. This type of forwarding action requires user interaction and is therefore only applicable for web traffic
+    - continue: After the specified file type is detected, a customizable response page is presented to the user. The user can click through the page to download the file. A log is also generated in the Data Filtering log. This type of forwarding action requires user interaction and is therefore only applicable for web traffic
+- Monitor > Logs > Data Filtering - All File Block logs are here
 
 ### WildFire
 
@@ -1187,7 +1291,6 @@ Operation workflow
 Platform in general:
 
 - Sandboxing platform
-- 1000 samples max manually per day
 - Machine learning, static analysis, dynamic analiisis
 - Reporting
 - Integrates with firewalls, traps, Autofocus, unit 42 team, URL filtering
@@ -1539,6 +1642,17 @@ What is not synced?
 - Slot configuration
 - For VMs: HYpervisor, number of CPU cores
 
+### HA states
+
+- Initial - A/P or A/A
+- Active - A/P
+- Passive - A/P
+- Active-Primary - A/A
+- Active-Secondary - A/A - A firewall in active-secondary state does not support DHCP relay
+- Tetntative - A/A - Failure, monitored object (a link or path), firewall leaves suspended or non-functional state
+- Non-Functional - A/P or A/A - Failure - In active/passive mode, all of the causes listed for Tentative state cause non-functional state
+- Suspended - A/P or A/A - manually disabled
+  
 ### Links
 
 7 Links in total, all are configured in HA Communications section
@@ -1678,6 +1792,7 @@ Configuration workflow
 - Each firewall has separate IP addresses, sessions are synced
 - If firewall fails, then based on routing protocol traffic is not sent to it
 - No need to configure virtual MAC address/floating IP address, arp load sharing, failover conditions
+  
 <img width="602" alt="image" src="https://user-images.githubusercontent.com/116812447/215494580-eeaed00c-52a0-479c-b8db-909f8cce27fc.png">
 
 ### ARP load sharing
@@ -1823,7 +1938,7 @@ Configure User-ID Agent
 - You must commit firewall configuration after creating a DUG and adding it to a policy rule
 - You do not have to perform a commit when users are added to or removed from a DUG
 - User membership in a DUG is dynamic and controlled through the tagging and untagging of usernames
-- Usernames can also be tagged and untagged by using the auto-tagging feature in a Log Forwarding §
+- Usernames can also be tagged and untagged by using the auto-tagging feature in a Log Forwarding Profile
 - PAN-OS XML API commands to tag or untag usernames
 - Event in a log > log forwarding action assignes a tag to a user > User added to a DUG > User is blocked according to a policy
 - Auto-remediation in response to user behavior and activity
@@ -1906,18 +2021,18 @@ Types:
 
 ### Authentication enforcement object
 
-- **Objects > Authentication**
+- Objects > Authentication
 - Is assigned to Authentication policy rules
-- We configure here method, authentication profile, and text messege for user
+- We configure here method, authentication profile, and text messgae for user
 - Methods:
     - browser-challenge — The firewall transparently obtains user authentication credentials. If you select this action, the Authentication Profile you select must have Kerberos SSO enabled or else you must have configured NTLM in the Captive Portal settings . If Kerberos SSO authentication fails, the firewall falls back to NTLM authentication. If you did not configure NTLM, or NTLM authentication fails, the firewall falls back to web-form authentication
     - web-form — To authenticate users, the firewall uses the certificate profile you specified when configuring Captive Portal or the Authentication Profile you select in the authentication enforcement object. If you select an Authentication Profile , the firewall ignores any Kerberos SSO settings in the profile and presents a Captive Portal page for the user to enter authentication credentials
     - no-captive-portal — The firewall evaluates Security policy without authenticating users
-- Authetication profile may be none, then one in Captive portal settings is used
+- Authetication profile my be none, then one in Captive portal settings is used
 
 ### Captive Portal - Authentication Portal
 
-**Device > User Identification > Authentication Portal Settings**
+Device > User Identification > Authentication Portal Settings  
 
 - Timers - Idle + How log to store User-IP mapping
 - GlobalProtect Network Port for Inbound Authentication Prompts (UDP) - To facilitate MFA notifications for non-HTTP applications (such as Perforce) on Windows or macOS endpoints, a GlobalProtect app is required. When a session matches an Authentication policy rule, the firewall sends a UDP notification to the GlobalProtect app with an embedded URL link to the Authentication Portal page. The GlobalProtect app then displays this message as a pop up notification to the user
@@ -2099,18 +2214,21 @@ Configuration
 - You can import CSV with values for variables into Stack, depending on a device
 - In CSV you configure variable name, which you already created + variable type (IP/netmask for example) + value for each firewall - Serial/Hostname
 
-### Device groups - to control policies and objects
+### Device groups 
 
+- To control policies and objects
 - To create a device group: Name, parent group, devices, User-ID master device - The device selected as the Master Device is used to gather user information.  The gathered user and group mapping information is used for shared policy configiration. It is required if you want to use users in a policy, Cloud Identity Engine
 - Device groups: for controlling all policies + all objects
 - By default Panorama pushes all shared objects to firewalls whether or not any shared or device group policy rules reference the objects
 - On lower-end models, such as the PA-220, consider pushing only the relevant shared objects to the managed firewalls. This is because the number of objects that can be stored on the lower-end models is considerably lower than that of the mid- to high-end models
-- Panorama > Setup > Management > Panorama Settings > Share Unused Address and Service Objects with Devices - enabled by default
+- **Panorama > Setup > Management > Panorama Settings > Share Unused Address and Service Objects with Devices** - enabled by default
 - By default lower device groups take precedence over upper device groups, if the same objects exist
 - Objects defined in ancestors will take higher precedence - when you perform a device group commit, the ancestor values replace any override values
 - Tags can be applied to devices when add them to panorama
 - Then these tags are used as targets in rule instead of sending to all devices in device group
 - One NGFW only in one Device Group
+- Every device Group contains its Policies and Objects
+- Before editing Policies and Objects we we choose device group
 - You can create a device group hierarchy to nest device groups in a hierarchy of up to four levels, with the lower-level groups inheriting the settings (policy rules and objects) of the higher-level groups
 - Adds pre rules and post rules, which are read only on NGFW
 - Devices must be added to device group
@@ -2126,8 +2244,13 @@ Configuration
 - You attach devices only to lower Device Groups, because Device can be attached only to one Device Group
 - You cannot override or change rules arrived from Panorama
 - If you create an address object on Panorama, you can disable override and make it shared: for other VSYSs and Device Groups
-- If you create an address on Panorama and do not use it in rules, it will be installed to device anywayt is enabled in Parent Group
-- If the same object is in Parent group, you cannot create it in Child group, override is required, if i
+- If you create an address on Panorama and do not use it in rules, it will be installed to device anyway
+- If the same object is in Parent group, you cannot create it in Child group, override is required
+- All device groups are members of shared group
+- 1024 device groups is maximum
+- We can assign a reference template to a device group to see zones and interface when we create rules in policy
+- When we create an object, we can make it Shared, it will be in Shared group and will be accessible for all device groups. We can also disable override for it, so lower hirerchy firewalls and groups will not be able to overrride it
+- Objects in Shared group never can be overrriden
 
 ### Licensing + Software Upgrades + Dynamic Updates
 
@@ -2410,20 +2533,6 @@ Supported on the following firewalls: PA-3200 Series, PA-5200 Series,and PA-7000
 admin@PA-7050>set session offload no
 ```
 
-### Show MAC addresses
-
-The MAC addresses of the HA1 interfaces, which are on the control plane and synchronize the configuration of the devices are unique. The MAC addresses of the HA2 interfaces, which are on the data plane and synchronize the active sessions mirror each other
-
-```
-show interface all - including VMAC for Active-Passive HA cluster
-ethernet1/5             20    1000/full/up              00:1b:17:00:0b:14
-HA Group ID = 0b Hex (11 Decimal) and Interface ID = 14 Hex (20 Decimal)
-
-show interface ethernet1/1
-show high-availability state - The following command displays the MAC addresses of an HA cluster
-show high-availability virtual-address - displays VMAC and VIP for Active-Active HA cluster
-```
-
 ### Switch to suspended state
 
 ```
@@ -2500,11 +2609,32 @@ All other logs forwarding: Device > Log Settings - System, Configuration, User-I
 
 ### CLI System logs
 
+Every log section has many files.
+
+- mp-log - management plane
+- dp-log - data plane
+
 ```
+less mp-log <value>
+less plugins-log <value>
+less mp-global <value>
+less dp-log <value>
+less mp-backtrace <value>
+less dp-backtrace <value>
+less webserver-log <value>
+less appweb-log <value>
+less custom-page <value>
+less agent-log <value>
+less db-log <value>
+
 less mp-log ms.log
 tail follow yes mp-log paninstaller_content.log
 ```
 
+- shift+g will take you to the end of the file (regular 'g' will take you to start of file)
+- /<keyword> to search , while in search use 'n' to go to the next or 'N' (shift+n) to go to the previous
+- only use arrow keys to scroll up or down
+  
 ### Log forwarding
 
 Is done to filter and forward logs to external storage and also assign tags.  
@@ -2981,28 +3111,7 @@ GlobalProtect has three major components:
 
 ## VSYS
 
-- Virtual systems are supported on PA-3200 Series, PA-5200 Series, and PA-7000 Series firewalls, the number varies by platform
-- Device > Setup > Management and edit the General Settings > Multi Virtual System Capability
-- Device > Virtual Systems > Add  > virtual system ID 1-255
-- The default is vsys1. You cannot delete vsys1 because it is relevant to the internal hierarchy on the firewall; vsys1 appears even on firewall models that don’t support multiple virtual systems
-- Allow forwarding of decrypted content if you want to allow the firewall to forward decrypted content to an outside service. For example, you must enable this option for the firewall to be able to send decrypted content to WildFire for analysis
-- Add interfaces virtual routers, virtual wires, or VLANs
-- Visible Virtual System field, check all virtual systems that should be made visible to the virtual system being configured
-- Optional - Limit the resource allocations for sessions, rules(security, NAT, Decryption, QoS, Application Override, PBF, Authentication, DoS), and VPN tunnels allowed for the virtual system
-- Optional - Configure a virtual system as a User-ID hub to Share User-ID Mappings Across Virtual Systems
 - If several VSYSes are connected via extermal equipment then there is an issue - to many sessions!
-
-Switch CLI to VSYS
-
-```
-set system setting target-vsys <vsys-id>
-```
-Inter VSYS routing
-
-- Enable visibility between VSYSs
-- Create Zone with type external on both VSYS and add appropriate VSYS to it
-- Create rules in Security policies which allow traffic to and External zones
-- In virtual router create routes which point to virtual router of other VSYS
 
 ### Inter-vsys routing
 
