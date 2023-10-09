@@ -7,23 +7,6 @@ Everything I need to know about OSPF in one place.
 - RFC 2328 "OSPF Version 2"
 - RFC 5340 "OSPF for IPv6"
 
-## Main features to know
-
-- DR/BDR
-- Area types
-- Virtual links
-- LSA types
-
-## Typical tasks
-
-- Add network to OSPF domain - network command or interface command
-- Add router to OSPF domain
-- Redistribute routes to OSPF domain
-- Make one path preferable - using cost
-- Summarize routes
-- Add default gateway - one command
-- Configure ECMP
-
 ## History
 
 - Open Shortest Path First  was developed in the late 1980s
@@ -43,7 +26,7 @@ Everything I need to know about OSPF in one place.
 - ASBR - Autonomous System Border Router - connects OSPF domain with external domains
 - Internal router - all interfaces are in one area  
 - DR - Designated Router  
-- BDR - BAckup Designated Router  
+- BDR - Backup Designated Router  
 - DBD - Database Descriptor packets - The DBD packets are OSPF packet Type 2. The OSPF router summarizes the local database and the DBD packets carry a set of LSAs belonging to the database
 - Stub network: A subnet on which a router has not formed any neighbor relationships.
 
@@ -72,12 +55,17 @@ Everything I need to know about OSPF in one place.
 - All networks are connected via backbone areas to avoid loops
 - Hello interval - router sends Hello messages
 - Dead timer - after it neighboor is considered dead
-- Route tags- tag routes as they are redistributed into OSPF
+- The timers depends upon the network type
+- Route tags - tag routes as they are redistributed into OSPF
 - Next-hop field - supports the advertisment of routes with a different next-hop router than the advertising router
 - Manual route summarization - summarization is supported on ABR only
 - If there is an topology change - router sends LSA, if no changes LSAs are sent every 30 mins
 - Each router stores the data, composed of individual link-state advertisements (LSA) , in its own copy of the link-state database (LSDB) . Then, the router applies the Shortest Path First (SPF) algorithm to the LSDB to determine the best (lowest-cost) route for each reachable subnet (prefix/length)
 - Two routers can have 2 neighborships via different interfaces - and it is ok - router ID is the same
+- Cost = Reference Bandwidth/Interface Bandwidth
+- IOS default reference bandwidth 100 mbit/s
+- NX-OS default reference bandwidth 40 gbit/s
+- Authentication: NUll - without auth, Clear text, MD5
 
 ## Design
 
@@ -90,12 +78,9 @@ We have to think through the following:
 - Network types
 - Process ID - it has local significance, it is better to use the same ID on all devices
 - Timers, maybe it is better to harden them
-
-## Two OSPF links between sites via IPSec link
-
 - In order to make one link primary - we need to change its cost: either directly via interface command, on indirectly via changing bandwidth
 
-## Data centre CLOS specifics
+### Data centre CLOS specifics
 
 - All routers are in area 0
 - In case of super spine: superspine is in backbone, POD is in non backbone, stub area. In this scheme Spine-1 stores everything about area 1 and backbone area  and so load on Spine is BIG! Such scheme is used rarely. OSPF is not recommended for Fabric!! Do not use unnumbered!
@@ -132,7 +117,7 @@ OSPF areas are connected by one or more Area Border Routers (the other main link
 - Enable OSPF on required interfaces and specify area - on Nexus - and on IOS as well
 - Enable OSPF on loopback to announce it
 
-## OSPF packets
+## Packets
 
 OSPF packet consists of:
 
@@ -156,7 +141,7 @@ OSPF header is included in any OSPF packet
 - Destination IP: 224.0.0.5 - all OSPF routers, 224.0.0.6 - DRs
 - IP type: 89
 - Message type: Hello - 1
-- Router ID - unique within OSPF domain and processes - source router - not origin
+- Router ID - unique within OSPF domain and processes - source router, who sent it - not origin, who generated
 - Area ID - 0.0.0.0 - The OSPF area that the OSPF interface belongs to. It is a 32-bit number that can be written in dotted-decimal format (0.0.1.0) or decimal (256)
 - Auth Data
 
@@ -185,7 +170,107 @@ OSPF routers periodically send Hello packets out OSPF enabled links every Hellol
 - Advertising router ID - 192.168.1.1
 - Sequence number
 
-## Neighbor & Topology Discovery, Adjacency
+## LSA
+
+- All LSAs contain Link state ID and Advertising router(RID)
+- Only a router that has originated a particular LSA is allowed to modify it or withdraw it
+- So Link State ID, Advertising Router, Metric are not changed! Metric is not accumulated!
+- Other routers must process and flood this LSA within its defined flooding scope if they recognize the LSA’s type and contents, but they must not ever change its contents, block it, or drop it before its maximum lifetime has expired
+- Summarization and route filtering can be done in a very limited fashion, unlike in distance vector protocols, where summarization and route filtering can be performed at any point in the network
+
+LSA types:
+
+- 1 - Router LSA
+- 2 - Network
+- 3 - Net Summary - Created by ABR, represent subnets listed in one's area LSA 1 and 2 to advertise to another area. Defines links(subnets) and costs, but no topology, goes between areas. We see them as “OIA” routes.
+- 4 - ASBR Summary - The same as LSA 3, but how to reach ASBR router
+- 5 - AS external - created by ASBRs. They are used to propogate external routes - routes, which are redistributed from other protocols or other OSPF process
+- 6 - Group membership, defined for MOSPF, not supported by Cisco IOS
+- 7 - NSSA External - Created by ASBRs inside an NSSA area, instead of LSA 5
+- 8 - Link LSA - for IPv6
+- 9 - Intra area prefix LSA
+- 10 - 11 - Opaque
+
+How LSA is sent:
+
+- OSPF header
+- LSU
+  - LSA 1
+  - LSA 2
+  - LSA ...
+
+### LSA-1
+
+- Is sent inside the area, every router generates LSA-1 for every enabled interface  
+- In one LSA-1 can be several number of links  
+- We see this as “O” routes in the routing table
+- Links can be stub or transit - if there are other routers on a link
+
+Example of stub link LSA:
+
+- Link ID - 10.1.1.0
+- Link Data - 255.255.255.0
+- Link type - 3 - Stub network
+- Metric - 10
+
+Example of transit link LSA:
+
+- Link ID: 192.168.3.1 - IP address of Designated Router
+- Link Data: 192.168.3.2
+- Link Type: 2 - Connection to a transit network
+- Metric: 10
+
+### LSA-2
+
+Sent by DR. Only inside area.
+
+- Link state ID - 192.168.1.1
+- Netmask - 255.255.255.252
+- IPs of all attched routers
+
+### LSA-3
+
+- Is sent by ABR, contains all prefixes available in neighbor area
+- For example ABR sends everything he gets from Area 1 to Area 0 interfaces
+- Every prefix contains network, mask, metric
+- Metric depends on how far ABR is from prefix
+- LSA-3 does not contain area, from which it arrived
+- All LSA-3 routes are marked as INTER in OSPF RIB
+- Advertising Router in LSA is ABR
+
+LSA-3 example for one prefix
+
+```
+LSA-type 3 (Summary-LSA (IP network)), len 28
+    .000 0000 0000 0001 = LS Age (seconds): 1
+    0... .... .... .... = Do Not Age Flag: 0
+    Options: 0x22, (DC) Demand Circuits, (E) External Routing
+    LS Type: Summary-LSA (IP network) (3)
+    Link State ID: 192.168.4.0
+    Advertising Router: 192.168.1.2
+    Sequence Number: 0x80000001
+    Checksum: 0xf068
+    Length: 28
+    Netmask: 255.255.255.0
+    TOS: 0
+    Metric: 10
+```
+
+## Neighbors
+
+**Requirements**
+
+- IP in the same subnet
+- Not passive on the conencted interface
+- The same area
+- Timers
+- Unique router IDs
+- IP MTU must match
+- Pass neighboor auth
+- Stub area flag
+- Network type
+- If interface is unnumbered then address and network should not match mandatory. MTU maybe different for some vendors
+
 
 - OSPF uses Hello packets to discover neighbors on OSPF enabled attached links
 - Transport via IP protocol 89 (OSPF)
@@ -219,28 +304,6 @@ OSPF routers periodically send Hello packets out OSPF enabled links every Hellol
 - All routers in area run SPF alhorithm and recalculate topology
 - Other areas should know about it as well
 - ABR sends new Summary LSA with and updated sequence number. The prefix is flagged as unreachable by setting the 24-bit metric field to all ones. This is called LSInfinity and has a decimal value of 16777215
-
-## Unique OSPF Adjacency Attributes
-
-- Router-ID - 32 bit number, must be unique.
-  - Manual configuration
-  - Highest active Loopback IP
-  - Highest active Interface IP
-- Interface IP Address
-  - For OSPFv2 the interface's primary IP address 
-  - For OSPFv3 the interface's link-local address
-
-## Common OSPF Adjacency Attributes
-
-- Interface Area-ID
-- Hello interval & dead interval
-- Interface network address
-- Interface MTU
-- Network Type
-- Authentication
-- Stub Flags
-- DR enablement
-- Other optional capabilities
 
 ## Neighbor states
 
@@ -378,92 +441,6 @@ router ospf 10
 
 OSPF treats Loopback interfaces as STUB NETWORKS and advertise them as HOST ROUTES (with mask /32) regardless of their configured/native mask. According to RFC 2328, Host routes are considered to be subnets whose mask is "all ones (0xffffffff)".A router with one loopback interface generates a router-LSA with Type-1 link (stub network).
 
-## LSA
-
-- All LSAs contain Link state ID and Advertising router(RID)
-- Only a router that has originated a particular LSA is allowed to modify it or withdraw it
-- So Link State ID, Advertising Router, Metric are not changed! Metric is not accumulated!
-- Other routers must process and flood this LSA within its defined flooding scope if they recognize the LSA’s type and contents, but they must not ever change its contents, block it, or drop it before its maximum lifetime has expired
-- Summarization and route filtering can be done in a very limited fashion, unlike in distance vector protocols, where summarization and route filtering can be performed at any point in the network
-
-LSA types:
-
-- 1 - Router LSA
-- 2 - Network
-- 3 - Net Summary - Created by ABR, represent subnets listed in one's area LSA 1 and 2 to advertise to another area. Defines links(subnets) and costs, but no topology, goes between areas. We see them as “OIA” routes.
-- 4 - ASBR Summary - The same as LSA 3, but how to reach ASBR router
-- 5 - AS external - created by ASBRs. They are used to propogate external routes - routes, which are redistributed from other protocols or other OSPF process
-- 6 - Group membership, defined for MOSPF, not supported by Cisco IOS
-- 7 - NSSA External - Created by ASBRs inside an NSSA area, instead of LSA 5
-- 8 - Link LSA - for IPv6
-- 9 - Intra area prefix LSA
-- 10 - 11 - Opaque
-
-How LSA is sent:
-
-- OSPF header
-- LSU
-  - LSA 1
-  - LSA 2
-  - LSA ...
-
-### LSA-1
-
-- Is sent inside the area, every router generates LSA-1 for every enabled interface  
-- In one LSA-1 can be several number of links  
-- We see this as “O” routes in the routing table
-- Links can be stub or transit - if there are other routers on a link
-
-Example of stub link LSA:
-
-- Link ID - 10.1.1.0
-- Link Data - 255.255.255.0
-- Link type - 3 - Stub network
-- Metric - 10
-
-Example of transit link LSA:
-
-- Link ID: 192.168.3.1 - IP address of Designated Router
-- Link Data: 192.168.3.2
-- Link Type: 2 - Connection to a transit network
-- Metric: 10
-
-### LSA-2
-
-Sent by DR. Only inside area.
-
-- Link state ID - 192.168.1.1
-- Netmask - 255.255.255.252
-- IPs of all attched routers
-
-### LSA-3
-
-- Is sent by ABR, contains all prefixes available in neighbor area
-- For example ABR sends everything he gets from Area 1 to Area 0 interfaces
-- Every prefix contains network, mask, metric
-- Metric depends on how far ABR is from prefix
-- LSA-3 does not contain area, from which it arrived
-- All LSA-3 routes are marked as INTER in OSPF RIB
-- Advertising Router in LSA is ABR
-
-LSA-3 example for one prefix
-
-```
-LSA-type 3 (Summary-LSA (IP network)), len 28
-    .000 0000 0000 0001 = LS Age (seconds): 1
-    0... .... .... .... = Do Not Age Flag: 0
-    Options: 0x22, (DC) Demand Circuits, (E) External Routing
-    LS Type: Summary-LSA (IP network) (3)
-    Link State ID: 192.168.4.0
-    Advertising Router: 192.168.1.2
-    Sequence Number: 0x80000001
-    Checksum: 0xf068
-    Length: 28
-    Netmask: 255.255.255.0
-    TOS: 0
-    Metric: 10
-```
-
 ## Link types
 
 Link Type	Description	Link ID
@@ -557,24 +534,6 @@ LSA-type 1 (Router-LSA), len 48
 - ASBR - Autonomous System Border Router - connects with other autononomous systems or non-OSPF routers
 - Backbone - router with at least one interface in area 0
 
-## Neighbor requirements
-
-- IP in the same subnet
-- Not passive on the conencted interface
-- The same area
-- Timers
-- Unique router IDs
-- IP MTU must match
-- Pass neighboor auth
-- Stub area flag
-* If interface is unnumbered then address and network should not match mandatory. MTU maybe different for some vendors
-
-## Timers
-
-- Hello timer - Decides how often the hellos packets will be sentby OSPF Router to its OSFP Neighbor/s
-- Dead Timer - Decides how long a OSPF Router should wait for hello packet before declaring an OSPF neighbor as dead
-- The timers depends upon the network type 
-
 ## DR/BDR
 
 - Used in Ethernet, Frame Relay
@@ -630,18 +589,6 @@ Restart OSPD processes to change DR/BDR after changing priority
 R3# clear ip ospf process
 ```
 
-## Authentication
-
-- NUll - without auth
-- Clear text
-- MD5
-
-## Cost
-
-- Cost = Reference Bandwidth/Interface Bandwidth
-- IOS default reference bandwidth 100 mbit/s
-- NX-OS default reference bandwidth 40 gbit/s
-
 ## Router ID
 
 - 32 bits, 4 octets
@@ -655,7 +602,7 @@ R3# clear ip ospf process
 router-id 1.1.1.1
 ```
 
-- To change RID we need to restart OSPF
+To change RID we need to restart OSPF
 
 ```
 clear ip ospf process
