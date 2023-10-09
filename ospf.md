@@ -178,15 +178,15 @@ OSPF routers periodically send Hello packets out OSPF enabled links every Hellol
 - Other routers must process and flood this LSA within its defined flooding scope if they recognize the LSA’s type and contents, but they must not ever change its contents, block it, or drop it before its maximum lifetime has expired
 - Summarization and route filtering can be done in a very limited fashion, unlike in distance vector protocols, where summarization and route filtering can be performed at any point in the network
 
-LSA types:
+LSA types (11 in total):
 
 - 1 - Router LSA
 - 2 - Network
 - 3 - Net Summary - Created by ABR, represent subnets listed in one's area LSA 1 and 2 to advertise to another area. Defines links(subnets) and costs, but no topology, goes between areas. We see them as “OIA” routes.
 - 4 - ASBR Summary - The same as LSA 3, but how to reach ASBR router
-- 5 - AS external - created by ASBRs. They are used to propogate external routes - routes, which are redistributed from other protocols or other OSPF process
+- 5 - AS external - created by ASBRs. They are used to propogate external routes - routes, which are redistributed from other protocols or other OSPF process. External type2 aka E2
 - 6 - Group membership, defined for MOSPF, not supported by Cisco IOS
-- 7 - NSSA External - Created by ASBRs inside an NSSA area, instead of LSA 5
+- 7 - NSSA External - Created by ASBRs inside an NSSA area, instead of LSA 5, nssa-external type2 or N2 
 - 8 - Link LSA - for IPv6
 - 9 - Intra area prefix LSA
 - 10 - 11 - Opaque
@@ -381,7 +381,7 @@ Using areas provides the following benefits:
 - A link failure in one area only requires a partial SPF computation in other areas
 - Routes can be summarized and filtered only at ABRs (and ASBRs). Having areas permits summarization, again shrinking the LSDB and improving SPF calculation performance
 
-Area types:
+Area types (6 in total):
 
 - Backbone area (area 0) - area 0 - connects all areas - all LSAs can pass it
 - Regular area - all LSAs can pass it - areas that do not perform any automatic filtering on the type of accepted information
@@ -669,6 +669,20 @@ passive-unterface default
 no passive-interface ethernet 0/1 - when default is enabled
 default-information originate
 ```
+
+### Send default route to OSPF domain
+
+```
+router ospf 1
+  default-information originate
+```
+
+Default route is sent via different LSAs, depending on Area type:
+
+- LSA 5 - in normal Areas
+- LSA 3 - in stub & totally-stub area
+- LSA 7 - in NSSA
+- ? - In a NSSA-totally-stub area
 
 ### IOS interface specific configuration
 
