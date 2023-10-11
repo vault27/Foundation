@@ -74,9 +74,6 @@ TLS
 
 HTTP, FTP, SMTP
 
-
-
-
 ## OSI protocols terms
 
 - End System (ES) - host
