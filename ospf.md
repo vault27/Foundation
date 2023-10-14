@@ -162,6 +162,7 @@ OSPF routers periodically send Hello packets out OSPF enabled links every Hellol
 
 - OSPF header
 - One or many LSAs
+- In one LSU can be many LSAs from different Advertising Routers
 
 ### Link State Acknowledgment
 
@@ -173,10 +174,17 @@ OSPF routers periodically send Hello packets out OSPF enabled links every Hellol
 ## LSA
 
 - All LSAs contain Link state ID and Advertising router(RID)
+- Every router stores all LSAs in its LSDB, where his own LSAs are stored as well
 - Only a router that has originated a particular LSA is allowed to modify it or withdraw it
 - So Link State ID, Advertising Router, Metric are not changed! Metric is not accumulated!
 - Other routers must process and flood this LSA within its defined flooding scope if they recognize the LSA’s type and contents, but they must not ever change its contents, block it, or drop it before its maximum lifetime has expired
 - Summarization and route filtering can be done in a very limited fashion, unlike in distance vector protocols, where summarization and route filtering can be performed at any point in the network
+- In one LSU can be many LSAs, including LSAs from different Advertising Routers
+- Mostly used: 1,2,3,4,5,7
+- 1,2,3 - for all routes exchanges inside OSPF domain
+- 4,5,7 - for external redistributed routes
+- Sequence number - 32 bit number - it is incremented after each sending LSA - if router receives LSA with sequence number larger than in LSDB it processes it, and if it is smaller, router discards it
+- LSA age - every 1800 seconds - 3 minutes - router sends new LSAs with LSA age set to 0 - every second this value increments in LSDB. When age is 3600 seconds and nothiing new arrived - LSA is purged
 
 LSA types (11 in total):
 
@@ -202,23 +210,92 @@ How LSA is sent:
 ### LSA-1
 
 - Is sent inside the area, every router generates LSA-1 for every enabled interface  
-- In one LSA-1 can be several number of links  
+- Link-state ID and advertising router are shared for all links in LSA-1
+- Link-state ID is always equal Advertising router
 - We see this as “O” routes in the routing table
-- Links can be stub or transit - if there are other routers on a link
+- In one LSA-1 can be several number of links 
+- Every link has fields:
+  - Link type
+  - Link ID
+  - Link Data
+  - Metric
+- Link ID and Link Data, and they have different values depending on link type
+- 4 types of Links are available:
+    - 1 - Point-to-point link IP address assigned, Link ID Value - Neighbor RID, Link Data Value - Interface IP address
+    - 1 - Point-to-point link IP unnumbered, Link ID Value - Neighbor RID, Link Data Value - MIB II IfIndex value
+    - 2 - Transit network, Link ID Value - Interface address of DR, Link Data Value - Interface IP address
+    - 3 - Sub network - Link ID Value - Network Address, Link Data Value - Subnet mask
+    - 4 - Virtual Link - Link ID Value - Neighbor RID, Link Data Value - Interface IP address
+- Transit - if there are other routers on a link, adjecency formed, DR elected
+- Secondary connected networks are always advertised as Stub because adjecencies are impossible on them
+- Shared portion + Stub link + Transit link: 
 
-Example of stub link LSA:
+```
+LSA-type 1 (Router-LSA), len 60
+    .000 0000 0011 0111 = LS Age (seconds): 55
+    0... .... .... .... = Do Not Age Flag: 0
+    Options: 0x22, (DC) Demand Circuits, (E) External Routing
+    LS Type: Router-LSA (1)
+    Link State ID: 2.2.2.2
+    Advertising Router: 2.2.2.2
+    Sequence Number: 0x8000000c
+    Checksum: 0x572f
+    Length: 60
+    Flags: 0x00
+    Number of Links: 3
+    Type: Stub     ID: 10.1.3.0        Data: 255.255.255.0   Metric: 10
+    Type: Stub     ID: 192.168.1.0     Data: 255.255.255.0   Metric: 10
+        Link ID: 192.168.1.0 - IP network/subnet number
+        Link Data: 255.255.255.0
+        Link Type: 3 - Connection to a stub network
+        Number of Metrics: 0 - TOS
+        0 Metric: 10
+    Type: Transit  ID: 192.168.3.1     Data: 192.168.3.2     Metric: 10
+        Link ID: 192.168.3.1 - IP address of Designated Router
+        Link Data: 192.168.3.2
+        Link Type: 2 - Connection to a transit network
+        Number of Metrics: 0 - TOS
+        0 Metric: 10
 
-- Link ID - 10.1.1.0
-- Link Data - 255.255.255.0
-- Link type - 3 - Stub network
-- Metric - 10
+```
 
-Example of transit link LSA:
+Show LSA-1 in OSPF database with Link ID, Link Data, Link type. Structured: All LSAs 1 for every router ID.
 
-- Link ID: 192.168.3.1 - IP address of Designated Router
-- Link Data: 192.168.3.2
-- Link Type: 2 - Connection to a transit network
-- Metric: 10
+```
+show ip ospf database router
+
+   OSPF Router with ID (3.3.3.3) (Process ID 1)
+
+		Router Link States (Area 0)
+
+  LS age: 223
+  Options: (No TOS-capability, DC)
+  LS Type: Router Links
+  Link State ID: 1.1.1.1
+  Advertising Router: 1.1.1.1
+  LS Seq Number: 80000010
+  Checksum: 0x8467
+  Length: 60
+  Number of Links: 3
+
+    Link connected to: a Transit Network
+     (Link ID) Designated Router address: 192.168.2.2
+     (Link Data) Router Interface address: 192.168.2.1
+      Number of MTID metrics: 0
+       TOS 0 Metrics: 10
+
+    Link connected to: a Stub Network
+     (Link ID) Network/subnet number: 10.1.1.0
+     (Link Data) Network Mask: 255.255.255.0
+      Number of MTID metrics: 0
+       TOS 0 Metrics: 10
+
+    Link connected to: a Stub Network
+     (Link ID) Network/subnet number: 10.1.2.0
+     (Link Data) Network Mask: 255.255.255.0
+      Number of MTID metrics: 0
+       TOS 0 Metrics: 10
+```
 
 ### LSA-2
 
@@ -254,6 +331,34 @@ LSA-type 3 (Summary-LSA (IP network)), len 28
     Netmask: 255.255.255.0
     TOS: 0
     Metric: 10
+```
+
+### LSA-5
+
+- Used for sending redistributed routes, including default gateway
+- Link State ID - network
+- Netmask
+- Advertising Router - ASBR itself
+- Metric - 10
+- Forwarding Address - Next hop for this network
+
+```
+LSA-type 5 (AS-External-LSA (ASBR)), len 36
+    .000 0000 1010 1000 = LS Age (seconds): 168
+    0... .... .... .... = Do Not Age Flag: 0
+    Options: 0x20, (DC) Demand Circuits
+    LS Type: AS-External-LSA (ASBR) (5)
+    Link State ID: 0.0.0.0
+    Advertising Router: 3.3.3.3
+    Sequence Number: 0x80000001
+    Checksum: 0x7b1d
+    Length: 36
+    Netmask: 0.0.0.0
+    1... .... = External Type: Type 2 (metric is larger than any other link state path)
+    .000 0000 = TOS: 0
+    Metric: 10
+    Forwarding Address: 1.1.1.2
+    External Route Tag: 1
 ```
 
 ## Neighbors
@@ -977,3 +1082,8 @@ Show packets from particular source router - not origin router, but router who s
 ospf.srcrouter == 192.168.3.1 
 ```
 
+From particular advertising router
+
+```
+ospf.advrouter == 3.3.3.3
+```
