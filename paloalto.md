@@ -2251,6 +2251,14 @@ Configuration
 - We can assign a reference template to a device group to see zones and interface when we create rules in policy
 - When we create an object, we can make it Shared, it will be in Shared group and will be accessible for all device groups. We can also disable override for it, so lower hirerchy firewalls and groups will not be able to overrride it
 - Objects in Shared group never can be overrriden
+- Policy rules Hierarchy 
+    - Shared Pre-policies
+    - Device group hierarchy pre policies
+    - Local firewall policies
+    - Device group hierarchy post policies
+    - Shared post-policies
+    - Default rules
+- When we import firewall config to Panorama, its rules go to Pre rules section of Device Group
 
 ### Licensing + Software Upgrades + Dynamic Updates
 
@@ -2343,6 +2351,63 @@ Commit options when you commit to Panorama:
 - Log collector mode is enabled via CLI and then device does not have Web interface  any more, it is controlled via Panorama management device
 - Logs may store on firewall and Panorama may query them for reports
 
+**Display the Number of Log Events per Second for Log collector sizing**
+
+```
+> debug log-receiver statistics
+Logging statistics
+------------------------------ -----------
+
+Log incoming rate:             1/sec
+
+Log written rate:              1/sec
+```
+
+**Show incoming logs on log collector**
+
+```
+Panorama> debug log-collector log-collection-stats show incoming-logs
+Last time logs received Sun Feb  2 17:54:47 2020
+
+Incoming log rate =   125.85
+
+Detail counts by logtype:
+traffic:1780676451
+config:1126
+system:98615
+threat:28105597
+```
+
+Or WebUI: **Panorama > Managed Collectors**
+  
+**Log collector processes**
+
+- logd— Process responsible for ingesting logs received from the managed firewall and for transferring ingested logs to the vldmgr
+- vldmgr — Process responsible for managing the vld processes
+- vlds — Process responsible for managing individual logging disks, writing logs to the logging disks, and ingesting logs into ElasticSearch
+- es — ElasticSearch process running on the Log Collector
+
+**Restart ellastic search process**
+
+```
+debug elasticsearch es-restart option all
+```
+
+**Show ellastic cluster status**
+
+```
+show log-collector-es-cluster health
+```
+
+- Unassigned shards - 1000 and bigger - logs are bad on panorama, slow or does not work at all
+- Only full reset helps: switch to panorama mode and then back to log collector
+- Ellastic search commands are not available without root
+
+**Clear logs on log collector - the same command for firewall**
+
+```
+clear log log-type
+```
 
 ### Health monitoring
 
