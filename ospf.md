@@ -74,7 +74,9 @@ We have to think through the following:
 - IP networks between routers - /31 is ok
 - Loopback interfaces and Router-IDs - loopback is actually not needed if we configure router-id manually, which is recomended. Loopback numbers on all devices.
 - Authentication
-- Areas
+- Areas - summarization is possible only in multi area environment
+- Passive inerfaces
+- Route filtering
 - Network types
 - Process ID - it has local significance, it is better to use the same ID on all devices
 - Timers, maybe it is better to harden them
@@ -753,15 +755,53 @@ clear ip ospf process
 
 - Disabled by default
 - Configured on ABR or ASBR
+- On ASBR default metric will be 20 for routes redistributed from other protocols
 
 On ABR, send to Area 0 only summery from area 1 instead of 10 nerworks
 
 ```
 router ospf 1
-area 1 range 192.168.16.0 255.255.255.248..0
+area 1 range 192.168.16.0 255.255.255.248.0
 ```
 
-Summarization on ASBR router
+Summarization on ASBR router - it will send only one external route, from BGP for example, to OSPF domain
+
+```
+router ospf 1
+summary-address 192.168.16.0 255.255.255.248.0
+```
+
+## Route filtering
+
+- Distribute list
+  	- Can use ACL, PFL, Route Map
+  	- Can be applied to transmitted, received, redistributed route updates
+- Prefix list
+  	- Better performance than ACL
+  	- Easier to configure than extended ACL
+  	- Subnet mask cannot be easily matched
+ 
+Configure route filtering with prefix list
+
+```
+ip prefix-list TEST deny 192.168.0.24/24
+ip prefix-list TEST permit 0.0.0.0/0 le 32
+
+router ospf 1
+area 1 filter-list prefix TEST out
+```
+
+After this route will dissapear from LSA database and routing table.
+  
+Configure route filtering with distribute list + ACL
+
+```
+access-list 1 deny 192.168.4.0 0.0.0/255
+access-list 1 permit any
+
+router ospf 1
+distribute-list 1 in
+```
 
 ## OSPFv3
 
