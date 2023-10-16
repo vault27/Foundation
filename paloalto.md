@@ -1506,16 +1506,15 @@ A session created locally on the firewall will have the False value and one crea
 - Application filters - they are dynamic - based on categories or tags
 - Custom application signature is always prefereable over downloaded
 - Application Block Page works for the applications that needs CTD (Content-ID Decoder) inspection but "web-browsing" or "ssl" application is classified earlier than the transaction in CTD
-
-
-Best pratice Moving from Port-Based to App-ID Security: set of rules that aligns with business goals, thus simplifying administration and reducing the chance of error
-    - Assess your business and identify what you need to protect
-    - Segment your network by using interfaces and zones
-    - Identify allow list applications
-    - Create user groups for access to allow list applications
-    - Decrypt traffic for full visibility and threat inspection
-    - Create best-practice Security Profiles for the internet gateway for all allow rules
-    - Define the initial internet gateway Security policy, Using the application and user group inventory
+- App-ID blocks can be seen in Traffic Logs
+- Best pratice Moving from Port-Based to App-ID Security: set of rules that aligns with business goals, thus simplifying administration and reducing the chance of error:
+      - Assess your business and identify what you need to protect
+      - Segment your network by using interfaces and zones
+      - Identify allow list applications
+      - Create user groups for access to allow list applications
+      - Decrypt traffic for full visibility and threat inspection
+      - Create best-practice Security Profiles for the internet gateway for all allow rules
+      - Define the initial internet gateway Security policy, Using the application and user group inventory
 
 App-ID database
 
