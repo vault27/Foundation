@@ -174,6 +174,12 @@ OSPF routers periodically send Hello packets out OSPF enabled links every Hellol
 ## LSA
 
 - All LSAs contain The LSA header which contains the LS type, Link State ID and Advertising Router fields.  The combination of these three fields uniquely identifies the LSA
+- Link State ID depends on LS type:
+  - 1 - The originating router's Router ID.
+  - 2 - The IP interface address of the network's Designated Router.
+  - 3 - The destination network's IP address.
+  - 4 - The Router ID of the described AS boundary router
+  - 5 - The destination network's IP address
 - Every router stores all LSAs in its LSDB, where his own LSAs are stored as well
 - Only a router that has originated a particular LSA is allowed to modify it or withdraw it
 - So Link State ID, Advertising Router, Metric are not changed! Metric is not accumulated!
@@ -199,7 +205,7 @@ LSA types (11 in total):
 - 9 - Intra area prefix LSA
 - 10 - 11 - Opaque
 
-How LSA is sent:
+**How LSA is sent:**
 
 - OSPF header
 - LSU
@@ -304,11 +310,30 @@ show ip ospf database router
 
 ### LSA-2
 
-Sent by DR. Only inside area.
+- Sent by DR. Only inside area
+- Represents multi access network segment that uses DR
+- Identifies all the routers attached to this network segment
+- It contains:
+  - IP address of DR in corresponding multi access network - in Link State ID field
+  - Network mask
+  - RIDs of all(including DR) attached routers to corresponding multiaccess network
+- Example:
 
-- Link state ID - 192.168.1.1
-- Netmask - 255.255.255.252
-- IPs of all attched routers
+```
+LSA-type 2 (Network-LSA), len 32
+    .000 0000 0011 1101 = LS Age (seconds): 61
+    0... .... .... .... = Do Not Age Flag: 0
+    Options: 0x22, (DC) Demand Circuits, (E) External Routing
+    LS Type: Network-LSA (2)
+    Link State ID: 192.168.3.1
+    Advertising Router: 3.3.3.3
+    Sequence Number: 0x80000001
+    Checksum: 0x3379
+    Length: 32
+    Netmask: 255.255.255.0
+    Attached Router: 3.3.3.3
+    Attached Router: 2.2.2.2
+```
 
 ### LSA-3
 
