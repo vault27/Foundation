@@ -748,7 +748,20 @@ clear ip ospf process
 
 - They are used when there are two area 0, and with them both area 0 are connected with each other. It can happen if 2 companies are merged
 - A virtual link is not a tunnel for data packets; rather, it is a targeted session that allows two remote routers within a single area to become fully adjacent and synchro- nize their LSDBs. The virtual link is internally represented as an unnumbered point-to- point link between the two endpoint routers and exists in the backbone area, regardless of the area through which it is created. The area through which the virtual link is created is called a transit area and it must be a regular area: As no tunneling is involved, packets routed through this transit area are forwarded based on their true destination addresses, requiring the transit area to know all networks in the OSPF domain, intra-area, inter-area, and external
-- 
+
+## Summarization
+
+- Disabled by default
+- Configured on ABR or ASBR
+
+On ABR, send to Area 0 only summery from area 1 instead of 10 nerworks
+
+```
+router ospf 1
+area 1 range 192.168.16.0 255.255.255.248..0
+```
+
+Summarization on ASBR router
 
 ## OSPFv3
 
@@ -916,7 +929,7 @@ Ethernet0/3 is up, line protocol is up
   Suppress hello for 0 neighbor(s)
 ```
 
-**List interfaces, where OSPF is enabled based on network command, omitting passive interfaces.**
+**List interfaces, where OSPF is enabled based on network command, omitting passive interfaces. Show all costs**
 
 ```
 show ip ospf interface brief
