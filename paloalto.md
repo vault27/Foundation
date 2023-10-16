@@ -1092,7 +1092,7 @@ Possible actions:
 - allow: This action permits the application traffic.
 - alert: This action generates an alert for each application traffic flow. The alert is saved in the
 Threat log.
-- drop: This action drops the application traffic.
+- drop: This action drops the application traffic
 - reset-client: For TCP, this action resets the client-side connection. For UDP, it drops the
 connection.
 - reset-server: For TCP, this action resets the server-side connection. For UDP, it drops the
@@ -1505,6 +1505,8 @@ A session created locally on the firewall will have the False value and one crea
 - Application groups for convenience
 - Application filters - they are dynamic - based on categories or tags
 - Custom application signature is always prefereable over downloaded
+- Application Block Page works for the applications that needs CTD (Content-ID Decoder) inspection but "web-browsing" or "ssl" application is classified earlier than the transaction in CTD
+
 
 Best pratice Moving from Port-Based to App-ID Security: set of rules that aligns with business goals, thus simplifying administration and reducing the chance of error
     - Assess your business and identify what you need to protect
