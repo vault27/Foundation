@@ -79,6 +79,7 @@ We have to think through the following:
 - Process ID - it has local significance, it is better to use the same ID on all devices
 - Timers, maybe it is better to harden them
 - In order to make one link primary - we need to change its cost: either directly via interface command, on indirectly via changing bandwidth
+- Costs by default are not optimal, reference bandwidth is 100, so all costs are 1, we should change reference bandwidth to 1000 for example, or change cost per interface
 
 ### Data centre CLOS specifics
 
@@ -842,6 +843,11 @@ network 0.0.0.0 255.255.255.255 area 0
 auto-cost reference bandwidth 
 ```
 
+### Change interface cost
+
+```
+ip ospf cost 10
+```
 ### Remove router from the network for maintenence
 
 Not to be confused with stub areas.  
