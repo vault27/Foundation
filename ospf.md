@@ -173,7 +173,7 @@ OSPF routers periodically send Hello packets out OSPF enabled links every Hellol
 
 ## LSA
 
-- All LSAs contain Link state ID and Advertising router(RID)
+- All LSAs contain The LSA header which contains the LS type, Link State ID and Advertising Router fields.  The combination of these three fields uniquely identifies the LSA
 - Every router stores all LSAs in its LSDB, where his own LSAs are stored as well
 - Only a router that has originated a particular LSA is allowed to modify it or withdraw it
 - So Link State ID, Advertising Router, Metric are not changed! Metric is not accumulated!
@@ -204,6 +204,11 @@ How LSA is sent:
 - OSPF header
 - LSU
   - LSA 1
+    - LSA Header
+      - LS type
+      - Link State ID
+      - Advertising Router
+    - LSA Data
   - LSA 2
   - LSA ...
 
