@@ -161,6 +161,15 @@ OSPF routers periodically send Hello packets out OSPF enabled links every Hellol
 - Options (e.g. stub flags, etc.)
 - Router IDs of other neighbors on the link - even if there are only 2 routers on the links, if R2 got Hello from R1, then it sends its own hello to R1 with R1's ID in this field > so R1 understands that R2 knows about him and 2-Way neighbor state is established
 
+### DBD - Database Description Packet
+
+- Summary of what router knows
+- Sent during adjecency forming
+
+### Link State Request Packet
+
+- 
+
 ### LSU packet
 
 - OSPF header
