@@ -689,6 +689,13 @@ Policy optimizer
 - Unused apps
 - Unused rules
 - App viewer
+- Highlight Unused Rules - Any rules not used since the dataplane started up will be highlighted
+
+**Show unused rules from CLI**
+
+```
+admin@Lab-2(active)> show running rule-use highlight vsys vsys1 rule-base security type unused
+```
 
 ### NAT
 
