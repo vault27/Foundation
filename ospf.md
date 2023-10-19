@@ -432,9 +432,7 @@ LSA-type 5 (AS-External-LSA (ASBR)), len 36
 - Full updates - during discovery, partial otherwise. Router changes its LSDB, increases its number and sends LSU
 - Authentication - MD5 and clear text
 
-## Packet flow
-
-### Adjecency
+## Adjecency
 
 - R1 sends Hello - multicast - 224.0.0.5
 - R2 gets Hello and sends DB description packet without anything useful - unicast
@@ -446,7 +444,13 @@ LSA-type 5 (AS-External-LSA (ASBR)), len 36
 - Both routers send LS acknowledges, confirminf that they got everything they need
 - After this only Hello packets
 
-### Withdraw a route, link is down
+Debug adjecency
+
+```
+debug ip ospf adjacency
+```
+
+## Withdraw a route, link is down
 
 - Router generates LSA-1 and LSA-2(if it is a transit network with DR) with higher sequence number and absence of this link - multicast 224.0.0.5
 - Received routers send LS Acknowledge - multicast as well
