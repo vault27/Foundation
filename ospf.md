@@ -163,12 +163,13 @@ OSPF routers periodically send Hello packets out OSPF enabled links every Hellol
 
 ### DBD - Database Description Packet
 
-- Summary of what router knows
-- Sent during adjecency forming
+- Summary of what router knows - index
+- Sent during adjacency forming
 
 ### Link State Request Packet
 
-- 
+- After router gets DBD, it requests details based on LS type and Link State ID
+- In reply to this LSR LSUs with LSAs are sent
 
 ### LSU packet
 
@@ -178,6 +179,7 @@ OSPF routers periodically send Hello packets out OSPF enabled links every Hellol
 
 ### Link State Acknowledgment
 
+- Confirms that LSA has been received
 - LSA which was received is inside, but less details
 - Link state ID - 192.168.1.1
 - Advertising router ID - 192.168.1.1
