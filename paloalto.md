@@ -3477,5 +3477,6 @@ test
   - Use global find to find objects based on IP addresses
   - Use global find to find policies based on objects
   - Based on policies find the VSYS
-  - Based on VSYS analyze routing
+  - Based on VSYS analyze routing table
   - Traceroute from VSYS
+  - Traceroute from personal laptop
