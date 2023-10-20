@@ -3478,3 +3478,4 @@ test
   - Use global find to find policies based on objects
   - Based on policies find the VSYS
   - Based on VSYS analyze routing
+  - Traceroute from VSYS
