@@ -3482,3 +3482,4 @@ test
   - Traceroute from personal laptop
   - Based on traceroute SSH to hops and find out the details
   - Search for trace route IPs in IPAM: find out host details + which network they are in
+  - Search for end IPs in Palo Alto logs - and find which firewalls it hits
