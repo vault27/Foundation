@@ -3461,7 +3461,7 @@ test
 ## Security Policy to Excel
 
 - Export your current running configuration:  In the web-interface you go to Device -> Setup -> Operations -> Export named configuration snapshot
--  Open the configuration snapshot with a compatible text-editor (as Notepad++ for example)
+- Open the configuration snapshot with a compatible text-editor (as Notepad++ for example)
 - Search for string <security> (press Strg+H in most ext-editors) and deleted everything before the tag
 - Search for string </security> (press Strg+H in most ext-editors) and deleted everything after the tag You now should have everything between <security> and </security>. Save the file (for security ;))
 - Delete all tags <member> and </member>: Press Strg+H again for search and replace. Search for string <member> and replace it with nothing (delete it!). Do the same for the string </member>
@@ -3471,3 +3471,10 @@ test
 - You can easily fix that by using the replace-function again, and replace the blanks with nothing
 - As a side-note:  You can use that procedure also for importing the address-objects of your PAN-Firewall. In that case you have to import everything between <address> and </address> tags
 - Side-Note 2: For additional XML settings you may want to activate the developers tab in Excel. It offers you additional features when working with XML data
+
+ ## Traffic flow analysis
+
+  - Use global find to find objects based on IP addresses
+  - Use global find to find policies based on objects
+  - Based on policies find the VSYS
+  - Based on VSYS analyze routing
