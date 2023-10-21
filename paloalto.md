@@ -2337,6 +2337,8 @@ Configuration
 - Panorama queues all the commit requests so that you can initiate a new commit while a previous commit is in progress
 - Panorama performs the commits in the order in which they are initiated but prioritizes the auto-commits that are initiated by Panorama (such as FQDN refreshes)
 - You can use the Task Manager to clear the commit queue or see details about commits
+- Push to devices button = Commit on devices
+- If templates and device groups are just saved on Panorama without Push, the Devices will be out of sync in **Panorama > Managed Devices > Summary**
 
 Commit options when you commit to Panorama:
 
