@@ -2129,7 +2129,8 @@ Features:
     - Automated correlation engine
     - AppScope - all possible App Analytics
     - PDF reports
-- Device management: **Panorama > Managed Devices > Summary**, Health: **Panorama > Managed Devices > Health**, Troubleshooting policies + Connectivity: **Panorama > Managed Devices > Troubleshooting**
+- Add, delete device/VSYS + ALL information about devices/VSYSs structured via Device Groups: **Panorama > Managed Devices > Summary** - Model, VSYS name, Template Stack, Sync status of policy and stack, serial number, mgmt IP, software + all bases versions, backup management, HA state
+- Health: **Panorama > Managed Devices > Health**, Troubleshooting policies + Connectivity: **Panorama > Managed Devices > Troubleshooting**
 - Policies + Objects management - all types of policies via **Device Groups: Panorama > Device Groups, Policies, Objects**
 - All Network Configurations + Device configurations via **Network, Device, Panorama > Templates**
 - Databases, licenses and software updates: **Panorama > Device Deployment**
