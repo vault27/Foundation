@@ -230,6 +230,15 @@ https://knowledgebase.paloaltonetworks.com/KCSArticleDetail?id=kA10g000000ClVHCA
 - Enterprise Data Loss Prevention (DLP) - cloud-based protection against unauthorized access, misuse, extraction, and sharing of sensitive information
 - SaaS Security Inline - works with Cortex Data Lake to discover all of the SaaS applications in use on your network
 
+## Bases
+
+4 in total
+
+- Apps and threat
+- Antivirus
+- URL filtering
+- Wildfire
+    
 ## Artificial intelligence operations (AIOps)/Telemetry
 
 - When enabled, Telemetry allows the firewall to collect and forward traffic information to Palo Alto Networks
