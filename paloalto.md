@@ -243,8 +243,8 @@ https://knowledgebase.paloaltonetworks.com/KCSArticleDetail?id=kA10g000000ClVHCA
 
 - When enabled, Telemetry allows the firewall to collect and forward traffic information to Palo Alto Networks
 - The data collected pertains to applications, threats, device health, and passive DNS information
-- Data is sent to Cortex Data lake
-- Device > Setup > Telemetry + enable Cortex Data Lake
+- Data is sent to Cortex Data lake  every 5 minutes by default
+- **Device > Setup > Telemetry** + enable Cortex Data Lake
 
 ## Maintenance
 
