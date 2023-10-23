@@ -2157,7 +2157,7 @@ Features:
 - High Availability: passive one is passive and just synchronize with active: **Panorama > High Availability**, Same Model version and mode, Peer IP, Peer Serial, Priority
 - Panorama Interconnect: manages up to 64 Panorama Nodes: Panorama Interconnect plugin. You must install the plugin on the Panorama Controller, and all Panorama Nodes
 - Wildfire Clusters + Appliances: **Panorama > Managed Wildfire Clusters, Appliances**
-- **Panorama > Scheduled Confif Push** - Date/Time/One-time/Recurring/Device Groups/Templates
+- **Panorama > Scheduled Config Push** - Date/Time/One-time/Recurring/Device Groups/Templates
 - **Panorama > Log Ingestion Profile** - receive logs from external sources, attach the log ingestion profile to a Log Collector group
 - **Panorama > Policy Recomendation > IoT + SaaS** - ?
 
@@ -2199,6 +2199,7 @@ If you migrate HA pair:
 - There is no possibility to see on Panorama on which Firewalls what was overrided
 - Stack have a configurable priority order to ensure that Panorama pushes only one value for any duplicate setting. If there is the same object in 2 templates, object from the uppest template in the stack will be installed, for example interface management profile, no options for this profile from lower template will be installed
 - Different firewall models - different stacks
+- Object created in template, is available only in this template
 
 It is impossible to configure with templates:
 
@@ -2240,6 +2241,7 @@ Configuration
 - By default Panorama pushes all shared objects to firewalls whether or not any shared or device group policy rules reference the objects
 - On lower-end models, such as the PA-220, consider pushing only the relevant shared objects to the managed firewalls. This is because the number of objects that can be stored on the lower-end models is considerably lower than that of the mid- to high-end models
 - **Panorama > Setup > Management > Panorama Settings > Share Unused Address and Service Objects with Devices** - enabled by default
+- Objects management: when we create an object, for example address, it is not shared by default, so it is visible only in a device group and only for 1 vsys, if we make it shared, we can use it in all device groups. We should be cautious: as small devices do not support many objects, and we can overload them
 - By default lower device groups take precedence over upper device groups, if the same objects exist
 - Objects defined in ancestors will take higher precedence - when you perform a device group commit, the ancestor values replace any override values
 - Tags can be applied to devices when add them to panorama
