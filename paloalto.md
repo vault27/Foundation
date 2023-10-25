@@ -3497,3 +3497,18 @@ test
   - Based on traceroute SSH to hops and find out the details
   - Search for trace route IPs in IPAM: find out host details + which network they are in
   - Search for end IPs in Palo Alto logs - and find which firewalls it hits
+
+## Chassis
+
+- Network Processing Cards (NPCs) provide network connectivity for a PA-7000 Series
+- Six NPCs in a PA-7050 firewall and up to ten NPCs in a PA-7080 firewall
+- You must install at least one NPC to enable the firewall to process network traffic
+
+  Verify slots
+
+  ```
+> show chassis power
+> show chassis inventory
+> show chassis status slot <slot number>
+> show chassis status
+  ```
