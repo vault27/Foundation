@@ -22,6 +22,7 @@ All you need to know about Palo Alto firewalls and for PCNSE exam in short and s
 - Panorama Admin Guide
 - https://docs.paloaltonetworks.com/compatibility-matrix - Compatibility Matrix
 - Palo Alto General Logs and Log files that are in the managment, data and control planes overview/review - https://live.paloaltonetworks.com/t5/general-topics/knowledge-sharing-palo-alto-general-logs-and-log-files-that-are/td-p/410110
+- Best Practises: https://docs.paloaltonetworks.com/best-practices
 
 ## Portfolio
 
