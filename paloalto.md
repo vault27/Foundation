@@ -1755,6 +1755,13 @@ Possible when person makes change to active host, does not commit. Then someone 
 - Suspended - administratively disabled
 - Non Functional - error state
 
+### Troubleshoot HA
+
+Show HA logs in **Monitor > System**
+
+```
+( subtype eq ha ) and ( severity neq informational )
+```
 ### Active/Active
 
 - Advanced design concepts
