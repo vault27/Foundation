@@ -202,7 +202,7 @@ Existing session 6 stages
 - Session (flow) lookup based on 6 tuple
 - Each flow has a client and server component, where the client is the sender of the first  packet of the session from firewall’s perspective, and the server is the receiver of this first packet
 
-FW new session setup
+**3. FW new session setup**
 
 - Zone protection checks
 - TCP state check
@@ -210,6 +210,10 @@ FW new session setup
 - NAT
 - User-ID, Group mapping
 - DoS protection Policy
+- Security Policy Lookup
+- Session allocation - Session state changes from INIT (pre-allocation) to OPENING (post-allocation)
+- Session is added to the flow lookup table for both C2S and S2C flows and firewall changes the session’s state from  OPENING to ACTIVE
+- The firewall then sends the packet into Session Fast Path phase for security processing
 
 ## Features
 
