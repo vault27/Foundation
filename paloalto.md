@@ -164,6 +164,53 @@ https://knowledgebase.paloaltonetworks.com/KCSArticleDetail?id=kA10g000000ClVHCA
 
 <img width="1071" alt="image" src="https://user-images.githubusercontent.com/116812447/215520946-0255d873-1931-4799-b57e-4a62d4e48765.png">
 
+- The ingress and forwarding/egress stages handle network functions and make packet—forwarding decisions on a per-packet basis
+- The remaining stages are session-based security modules highlighted by App-ID and Content-ID
+
+New session 7 Stages:
+
+- Ingress
+- Firewall session lookup
+- FW Session Setup SlowPath
+- FW Fastpath
+- Application identification
+- Content Inspection
+- Forwarding/Egress
+
+Existing session 6 stages
+
+- Ingress
+- Firewall session lookup
+- FW Fastpath
+- Application identification
+- Content Inspection
+- Forwarding/Egress
+
+**1. Ingress**
+
+- Any inconsistencies, errors, mismatches will be dropped
+- Layer 2 headers are parsed
+- Layer 3 headers are parsed
+- Layer 4 headers are parsed
+- Tunnel decapsulation
+- Layer 3 headers of packets inside tunnel are parsed > L4
+- IP fragments are parsed
+
+**2. Firewall session lookup**
+
+- Packet is subject for inspection depending on packet type: IP/IPv6/Broadcast/Unicast/Non-IP/Multicast and interface type: L3/L2/VW/TAP
+- Session (flow) lookup based on 6 tuple
+- Each flow has a client and server component, where the client is the sender of the first  packet of the session from firewall’s perspective, and the server is the receiver of this first packet
+
+FW new session setup
+
+- Zone protection checks
+- TCP state check
+- Determine  the  packet-forwarding path: TAP - Discard, VW - Exit interface, L2 - MAC table, L3 - next hop
+- NAT
+- User-ID, Group mapping
+- DoS protection Policy
+
 ## Features
 
 - Device-ID
@@ -3512,11 +3559,11 @@ test
 - Six NPCs in a PA-7050 firewall and up to ten NPCs in a PA-7080 firewall
 - You must install at least one NPC to enable the firewall to process network traffic
 
-  Verify slots
+Verify slots
 
-  ```
+```
 > show chassis power
 > show chassis inventory
 > show chassis status slot <slot number>
 > show chassis status
-  ```
+```
