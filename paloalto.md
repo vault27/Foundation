@@ -354,6 +354,28 @@ In the right upper corner you can:
     - Import named config snapshot - Imports a configuration file from any network location
     - Import device state (firewall only) - Import the device state information that was exported using the Export device state option. This includes the current running config, Panorama templates, and shared policies. If the device is a Global Protect Portal, the export includes the Certificate Authority (CA) information and the list of satellite devices and their authentication information
 
+### Reboot HA pair
+
+- Backup both devices **Device > Setup > Operations > Export device state**
+- Check config sync status, ongoing throughput, amount of sessions and active IPSec VPN tunnels on: show vpn ike-sa
+- Reboot Passive device: request shutdown/restart system
+- Unplug power cords
+- Reconnect both power cords of the FW (this will automatically boot up FW)
+- Monitor AutoCommit is complete by doing: show jobs all
+- Monitor if raid status is healthy: show system raid detail
+- Verify that it has status Passive after reboot
+- Verify that config is synced
+- Verify that all network cards are ok for chassis: show chassis status
+- Failover to passive: request high-availability state suspend
+- On new Active device reset VPNs:
+    - clear vpn ike-sa
+    - clear vpn ipsec-sa
+    - test vpn ike-sa
+    - test vpn ipsec-sa
+- Check ongoing throughput and amount of sessions, all active IPSec VPN tunnels
+- Show system statistics session
+- Reboot Active device: request shutdown/restart system
+  
 ### Content updates
 
 - Applications and Threats Content Updates
