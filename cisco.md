@@ -23,6 +23,22 @@
 - Webex
 - SD-WAN - Viptella
     - Catalyst SD-WAN
+ 
+
+## Catalyst
+
+- Brand for a variety of network switches, wireless controllers, and wireless access points
+- Series: The 1700, 1900, 2800 -  Grand Junction Networks, 3000 -  Kalpana, 5000 and 6000 - Crescendo Communications, 9000
+- CatOS first,  layer 2 functions are configured using CatOS, and the layer 3 elements are configured using IOS, pure IOS
+- GUI via HTTP
+- Cisco Catalyst products run IOS or a Linux-derived version called Cisco IOS XE
+- The newer Catalyst 9000 family uses the Cisco IOS XE operating system
+- 9400, 9600 - chassis: field-replaceable supervisor, line cards, power supplies and fans
+- Chassis provides power and a high-speed backplane, the line cards provide interfaces to the network, and the supervisor engine moves packets, participates in routing protocols, etc
+- StackWise and Stackwise Virtual are technologies offered by Cisco Systems that allows some models of Catalyst switches to operate as though they were one switch
+- One switch is master, if master fails - another is a master
+- Stackwise physically connects the switch stack using special stack interconnect cables
+- 
 
 ## Documentation
 
