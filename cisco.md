@@ -240,3 +240,13 @@ show int description
 - access-list 1 deny 10.1.1.0 0.0.0.255 - match everything starting with 10.1.1.
 - access-list 1 permit 10.0.0.0 0.255.255.255 - match everything starting from 10
 - Convert subnet mask to WC: 255.255.255.255 - 255.255.252.0 = 0. 0. 3.255 - wildcard mask!
+
+## IPSec
+
+Debug
+
+```
+Debug crypto condition peer ipv4 140.238.149.242
+Debug crypto ikev2
+Debug crypto ipsec
+```
