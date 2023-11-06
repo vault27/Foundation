@@ -297,6 +297,7 @@ Existing session 6 stages
 - The data collected pertains to applications, threats, device health, and passive DNS information
 - Data is sent to Cortex Data lake  every 5 minutes by default
 - **Device > Setup > Telemetry** + enable Cortex Data Lake
+- Add device to account: Hub https://apps.paloaltonetworks.com/apps > Common Services > Device Associations > Add appliance choosing via Serial
 
 ## Maintenance
 
