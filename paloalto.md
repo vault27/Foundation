@@ -291,13 +291,15 @@ Existing session 6 stages
 - URL filtering
 - Wildfire
     
-## Artificial intelligence operations (AIOps)/Telemetry
+## AIOps
 
 - When enabled, Telemetry allows the firewall to collect and forward traffic information to Palo Alto Networks
 - The data collected pertains to applications, threats, device health, and passive DNS information
-- Data is sent to Cortex Data lake  every 5 minutes by default
+- Data is sent to Cortex Data lake every 5 minutes by default
 - **Device > Setup > Telemetry** + enable Cortex Data Lake
+- Activate AIOps for NGFW (Free): https://apps.paloaltonetworks.com/hub > Toggle View by Support Account > AIOps > Activate > for NGFW > Create tenant
 - Add device to account: Hub https://apps.paloaltonetworks.com/apps > Common Services > Device Associations > Add appliance choosing via Serial
+- Log in to AIOps for NGFW by clicking on its icon in the hub
 
 ## Maintenance
 
