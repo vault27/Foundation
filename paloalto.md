@@ -1,4 +1,4 @@
-# Palo Alto
+## Palo Alto
 
 All you need to know about Palo Alto firewalls and for PCNSE exam in short and structured form
 
@@ -282,7 +282,7 @@ Existing session 6 stages
 - Enterprise Data Loss Prevention (DLP) - cloud-based protection against unauthorized access, misuse, extraction, and sharing of sensitive information
 - SaaS Security Inline - works with Cortex Data Lake to discover all of the SaaS applications in use on your network
 
-## Bases
+## Databases
 
 4 in total
 
@@ -298,7 +298,7 @@ Existing session 6 stages
 - Data is sent to Cortex Data lake every 5 minutes by default
 - **Device > Setup > Telemetry** + enable Cortex Data Lake
 - Activate AIOps for NGFW (Free): https://apps.paloaltonetworks.com/hub > Toggle View by Support Account > AIOps > Activate > for NGFW > Create tenant
-- Add device to account: Hub https://apps.paloaltonetworks.com/apps > Common Services > Device Associations > Add appliance choosing via Serial
+- Add device to account: Hub https://apps.paloaltonetworks.com/apps > Toggle View by Support Account > Common Services > Device Associations > Add appliance choosing via Serial
 - Log in to AIOps for NGFW by clicking on its icon in the hub
 
 ## Maintenance
