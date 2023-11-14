@@ -297,7 +297,7 @@ Existing session 6 stages
 - The data collected pertains to applications, threats, device health, and passive DNS information
 - Data is sent to Cortex Data lake every 5 minutes by default
 - **Device > Setup > Telemetry** + enable Cortex Data Lake
-- Install device certificate
+- Install device certificate. It is used for connection with cloud services. It is installed from the cloud via OTP. Some firewall models already have it
 - Be sure that the device is registered in the Customer Support Portal
 - Activate AIOps for NGFW (Free): https://apps.paloaltonetworks.com/hub > Toggle View by Support Account > AIOps > Activate > for NGFW > Create tenant
 - Add device to account: Hub https://apps.paloaltonetworks.com/apps > Toggle View by Support Account > Common Services > Device Associations > Add appliance choosing via Serial
