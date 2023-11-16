@@ -33,6 +33,7 @@ All you need to know about Palo Alto firewalls and for PCNSE exam in short and s
 ### Strata
 
 - PA-220, PA-800, PA-3200, PA-5200, and PA-7000 Series
+- PA-7500 (1.5 Tbps), PA-5445, PA-45OR, PA-415-5G, PA-455
 - VM-Series: 50, 100, 300, 500, 700
   - Amazon Web Services
   - Cisco ACI
