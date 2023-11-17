@@ -17,7 +17,8 @@
 
 ### IPSec
 
-- ESP or AH
+- IPSec protocol: ESP or AH
+- ESP mode: tunnel or transport mode
 - Symmetric cipher
 - Hash
 - DH group
