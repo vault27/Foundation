@@ -12,7 +12,7 @@
 - Hash
 - Symmetric cipher
 - Lifetime
-- Auth type
+- Auth type: pre shared key or certificate
 - Preshared key
 
 ### IPSec
