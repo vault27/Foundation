@@ -1,6 +1,27 @@
 # IPSec
 
 ## History
+## Parametres
+
+### IKE
+
+- Peer IP
+- Proxy IDs Local and Remote if required by one of the sides
+- IKE version
+- DH group
+- Hash
+- Symmetric cipher
+- Lifetime
+- Auth type
+- Preshared key
+
+### IPSec
+
+- ESP or AH
+- Symmetric cipher
+- Hash
+- DH group
+- Lifetime
 
 ## Concepts
 
