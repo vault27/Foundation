@@ -500,6 +500,8 @@ Via Transit Leafs 2
 
 ## Multi-site
 
+<img width="738" alt="image" src="https://github.com/philipp-ov/Foundation/assets/116812447/01bfb083-2f65-4c8c-a20e-bb5077a9f485">
+
 - Several fabrics are connected via separate DCI fabric
 - Under, Overlay are isolated, u can still span L2
 - BUM traffic runs between sites
@@ -560,6 +562,7 @@ interface nve1
 ### L2/L3 BGP EVPN on Nexus - VLAN based service - Symmetric L3
 
 **Leaf**
+
 ```
 #Enables EVPN Control-Plane in BGP
 nv overlay evpn
