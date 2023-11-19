@@ -78,7 +78,8 @@ internal ip=10.0.1.1, nat ip=70.70.70.71, range=5117~7439
 
 ## Inspection modes
 
-If a FortiGate or VDOM is configured for proxy-based inspection, then a mixture of flow-based and proxy-based inspection occurs. Traffic initially encounters the IPS engine, which applies single-pass IPS, Application Control, and CASI, if configured in the firewall policy accepting the traffic. The traffic is then sent for proxy-based inspection. Proxy-based inspection extracts and caches content, such as files and web pages, from a content session and inspects the cached content for threats.
+If a FortiGate or VDOM is configured for proxy-based inspection, then a mixture of flow-based and proxy-based inspection occurs. Traffic initially encounters the IPS engine, which applies single-pass IPS, Application Control, and CASI, if configured in the firewall policy accepting the traffic. The traffic is then sent for proxy-based inspection. Proxy-based inspection extracts and caches content, such as files and web pages, from a content session and inspects the cached content for threats.  
+Inspection mode is configured per rule.
 
 ### Proxy mode
 
@@ -93,10 +94,14 @@ Flow-based inspection typically requires fewer processing resources than proxy-b
 
 ## NGFW modes
 
-Available only in Flow mode 
-
+- Policy based - available only in Flow mode
+- The NGFW mode is set per VDOM
 - Policy based - no profiles except Antivirus, one SSL/SSH decryption policy for all rules
+- Policy based - default-app-port-as-service option
+- Policy-based - Requires the use of central SNAT
+- Policy-based - in a rule you select an app, group or category
 - Profile based
+- System > Settings > NGFW Mode
 
 ## Grep
 
