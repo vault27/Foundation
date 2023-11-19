@@ -1,7 +1,9 @@
 # VxLAN & EVPN
+
 Everything I need to know about VxLAN/EVPN in an extremely structured, brief language, that I understand the most
  
 ## Prerequisites of new approach: VxLAN and EVPN
+
 - DC used Layer 2 technologies such as xSTP and MC-LAG
 - xSTP blocks ports
 - MC-LAG may not provide enough redundancy
@@ -10,7 +12,8 @@ Everything I need to know about VxLAN/EVPN in an extremely structured, brief lan
 
 ## VxLAN 
 
-### Concepts   
+### Concepts 
+
 - RFC 7348
 - VXLAN (Virtual eXtensible Local Area Network) is a Layer 2 overlay technology over a Layer 3 underlay infrastructure. It provides a means to stretch the Layer 2 network by pro- viding a tunneling encapsulation using MAC addresses in UDP (MAC in UDP) over an IP underlay. It is used to carry the MAC traffic from the individual VMs in an encapsulated format over a logical “tunnel”
 - UDP encapsulation, port 4789, 50 bytes overhead
@@ -36,15 +39,18 @@ Everything I need to know about VxLAN/EVPN in an extremely structured, brief lan
 - Load balancing: Nexus uses hash of (src ip, dst ip, protocol, src port, dst port) for ECMP load balancing underlay traffic, in VxLAN packets all these fields are the same, except UDP source port which is based on hash of inside VxLAN packet, thanks to this load balancing works good, that is why UDP is used, not direct IP for example
 
 ### Modes of learning MACs
+
 - Flood and learn - no control plane - VTEP sends BUM traffic everywhere it is configured and then listens for reply, based on this learns where which MAC is located. First packet (ARP) and broadcast are sent to all peers, configured for this VNI. All next packets are sent only to particular VTEP. VxLAN packets between leafs are load balanced between spines. Host A in VLAN 1 SVI 1 sends ARP request for Host B in VLAN 2 svi 1. VTEP 1 encapsulates this ARP request to VXLAN and sends it to peer VTEPs for this SVI. VTEP 2 replies, and then all other traffic goes between these 2 VTEPs
 - EVPN - VTEPs exchange data about MACs and IP addresses
 
 ### BUM traffic
+
 Can be processed in 2 ways:
 - Multicast replication for BUM/Flood and learn for MAC - multicast is enabled on Underlay - BUM is not packed inside VxlAN - it is sent via Underlay - replication point is on rendezvous point - spine - it is difficult to configure multicast on Underlay - not used today. Host sends broadcast. Leaf forwards it without VXLAN as a multicast to 225.2.2.1. We configure a match between VNI and multicast address - only one multicast packet - Spines will propogate it to all subscribers - load is much less then ingress replication
 - Ingress replication for BUM- packed to VxLAN - and sent to all in VNI - configured statically: for every VNI we configure VTEPs IPs which have the same VNI - or we chaeck for BUM subscribtion (Route Type 3) in EVPN table
 
 ### Host mobility
+
 - VM moves from one VTEP to another and continue
 - VTEP-2 creates route type 2 with higher Sequence Number
 - All other VTEPs get a new route
@@ -54,6 +60,7 @@ Can be processed in 2 ways:
 ## EVPN
 
 ### Concepts
+
 - Ethernet VPN (EVPN) is a technology for carrying layer 2 Ethernet traffic as a virtual private network using wide area network protocols. EVPN technologies include Ethernet over MPLS and Ethernet over VXLAN
 - AFI 25, SAFI 70
 - EVPN - is an address family used in MP BGP, MP BGP is transport for it
@@ -68,11 +75,12 @@ Can be processed in 2 ways:
 - Providing multi-homing for active active connections - one host to several switches without any VPC
 - We establish eBGP or iBGP sessions between leafs and spines. If BGP session is used for underlay, than it will be the second session via separate Loopback interfaces. This new BGP session uses only l2vpn address family
 - When everything is stable, there are only BGP keep alives, nothing more
-- It is recomended to use separate Loopbacks for l2vpn BGP adjecency and nve interface, vendors recomend
+- It is recomended to use separate Loopbacks for l2vpn BGP adjecency and nve interface, vendors recommend
 - When l2vpn BGP update is sent, nve interface IP is used as nexthop
 - eBGP is better because if we have superspines we will have to configure hierarchical design for RR
 
 ### Inside EVPN packet
+
 - Type: Update message (2)
 - Path attributes:
   - Origin: IGP 
@@ -94,6 +102,7 @@ Can be processed in 2 ways:
   - Sequence number - the more the better, used when host moves from one VTEP to another, new VTEP increases this number and sends to everyone
 
 ### EVPN route types
+
 All routes inside a fabric are in fact host /32 routes with MAC or MAC/IP.  
 VTEP gets all BGP updates and stores them in global table, but installs them to VRF only if there is required VNI.  
 In the beginning just after configuration is finished only Type 3 routes are sent to all l2vpn neighbors, announcing that VTEP is ready to process BUM traffic. Type 2 routes will appear only after client hosts will start to generate traffic.
@@ -109,12 +118,14 @@ In the beginning just after configuration is finished only Type 3 routes are sen
   - Type 6,7,8 - PIM, IGMP Leave/Join
  
 #### Route type 1
+
 - Used for quick convergence and load balancing, when we build MLAG without vPC
 - One Route Type 1 is generated for all EVIs right after we enable Ethernet Segment
 - One Route Type 1 is generated for each EVI for load balancing right after we enable Ethernet Segment - it is used for load balancing - every Leaf in a Fabric gets 2 Type 2 Routes for MACs which are behind 2 Leafs in MLAG
 - When link is broken between Leaf and Host, Leaf sends Route Type 1 withdrawl and all Leafs delete this Leaf as next hop for specified Ethernet Segment - and all Type 2 Routes(Maybe thousands) are automatically withdrawn - as a result quick convergence
 
 #### Route type 2
+
 - Everything is pretty much the same here as in Route Type 3
 - No PMSI_TUNNEL_ATTRIBUTE path attribute
 - Only MP_REACH_NLRI differs - route type, MAC inside
@@ -144,6 +155,7 @@ Path Attribute - MP_REACH_NLRI
 ```
 
 #### Route type 3
+
 In general route update message looks like typical BGP update:
 ```
 Border Gateway Protocol - UPDATE Message
@@ -192,6 +204,7 @@ Path Attribute - PMSI_TUNNEL_ATTRIBUTE
 ```
 
 #### Route type 4
+
 - This route type is created 1 for all EVIs on a switch
 - It is used to discover all VTEPs, connected to one Ethernet segment
 - It is used to choose Designated Forwarder - DF
@@ -205,7 +218,8 @@ Path Attribute - PMSI_TUNNEL_ATTRIBUTE
 - If non DF Leaf gets BUM traffic from HOST, it will forward BUM to local ports in the same segment, and also send BUM to the Fabric, DF will get this BUM, but will not send it to HOSTs because other Leaf allready done it
 
 
-Route Type 4 Update example
+**Route Type 4 Update example**
+
 ```
 Border Gateway Protocol - UPDATE Message
 Marker: ffffffffffffffffffffffffffffffff
@@ -263,17 +277,20 @@ ES-Import Route Target: Private 11:11:11 (11:11:11:11:11:11)
 - Summarization: before sending to firewall all fabric /32 routes we summarize them and send for example 192.168.1.0/24
 
 ## L2
+
 - Fabric is a big Switch
 - For every VLAN we configure VNI and MAC VRF
 - Default Gateway for host is outside fabric
 - We configure NVE interface with all VNIs, BUM traffic configuration, and hosts learning type
 
 ### Implementation types
+
 - VLAN based service: one VLAN - one MAC VRF (RT, RD) - one bridge table, Ethernet Tag = 0 - one VNI - forwarding based on VNI - most popular - good for multi vendor - one subnet per EVI - EVPN route type 2
 - VLAN bundle service - one bridge table, MAC VRF with RT RD for all VLANs - frames are sent with 802.1Q - Ethernet Tag = 0, MACs in different VLANs should not match
 - VLAN aware bundle service - not supported by all vendors - all VLANs have one VRF(RT, RD) - every VLAN has its own bridge table with VNI and Ethernet tag = VNI. We create VLAN aware bundle with RD, RT and put all VLANS into it, for example 1-1000, this is a major pro. In this mode, in Route type 2, in NLRI path attribite in BGP update there will be Ethernet TAG ID - the same as VNI.
 
 ### Operations overview - VLAN based
+
 - Host A is online, Leaf-1 sees its MAC and forwards Route Type 2 to all other VTEPS, and now all VTEPs know that Host A is behind Leaf-1
 - Host A in VLAN 1 VNI 1 sends ARP request for Host B in VLAN 1 VNI 1
 - Leaf 1 sends this ARP request in VXLAN to all VTEPs from which it got Route Type 3 - Inclusive Multicast Ethernet Tag with VNI 1
@@ -281,6 +298,7 @@ ES-Import Route Target: Private 11:11:11 (11:11:11:11:11:11)
 - Host B replies and Leaf 2 sends reply in VXLAN to Leaf 1
 
 ### MAC VRF
+
 - RD:MAC-PREFIX:ETI
 - RD:IP-PREFIX:ETI
 - MAC-PREFIX = MAC/48
@@ -288,6 +306,7 @@ ES-Import Route Target: Private 11:11:11 (11:11:11:11:11:11)
 - We add VLAN to MAC VRF instead of interface in IP VRF
 
 ### Firewall/Deafult gateway injection
+
 - Connected to border leaf via TRUNK interface
 - All required subinterfaces are configured on firewall
 - On all required clients we configure firewall as a default gateway
@@ -297,6 +316,7 @@ ES-Import Route Target: Private 11:11:11 (11:11:11:11:11:11)
 - ePBR can be also used
 
 ### Configuration overview for L2
+
 - Pure L2 configuration for VxLAN traffic, no L3, no routing
 - MAC VRF for every VLAN 
 - Special loopback for Overlay is created. From this overlay address we build l2vpn adjacency with Spines and send then only l2vpn route updates   
@@ -309,6 +329,7 @@ ES-Import Route Target: Private 11:11:11 (11:11:11:11:11:11)
 ## L3
 
 ### Concepts
+
 - IRB - Integrated Routing and Bridging - It means that 2 services are provided at the same time: Routing and switching
 - To isolate from Underlay we use VRfs for VxLAN routing
 - During L3 routing of VxLAN traffic MACs of source and destination are changed the same as in regular routing
@@ -334,6 +355,7 @@ ES-Import Route Target: Private 11:11:11 (11:11:11:11:11:11)
 - Edge-Routed Bridging (Leaf routed) - recomended
 
 ### Bridged overlay - no L3 functionality
+
 - Does not provide a mechanism for inter-VXLAN routing functionality within the fabric
 - Default gateway is outside fabric (firewall)
 - All routing and L3 termination is outside fabric
@@ -344,6 +366,7 @@ ES-Import Route Target: Private 11:11:11 (11:11:11:11:11:11)
 - Rarely used
 
 ### Edge-Routed Bridging
+
 - Default Gateway - VTEP
 - VRF based segmentation
 - Pros: optimal traffic flow, ARP suppression
@@ -352,6 +375,7 @@ ES-Import Route Target: Private 11:11:11 (11:11:11:11:11:11)
 - Intra VRF traffic may go via Firewall
 
 #### Edge-Routed Bridging - Assymetric
+
 - Only L2VNI is used
 - Does not require any specific configuration: just add VRF and SVI interfaces, maybe if you want, add virtual MAC, that's all
 - Routing on ingress VTEP: Leaf1 gets frame in VLAN/VNI 1, and puts it to MAC VRF 2 according to destination IP and this packet with new VNI goes to LEAF 2
@@ -374,6 +398,7 @@ Host 1 (SRC MAC: Host 1; DST MAC: VLAN 1) > Leaf 1 > MAC VRF 1 VNI/VLAN 1 > MAC 
 - Enable anycast distributed gateway on all VLAN interfaces - maybe no needed on Nexus
 
 #### Edge-Routed Bridging - Symmetric
+
 - Routing happends both on ingress and egress VTEP: Leaf1 gets frame in VLAN/VNI 1, puts it to IP VRF A, IP VRF sends it to Leaf 2 with VNI of this VRF, Leaf 2 puts it into proper MAC VRF
 ```
 Host 1 (SRC MAC: Host 1; DST MAC: VLAN 1) > Leaf 1 > MAC VRF 1 VNI/VLAN 1 > IP VRF A (SRC MAC: VLAN 1; DST MAC: VLAN 2) > VXLAN VNI 555 > Leaf 2 > IP VRF A > MAC VRF 2 (SRC MAC: VLAN 2; DST MAC: HOST 2) > Host 2
@@ -398,6 +423,7 @@ Host 1 (SRC MAC: Host 1; DST MAC: VLAN 1) > Leaf 1 > MAC VRF 1 VNI/VLAN 1 > IP V
 ## Multihoming/LAG for hosts
 
 ### vPC
+
 Cisco Live BRKDCN-2012 - VXLAN vPC: Design and Best Practices  
 
 - On NVE interfaces on both leafs we configure secondary IP as a virtual VTEP ID - Anycast VTEP - this secondary IP is configured on Loopback interface, which is used on NVE - all routes about vPC hosts are announced from this Anycast VTEP - both Leafs will advertise the same routes to Spines via BGP
@@ -477,24 +503,33 @@ Via Transit Leafs 2
 - Several fabrics are connected via separate DCI fabric
 - Under, Overlay are isolated, u can still span L2
 - BUM traffic runs between sites
-- Border Gateways - Key Functional Components - connected to Spines above them - 2 gateways per fabric
+- Border Gateways - BGW - Key Functional Components - connected to Spines above them - 2 gateways per fabric
+- BGW is VTEP for both fabrics: local and connecting fabrics
+- VTEPs in different fabrics do not communicate directly, all communications via BGW
+- 2 BGW always used for redundancy: vPC or Anycast - 4 devices can be used
+- BGW fully decapsulates VxLAN and then encapsulates it again - high load
+- 2 BGW have multisite VIP - virtual IP - Loopback interface, besides it each BGW has its own IP - loopback as well
+- Multisite VIP is seen as NVE peer on local VTEPs + remote BGW
+- We can use any Underlay between BGWs of different fabrics
 - Site internal fabric - local fabric itself
 - Site external DCI - fabric between sites - L3 connectivity between BGWs + increased MTU
 - Multi-site also supports integration an migration of legacy networks: you connect to BGW usual network and it sees VxLAN hosts and VxLAN hosts see usual hosts
-
-
+- 10 sites max, 4 BGWs per site max, 256 VTEP per site max: BGWs of all sites should see each other + oversized (MTU) packets should travel between them
+- For BUM traffic between sites Ingress Replication is used
+- Sites with different BUM traffic replication(Ingress and Multicast) can be combined
 
 ## Configuration
 
 ### Static peers on Nexus - flood and learn, no EVPN
-Configuration overview  
+
+Configuration overview
+
 - We create special Loopback for overlay, announce it to BGP Underlay    
 - For every VLAN where clients are connected we configure VNI  
 - Next we configure nve interface, where we configure peers for every VNI
 - Only L2 for VxLAN traffic, no L3 and no BGP
 
 ```
-#
 feature vn-segment-vlan-based
 
 #Enables VTEP (only required on Leaf or Border)
@@ -618,6 +653,7 @@ interface nve1
 
 **Spine**  
 Here we configure only BGP EVPN, no VTEP, VNI, NVE... One configuration is the same for L2 and L3. It just transits routes and traffic.
+
 ```
 #Enable all required features
 nv overlay evpn
@@ -653,13 +689,16 @@ neighbor 10.10.2.3
 ```
 
 **Advertise Primary IP Address in case of vPC**
+
 ```
 router bgp 65536
 address-family 12vp evpn advertise-pip
 Interface nve 1
 advertise virtual-rmac
 ```
+
 **vPC configuration on Leafs**
+
 ```
 Interface 1
 switchport
@@ -691,9 +730,9 @@ Secondary IP on loopback
 
 ## Verification
 
-**Show all NVE neighboors**
+**Show all NVE neighboors**  
 not very reliable data, because connections are connectionless :)  
-Peer is up just because it exists in routing table. It even mau not accept VxLAN packets.
+Peer is up just because it exists in routing table. It even may not accept VxLAN packets.
 
 ```
 show nve peers  
@@ -746,6 +785,7 @@ Route Distinguisher: 100:100    (L2VNI 100)
  ```
  
  **Show EVPN neighboors**
+
  ```
  spine-1# show bgp l2vpn evpn summary
 BGP summary information for VRF default, address family L2VPN EVPN
@@ -761,12 +801,14 @@ Neighbor        V    AS MsgRcvd MsgSent   TblVer  InQ OutQ Up/Down  State/PfxRcd
  ```
  
  **Show details about particular route type**
+
  ```
  leaf-2(config-evpn-evi)# show bgp l2vpn evpn route-type 2
  ```
 We can also filter based on different parametres, for example RD  
 
 **Show MAC addresses: both local and from remote VTEP**
+
 ```
 leaf-1(config-evpn-evi)# show mac address-table
 Legend:
@@ -781,21 +823,25 @@ G    -     5000.3e00.1b08   static   -         F      F    sup-eth1(R)
 ```
 
 **Show all routes for particular IP**
+
 ```
 show bgp l2vpn evpn 192.168.2.3
 ```
 
 **Show all MAC-IP records**
+
 ```
 show l2route evpn mac-ip evi 40
 ```
 
 **Show info about arp-suppression**
+
 ```
 show ip arp suppression-cache detail
 ```
 
 **Show all next hops for all MACs**
+
 ```
 switch# show l2route mac all
 
@@ -814,6 +860,7 @@ Topology    Mac Address    Prod   Flags         Seq No     Next-Hops
 ```
 
 **Show ip routes with installed VxLAn routes in symmetric mode**
+
 ```
 leaf-1(config-if)# show ip route vrf OTUS
 IP Route Table for VRF "OTUS"
@@ -844,6 +891,7 @@ IP Route Table for VRF "OTUS"
 ## Additional materials
 
 ### Cisco Live
+
 - BRKDCN-2450 - VXLAN EVPN Day-2 operation  
 - BRKDCT-3378 - Building Data Center Networks with VXLAN BGP-EVPN - done
 - BRKDCT-2404 - VXLAN Deployment Models - A practical perspective  
@@ -853,6 +901,7 @@ IP Route Table for VRF "OTUS"
 - BRKDCN-2012 - VXLAN vPC: Design and Best Practices
   
 ### Juniper books
+
 - Data Center EVPN-VXLAN Fabric Architecture Guide
 - DAY ONE: DAtA CENtEr FUNDAMENtALS
 - DAY ONE: ROUTING IN FAT TREES (RIFT)
@@ -862,5 +911,6 @@ IP Route Table for VRF "OTUS"
 - EVPN-VXLAN User Guide
  
 ### Cisco books
+
 - Building Data Centers with VXLAN BGP EVPN - A Cisco NX-OS Perspective
 - Cisco Nexus 9000 Series NX-OS VXLAN Configuration Guide

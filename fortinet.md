@@ -69,3 +69,6 @@ internal ip=10.0.1.1, nat ip=70.70.70.71, range=5117~7439
 - VIPs in separate section as well, appropriate firewall rule should be configured
 - DNAT takes place before firewall policy, so in a firewall rule you use internal IP
 - Options for DNAT: interface, external IP, internal IP, Port Forwarding
+
+## Application control
+
