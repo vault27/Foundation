@@ -72,3 +72,93 @@ internal ip=10.0.1.1, nat ip=70.70.70.71, range=5117~7439
 
 ## Application control
 
+- Database for Application Control signatures is separate from the IPS database
+- Access to the database no longer requires a FortiGuard IPS subscription
+- Updates for the Application Control signature database requer a valid FortiCare support contract
+
+## Inspection modes
+
+If a FortiGate or VDOM is configured for proxy-based inspection, then a mixture of flow-based and proxy-based inspection occurs. Traffic initially encounters the IPS engine, which applies single-pass IPS, Application Control, and CASI, if configured in the firewall policy accepting the traffic. The traffic is then sent for proxy-based inspection. Proxy-based inspection extracts and caches content, such as files and web pages, from a content session and inspects the cached content for threats.
+
+### Proxy mode
+
+Content inspection takes place in the following order: VoIP inspection, DLP, AntiSpam, Web Filtering, AntiVirus, and ICAP. If no threat is found, the proxy relays the content to its destination. If a threat is found, the proxy can block the threat and send a replacement message in its stead. The proxy can also block VoIP traffic that contains threats.  
+2 TCP connections
+
+### Flow mode
+
+Flow-based inspection can apply IPS, Application Control, Web Filtering, DLP, and AntiVirus. Flow-based inspection is all done by the IPS engine and, as you would expect, no proxying is involved.  
+All of the applicable flow-based security modules are applied simultaneously in one single pass, and pattern matching is offloaded and accelerated by CP8 or CP9 processors. IPS, Application Control, flow-based Web Filtering, and flow-based DLP filtering happen together. Flow-based AntiVirus scanning caches files during protocol decoding and submits cached files for virus scanning while the other matching is carried out.  
+Flow-based inspection typically requires fewer processing resources than proxy-based inspection and does not change packets, unless a threat is found and packets are blocked. Flow-based inspection cannot apply as many features as proxy inspection. For example, flow-based inspection does not support client comforting and some aspects of replacement messages.
+
+## NGFW modes
+
+Available only in Flow mode 
+
+- Policy based - no profiles except Antivirus, one SSL/SSH decryption policy for all rules
+- Profile based
+
+## Grep
+
+```
+gate1 # show | grep -h
+Usage: grep [-invfcABC] PATTERN
+Options:
+        -i      Ignore case distinctions
+        -n      Print line number with output lines
+        -v      Select non-matching lines
+        -f      Print fortinet config context
+        -c      Only print count of matching lines
+        -A      Print NUM lines of trailing context
+        -B      Print NUM lines of leading context
+        -C      Print NUM lines of output context
+```
+
+-f flag which prints the config context which shows us where exactly in config the values are found
+
+```
+gate1 # show | grep -f ssl-token
+config user local
+    edit "ssl-token" <---
+        set type password
+        set two-factor fortitoken
+        set email-to "amouawad@ingramlabs.com.au"
+        set passwd ENC encodedpasswordz
+    next
+end
+config user group
+    edit "Full SSL Access"
+        set member "authenticator-radius" "ssl-sms" "ssl-token" "imadmin" <---
+    next
+end
+```
+
+Doing the same search with the -i flag will ignore all cases 
+
+```
+gate1 # show | grep -i -f "full ssl access"
+config user group
+    edit "Full SSL Access" <---
+        set member "authenticator-radius" "ssl-sms" "ssl-token" "imadmin"
+    next
+end
+```
+
+OR operator by \|
+
+```
+gate1 (global) # get | grep 'admin-lockout\|admintimeout'
+admin-lockout-duration: 60
+admin-lockout-threshold: 3
+admintimeout        : 480
+```
+
+AND operator by a fullstop without quotation marks
+
+```
+ate1 (global) # get | grep admin.ssh
+admin-ssh-grace-time: 120
+admin-ssh-password  : enable
+admin-ssh-port      : 22
+admin-ssh-v1        : disable
+```
