@@ -162,3 +162,40 @@ admin-ssh-password  : enable
 admin-ssh-port      : 22
 admin-ssh-v1        : disable
 ```
+
+## ICAP
+
+```
+edit "test-icap-vdlp"
+set replacemsg-group ''
+set request enable
+set response disable
+set streaming-content-bypass enable
+set preview disable
+set request-server "test-icap-vdlp"
+set request-failure bypass
+set request-path "dlpsymantec"
+set methods post
+config icap-headers
+edit 1
+set name "X-Authenticated-User"
+set content "$user"
+set base64-encoding enable
+next
+edit 2
+set name "X-Authenticated-Groups"
+set content "$local_grp"
+set base64-encoding enable
+```
+
+## Migration
+
+- Port based VIPS - service should be any
+- Source nat rules should point to INET only
+- Ping to every vip
+- Plus explicit ping for all vips
+- ping to source nat rules
+- VIP are connected to Device and interface - disable
+- Same interface names
+- the same VLANs for vdoms
+- VIP intersection during policy install
