@@ -544,3 +544,9 @@ switch(config-if)# ip ospf bfd
 switch(config-router)# neighbor 209.165.201.1 remote-as 64497
 switch(config-router-neighbor)# bfd
 ```
+
+## Route server
+
+- Many ISP come to IX
+- To work they need a full mesh BGP peering between each other
+- To avoid it they all peer with route server

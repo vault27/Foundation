@@ -519,6 +519,7 @@ Via Transit Leafs 2
 - 10 sites max, 4 BGWs per site max, 256 VTEP per site max: BGWs of all sites should see each other + oversized (MTU) packets should travel between them
 - For BUM traffic between sites Ingress Replication is used
 - Sites with different BUM traffic replication(Ingress and Multicast) can be combined
+- Between sites only eBGP, no iBGP
 
 ## Configuration
 
