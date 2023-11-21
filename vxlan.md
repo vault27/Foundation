@@ -520,6 +520,9 @@ Via Transit Leafs 2
 - For BUM traffic between sites Ingress Replication is used
 - Sites with different BUM traffic replication(Ingress and Multicast) can be combined
 - Between sites only eBGP, no iBGP
+- BGWs of one site should have eBGP MP EVPN peering with all BGWs of another site: full mesh or route server
+- One NVE interface is used on BGW: for internal fabric and DCI fabric
+- When we configure peering with external fabric on BGW we mark this peering as external connection
 
 ## Configuration
 
