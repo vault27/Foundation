@@ -379,32 +379,32 @@ Enqueued  ID  Type     Status  Result  Completed
 
 - Backup both devices **Device > Setup > Operations > Export device state**
 - On both devices gather all possible information:
-    - Check ongoing throughput and amount of sessions on active device: show system statistics sessions
-    - Check all active IPSec VPN tunnels on Active device: show vpn ike-sa
-    - Check all BGP peers on Active device: show routing protocol bgp summary | match Established
-    - Check active physical interfaces on both devices: show interface all
-    - Check status of aggregation groups on both devices: show lacp aggregate-ethernet all
-    - Check total amount of routes on active device: show routing summary
-    - Check connection to User-ID agents on Active device: show user user-id-agent state all
-    - Check group mappings on Active device: show user group-mapping state all
-    - Check chassis: show chassis status
+    - Check ongoing throughput and amount of sessions on active device: **show system statistics sessions**
+    - Check all active IPSec VPN tunnels on Active device: **show vpn ike-sa**
+    - Check all BGP peers on Active device: **show routing protocol bgp summary | match Established**
+    - Check active physical interfaces on both devices: **show interface all**
+    - Check status of aggregation groups on both devices: **show lacp aggregate-ethernet all**
+    - Check total amount of routes on active device: **show routing summary**
+    - Check connection to User-ID agents on Active device: **show user user-id-agent state all**
+    - Check group mappings on Active device: **show user group-mapping state all**
+    - Check chassis: **show chassis status**
+    - Check ARP table and amount of records: **show arp all**
 - Reboot Passive device: request shutdown/restart system
 - Unplug power cords
 - Reconnect both power cords of the FW (this will automatically boot up FW)
-- Monitor AutoCommit is complete by doing: show jobs all
-- Monitor if raid status is healthy: show system raid detail
+- Monitor AutoCommit is complete by doing: **show jobs all**
+- Monitor if raid status is healthy: **show system raid detail**
 - Verify that it has status Passive after reboot
 - Verify that config is synced
-- Verify that all network cards are ok for chassis: show chassis status
-- Failover to passive: request high-availability state suspend
+- Verify that all network cards are ok for chassis: **show chassis status**
+- Failover to passive: **request high-availability state suspend**
 - On new Active device reset VPNs:
-    - clear vpn ike-sa
-    - clear vpn ipsec-sa
-    - test vpn ike-sa
-    - test vpn ipsec-sa
-- Check all parametres: throughput, amount of sessions, IPSec VPN tunnels, BGP peers, physical interfaces, aggregation groups, total amount of routes, User-ID agents, group mappings, chassis
-- Show system statistics session
-- Reboot Active device: request shutdown/restart system
+    - **clear vpn ike-sa**
+    - **clear vpn ipsec-sa**
+    - **test vpn ike-sa**
+    - **test vpn ipsec-sa**
+- Check all parametres: * *throughput, amount of sessions, IPSec VPN tunnels, BGP peers, physical interfaces, aggregation groups, total amount of routes, User-ID agents, group mappings, chassis* *
+- Reboot Active device: **request shutdown/restart system**
   
 ### Content updates
 
