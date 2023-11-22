@@ -378,7 +378,16 @@ Enqueued  ID  Type     Status  Result  Completed
 ### Reboot HA pair
 
 - Backup both devices **Device > Setup > Operations > Export device state**
-- Check config sync status, ongoing throughput, amount of sessions and active IPSec VPN tunnels on: show vpn ike-sa
+- On both devices gather all possible information:
+    - Check ongoing throughput and amount of sessions on active device: show system statistics sessions
+    - Check all active IPSec VPN tunnels on Active device: show vpn ike-sa
+    - Check all BGP peers on Active device: show routing protocol bgp summary | match Established
+    - Check active physical interfaces on both devices: show interface all
+    - Check status of aggregation groups on both devices: show lacp aggregate-ethernet all
+    - Check total amount of routes on active device: show routing summary
+    - Check connection to User-ID agents on Active device: show user user-id-agent state all
+    - Check group mappings on Active device: show user group-mapping state all
+    - Check chassis: show chassis status
 - Reboot Passive device: request shutdown/restart system
 - Unplug power cords
 - Reconnect both power cords of the FW (this will automatically boot up FW)
@@ -393,7 +402,7 @@ Enqueued  ID  Type     Status  Result  Completed
     - clear vpn ipsec-sa
     - test vpn ike-sa
     - test vpn ipsec-sa
-- Check ongoing throughput and amount of sessions, all active IPSec VPN tunnels
+- Check all parametres: throughput, amount of sessions, IPSec VPN tunnels, BGP peers, physical interfaces, aggregation groups, total amount of routes, User-ID agents, group mappings, chassis
 - Show system statistics session
 - Reboot Active device: request shutdown/restart system
   
