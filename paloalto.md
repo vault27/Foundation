@@ -345,7 +345,7 @@ In the right upper corner you can:
   - Immediately after restarting, every Palo Alto Networks firewall performs an auto-commit. This takes place in the background and can last up to 30 minutes. The firewall can be accessed from the management interface during that time, but the data plane will be down and the physical interfaces will be down
   - To check the status of the auto-commit on the CLI, run the following command and look for the AutoCom job:
 
-  ```
+```
   > show jobs processed
 
 Enqueued  ID  Type     Status  Result  Completed
