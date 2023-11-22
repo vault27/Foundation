@@ -403,7 +403,7 @@ Enqueued  ID  Type     Status  Result  Completed
     - **clear vpn ipsec-sa**
     - **test vpn ike-sa**
     - **test vpn ipsec-sa**
-- Check all parametres: * *throughput, amount of sessions, IPSec VPN tunnels, BGP peers, physical interfaces, aggregation groups, total amount of routes, User-ID agents, group mappings, chassis* *
+- Check all parametres: *throughput, amount of sessions, IPSec VPN tunnels, BGP peers, physical interfaces, aggregation groups, total amount of routes, User-ID agents, group mappings, chassis*
 - Reboot Active device: **request shutdown/restart system**
   
 ### Content updates
