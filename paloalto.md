@@ -547,6 +547,28 @@ Concepts
 
 ### Zone protection profile
 
+Features:
+
+- Enablement of zone protection should be very cautious, it main ruin your network
+- If zone protection drops traffic, it is in Threat logs, it is in special counters without specifics about IPs because it drops traffic on very early stages
+- Check drop counters:
+
+```
+show zone-protection zone trust
+```
+
+- Show amount of land attacks
+
+```
+show interface ethernet1/1 
+```
+
+- Outputs for packets dropped by DOS protection and zone protection
+
+```
+show counter global 
+```
+
 There are 5 sections in a profile:
 
 - Flood protection
