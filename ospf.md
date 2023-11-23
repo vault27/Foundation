@@ -820,7 +820,7 @@ distribute-list 1 in
 
 ## OSPFv3
 
-Separate instances for OSPFv2 and OSPFv3
+- Separate instances for OSPFv2 and OSPFv3
 
 ## Configuration
 
@@ -916,6 +916,7 @@ auto-cost reference bandwidth
 ```
 ip ospf cost 10
 ```
+
 ### Remove router from the network for maintenence
 
 Not to be confused with stub areas.  
@@ -1127,7 +1128,7 @@ Router#show ip ospf database summary
   Network Mask: /24
         MTID: 0 	Metric: 20
 ```
-Show how many types OSPF was launched and area type
+**Show how many types OSPF was launched and area type**
 
 ```
 show ip ospf
@@ -1136,7 +1137,7 @@ Show?
 ```
 show ip protocols
 ```
-List known neighbors with state
+**List known neighbors with state**
 ```
 show ip ospf neighbors
 ```
@@ -1144,11 +1145,11 @@ Show ???
 ```
 show ip ospf neighbor detail 4.4.4.4
 ```
-List all LSAs for all connected areas
+**List all LSAs for all connected areas**
 ```
 show ip ospf database
 ```
-Show LSAs from one particular router
+**Show LSAs from one particular router**
 ```
 sh ip ospf database router 192.168.2.2
 ```
