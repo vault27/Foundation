@@ -13,5 +13,6 @@
 - Show all interfaces in all VRFs: **show ip int br vrf all**
 - Identify VRF and VLAN
 - Draw
-- Identify MAC of the client: 
+- Identify MAC of the client: show ip arp vrf User | inc 10.90.23.103
+- 
 
