@@ -13,6 +13,9 @@
 - Show all interfaces in all VRFs: **show ip int br vrf all**
 - Identify VRF and VLAN
 - Draw
-- Identify MAC of the client: show ip arp vrf User | inc 10.90.23.103
+- Identify MAC of the client: **show ip arp vrf User | inc 10.90.23.103**
+- Find the port: **show mac address-table vlan 300 | inc 8038.fb82.b482**
+- Find physical port based on Port Channel: **show interface PO13**
+- Find CDP neighbors on port: **show cdp neighbors interface ethernet 1/2**
 - 
 
