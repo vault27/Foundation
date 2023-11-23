@@ -284,7 +284,7 @@ LSA-type 1 (Router-LSA), len 60
 
 ```
 
-Show LSA-1 in OSPF database with Link ID, Link Data, Link type. Structured: All LSAs 1 for every router ID.
+**Show LSA-1 in OSPF database with Link ID, Link Data, Link type. Structured: All LSAs 1 for every router ID**
 
 ```
 show ip ospf database router
@@ -616,69 +616,6 @@ Network type influences DR/BDR, timers, Hello types(multicast/unicast), Updates(
 - Point to multipoint non broadcast  
 - All interfaces will be point to point in CLOS network  
 - Interface command or configure priority for DR/BDR - 0
-
-
-## OSPF packet
-
-High-level view on OSPF packet
-
-```text
-Open Shortest Path First
-    OSPF Header
-        Version: 2
-        Message Type: LS Update (4)
-        Packet Length: 400
-        Source OSPF Router: 4.4.4.4
-        Area ID: 0.0.0.20
-        Checksum: 0xd794 [correct]
-        Auth Type: Null (0)
-        Auth Data (none): 0000000000000000
-    LS Update Packet
-        Number of LSAs: 11
-        LSA-type 1 (Router-LSA), len 48
-        LSA-type 1 (Router-LSA), len 36
-        LSA-type 2 (Network-LSA), len 32
-        LSA-type 3 (Summary-LSA (IP network)), len 28
-        LSA-type 3 (Summary-LSA (IP network)), len 28
-        LSA-type 3 (Summary-LSA (IP network)), len 28
-        LSA-type 4 (Summary-LSA (ASBR)), len 28
-        LSA-type 5 (AS-External-LSA (ASBR)), len 36
-        LSA-type 5 (AS-External-LSA (ASBR)), len 36
-        LSA-type 5 (AS-External-LSA (ASBR)), len 36
-        LSA-type 5 (AS-External-LSA (ASBR)), len 36
-
-```
-
-LSA-1 packet
-
-```text
-
-LSA-type 1 (Router-LSA), len 48
-    .000 0001 1011 1110 = LS Age (seconds): 446
-    0... .... .... .... = Do Not Age Flag: 0
-    Options: 0x22, (DC) Demand Circuits, (E) External Routing
-    LS Type: Router-LSA (1)
-    Link State ID: 5.5.5.5
-    Advertising Router: 5.5.5.5
-    Sequence Number: 0x80000004
-    Checksum: 0x7caa
-    Length: 48
-    Flags: 0x00
-    Number of Links: 2
-    Type: Stub     ID: 192.168.20.0    Data: 255.255.255.0   Metric: 10
-        Link ID: 192.168.20.0 - IP network/subnet number
-        Link Data: 255.255.255.0
-        Link Type: 3 - Connection to a stub network
-        Number of Metrics: 0 - TOS
-        0 Metric: 10
-    Type: Transit  ID: 10.0.20.2       Data: 10.0.20.2       Metric: 10
-        Link ID: 10.0.20.2 - IP address of Designated Router
-        Link Data: 10.0.20.2
-        Link Type: 2 - Connection to a transit network
-        Number of Metrics: 0 - TOS
-        0 Metric: 10
-
-```
 
 ## Router types
 
@@ -1153,15 +1090,15 @@ show ip ospf database
 ```
 sh ip ospf database router 192.168.2.2
 ```
-Show OSPF routes, marked with O
+**Show OSPF routes, marked with O**
 ```
 show ip route
 ```
-Show interface type and timers
+**Show interface type and timers**
 ```
 show ip ospf interface serial0/0
 ```
-Show virtual links  
+**Show virtual links**  
 To prove whether the virtual link works, a neighbor relationship between C1 and C2 must reach the FULL state, resulting in all routers in both parts of area 0 having the same area 0 LSDB.
 ```
 show ip ospf virtual-links
@@ -1169,25 +1106,25 @@ show ip ospf virtual-links
 
 ## Wireshark display filters
 
-Show only LSU packets
+**Show only LSU packets**
 
 ```
 ospf and ip.src==192.168.2.2 and ospf.msg.lsupdate
 ```
 
-Show only LSA-1
+**Show only LSA-1**
 
 ```
 ospf.lsa == 1
 ```
 
-Show packets from particular source router - not origin router, but router who sent packet
+**Show packets from particular source router - not origin router, but router who sent packet**
 
 ```
 ospf.srcrouter == 192.168.3.1 
 ```
 
-From particular advertising router
+**From particular advertising router**
 
 ```
 ospf.advrouter == 3.3.3.3
