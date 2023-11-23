@@ -1,6 +1,10 @@
 # OSPF
 
-Everything I need to know about OSPF in one place.
+- Areas
+- LSAs
+- Network types
+- DR/BDR
+- Virtual links
 
 ## Standards
 
@@ -39,9 +43,9 @@ Everything I need to know about OSPF in one place.
 - It does not receives routes, every router calculates them by itself
 - OSPF runs directly over IPv4, using its own protocol 89, which is reserved for OSPF by the Internet Assigned Numbers Authority (IANA)
 - Each router has its own view of the topology even though all the routers build a shortest path tree which uses the same link-state database
-- OSPF is very good for traffic engineering in ISP with MPLS
+- OSPF is very good for traffic engineering in ISP with MPLS - ?
 - IPv4 and IPv6
-- Supports multiple forms of authentication: Clear Text, MD5, SHA, IPsec, etc.
+- Supports multiple forms of authentication: Clear Text, MD5, SHA - ?
 - Main cons is bad performance when many hosts - high CPU load - several thousand prefixes max - because every router has to calculate a tree
 - Operates in one Autonomous System
 - LSDB is identical on all routers in 1 area
@@ -65,7 +69,6 @@ Everything I need to know about OSPF in one place.
 - Cost = Reference Bandwidth/Interface Bandwidth
 - IOS default reference bandwidth 100 mbit/s
 - NX-OS default reference bandwidth 40 gbit/s
-- Authentication: NUll - without auth, Clear text, MD5
 
 ## Design
 
