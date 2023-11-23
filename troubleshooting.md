@@ -5,3 +5,4 @@
 - This process continues until the packets actually reach the other destination. Since these datagrams try to access an invalid port at the destination host, ICMP Port Unreachable Messages are returned, and indicates an unreachable port; this event signals the Traceroute program that it is finished
 - If there is a firewall on the way, after it there will be permanent Request timed out
 - Reply from routers arrives from interface IP, where UDP arrived
+- Several traceroutes can be launched to understand if there is a ECMP involved, or load balancing
