@@ -1887,6 +1887,13 @@ Show HA logs in **Monitor > System**
 ```
 ( subtype eq ha ) and ( severity neq informational )
 ```
+
+**Show logs in CLI about state change only**
+
+```
+show log system direction equal backward subtype equal ha eventid equal state-change
+```
+
 ### Active/Active
 
 - Advanced design concepts
