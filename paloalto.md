@@ -2506,6 +2506,15 @@ Commit options when you commit to Panorama:
 - Panorama > Setup > Operations, click Import device configuration to Panorama, and select the Device
 - Migrate HA pair: Disable configuration synchronization between the HA peers, 
 
+### Firewall is disconnected in Panorama
+
+On Firewall we need to launch a command
+
+```
+request sc3 reset
+debug software restart process management-server
+```
+
 ### Log collectors
 
 - You can use Panorama as management server + send all logs to it, or you can send logs to log collectors (Panorama) and from them management Panorama will request all required data, you can also send logs to Cortex Data Lake
