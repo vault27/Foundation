@@ -2,7 +2,7 @@
 
 ## Design options
 
-- STP
+- STP + FHRP
 - VSS + LAG
 - BGP
 
