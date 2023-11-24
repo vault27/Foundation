@@ -96,7 +96,7 @@ Flow-based inspection typically requires fewer processing resources than proxy-b
 
 - Policy based - available only in Flow mode
 - The NGFW mode is set per VDOM
-- Policy based - no profiles except Antivirus, one SSL/SSH decryption policy for all rules
+- Policy based - no profiles except Antivirus and IPS, one SSL/SSH decryption policy for all rules
 - Policy based - default-app-port-as-service option
 - Policy-based - Requires the use of central SNAT
 - Policy-based - in a rule you select an app, group or category
