@@ -185,6 +185,10 @@ Type(Leaf/Spine) - Number - Rack number - Pod number - DC number
 
 ## Oversubscription
 
+## Diagrams
+
 ![image](https://user-images.githubusercontent.com/116812447/207340403-0efe260d-26ce-4894-a720-0633a4840026.png)
+    
 ![image](https://user-images.githubusercontent.com/116812447/207340702-35686763-a6b1-4cb7-abbd-b4b037bdb372.png)
+  
 ![image](https://user-images.githubusercontent.com/116812447/207341833-e4fac06a-ec29-48ed-abce-486f246c473b.png)
