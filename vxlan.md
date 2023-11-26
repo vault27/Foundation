@@ -524,6 +524,31 @@ Via Transit Leafs 2
 - One NVE interface is used on BGW: for internal fabric and DCI fabric
 - When we configure peering with external fabric on BGW we mark this peering as external connection
 
+### Multi site configuration
+
+NX-OS 9.2.4
+
+```
+#Enable BGW on a box
+evpn multisite border-gateway 1
+#1 - Site number
+
+#Confugure muulti site VIP for NVE interface
+interface nve1
+  multisite border-gateway interface loopback100
+
+#Configure interface, which is connected to Inside
+interface Ethernet1/1
+  mtu 9216
+  evpn multisite fabric-tracking
+
+#Configure interface, which is connected to Outside for connection with other site
+interface Ethernet1/2
+  mtu 9216
+  evpn multisite dci-tracking
+
+```
+
 ## Configuration
 
 ### Static peers on Nexus - flood and learn, no EVPN
