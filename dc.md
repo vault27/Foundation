@@ -241,7 +241,8 @@ Type(Leaf/Spine) - Number - Rack number - Pod number - DC number
   
 ![image](https://user-images.githubusercontent.com/116812447/207341833-e4fac06a-ec29-48ed-abce-486f246c473b.png)
 
-<img width="1155" alt="image" src="https://github.com/philipp-ov/Foundation/assets/116812447/cbbc8ca9-1e5b-4476-8132-0e6dc73b7299">
+<img width="1169" alt="image" src="https://github.com/philipp-ov/Foundation/assets/116812447/e73300b0-28dc-4d4a-85a8-f47dbd1084dc">
+
 
 ## VxLAN 
 
