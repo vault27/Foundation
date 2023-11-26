@@ -5,7 +5,7 @@
 Data Centers networks evolution in one string:
 
 ```
-Three tier model > LAG > Fabric Experiments > IP Fabric/CLOS/Spine-Leaf > VxLAN + EVPN
+Three tier model > LAG > TRILL > FabricPath > OTV > IP Fabric/CLOS/Spine-Leaf > VxLAN + EVPN | Geneve in VMWare instead of VxLAN
 ```
 
 - Three tier model - only in big companies, collapsed core - mostly, we also can connect 2 collapsed cores , if there are many collapsed cores then we should switch to 3 tier. STP + HSRP/VRRP
@@ -13,6 +13,8 @@ Three tier model > LAG > Fabric Experiments > IP Fabric/CLOS/Spine-Leaf > VxLAN 
 - After 2005 - Nexus: VDC( Virtual Device Context - several virtual switches on one physical), MCLAG (vPC in Cisco terms), FEX - fabric extender - many small switches are connected to a big main one and they send all traffic to it, they have no brains or control plane
 - MLAG in Core - may be not very good to much control plane
 - Trill, FabricPath
+- OTV
+- LISP
 - VxLAN flood to everyone
 - VXLAN + EVPN
 
@@ -71,6 +73,45 @@ Connections:
 - MPLS fabric. MPLS as a transport for Underlay. FRR(fast rerouting). Traffic engineering. MPLS signaling protocols like LDP, RSVP, or BGP-LU can be used to provide MPLS underlay. Devices should support MPLS.
 - IP fabric. Underlay IP transport. Open standard, flat forwarding, horizontally scalable, and non-blocking spine/leaf architecture
 - Fabric path - Cisco's version of TRILL - eliminates STP
+
+**TRILL**
+
+- STP - Useless links - no bandwidth, long convergence times, mac address tables
+- Trill - replacement for all versions of STP
+- It brings routing intelligence to switch fabric
+- IS-IS is used
+- Switches route traffic on L2 layer, mac address routing
+- Alllinks are up and active
+- Equal Cost Multipath - ECMP - load sharing
+- Convergence is very fast
+- IS-IS knowledge is not required
+- Different vendors implement it in own variations
+- Cisco Fabric Path
+- Brocade VCS - VDX switches
+
+To forward frames,  TRILL uses a MAC-in-MAC encapsulation format. The ingress RBridge  encapsulates the original Layer 2 frame with a new source and  destination MAC (the MAC addresses of the source RBridge, and the  next-hop RBridge, respectively), a TRILL Header, (which has the Ingress  and Egress nicknames that identify the source and destination RBridge,  respectively), and the original Layer 2 frame with a new CRC. The  incoming 802.1q or q-in-q tag needs to be preserved in the inner header.  Egress RBridge removes the headers added by the ingress RBridge and  will forward them based on the inner frame.
+
+**FabricPath**
+
+- We disable STP on NExus and enable fabric path
+- There is IS-IS adjency between switches
+- show fabricpath route
+
+To forward the frames,  FabricPath employs hierarchical MAC addresses that are locally assigned.  FabricPath encapsulates the original Layer 2 frame with a new source  and destination MAC address, a FabricPath tag, the original Layer 2  frame, and a new CRC. To forward the frames in the FabricPath network,  the outer source and destination MAC addresses contain a 12-bit unique  identifier called a SwitchID. The SwitchID is the field used in the  FabricPath core network to forward packets to the right destination  switch. Fabric path is dying
+
+**OTV**
+
+- Control Plane - IS-IS
+- DataPlane - UDP
+- Used for connecting DCs
+- Big overhead - 60 bytes
+
+**LISP**
+
+- Locator/ID Separation protocol
+- DataPlane - UDP
+- Only in one DC
+
 
 ## Era 2 - IP fabric - Clos - Underlay - Spine/Leaf
 
