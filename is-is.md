@@ -1,6 +1,7 @@
 # IS-IS
 
 ## Concepts
+
 - Which networks are advertised by default???
 - Intermediate System to Intermediate System, there is also ES-IS: End system to Intermediate System in OSI world
 - Initially created for OSI networks
@@ -38,24 +39,29 @@
 - We can connect all areas with each over - it is ok
 
 ## Pros and cons
+
 - Supports more devices in one area than OSPF
 - Very quick convergence, because very short adjency process - only 3 steps
 - No many type of LSAs like in OSPF, one LSP for all updates
 
 ## Design
 
+
 ## Data centre design
+
 - Different areas for PODS, L1 inside pod, L2 between pods and superspine
 - Distributed spreading of LSP - dynamic flooding - primary and secondary leader for area
 - If only one area is used - we may use L2 for all adjemcies, just for comfort, so we can use filtering
 - For every router we configure different or the same area and System ID???
 
 ## Router types
+
 - L1 - as OSPF internal
 - L2 - as OSPF backbone
 - L1/2 - as OSPF ABR - maintain both link state database for level 1 and level 2
 
 ## Metrics
+
 - Default: Required to be supported by all IS-IS implementations; usually relates to the bandwidth of the link (higher value represents a slower link)
 - Delay: Relates to the transit delay on the link
 - Expense: Relates to the monetary cost of carrying data through the link
@@ -71,11 +77,13 @@ It is strongly recommended to use wide metrics.
 All routers in an area must use the same type of metrics.  
 
 ## Adjacency
+
 For each routing level, be it Level 1 or Level 2, an IS-IS router establishes separate adjacencies with its neighbors running on the same level, and maintains a separate link-state database.  
 Two neighboring routers configured for both Level 1 and Level 2 routing will create two independent adjacencies, one for each level. In addition, as each router belongs to a single area (recall that only a single NET is usually configured on a router, and the NET carries the area identifier), Level 1 adjacencies are created only between routers with the same area identifier.  
 Routing information may be injected between L1 and L2 LSDB.  
 
 **Neighbor States**
+
 - Down: The initial state. No IIHs have been received from the neighbor
 - Init: IIHs have been received from the neighbor, but it is not certain that the neighbor is properly receiving this router’s IIH.
 - Up: Now it’s confirmed that neighboring router is receiving local router’s hellos. 
@@ -95,12 +103,14 @@ Routing information may be injected between L1 and L2 LSDB.
 - IP addresses are inside hello as well
 
 ## Packet types
+
 - Hello - IS-IS Hello - IIH
 - Link State PDU
 - Complete Sequence Numbers PDU
 - Partial Sequence Numbers PDU
 
 ## Hello packet
+
 - Three types of Hello: Level 1 Hello, Level 2 Hello (both used on broad- cast networks), and L1L2 Hello (used on point-to-point interfaces) 
 - Detecting neighbors and their loss, verifying bidirectional visibility, establishing and maintaining adjacencies, electing a Designated IS
 - On broadcast-type interfaces, IS-IS routers use separate Hello packet types for L1 and L2 adjacencies
@@ -111,6 +121,7 @@ Routing information may be injected between L1 and L2 LSDB.
 - On a DIS, the individual timers are always one-third of the configured timers
 
 ## Link state PDU
+
 - Contains routing information and updates
 - Only one LSP for all changes, no LSA types like for LSA
 - Two types of LSP:
@@ -125,6 +136,7 @@ Routing information may be injected between L1 and L2 LSDB.
  - For LSPs that describe routers themselves, the Pseudonode ID is always set to 0
 
 ## Areas
+
 - Only a single NSAP address is assigned to a node, and the NSAP address contains the domain and area identifier, the entire node with all its interfaces belongs only to a single area
 - L1/L2 router sends the default route in L1 Area, so that the L1 routers can reach the other parts of the network.  
 - It is in fact possible to configure up to three different NSAP addresses on an IS-IS router in a single IS-IS instance, provided that the System ID in all NSAP addresses is identical and the NSAP addresses differ only in their Area ID. A router with multiple NSAP addresses will nonetheless maintain only a single link-state database, caus- ing all configured areas to merge together. This behavior is useful when splitting, joining, or renumbering areas.
@@ -140,6 +152,7 @@ Routing information may be injected between L1 and L2 LSDB.
 ## Packet flow - to be created
 
 ## Timers
+
 - MaxAge, a.k.a. RemainingLifetime - The maximum remaining lifetime of an without receiving a newer copy of the LSP, before the LSP expires. Default is 1200 seconds
 - ZeroAgeLifetime - The minimum time an LSP must be retained in the link-state database after expiring or initiating an LSP purge. Default is 60 seconds
 - Hello - Per interface; time interval between Hellos. Default is 10 seconds. Independent for L1 and L2 Hellos on broadcast interfaces
@@ -147,6 +160,7 @@ Routing information may be injected between L1 and L2 LSDB.
 - CSNP Interval - Per interface; defines the time interval between sending consecutive CSNP packets if the router is a DIS on that interface. Defaults to 10 seconds
 
 ## Designated Intermediate System - DIS
+
 Elected based on:
 - Priority
 - MAC - bigger wins 
@@ -161,12 +175,15 @@ Elected based on:
 - If link is P2P, DIS can be disabled, by changing interface type, the same as for OSPF
 
 ## Type-Length-Value (TLV)
+
 - They exist in HELLO and in LSP
 - There are many types of them, every type carry its own data
 - Extended IP reachability -  type 135 - iformation about prefixes
 
 ## Configuration
-Nexus
+
+**Nexus**
+
 ```
 feature isis
 router isis isis
@@ -181,7 +198,9 @@ interface Ethernet1/2
 ```
 
 ## Verification to be continued
-Show database as a list of LSPs
+
+**Show database as a list of LSPs**
+
 ```
 show isis database l2
 ```
@@ -201,15 +220,3 @@ show isis neighbors
 show isis dynamic-flooding
 show isis dynamic flooding detail
 ```
-
-## Interview questions - to be continued
-**Question 1** If all routers are connected with L2 links, will it work?  
-**Answer 1:** Yes, it will, L2 links transfer both connected networks and routes from other areas.  
-  
-  
-**Question 2:** In OSPF ASBR is used for external domain (external routes) injection, could u please let me know in ISIS who will be utilise to connect different routing protocol domain…. Is that L1/L2 or L2 or L1?  
-**Answer 1:** First of all, ASBR is not just an OSPF concept. Whichever device performs redistribution regardless of routing protocol, that device is called as an ASBR.  
-Redistribution can be performed in both Level 1 and Level 2 domains.  
-IS-IS L2 domain is an equivalent of OSPF backbone area.  
-L2 domain has to be contiguous.  
-L1 domain is similar to totally not so stubby areas.It doesn’t allow any external or summary information but allows redistribution into domain. Thus external information’s can be injected in L1 domain as well.
