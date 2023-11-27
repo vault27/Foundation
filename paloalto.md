@@ -2821,10 +2821,11 @@ scp export mgmt-pcap from mgmt.pcap to < username@host:path>
 
 ## Logs
 
-By default, the logs that the firewall generates reside only in its local storage  
-Everything is in a Log Forwarding profile  
-Objects > Log Forwarding  
-Profile is attached to Security, Authentication, DoS Protection, and Tunnel Inspection policy rules  
+- By default, the logs that the firewall generates reside only in its local storage  
+- Everything is in a Log Forwarding profile: **Objects > Log Forwarding**
+- Logging Profile is attached to Security, Authentication, DoS Protection, and Tunnel Inspection policy rules  
+
+### Logging profile
 
 - Several rules in one profile
 - We configure all in one profile and then apply it to all rules, for example we can negate DNS and ICMP int it: ICMP and DNS are logged only locally to NGFW to lesses load on Panorama
@@ -2840,10 +2841,21 @@ Profile is attached to Security, Authentication, DoS Protection, and Tunnel Insp
                 - Syslog (profile)
                 - HTTP (profile)
         - Add/del tag for src/dst address or User
+- All other logs forwarding: Device > Log Settings - System, Configuration, User-ID....
 
-All other logs forwarding: Device > Log Settings - System, Configuration, User-ID....
+### Logs in CLI
 
-### CLI System logs
+show log **traffic type** **log option** equal **value**
+
+Examples:
+
+```
+show log system subtype equal device-telemetry direction equal backward | match Fail
+
+show log system direction equal backward subtype equal ha eventid equal state-change
+```
+
+### Log files
 
 Every log section has many files.
 
@@ -2893,32 +2905,7 @@ All types (other than Panorama) support customization of the message format
 It is configured in Server Profile  
 You can control which fields are sent + design + arbitrary text: A threat was detected from $src  
 
-In Profile you configure:
-
-- Log type
-- Filter
-- Forward method
-    - Panorama
-    - SNMP - SNMP profile
-    - Syslog - Syslog profile
-    - Email - email profile
-    - HTTP - HTTP profile - via POST method - you configure address, TLS...headers...
-- Built-in actions
-    - According to filter above assign or remove a tag to a src address, dst address, User, X-Forwarded address
-    - Configure timeout
-    - Configure registration: Local, remote or Panorama
-
-All other logs are configured in Device > Log Setting:
-
-- System
-- Config
-- User-ID
-- HIP Match
-- IP-Tag
-
-Here you configure the same as for LOg Forwarding Profile: Forward method and filter  
-  
-Storage and quota
+### Storage and quota
 
 - Device > Setup > Management
 - Quota in percentage
