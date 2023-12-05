@@ -242,8 +242,6 @@ Type(Leaf/Spine) - Number - Rack number - Pod number - DC number
 - FHRP on leafs
 - Do not reserve TOR switches
 
-## Oversubscription
-
 ## Diagrams
 
 ![image](https://user-images.githubusercontent.com/116812447/207340403-0efe260d-26ce-4894-a720-0633a4840026.png)
