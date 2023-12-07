@@ -3343,6 +3343,30 @@ GlobalProtect has three major components:
 - Routes are added, next hop is VR - and you choose wich one
 - Rules are created to allow communication between VSYS
 
+### CLI
+
+```
+admin@PA> show system info | match vsys 
+multi-vsys: on
+
+admin@PA> set system setting target-vsys ? 
+none     none 
+vsys1    vsys1 
+vsys2    vsys2 
+<value>  <value>
+
+> set system setting target-vsys vsys2 
+Session target vsys changed to vsys2 
+admin@PA-vsys2>
+
+admin@PA> show session meter
+
+admin@PA-vsys2> show user ip-user-mapping all
+
+admin@PA-vsys2> set system setting target-vsys none 
+admin@PA> 
+```
+
 ## Certificates
 
 - SCEP - ?
