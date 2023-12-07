@@ -2075,8 +2075,8 @@ Configure User-ID Agent
 ### User-ID redistribution
 
 - If you configure an Authentication policy, you have to configure firewall to redistribute mappings + timestamps to other firewalls, time stamps are sent automatically, no additional configuration
-- In Device > Data Redistribution > Agents you can configure other Firewall, Panorama or Windows agent as agent
-- In Device > Data Redistribution > Collector Settings you can configure firewall as a redistribuion point for other firewalls and VSYSs
+- In **Device > Data Redistribution > Agents** you can configure other Firewall, Panorama or Windows agent as agent
+- In **Device > Data Redistribution > Collector Settings** you can configure firewall as a redistribuion point for other firewalls and VSYSs
 - Connection to agent is done via pre-shared key
 - It is possible to redistribute not only User-IP mappings, but also:
     - IP tags
@@ -2084,6 +2084,20 @@ Configure User-ID Agent
     - HIP
     - Quarantine list
 - You can include/exclude networks for IP-Tag and IP-user in Device > Data Redistribution > Include/Exlcude networks, as I understand it is both for collector and client
+
+Display the status of the User-ID service - Collector - Redistributor:
+
+```
+show user user-id-service status
+```
+
+Display the clients/firewalls that are connected to the collector
+
+```
+show user user-id-service client all
+```
+
+
 
 ### Dynamic User Groups
 
