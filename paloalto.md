@@ -2097,7 +2097,30 @@ Display the clients/firewalls that are connected to the collector
 show user user-id-service client all
 ```
 
+Show connections to agents - for new Pan versions
 
+```
+show redistribution agent state all
+```
+
+Log files for old and new verions
+
+```
+less mp-log useridd.log
+less mp-log distributord.log
+```
+
+Netstat
+
+```
+netstat -na | findstr 5007
+```
+
+Search in System logs
+
+```
+show log system direction equal backward subtype equal userid
+```
 
 ### Dynamic User Groups
 
