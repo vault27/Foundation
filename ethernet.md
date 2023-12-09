@@ -85,18 +85,28 @@ STP - Shielded Twisted Pair - covered with foil
 
 ## Frame
 
-1522 bytes max  
-64 bytes - min  
-Ethernet frame is a data link layer protocol data unit and uses the underlying Ethernet physical layer transport mechanisms  
-Ethernet packet at the physical layer: preamble + Start frame delimiter + Ethernet frame + Interpacket gap (IPG)  
-A data packet on the wire and the frame as its payload consist of binary data  
-Ethernet transmits data with the most-significant octet (byte) first  
-In each octet the least-significant bit is transmitted first
-The internal structure of an Ethernet frame is specified in IEEE 802.3  
+Concepts
+
+- 1522 bytes max  
+- 64 bytes - min  
+- Ethernet frame is a data link layer protocol data unit and uses the underlying Ethernet physical layer transport mechanisms  
+- Ethernet packet at the physical layer: preamble + Start frame delimiter + Ethernet frame + Interpacket gap (IPG)  
+- A data packet on the wire and the frame as its payload consist of binary data  
+- Ethernet transmits data with the most-significant octet (byte) first  
+- In each octet the least-significant bit is transmitted first
+- The internal structure of an Ethernet frame is specified in IEEE 802.3
+- IEEE 802.1ad (Q-in-Q) allows for multiple tags in each frame
+- Runt frame is an Ethernet frame that is less than the IEEE 802.3's minimum length of 64 octets. Runt frames are most commonly caused by collisions; other possible causes are a malfunctioning network card, buffer underrun, duplex mismatch or software issues
+
+Frame contents
 
 - Destination MAC address - 6 bytes
 - Source MAC address - 6 bytes
-- 802.1Q tag - optional - 4 bytes
+- 802.1Q - optional
+    - TPID - 16 bits
+    - PCP - 3 bits
+    - DEI- 1 bit
+    - VLAN ID - 12 bits
 - EtherType: two-octet field in an Ethernet frame. It is used to indicate which protocol is encapsulated in the payload of the frame and is used at the receiving end by the data link layer to determine how the payload is processed. Examples:
     - IPv4
     - ARP
@@ -105,9 +115,6 @@ The internal structure of an Ethernet frame is specified in IEEE 802.3
     - PPPoE 
 - Payload - 1500 bytes max
 - Frame check sequence - 32‑bit CRC - 4 bytes - used to detect any in-transit corruption of data
-
- IEEE 802.1ad (Q-in-Q) allows for multiple tags in each frame  
- Runt frame is an Ethernet frame that is less than the IEEE 802.3's minimum length of 64 octets. Runt frames are most commonly caused by collisions; other possible causes are a malfunctioning network card, buffer underrun, duplex mismatch or software issues
 
 ## MAC
 
