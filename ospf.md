@@ -38,7 +38,7 @@
 
 - Open standard, IGP, Link-state, classless (VLSM, Summarization), Dikstra SPF Algorithm, guaranties loop free, hierarchi through areas - large scalability, topology summarization, interopeability between vendors
 - Router knows all network and builds a tree - The algorithm places each router at the root of a tree
-- This protocol is all about interfaces: priority, area, cost, network type - everyfing is connected with the interface, it even did not send routes, it sends information about interface: IP address, mask, cost...
+- This protocol is all about interfaces: priority, area, cost, network type, hello timer, dead timer - everyfing is connected with the interface, it even did not send routes, it sends information about interface: IP address, mask, cost...
 - It does not send routes, it sends LSAs
 - It does not receives routes, every router calculates them by itself
 - OSPF runs directly over IPv4, using its own protocol 89, which is reserved for OSPF by the Internet Assigned Numbers Authority (IANA)
@@ -50,11 +50,9 @@
 - Operates in one Autonomous System
 - LSDB is identical on all routers in 1 area
 - Administrative distance 110
-- Metric is cost, cost is dependent on bandwidth of the link, cost is inversly proportional to the bandwidth, the greater the bandwidth the less the cost, the better the path, cost=Reference bandwidth/100 in Mbps - More flexible than static hop count
 - Loops are impossible inside the area because every router knows all topology. And between areas all areas have to be connected to area 0, so loops are avoided as well like in distance vector
 - One area - 500 routers
 - A router can run multiple OSPF processes. Each process maintains its own unique database, and routes learned in one OSPF process are not available to a different OSPF process with- out redistribution of routes between processes. The OSPF process numbers are locally sig- nificant and do not have to match among routers. Running OSPF process number 1 on one router and running OSPF process number 1234 will still allow the two routers to become neighbors
-- Metric is based on cumulitive cost of all outgoing interfaces, the lower the mitric the better, it is a price of the route
 - No hop limit
 - All networks are connected via backbone areas to avoid loops
 - Hello interval - router sends Hello messages
@@ -66,15 +64,16 @@
 - If there is an topology change - router sends LSA, if no changes LSAs are sent every 30 mins
 - Each router stores the data, composed of individual link-state advertisements (LSA) , in its own copy of the link-state database (LSDB) . Then, the router applies the Shortest Path First (SPF) algorithm to the LSDB to determine the best (lowest-cost) route for each reachable subnet (prefix/length)
 - Two routers can have 2 neighborships via different interfaces - and it is ok - router ID is the same
-- Cost = Reference Bandwidth/Interface Bandwidth
-- IOS default reference bandwidth 100 mbit/s
-- NX-OS default reference bandwidth 40 gbit/s
 
 ## Metric
 
 - Metric = Cumulitive interface cost from router to destination
 - Cost of interface = Reference bandwidth/Interface bandwidth
-- Default reference bandwidth in Cisco - 100 Mbit/s: because of this FastEthernet, GigabitEthernet, 10n GigabitEthernet - all have Cost - 1
+- Default reference bandwidth in Cisco IOS - 100 Mbit/s: because of this FastEthernet, GigabitEthernet, 10 GigabitEthernet - all have Cost - 1. NX-OS: 40 gbit/s
+- Reference bandwidth should be the same on all OSPF routers
+- OSPF cost can be set manually on an interface
+- In order to make one link primary - we need to change its cost: either directly via interface command, on indirectly via changing bandwidth
+
 ## Design
 
 We have to think through the following:
@@ -88,8 +87,6 @@ We have to think through the following:
 - Network types
 - Process ID - it has local significance, it is better to use the same ID on all devices
 - Timers, maybe it is better to harden them
-- In order to make one link primary - we need to change its cost: either directly via interface command, on indirectly via changing bandwidth
-- Costs by default are not optimal, reference bandwidth is 100, so all costs are 1, we should change reference bandwidth to 1000 for example, or change cost per interface
 
 ### Data centre CLOS specifics
 
@@ -128,7 +125,7 @@ OSPF areas are connected by one or more Area Border Routers (the other main link
 - Enable OSPF on required interfaces and specify area - on Nexus - and on IOS as well
 - Enable OSPF on loopback to announce it
 
-## Packets
+## OSPF Packets
 
 OSPF packet consists of:
 
@@ -158,7 +155,8 @@ OSPF header is included in any OSPF packet
 
 ### Hello Packet
 
-OSPF routers periodically send Hello packets out OSPF enabled links every Hellolnterval 
+OSPF routers periodically send Hello packets out OSPF enabled links every Hello lnterval  
+Hello and Dead timers are configured per interface, they should match on both interfaces
 
 - Network mask
 - Hello interval
