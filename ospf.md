@@ -70,6 +70,11 @@
 - IOS default reference bandwidth 100 mbit/s
 - NX-OS default reference bandwidth 40 gbit/s
 
+## Metric
+
+- Metric = Cumulitive interface cost from router to destination
+- Cost of interface = Reference bandwidth/Interface bandwidth
+- Default reference bandwidth in Cisco - 100 Mbit/s: because of this FastEthernet, GigabitEthernet, 10n GigabitEthernet - all have Cost - 1
 ## Design
 
 We have to think through the following:
