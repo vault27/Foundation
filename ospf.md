@@ -643,6 +643,7 @@ Network type influences DR/BDR, timers, Hello types(multicast/unicast), Updates(
 - Main goal is to avoid LSA flooding
 - DR/BDR are chosen based on hello messages in broadcast segment
 - Non-DR and non-BDR routers only exchange routing information with the DR and BDR, rather than exchanging updates with every other router upon the segment. This, in turn significantly reduces the amount of OSPF routing updates that need to be sent
+- Other routers have state FULL with DR/BDR, with other routers they have state 2WAYshow 
 - In the event of DR failure, a backup designated router (BDR) becomes the new DR; then an election occurs to replace the BDR
 - Only DR generates type 2 LSAs
 - To minimize transition time, the BDR also forms full OSPF adjacencies with all OSPF routers on that segment
@@ -668,22 +669,30 @@ Elections:
 - Modifying a router’s RID for DR placement is a bad design strategy. A better technique involves modifying the interface priority to a higher value than the existing DR has
 - Remember that OSPF does not preempt the DR or BDR roles, and the OSPF process might need to be restarted on the current DR/BDR for the changes to take effect
 
-Show DR/BDR
+**Show DR/BDR state of current router**
 
 ```
 R1# show ip ospf interface brief
+
+Interface    PID   Area            IP Address/Mask    Cost  State Nbrs F/C
+Et0/0        1     2               10.1.1.4/24        10    DROTH 2/3
+```
+
+**Show state of neighbors, their priority, their status: DR, BDR, or DROTHER**
+
+```
+r8#show ip ospf neighbor
+
+Neighbor ID     Pri   State           Dead Time   Address         Interface
+1.1.1.1           1   FULL/BDR        00:00:34    10.1.1.1        Ethernet0/0
+9.9.9.9           1   2WAY/DROTHER    00:00:39    10.1.1.3        Ethernet0/0
+10.10.10.10       1   FULL/DR         00:00:31    10.1.1.2        Ethernet0/0
 ```
 
 Configure interface priority on IOS
 
 ```
 R1(config-if)# ip ospf priority 100
-```
-
-Show all neighbors, their priority, state of adjecency with them, their status: DR, BDR, or DROTHER
-
-```
-R2# show ip ospf neighbor
 ```
 
 Restart OSPD processes to change DR/BDR after changing priority
@@ -702,7 +711,8 @@ R3# clear ip ospf process
 - Recomended to configure manually
 
 ```
-router-id 1.1.1.1
+router ospf 1
+	router-id 1.1.1.1
 ```
 
 To change RID we need to restart OSPF
