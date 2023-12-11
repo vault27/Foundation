@@ -38,8 +38,15 @@
 
 - Open standard, IGP, Link-state, classless (VLSM, Summarization), Dikstra SPF Algorithm, guaranties loop free, hierarchi through areas - large scalability, topology summarization, interopeability between vendors
 - Router knows all network and builds a tree - The algorithm places each router at the root of a tree
-- This protocol is all about interfaces: priority, area, cost, network type, hello timer, dead timer - everyfing is connected with the interface, it even did not send routes, it sends information about interface: IP address, mask, cost...
-- It does not send routes, it sends LSAs
+- This protocol is all about interfaces - everyfing is connected with the interface:
+	- priority
+ 	- area
+  	- cost
+  	- network type
+  	- hello timer
+  	- dead timer
+  	- DR/BDR/OTHER
+  	- it even does not send routes it sends information about interface: IP address, mask, cost... inside LSA
 - It does not receives routes, every router calculates them by itself
 - OSPF runs directly over IPv4, using its own protocol 89, which is reserved for OSPF by the Internet Assigned Numbers Authority (IANA)
 - Each router has its own view of the topology even though all the routers build a shortest path tree which uses the same link-state database
