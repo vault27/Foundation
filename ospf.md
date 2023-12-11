@@ -163,16 +163,29 @@ OSPF header is included in any OSPF packet
 ### Hello Packet
 
 OSPF routers periodically send Hello packets out OSPF enabled links every Hello lnterval  
-Hello and Dead timers are configured per interface, they should match on both interfaces
 
-- Network mask
-- Hello interval
-- Router priority
-- Dead interval
-- DR: interface address itself
-- BDR: 0.0.0.0
-- Options (e.g. stub flags, etc.)
-- Router IDs of other neighbors on the link - even if there are only 2 routers on the links, if R2 got Hello from R1, then it sends its own hello to R1 with R1's ID in this field > so R1 understands that R2 knows about him and 2-Way neighbor state is established
+Example:
+
+```
+OSPF Hello Packet
+    Network Mask: 255.255.255.0
+    Hello Interval [sec]: 10
+    Options: 0x12, (L) LLS Data block, (E) External Routing
+    Router Priority: 1
+    Router Dead Interval [sec]: 40
+    Designated Router: 10.1.1.2
+    Backup Designated Router: 10.1.1.1
+    Active Neighbor: 8.8.8.8
+    Active Neighbor: 9.9.9.9
+    Active Neighbor: 10.10.10.10
+```
+
+Explanation:
+
+- Network mask - Interface mask
+- DR: IP address of DR in this broadcast domain
+- BDR: IP address of BDR in this broadcast domain
+- Active neighbor - all neighbors in broadcast domain - even if there are only 2 routers on the links, if R2 got Hello from R1, then it sends its own hello to R1 with R1's ID in this field > so R1 understands that R2 knows about him and 2-Way neighbor state is established
 
 ### DBD - Database Description Packet
 
@@ -665,9 +678,9 @@ Elections:
 - Then the election for the BDR takes place
 - The election follows the same logic for the DR election, except that the DR does not add its RID to the BDR field of the hello packet
 - The OSPF DR and BDR roles cannot be preempted after the DR/BDR election. Only upon the failure (or process restart of the DR or BDR) does the election start to replace the role that is missing
+- New routers added to DR/BDR domain do not influence DR/BDR election - they are already elected
 - Priority 0 - router does not pretend on DR
 - Modifying a router’s RID for DR placement is a bad design strategy. A better technique involves modifying the interface priority to a higher value than the existing DR has
-- Remember that OSPF does not preempt the DR or BDR roles, and the OSPF process might need to be restarted on the current DR/BDR for the changes to take effect
 
 **Show DR/BDR state of current router**
 
