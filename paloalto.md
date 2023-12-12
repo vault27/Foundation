@@ -2622,6 +2622,35 @@ clear log log-type
 - Panorama > Managed devices > Health
 - Throughput, sessions, connections, packets, interfaces, logging rate, memory, CPU (management plane, data plane), packet buffers, HA, Cluster
 
+### Telemetry in Panorama
+
+Show cert issues and fix it
+
+```
+show device-telemetry stats all
+Device Telemetry Statistics:
+device-health-performance:
+last-attempt: Mon Dec 4 18:58:03 EST 2023
+last-success: Thu Nov 30 04:28:05 EST 2023
+num-of-failed-attempts: 440
+reason: Client Certificate issue
+status: failed
+product-usage:
+last-attempt: Mon Dec 4 18:58:03 EST 2023
+last-success: Thu Nov 30 04:28:04 EST 2023
+num-of-failed-attempts: 440
+reason: Client Certificate issue
+status: failed
+threat-prevention:
+last-attempt: Mon Dec 4 18:58:03 EST 2023
+last-success: Thu Nov 30 04:28:05 EST 2023
+num-of-failed-attempts: 440
+reason: Client Certificate issue
+status: failed
+
+request certificate fetch
+```
+
 ## CLI
 
 Default username/pass - admin/admin  
