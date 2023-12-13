@@ -3738,3 +3738,15 @@ Verify slots
 > show chassis status slot <slot number>
 > show chassis status
 ```
+
+## Prisma Access
+
+- Service connection to on-prem network and data center - IPSec tunnel - any device, PA is not mandatory - BGP or static routing
+- Service connections and remote networks are different: service connections are only inbound - you cannot route traffic from service connection to Prisma and to Internet
+- 100 locations are available for users to connect
+- Hybrid mode is available together with appliances where Prisma location is not available
+- Portal identifies which location is better for user - user establishes IPSec tunnel
+- All logs are sent to Cortex data lake, which can forward it to your Syslog
+- Management: Cloud Services Plugin in Panorama or Cloud Managed Prisma Access
+- 
+- 
