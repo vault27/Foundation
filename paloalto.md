@@ -3748,5 +3748,5 @@ Verify slots
 - Portal identifies which location is better for user - user establishes IPSec tunnel
 - All logs are sent to Cortex data lake, which can forward it to your Syslog
 - Management: Cloud Services Plugin in Panorama or Cloud Managed Prisma Access
-- 
+- All configuration: **Panorama > Cloud Services**
 - 
