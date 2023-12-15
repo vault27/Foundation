@@ -427,6 +427,8 @@ Enqueued  ID  Type     Status  Result  Completed
 ## Upgrade
 
 - Backup both devices **Device > Setup > Operations > Export device state**
+- Disable monitoring system
+- Send notification email
 - Check that Preemptive is disabled **Device > High Availability > Election Settings**
 - Check HA Status on Dashboard
 - Log all SSH output
