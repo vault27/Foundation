@@ -424,35 +424,44 @@ Enqueued  ID  Type     Status  Result  Completed
 
 - Device > Dynamic Updates
 
-### Upgrade Standalone
+## Upgrade
 
-- Make a backup
-- If you have enabled User-ID, after you upgrade, the firewall clears the current IP address-to-username and group mappings
-- Ensure that the firewall is running the latest content release version
-- **Device > Software** and click Check Now
-- Download
-- Click istall
-- Reboot
-- Firewall clears the User-ID mappings, then connects to the User-ID sources to repopulate the mappings
+- Backup both devices **Device > Setup > Operations > Export device state**
+- Check that Preemptive is disabled **Device > High Availability > Election Settings**
+- Check HA Status on Dashboard
+- Log all SSH output
+- Prechecks on Active Device
+    - show system info | match version
+    - show chassis status - only for Chassis
+    - show system raid detail - where applicable
+    - show interface all
+    - show lacp aggregate-ethernet all
+    - show system statistics sessions
+    - show vpn ike-sa - where applicable
+    - show routing protocol bgp summary | match Established
+    - show routing summary
+    - show user user-id-agent state all - where applicable
+    - show user group-mapping state all - where applicable
+    - show user ip-user-mapping all - where applicable
+    - show user group list - where applicable
+    - show global-protect-gateway current-user | match users - where applicable
+- Prechecks on Passive Device
+    - show system info | match version
+    - show chassis status - only for Chassis
+    - show system raid detail - where applicable
+    - show interface all
+    - show lacp aggregate-ethernet all
+- request system software check
+- request system software download version <insert version number>
+- show jobs id <insert ID>
+- debug swm history (Shift+G to go to bottom of page, and confirm download or installation is successful)
+- request system software install version <insert version number>
+- 
 
-```
-show user ip-user-mapping all
-show user group list
-```
 
-- Check sessions: **Monitor > Session Browser**
 
-### Upgrade HA pair
 
-- Disable preemption
-- Suspend and upgrade the active HA peer first
-- Reboot
-- Verify that the device you just upgraded is in sync with the peer
-- Unsuspend: **Device > High Availability > Operational Commands and Make local device functional for high availability**
-- Suspend Secondary
-- Upgrade
-- Reboot
-- Reenable preemption
+
 
 ### Performance monitoring
 
