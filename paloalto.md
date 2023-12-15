@@ -442,6 +442,8 @@ Enqueued  ID  Type     Status  Result  Completed
     - show interface all
     - show lacp aggregate-ethernet all
     - show system statistics session - Sessions synchronization works
+    - show system disk-space
+    - debug software disk-usage cleanup deep threshold 90
 - Active Prechecks on Active Devices
     - show vpn ike-sa - where applicable
     - show routing protocol bgp summary | match Established
