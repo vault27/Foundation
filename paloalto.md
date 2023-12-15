@@ -457,7 +457,7 @@ Enqueued  ID  Type     Status  Result  Completed
     - request system software install version <insert version number>
     - show jobs id <insert ID> or show jobs all
     - request restart system
-    - Prechecks for Passive Device
+    - System Prechecks after reboot
 - Failover, run on Active Device:
     - request high-availability state suspend
     - request high-availability state functional
