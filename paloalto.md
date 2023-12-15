@@ -451,17 +451,21 @@ Enqueued  ID  Type     Status  Result  Completed
     - show system raid detail - where applicable
     - show interface all
     - show lacp aggregate-ethernet all
-- request system software check
-- request system software download version <insert version number>
-- show jobs id <insert ID>
-- debug swm history (Shift+G to go to bottom of page, and confirm download or installation is successful)
-- request system software install version <insert version number>
+- Upgrade Passive Device:
+    - request system software check
+    - request system software download version <insert version number>
+    - show jobs id <insert ID>
+    - debug swm history (Shift+G to go to bottom of page, and confirm download or installation is successful)
+    - request system software install version <insert version number>
+    - show jobs id <insert ID> or show jobs all
+    - request restart system
+    - Prechecks for Passive Device
+- Failover, run on Active Device:
+    - request high-availability state suspend
+    - request high-availability state functional
+- Perform Active Prechecks on new Active (former Passive) device
+- Upgrade Passive (Former Active) Device)
 - 
-
-
-
-
-
 
 ### Performance monitoring
 
