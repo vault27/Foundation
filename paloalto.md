@@ -430,13 +430,14 @@ Enqueued  ID  Type     Status  Result  Completed
 - Check that Preemptive is disabled **Device > High Availability > Election Settings**
 - Check HA Status on Dashboard
 - Log all SSH output
-- Prechecks on Active Device
+- System Prechecks on Active and Passive Devices
     - show system info | match version
     - show chassis status - only for Chassis
     - show system raid detail - where applicable
     - show interface all
     - show lacp aggregate-ethernet all
-    - show system statistics sessions
+    - show system statistics sessions - Sessions synchronization works
+- Active Prechecks on Active Devices
     - show vpn ike-sa - where applicable
     - show routing protocol bgp summary | match Established
     - show routing summary
@@ -445,12 +446,6 @@ Enqueued  ID  Type     Status  Result  Completed
     - show user ip-user-mapping all - where applicable
     - show user group list - where applicable
     - show global-protect-gateway current-user | match users - where applicable
-- Prechecks on Passive Device
-    - show system info | match version
-    - show chassis status - only for Chassis
-    - show system raid detail - where applicable
-    - show interface all
-    - show lacp aggregate-ethernet all
 - Upgrade Passive Device:
     - request system software check
     - request system software download version <insert version number>
