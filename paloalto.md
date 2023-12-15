@@ -426,6 +426,12 @@ Enqueued  ID  Type     Status  Result  Completed
 
 ## Upgrade
 
+```
+Download > Install > Reboot
+Downloaded images are stored on the device, until we delete them
+Devices with different versions can work in HA pair
+```
+
 - Backup both devices **Device > Setup > Operations > Export device state**
 - Prepare local admin password
 - Prepare console cable
@@ -467,8 +473,8 @@ Enqueued  ID  Type     Status  Result  Completed
     - request high-availability state suspend
     - request high-availability state functional
 - Perform Active Prechecks on new Active (former Passive) device
-- Upgrade Passive (Former Active) Device)
-- 
+- Upgrade Passive (Former Active) Device
+- Switch back Active one and perform Active Checks
 
 ### Performance monitoring
 
