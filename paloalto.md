@@ -2937,6 +2937,12 @@ show log system subtype equal device-telemetry direction equal backward | match 
 show log system direction equal backward subtype equal ha eventid equal state-change
 ```
 
+**Show logs for certain period of time**
+
+```
+show log system direction equal backward start-time equal 2023/12/04@12:30:00 end-time equal 2023/12/04@14:00:00
+```
+
 ### Log files
 
 Every log section has many files.
