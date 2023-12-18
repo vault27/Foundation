@@ -426,6 +426,34 @@ Enqueued  ID  Type     Status  Result  Completed
 
 ## Upgrade
 
+Upgrade high level plan plan
+
+- Verify upgrade path
+- Download images
+- Backup
+- Prepare local admin password
+- Prepare console cable
+- Person on-site
+- Pro-active vendor case
+- Disable monitoring system
+- Pre checks
+    - System prechecks
+    - Active prechecks
+- Send notification email
+- Upgrade passive device
+- Reboot Verifications
+- Failover
+- Failover verifications
+- Upgrade second device
+- Reboot verifications
+- Failover
+- Failover verifications
+- Backout plan
+- Backout verifications
+
+### Upgrade path
+
+
 ```
 Download > Install > Reboot
 Downloaded images are stored on the device, until we delete them
@@ -437,21 +465,25 @@ Devices with different versions can work in HA pair
 - Prepare console cable
 - Disable monitoring system
 - Send notification email
+
+### System pre checks
+
 - Check that Preemptive is disabled **Device > High Availability > Election Settings**
 - Check HA Status on Dashboard
 - Log all SSH output
 - Disable pager - set cli pager off
 - System Prechecks on Active and Passive Devices
-    - show system info | match version
-    - show chassis status - only for Chassis
-    - show system raid detail - where applicable
-    - show interface all
-    - show lacp aggregate-ethernet all
-    - show system statistics session - Sessions synchronization works
-    - show system disk-space
-    - debug software disk-usage cleanup deep threshold 90
-    - show system state | match aggressive
-- Active Prechecks on Active Devices
+- show system info | match version
+- show chassis status - only for Chassis
+- show system raid detail - where applicable
+- show interface all
+- show lacp aggregate-ethernet all
+- show system statistics session - Sessions synchronization works
+- show system disk-space
+- debug software disk-usage cleanup deep threshold 90
+- show system state | match aggressive
+
+### Active Prechecks on Active Devices
     - show vpn ike-sa - where applicable
     - show routing protocol bgp summary | match Established
     - show routing summary
@@ -460,6 +492,7 @@ Devices with different versions can work in HA pair
     - show user ip-user-mapping all - where applicable
     - show user group list - where applicable
     - show global-protect-gateway current-user | match users - where applicable
+
 - Upgrade Passive Device:
     - request system software check
     - request system software download version <insert version number>
