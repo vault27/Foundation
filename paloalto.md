@@ -141,6 +141,13 @@ Data plane:
 - NAT
 - Flow control
 
+## PAN-OS naming convention
+
+- The first number indicates the major version number, the second one indicates the minor version number and the last one indicates the maintenance release version. For instance, 10.1.10 means that it is a release from major version 10, minor version 1 and maintenance release 10
+- Each maintenance release is cumulative, that means it contains all the fixes from all the previous maintenance releases. 10.1.10 contains all fixes from 10.1.0.
+- The higher the maintenance release version number is, the more mature the version is
+- Major version and minor version numbers are to distinguish the amount of features : PAN-OS 10.0 will have more features than PAN-OS 8.1, there is no relation to the software stability
+    
 ## Bootstraping
 
 Bootstrap allows you to automatically config, upgrade, update signatures, license a device during initial boot.
@@ -426,7 +433,7 @@ Enqueued  ID  Type     Status  Result  Completed
 
 ## Upgrade
 
-Upgrade high level plan plan
+Upgrade high level plan
 
 - Verify upgrade path
 - Download images
@@ -453,18 +460,17 @@ Upgrade high level plan plan
 
 ### Upgrade path
 
+- We need to fully understand where we can jump in terms of version, what will be fixed
+- Devices with different versions can work in HA pair
 
-```
-Download > Install > Reboot
-Downloaded images are stored on the device, until we delete them
-Devices with different versions can work in HA pair
-```
+### Download images
+
+- Downloaded versions are kept on the device, until deleted
+
+### 
 
 - Backup both devices **Device > Setup > Operations > Export device state**
-- Prepare local admin password
-- Prepare console cable
-- Disable monitoring system
-- Send notification email
+
 
 ### System pre checks
 
