@@ -493,7 +493,7 @@ Upgrade high level plan
     - show vpn ike-sa - where applicable
     - show routing protocol bgp summary | match Established
     - show routing summary
-    - show user user-id-agent state all - where applicable
+    - show user user-id-agent state all | match Agent\|Status - where applicable
     - show user group-mapping state all - where applicable
     - show user ip-user-mapping all - where applicable
     - show user group list - where applicable
@@ -511,6 +511,15 @@ Upgrade high level plan
 - Failover, run on Active Device:
     - request high-availability state suspend
     - request high-availability state functional
+- Reset VPN connections if applicable
+
+```
+clear vpn ike-sa
+clear vpn ipsec-sa
+test vpn ike-sa
+test vpn ipsec-sa
+```
+
 - Perform Active Prechecks on new Active (former Passive) device
 - Upgrade Passive (Former Active) Device
 - Switch back Active one and perform Active Checks
