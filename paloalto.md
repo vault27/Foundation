@@ -433,7 +433,7 @@ Enqueued  ID  Type     Status  Result  Completed
 
 ## Upgrade
 
-Upgrade high level plan
+**High level plan**
 
 - Verify upgrade path
 - Download images
@@ -443,9 +443,8 @@ Upgrade high level plan
 - Person on-site
 - Pro-active vendor case
 - Disable monitoring system
-- Pre checks
-    - System prechecks
-    - Active prechecks
+- System prechecks on all devices
+- Active prechecks on active devices
 - Send notification email
 - Upgrade passive device
 - Reboot Verifications
@@ -455,24 +454,25 @@ Upgrade high level plan
 - Reboot verifications
 - Failover
 - Failover verifications
+- Enable monitoring system
+- Send notification
 - Backout plan
 - Backout verifications
 
-### Upgrade path
+**Upgrade path**
 
 - We need to fully understand where we can jump in terms of version, what will be fixed
 - Devices with different versions can work in HA pair
 
-### Download images
+**Download images**
 
 - Downloaded versions are kept on the device, until deleted
 
-### 
+**Backup**
 
 - Backup both devices **Device > Setup > Operations > Export device state**
 
-
-### System pre checks
+**System pre checks**
 
 - Check that Preemptive is disabled **Device > High Availability > Election Settings**
 - Check HA Status on Dashboard
@@ -489,25 +489,28 @@ Upgrade high level plan
 - debug software disk-usage cleanup deep threshold 90
 - show system state | match aggressive
 
-### Active Prechecks on Active Devices
-    - show vpn ike-sa - where applicable
-    - show routing protocol bgp summary | match Established
-    - show routing summary
-    - show user user-id-agent state all | match Agent\|Status - where applicable
-    - show user group-mapping state all - where applicable
-    - show user ip-user-mapping all - where applicable
-    - show user group list - where applicable
-    - show global-protect-gateway current-user | match users - where applicable
+**Active Prechecks**
 
-- Upgrade Passive Device:
-    - request system software check
-    - request system software download version <insert version number>
-    - show jobs id <insert ID>
-    - debug swm history (Shift+G to go to bottom of page, and confirm download or installation is successful)
-    - request system software install version <insert version number>
-    - show jobs id <insert ID> or show jobs all
-    - request restart system
-    - System Prechecks after reboot
+- show vpn ike-sa - where applicable
+- show routing protocol bgp summary | match Established
+- show routing summary
+- show user user-id-agent state all | match Agent\|Status - where applicable
+- show user group-mapping state all - where applicable
+- show user ip-user-mapping all - where applicable
+- show user group list - where applicable
+- show global-protect-gateway current-user | match users - where applicable
+
+** Upgrade Passive Device**
+- request system software check
+- request system software download version <insert version number>
+- show jobs id <insert ID>
+- debug swm history (Shift+G to go to bottom of page, and confirm download or installation is successful)
+- request system software install version <insert version number>
+- show jobs id <insert ID> or show jobs all
+- request restart system  
+- System Prechecks after reboot
+
+  
 - Failover, run on Active Device:
     - request high-availability state suspend
     - request high-availability state functional
@@ -524,7 +527,7 @@ test vpn ipsec-sa
 - Upgrade Passive (Former Active) Device
 - Switch back Active one and perform Active Checks
 
-### Performance monitoring
+### Performance
 
 - Resource widget: both datalane and management CPU
 
