@@ -3826,3 +3826,11 @@ Verify slots
 - Management: Cloud Services Plugin in Panorama or Cloud Managed Prisma Access
 - All configuration: **Panorama > Cloud Services**
 - 
+
+## RMA
+
+- Backup
+- Check jumbo frames
+- Check session distribution policy for 7000
+- 
+- 
