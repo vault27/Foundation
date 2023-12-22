@@ -362,6 +362,14 @@ Enqueued  ID  Type     Status  Result  Completed
 10:25:02  1   AutoCom  ACT     PEND    26%
 ```
 
+- If auto commit fails, we need to launch force commit - it causes the entire configuration to be parsed and pushed to the dataplane, instead of difference only
+
+```
+configure
+commit force
+```
+
+-  
 ### Backup
 
 - Device > Setup > Operations
@@ -3625,7 +3633,7 @@ Roles are available in RADIUS Vendor-Specific Attributes (VSAs), TACACS+ VSAs, o
 
 ## Global Protect
 
-### High level picture
+**High level**
 
 - Client connects with browser to Portal and authenticates there
 - Downloads Agent for his OS
@@ -3645,7 +3653,7 @@ Roles are available in RADIUS Vendor-Specific Attributes (VSAs), TACACS+ VSAs, o
 - In route table pool for clients appeares as static route via tunnel interface configured in gateway
 - Than we can redistribute this static route to OSPF for example, so all LAN hosts may access Globalprotect clients
 
-### Concepts
+**Concepts**
 
 - GlobalProtect is an SSL VPN client that also supports IPSec
 - You can have one portal per GlobalProtect deployment and as many gateways as
@@ -3671,7 +3679,7 @@ needed
     - Excluded or included based on the access route
 - All interaction between the GlobalProtect components occurs over an SSL/TLS connection
 
-### Portal configuration    
+**Portal configuration**    
 
 - Create GlobalProtect Portal: **Network > Global Protect > Portals**
 - Specify: Interface, IP, Logging, Page, TLS profile, Many Client Authentication Rules, Certificate Profile, Portal Data Collection, Agent, Clientless VPN, Satelite
@@ -3686,7 +3694,19 @@ needed
 - Satelite
 - After you configured Portal user can access it with browser and download required Agent
 
-### Agent configuration for portal
+???
+
+- Provides clients with a download portal to get the client package, provides configuration to the agents once installed, and provides a Clientless VPN
+- Requires a Layer 3 or loopback interface for the GlobalProtect apps’ connection. If the portal and gateway are on the same firewall, they can use the same interface. The portal must be in a zone that is accessible from outside your network, such as a DMZ
+- Network > GlobalProtect > Portals
+- Create and configure:
+    - Interface
+    - IP
+    - TLS service profile
+    - Client auth rule - Specify OS, Auth profile - the same as for captive portal, Allow list
+    - Custom checks for Windows and Mac
+
+**Agent configuration for portal**
 
 - Trusted root CAs - add to client
 - Agent User Override Key - change or disable client
@@ -3714,20 +3734,7 @@ test
 - Next, gateway
 - Next connect
 
-### GlobalProtect Portal
-
-- Provides clients with a download portal to get the client package, provides configuration to the agents once installed, and provides a Clientless VPN
-- Requires a Layer 3 or loopback interface for the GlobalProtect apps’ connection. If the portal and gateway are on the same firewall, they can use the same interface. The portal must be in a zone that is accessible from outside your network, such as a DMZ
-- Network > GlobalProtect > Portals
-- Create and configure:
-    - Interface
-    - IP
-    - TLS service profile
-    - Client auth rule - Specify OS, Auth profile - the same as for captive portal, Allow list
-    - Custom checks for Windows and Mac
-    - 
-
-### GlobalProtect Gateway
+**Gateway**
 
 - The interface and zone requirements for the gateway depend on whether the gateway you are configuring is external or internal, as follows:
     - External gateways—Requires a Layer 3 or loopback interface and a logical tunnel interface for the app to establish a connection. The Layer 3/loopback interface must be in an external zone, such as a DMZ. A tunnel interface can be in the same zone as the interface connecting to your internal resources (for example, trust). For added security and better visibility, you can create a separate zone, such as corp-vpn. If you create a separate zone for your tunnel interface, you must create security policies that enable traffic to flow between the VPN zone and the trust zone
@@ -3748,7 +3755,7 @@ test
     - IPSec or SSL
     - Satelite
 
-### HIP
+##v HIP
 
 - HIP checks are performed when the app connects to the gateway
 - Subsequent checks are performed hourly
