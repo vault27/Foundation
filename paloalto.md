@@ -2424,7 +2424,7 @@ Types:
 - Log Collector
 - Panorama: both
 
-### Migrate Firewall to Panorama
+**Migrate Firewall to Panorama**
 
 - Add new device
 - Import configuration
@@ -2438,7 +2438,7 @@ If you migrate HA pair:
 - Disable automatic sync between peers
 - Add both firewalls to Panorama
 
-### Templates & stacks
+**Templates & stacks**
  
  <img width="576" alt="image" src="https://github.com/philipp-ov/foundation/assets/116812447/813aef71-ce9f-401e-80a9-81e34f4c42c3">
   
@@ -2476,7 +2476,7 @@ Configuration
 - The Template at the top of the Stack has the highest priority in the presence of overlapping config
 - Commit to Panorama and devices
 
-### Variables
+**Variables**
 
 - They are created in order not to create 200 templates with different IPs inside
 - Used in: Static routes, interface IPs, Server profiles, DNS servers....
@@ -2490,7 +2490,7 @@ Configuration
 - You can import CSV with values for variables into Stack, depending on a device
 - In CSV you configure variable name, which you already created + variable type (IP/netmask for example) + value for each firewall - Serial/Hostname
 
-### Device groups 
+**Device groups**
 
 - To control policies and objects
 - To create a device group: Name, parent group, devices, User-ID master device - The device selected as the Master Device is used to gather user information.  The gathered user and group mapping information is used for shared policy configiration. It is required if you want to use users in a policy, Cloud Identity Engine
@@ -2537,7 +2537,7 @@ Configuration
     - Default rules
 - When we import firewall config to Panorama, its rules go to Pre rules section of Device Group
 
-### Licensing + Software Upgrades + Dynamic Updates
+**Licensing + Software Upgrades + Dynamic Updates**
 
 - Panorama > Device Deployment 
 - Automatically license a VM-Series firewall when it connects to Panorama
@@ -2549,7 +2549,7 @@ Configuration
 - Panorama > Device Deployment > Software
 - Panorama > Device Deployment > Dynamic Updates
 
-### Automatic commit recovery
+**Automatic commit recovery**
 
  - If the committed configuration breaks the connection with Panorama, then the firewall automatically fails the commit and the configuration reverts to the previous running configuration
  - The firewall also checks the connectivity to Panorama every hour to ensure consistent communication
@@ -2557,7 +2557,7 @@ Configuration
  - HA configuration syncs might occur only after each HA successfully tests the connectivity to Panorama and verifies its connection
  - Device > Setup > Panorama Settings > Enable Automatic commit recovery: Number of attempts to check for Panorama connectivity, Interval between retries (sec)
 
-### Configuration
+**Configuration**
 
 - Add Panorama and Secondary Panorama IP on device
 - Insert auth key from Panorama: **Panorama > Device Registration Auth Key**
@@ -2576,7 +2576,7 @@ Configuration
 - Combine them into stack - **Panorama > Templates** - add devices to Stack
 - You can add audit comment for every rule edit and then use audit comment archive to see all comment for all rule changes + you can make audit comment mandatory
 
-### Remove firewall from Panorama
+**Remove firewall from Panorama**
 
 - Device > Setup > Management > Panorama Settings
 - Disable Panorama Policy and Objects
@@ -2587,7 +2587,7 @@ Configuration
 - Save all these actions is only possible using auth key from panorama
 
 
-### Commit actions
+**Commit actions**
 
 - Commit > Commit to Panorama — Activates the changes you made in the configuration of the Panorama management server. This action also commits device group, template, Collector Group, and WildFire cluster and appliance changes to the Panorama configuration without pushing the changes to firewalls, Log Collectors, or WildFire clusters and appliances. Committing just to the Panorama configuration enables you to save the changes that are not ready for activation on the firewalls, Log Collectors, or WildFire clusters and appliances
 - Commit > Push to Devices — Pushes the Panorama running configuration to device groups, templates, Collector Groups, and WildFire clusters and appliances.
@@ -2613,7 +2613,7 @@ Commit options when you commit to Panorama:
 - Change Summary
 - Validate Commit
 
-### Import firewall configs to Panorama
+**Import firewall configs to Panorama**
 
 - You cannot manage the setting through both Panorama and the firewall. If you want to exclude certain firewall settings from Panorama management, you can either:
     - Migrate the entire firewall configuration and then, on Panorama, delete the settings that you will manage locally on firewalls. You can override a template or template stack value that Panorama pushes to a firewall instead of deleting the setting on Panorama
@@ -2623,7 +2623,7 @@ Commit options when you commit to Panorama:
 - Panorama > Setup > Operations, click Import device configuration to Panorama, and select the Device
 - Migrate HA pair: Disable configuration synchronization between the HA peers, 
 
-### Firewall is disconnected in Panorama
+**Firewall is disconnected in Panorama**
 
 On Firewall we need to launch a command
 
@@ -2631,6 +2631,14 @@ On Firewall we need to launch a command
 request sc3 reset
 debug software restart process management-server
 ```
+
+**Push config to Firewall without changes**
+
+- Can be used during RMA
+- COmmit > Push to Devices > Edit Selections
+- Device Groups > Decelect All > Uncheck Filter Selected > Choose devices
+- Templates > Deselect All > Uncheck Filter Selected > Choose devices
+- Push 
 
 ### Log collectors
 
