@@ -369,7 +369,6 @@ configure
 commit force
 ```
 
--  
 ### Backup
 
 - Device > Setup > Operations
@@ -2746,6 +2745,20 @@ show system info
 
 ```
 show system resources
+```
+
+**Check status of all processes**
+
+```
+Slot 0, Role mp
+----------------------------------------
+ 
+Type     Name                 State    Info
+Group    all                  running
+Group    base                 running
+Group    batch                running
+Group    batch_secondary      running
+Group    chassis              running
 ```
 
 ### Check if web server is running
