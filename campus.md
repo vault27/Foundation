@@ -1,10 +1,15 @@
 # Campus
 
+## Physical topology
+
+- 3 tiers: Access, Distribution, Core
+- 2 Tiers: Access, Core
+
 ## Design options
 
 - STP + FHRP
 - VSS + LAG
-- BGP
+- Pure Etherchannel everywhere: between core routers inside pair, between core routers and distribution routers, between nodes in a pair of distribution routers, between distribution switches and access switches
 
 ## STP + HSRP
 
@@ -18,3 +23,9 @@
 ## Access layer
 
 - Modular switch vs fixed switches approach
+
+## Layer 2 demarcation
+
+- Layer 2 Core - routing only on Core level
+- Routed Access - L3 starting from Access Switches - BGP is already between Access and Distribution/Core switches
+- Routed Distribution - L3 between distribution switches and Core, L2 between distribution and access
