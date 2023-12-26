@@ -14,3 +14,7 @@
 - Primary Core switch is root
 - STP saves from failure of any link between Access switches and Core Switches, and between 2 Core switches
 - HSRP saves from failure of Core Switch on layer 3
+
+## Access layer
+
+- Modular switch vs fixed switches approach
