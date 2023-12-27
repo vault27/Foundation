@@ -3848,6 +3848,8 @@ Verify slots
 
 ## Prisma Access
 
+**Consepts**
+
 - Service connection to on-prem network and data center - IPSec tunnel - any device, PA is not mandatory - BGP or static routing
 - Service connections and remote networks are different: service connections are only inbound - you cannot route traffic from service connection to Prisma and to Internet
 - 100 locations are available for users to connect
@@ -3856,7 +3858,16 @@ Verify slots
 - All logs are sent to Cortex data lake, which can forward it to your Syslog
 - Management: Cloud Services Plugin in Panorama or Cloud Managed Prisma Access
 - All configuration: **Panorama > Cloud Services**
-- 
+
+**Configuration**
+
+- **Cloud Services > Configuration > Service Setup > Settings**:
+    - First we configure service infrastructure subnet - not routable - not used in other places = /23 is recommened
+    - Infrastructure BGP Private AS Number
+    - Template Stack
+    - Device Group
+    - Push and commit to the cloud
+    - 
 
 ## RMA
 
