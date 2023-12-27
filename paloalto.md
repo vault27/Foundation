@@ -3867,8 +3867,17 @@ Verify slots
     - Infrastructure BGP Private AS Number
     - Template Stack
     - Device Group
-    - Push and commit to the cloud
-    - 
+- **Cloud Services > Configuration > Service Connection**  - Connections to Data Centers
+    - Closest location
+    - IPSec tunnel: we create it in earlier configured Prisma Template, in this template there are also many preconfigured tunnels for different vendors, IKE Gateways you configure there as well
+    - Corporate networks behind this tunnel
+    - High bandwidth service connections are available - up to 5 Gbps - via aggreagtion - async routing is used
+- Traffic Steering
+- Remote Networks - Branches - **Cloud Services > Configuration > Remote Networks**
+    - Location
+    - IPSec tunnel
+    - Static Routes or BGP
+- Push and commit to the cloud
 
 ## RMA
 
