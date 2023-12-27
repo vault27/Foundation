@@ -3881,7 +3881,9 @@ Verify slots
 
 ## RMA
 
-- Backup
+- Version of RMA device should be the same
+- Do a Factory reset of new RMA device
+- Backup failed device if available
 - Check jumbo frames
 - Check session distribution policy for 7000
 - 
