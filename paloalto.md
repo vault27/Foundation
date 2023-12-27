@@ -10,17 +10,17 @@ All you need to know about Palo Alto firewalls and for PCNSE exam in short and s
 - Learning center Beacon - https://beacon.paloaltonetworks.com
 - Live community - https://live.paloaltonetworks.com
 - Security Advisories - https://security.paloaltonetworks.com
-- https://www.paloaltonetworks.com/services/education - education services
-- https://www.paloaltonetworks.com/resources/reference-architectures - reference architechtures
-- https://knowledgebase.paloaltonetworks.com/KCSArticleDetail?id=kA10g000000Clc8CAC - Panorama Sizing and Design Guide
+- Education services - https://www.paloaltonetworks.com/services/education
+- Reference architechtures - https://www.paloaltonetworks.com/resources/reference-architectures
+- Panorama Sizing and Design Guide - https://knowledgebase.paloaltonetworks.com/KCSArticleDetail?id=kA10g000000Clc8CAC
 - PAN-OS CLI Quick Start Guide
-- https://cp.certmetrics.com/paloaltonetworks/en/login - Certification Management
-- https://home.pearsonvue.com/paloaltonetworks - Pearson Vue Palo Alto
+- Certification Management - https://cp.certmetrics.com/paloaltonetworks/en/login
+- Pearson Vue Palo Alto - https://home.pearsonvue.com/paloaltonetworks
 - Book "Mastering Palo Alto Networks: Build, configure, and deploy network solutions for your infrastructure using features of PAN-OS", 2nd Edition
 - GlobalProtect Administrator's Guide - 670 pages - whole world
 - PAN-OS® Administrator’s Guide - 1542 pages
 - Panorama Admin Guide
-- https://docs.paloaltonetworks.com/compatibility-matrix - Compatibility Matrix
+- Compatibility Matrix - https://docs.paloaltonetworks.com/compatibility-matrix
 - Palo Alto General Logs and Log files that are in the managment, data and control planes overview/review - https://live.paloaltonetworks.com/t5/general-topics/knowledge-sharing-palo-alto-general-logs-and-log-files-that-are/td-p/410110
 - Best Practises: https://docs.paloaltonetworks.com/best-practices
 - Palo Alto Networks LIVEcommunity Youtube channel
