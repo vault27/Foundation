@@ -3881,8 +3881,9 @@ Verify slots
 
 ## RMA
 
-The most difficult is to restore config, sync with HA node, restore connection with Panorama and successfully Push from Panorama. All interfaces are disconnected except Mgmt.
+The most difficult is to restore config, sync with HA node, restore connection with Panorama and successfully Push from Panorama.
 
+- All interfaces are disconnected except Mgmt
 - Version of RMA device should be the same
 - Do a Factory reset of new RMA device
 - Backup failed device if available
@@ -3905,3 +3906,21 @@ The most difficult is to restore config, sync with HA node, restore connection w
 - Connect HA1 Interfaces
 - Make sure the replacement device has the same configuration as the active device
 - If the configurations are not the same, go to Device > High Availability and click "Push configuration to peer" from the active device
+- Verify there are no active commit jobs running and the devices are in sync
+  
+```
+show jobs all
+show high-availability all | match "Running Configuration"
+```
+
+- Verify there is no difference in idmgr between the devices
+
+```
+debug device-server dump idmgr high-availability state
+```
+
+- Log into the Active unit. Go to Device > Config Audit > Do config audit between "Running Config" and "Peers Running Config." Make sure both are the same. If the case of any differences, try to manually configure the passive unit
+- Connect the HA2 interface and wait for the session synchronization to be completed
+- If the Firewall is suspended make it functional now
+- Connect the other dataplane interfaces now
+- Test Failover
