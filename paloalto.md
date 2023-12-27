@@ -4,12 +4,12 @@ All you need to know about Palo Alto firewalls and for PCNSE exam in short and s
 
 ## Data Sources
 
-- https://docs.paloaltonetworks.com - all docs in one place
-- https://knowledgebase.paloaltonetworks.com - all difficult questions
-- https://applipedia.paloaltonetworks.com - all information about Apps
-- https://beacon.paloaltonetworks.com - learning center Beacon
-- https://live.paloaltonetworks.com - community, ask your questions
-- https://security.paloaltonetworks.com - Security Advisories
+- Technical documentation - https://docs.paloaltonetworks.com
+- Knowledge Base - https://knowledgebase.paloaltonetworks.com
+- Application Database - https://applipedia.paloaltonetworks.com
+- Learning center Beacon - https://beacon.paloaltonetworks.com
+- Live community - https://live.paloaltonetworks.com
+- Security Advisories - https://security.paloaltonetworks.com
 - https://www.paloaltonetworks.com/services/education - education services
 - https://www.paloaltonetworks.com/resources/reference-architectures - reference architechtures
 - https://knowledgebase.paloaltonetworks.com/KCSArticleDetail?id=kA10g000000Clc8CAC - Panorama Sizing and Design Guide
