@@ -3881,10 +3881,27 @@ Verify slots
 
 ## RMA
 
+The most difficult is to restore config, sync with HA node, restore connection with Panorama and successfully Push from Panorama. All interfaces are disconnected except Mgmt.
+
 - Version of RMA device should be the same
 - Do a Factory reset of new RMA device
 - Backup failed device if available
 - Check jumbo frames
 - Check session distribution policy for 7000
-- 
-- 
+- Configure Mgmt interface on new FW
+- Transfer licenses of Palo Alto Portal
+- Install license on new device
+- Install OS on new device the same as on old one
+- Install dynamic updates the same as on old
+- Replace Serial in Panorama
+- Restore configuration and Commit
+- Ensure the new device stays in a passive state, suspend it
+- Check that Panorama is connected
+- Push Template and Device Group
+- Go to Device > High Availability > General > Setup and uncheck the Enable Config Sync option
+- Disable "Preemptive" under Election Settings
+- Configure the device with the highest Device Priority value (255)
+- Perform a commit
+- Connect HA1 Interfaces
+- Make sure the replacement device has the same configuration as the active device
+- If the configurations are not the same, go to Device > High Availability and click "Push configuration to peer" from the active device
