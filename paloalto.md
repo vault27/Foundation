@@ -539,6 +539,14 @@ test vpn ipsec-sa
 - Upgrade Passive (Former Active) Device
 - Switch back Active one and perform Active Checks
 
+Show history off all upgrades
+
+```
+debug swm history
+```
+Shift+G to go to bottom of page  
+Even with a factory reset, this command can still get a history of the software first installed and subsequent upgrades and downgrades.
+
 ### Performance
 
 - Resource widget: both datalane and management CPU
