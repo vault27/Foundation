@@ -316,9 +316,7 @@ Existing session 6 stages
 - Add device to account: Hub https://apps.paloaltonetworks.com/apps > Toggle View by Support Account > Common Services > Device Associations > Add appliance choosing via Serial
 - Log in to AIOps for NGFW by clicking on its icon in the hub
 
-## Maintenance
-
-### Configuration management
+## Configuration management
 
 Configuration files:
 
@@ -374,7 +372,7 @@ configure
 commit force
 ```
 
-### Backup
+## Backup
 
 - Device > Setup > Operations
 - Revert
@@ -394,7 +392,7 @@ commit force
     - Import named config snapshot - Imports a configuration file from any network location
     - Import device state (firewall only) - Import the device state information that was exported using the Export device state option. This includes the current running config, Panorama templates, and shared policies. If the device is a Global Protect Portal, the export includes the Certificate Authority (CA) information and the list of satellite devices and their authentication information
 
-### Reboot HA pair
+## Reboot HA pair
 
 - Backup both devices **Device > Setup > Operations > Export device state**
 - On both devices gather all possible information:
@@ -547,7 +545,15 @@ debug swm history
 Shift+G to go to bottom of page  
 Even with a factory reset, this command can still get a history of the software first installed and subsequent upgrades and downgrades.
 
-### Performance
+## Disk Space
+
+```
+show system disk-space
+debug software disk-usage cleanup threshold 90
+delete content cache old-content
+```
+
+## Performance monitoring
 
 - Resource widget: both datalane and management CPU
 
