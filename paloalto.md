@@ -547,7 +547,19 @@ Even with a factory reset, this command can still get a history of the software 
 
 ## Disk Space
 
-Automatic cleaning of disk-space is done only when the disk-space reaches 95% and this 95% is fixed and cannot be currently changed
+Some common symptoms of the root partition getting filled up are:
+
+- Unable to log in or access Web UI
+- Certain daemons processes not starting
+- Incomplete tech support bundles
+- System log alerts with "Disk usage for / exceeds limit,  X percent in use, cleaning file system"
+- Root partition is high
+- Automatic cleaning of disk-space is done only when the disk-space reaches 95% and this 95% is fixed and cannot be currently changed
+
+Some of the common causes of a filled partition:
+
+- An admin troubleshooting certain processes and creates core files. These files are stored on the root and remain there until deleted by the administrator
+- Enabling of diagnostic logs for the dataplane (packet diags) can also take up space on the root partition
 
 ```
 show system disk-space
@@ -559,10 +571,13 @@ Has to be run manually to bring the disk usage to below 90%. It is designed for 
 debug software disk-usage cleanup deep threshold <90%-100%>
 ```
 
-Automatically applied when 95% disk usage is detected and more aggressive cleaning is applied, including removing more backup log files
+Automatically applied when 95% disk usage is detected and more aggressive cleaning is applied, including removing more backup log files.  
+This will automatically truncate all old log files (entries under all *var/log/pan directories matching *.1, ... *.4, *.log.old) if the 95% occupancy alarm is tripped
 
 ```
 debug software disk-usage aggressive-cleaning enable
+> show system state | match aggressive-cleaning
+cfg.debug-sw-du.config: { 'aggressive-cleaning': True, }
 ```
 
 ```
