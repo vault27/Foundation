@@ -547,9 +547,25 @@ Even with a factory reset, this command can still get a history of the software 
 
 ## Disk Space
 
+Automatic cleaning of disk-space is done only when the disk-space reaches 95% and this 95% is fixed and cannot be currently changed
+
 ```
 show system disk-space
-debug software disk-usage cleanup threshold 90
+```
+
+Has to be run manually to bring the disk usage to below 90%. It is designed for platforms when 95% automatic disk clean up is not sufficient to hold TSF generated. It includes cleanup by deleting backup logfiles.  If you need this command run periodically, an external periodic script may be invoked.
+
+```
+debug software disk-usage cleanup deep threshold <90%-100%>
+```
+
+Automatically applied when 95% disk usage is detected and more aggressive cleaning is applied, including removing more backup log files
+
+```
+debug software disk-usage aggressive-cleaning enable
+```
+
+```
 delete content cache old-content
 ```
 
