@@ -8,7 +8,7 @@
 
 ## Standards
 
-- RFC 2328 "OSPF Version 2"
+- RFC 2328 "OSPF Version 2" - https://datatracker.ietf.org/doc/html/rfc2328
 - RFC 5340 "OSPF for IPv6"
 
 ## History
@@ -39,13 +39,14 @@
 - Open standard, IGP, Link-state, classless (VLSM, Summarization), Dikstra SPF Algorithm, guaranties loop free, hierarchi through areas - large scalability, topology summarization, interopeability between vendors
 - Router knows all network and builds a tree - The algorithm places each router at the root of a tree
 - This protocol is all about interfaces - everyfing is connected with the interface:
-	- priority
- 	- area
+	  - priority
+ 	  - area
   	- cost
   	- network type
   	- hello timer
   	- dead timer
   	- DR/BDR/OTHER
+    - Authentication
   	- it even does not send routes it sends information about interface: IP address, mask, cost... inside LSA
 - It does not receives routes, every router calculates them by itself
 - OSPF runs directly over IPv4, using its own protocol 89, which is reserved for OSPF by the Internet Assigned Numbers Authority (IANA)
@@ -628,20 +629,54 @@ Link Type	Description	Link ID
 3	Connection to stub network.	IP Network
 4	Virtual Link	Neighbor router ID
 
+## Timers
+
+Timers depend on interface network type
+
+- Hello: 1-65535 seconds
+- Dead: 4 times Hello by default
+- Wait - If no DR exists on the network, routes will wait until Wait Timer runs out. The Wait Timer is used in OSPF to allow newly-booted routers to determine the DR/BDR on their multiaccess segments. It allows these routers to wait to see if any DR/BDRs exist on those links, before declaring themselves as the DR/BDR.
+- Retransmit - When OSPF sends an advertisement to an adjacent router, it expects to receive an acknowledgment from that neighbor. If no acknowledgment is received, the router will retransmit the advertisement to its neighbor. The retransmit-interval timer controls the number of seconds between retransmissions
+
+```
+ip ospf hello-interval 1-65535
+ip ospf dead-interval 1-65535
+show ip ospf interface | i Timer|line
+```
+
 ## Network types
 
 This is a per interface setting  
 Ethernet is broadcast by default   
 Network type influences DR/BDR, timers, Hello types(multicast/unicast), Updates(multicast, unicast)
 
-- Point to point - Frame Relay by default
-- Broadcast  
-- Loopback  
-- Nonbroadcast - NBMA - Frame Relay by default
-- Point to multipoint - used in hub and spoke  
+- Point to point - No ARP protocol, Serial, GRE, point-to-point Frame Relay sub interfaces - no DR is required
+- Broadcast Multi Access - DR is needed
+- Loopback - always advertised as /s2, even if it is not 
+- Nonbroadcast multi access - NBMA - Frame Relay, ATM, X.25 - broadcasts from one interface cannot reach all other interfaces - DR is needed
+- Point to multipoint - used in hub and spoke - requires manual configuration - no DR - L2VPN and Frame Relay - 3 routers on the same subnet - 2 routers estalish peering only with hub
 - Point to multipoint non broadcast  
 - All interfaces will be point to point in CLOS network  
 - Interface command or configure priority for DR/BDR - 0
+
+Configure network type for interface
+
+```
+ip ospf network point-to-point_broadcast|non-broadcast
+```
+
+Static neighbor configuration is required when OSPF packets cannot be received via Broadcast/Multicast
+
+```
+router ospf 1
+  neighbor 10.1.1.1
+```
+
+Verify network type for the interface
+
+```
+show ip ospf serial 0/0 | include Type
+```
 
 ## Router types
 
@@ -652,7 +687,7 @@ Network type influences DR/BDR, timers, Hello types(multicast/unicast), Updates(
 
 ## DR/BDR
 
-- Used in Ethernet, Frame Relay
+- Used in multi access networks: Ethernet, Frame Relay
 - Main goal is to avoid LSA flooding
 - DR/BDR are chosen based on hello messages in broadcast segment
 - Non-DR and non-BDR routers only exchange routing information with the DR and BDR, rather than exchanging updates with every other router upon the segment. This, in turn significantly reduces the amount of OSPF routing updates that need to be sent
@@ -702,13 +737,13 @@ Neighbor ID     Pri   State           Dead Time   Address         Interface
 10.10.10.10       1   FULL/DR         00:00:31    10.1.1.2        Ethernet0/0
 ```
 
-Configure interface priority on IOS
+**Configure interface priority on IOS**
 
 ```
 R1(config-if)# ip ospf priority 100
 ```
 
-Restart OSPD processes to change DR/BDR after changing priority
+**Restart OSPD processes to change DR/BDR after changing priority**
 
 ```
 R3# clear ip ospf process
@@ -732,6 +767,36 @@ To change RID we need to restart OSPF
 
 ```
 clear ip ospf process
+```
+## Authentication
+
+- Enabled per interface basis or per areantication-key CISO
+- Plaintext
+- MD5
+
+Per interface enable and configure password
+
+```
+interface GigabitEthernet0/0
+    ip address 10.1.1.1 255.255.255.0
+    ip ospf authentication
+    ip ospf authentication message-digest
+    ip ospf authentication-key CISCO
+    ip ospf message-digest-key 1 md5 CISCO
+```
+
+Per area enable
+
+```
+router ospf 1
+    area 0 authetication message-digest
+    area 12 autentication
+```
+
+Verify
+
+```
+show ip ospf interface | include line|authetication|key
 ```
 
 ## Virtual links
@@ -797,7 +862,7 @@ distribute-list 1 in
 
 ## Configuration
 
-### Nexus  
+**Nexus**  
 
 - Interface point to point is necessary on Loopback  
 - It is better to configure RID manually - so it will not be changed  
@@ -831,7 +896,7 @@ interface Ethernet1/6
   no shutdown
 ```
 
-### IOS
+**IOS**
 
 ```text
 interface loopback 1
@@ -847,7 +912,7 @@ no passive-interface ethernet 0/1 - when default is enabled
 default-information originate
 ```
 
-### Send default route to OSPF domain
+**Send default route to OSPF domain**
 
 ```
 router ospf 1
@@ -861,14 +926,14 @@ Default route is sent via different LSAs, depending on Area type:
 - LSA 7 - in NSSA
 - ? - In a NSSA-totally-stub area
 
-### IOS interface specific configuration
+**IOS interface specific configuration**
 
 ```
 interface GigabitEthernet 0/0
   ip ospf 1 area 0
 ```
 
-### IOS VRF
+**IOS VRF**
 
 ```
 router ospf 1 vrf Red
@@ -878,19 +943,19 @@ router ospf 2 vrf Green
 network 0.0.0.0 255.255.255.255 area 0
 ```
 
-### Change default reference bandwidth 
+**Change default reference bandwidth** 
 
 ```
-auto-cost reference bandwidth 
+auto-cost reference bandwidth 200 mmps
 ```
 
-### Change interface cost
+**Change interface cost**
 
 ```
 ip ospf cost 10
 ```
 
-### Remove router from the network for maintenence
+**Remove router from the network for maintenence**
 
 Not to be confused with stub areas.  
 This feature will advertise R2's router LSA with the maximum metric, making it least likely as a transit router.
@@ -906,7 +971,13 @@ Also other options are available:
 - max-metric router-lsa summary-lsa
 - max-metric router-lsa external-lsa
 
-### Virtual Links
+**Restart OSPF process**
+
+```
+clear ip ospf process
+```
+
+## Virtual Links
 
 ```
 ! On Router C1:
@@ -927,8 +998,6 @@ ip ospf 1 area 1
 ```
 
 ## Verification
-
-### Interfaces
 
 **Show OSPF interfaces in detail: up/down/disabled/timers/DR/BDR/area/**
 
@@ -972,9 +1041,7 @@ Et0/3        1     0               192.168.1.1/30     10    DR    1/1
 - Nbrs F - fully adjacent neighbors  
 - Nbrs C - number of neighbors in 2Way state
 
-### Neighbors
-
-Show neighbor table: neighbor priority, state of adjecency, DR state of neighbor, dead time, address, local interface
+**Show neighbor table: neighbor priority, state of adjecency, DR state of neighbor, dead time, address, local interface**
 
 ```
 Router#show ip ospf neighbor
@@ -982,8 +1049,6 @@ Router#show ip ospf neighbor
 Neighbor ID     Pri   State           Dead Time   Address         Interface
 192.168.1.2       1   FULL/BDR        00:00:33    192.168.1.2     Ethernet0/3
 ```
-
-### Routes
 
 **Show OSPF routes installed to RIB**
 
@@ -1032,8 +1097,6 @@ Codes: * - Best, > - Installed in global RIB
 *>  192.168.5.0/24, Inter, cost 30, area 0
       via 192.168.1.2, Ethernet0/3
 ```
-
-### Database
 
 **Show how many LSAs of each type in a database**
 
@@ -1106,34 +1169,24 @@ Router#show ip ospf database summary
 ```
 show ip ospf
 ```
+
 Show?
+
 ```
 show ip protocols
 ```
-**List known neighbors with state**
-```
-show ip ospf neighbors
-```
-Show ???
-```
-show ip ospf neighbor detail 4.4.4.4
-```
+
 **List all LSAs for all connected areas**
+
 ```
 show ip ospf database
 ```
+
 **Show LSAs from one particular router**
 ```
 sh ip ospf database router 192.168.2.2
 ```
-**Show OSPF routes, marked with O**
-```
-show ip route
-```
-**Show interface type and timers**
-```
-show ip ospf interface serial0/0
-```
+
 **Show virtual links**  
 To prove whether the virtual link works, a neighbor relationship between C1 and C2 must reach the FULL state, resulting in all routers in both parts of area 0 having the same area 0 LSDB.
 ```
