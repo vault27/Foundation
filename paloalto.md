@@ -4,25 +4,30 @@ All you need to know about Palo Alto firewalls and for PCNSE exam in short and s
 
 ## Data Sources
 
-- https://docs.paloaltonetworks.com - all docs in one place
-- https://knowledgebase.paloaltonetworks.com - all difficult questions
-- https://applipedia.paloaltonetworks.com - all information about Apps
-- https://beacon.paloaltonetworks.com - learning center Beacon
-- https://live.paloaltonetworks.com - community, ask your questions
-- https://security.paloaltonetworks.com - Security Advisories
-- https://www.paloaltonetworks.com/services/education - education services
-- https://www.paloaltonetworks.com/resources/reference-architectures - reference architechtures
-- https://knowledgebase.paloaltonetworks.com/KCSArticleDetail?id=kA10g000000Clc8CAC - Panorama Sizing and Design Guide
+- Technical documentation - https://docs.paloaltonetworks.com
+- Knowledge Base - https://knowledgebase.paloaltonetworks.com
+- Application Database - https://applipedia.paloaltonetworks.com
+- Learning center Beacon - https://beacon.paloaltonetworks.com
+- Live community - https://live.paloaltonetworks.com
+- Security Advisories - https://security.paloaltonetworks.com
+- Education services - https://www.paloaltonetworks.com/services/education
+- Reference architechtures - https://www.paloaltonetworks.com/resources/reference-architectures
+- Panorama Sizing and Design Guide - https://knowledgebase.paloaltonetworks.com/KCSArticleDetail?id=kA10g000000Clc8CAC
 - PAN-OS CLI Quick Start Guide
-- https://cp.certmetrics.com/paloaltonetworks/en/login - Certification Management
-- https://home.pearsonvue.com/paloaltonetworks - Pearson Vue Palo Alto
+- PAN-OS Upgrade Guide
+- PAN-OS New Features Guide
+- SD-WAN Administrator’s Guide
+- Certification Management - https://cp.certmetrics.com/paloaltonetworks/en/login
+- Pearson Vue Palo Alto - https://home.pearsonvue.com/paloaltonetworks
 - Book "Mastering Palo Alto Networks: Build, configure, and deploy network solutions for your infrastructure using features of PAN-OS", 2nd Edition
 - GlobalProtect Administrator's Guide - 670 pages - whole world
 - PAN-OS® Administrator’s Guide - 1542 pages
 - Panorama Admin Guide
-- https://docs.paloaltonetworks.com/compatibility-matrix - Compatibility Matrix
+- Compatibility Matrix - https://docs.paloaltonetworks.com/compatibility-matrix
 - Palo Alto General Logs and Log files that are in the managment, data and control planes overview/review - https://live.paloaltonetworks.com/t5/general-topics/knowledge-sharing-palo-alto-general-logs-and-log-files-that-are/td-p/410110
 - Best Practises: https://docs.paloaltonetworks.com/best-practices
+- Palo Alto Networks LIVEcommunity Youtube channel
+- All release notes - https://docs.paloaltonetworks.com/release-notes
 
 ## Portfolio
 
@@ -311,9 +316,7 @@ Existing session 6 stages
 - Add device to account: Hub https://apps.paloaltonetworks.com/apps > Toggle View by Support Account > Common Services > Device Associations > Add appliance choosing via Serial
 - Log in to AIOps for NGFW by clicking on its icon in the hub
 
-## Maintenance
-
-### Configuration management
+## Configuration management
 
 Configuration files:
 
@@ -369,7 +372,7 @@ configure
 commit force
 ```
 
-### Backup
+## Backup
 
 - Device > Setup > Operations
 - Revert
@@ -389,7 +392,7 @@ commit force
     - Import named config snapshot - Imports a configuration file from any network location
     - Import device state (firewall only) - Import the device state information that was exported using the Export device state option. This includes the current running config, Panorama templates, and shared policies. If the device is a Global Protect Portal, the export includes the Certificate Authority (CA) information and the list of satellite devices and their authentication information
 
-### Reboot HA pair
+## Reboot HA pair
 
 - Backup both devices **Device > Setup > Operations > Export device state**
 - On both devices gather all possible information:
@@ -534,7 +537,54 @@ test vpn ipsec-sa
 - Upgrade Passive (Former Active) Device
 - Switch back Active one and perform Active Checks
 
-### Performance
+Show history off all upgrades
+
+```
+debug swm history
+```
+Shift+G to go to bottom of page  
+Even with a factory reset, this command can still get a history of the software first installed and subsequent upgrades and downgrades.
+
+## Disk Space
+
+Some common symptoms of the root partition getting filled up are:
+
+- Unable to log in or access Web UI
+- Certain daemons processes not starting
+- Incomplete tech support bundles
+- System log alerts with "Disk usage for / exceeds limit,  X percent in use, cleaning file system"
+- Root partition is high
+- Automatic cleaning of disk-space is done only when the disk-space reaches 95% and this 95% is fixed and cannot be currently changed
+
+Some of the common causes of a filled partition:
+
+- An admin troubleshooting certain processes and creates core files. These files are stored on the root and remain there until deleted by the administrator
+- Enabling of diagnostic logs for the dataplane (packet diags) can also take up space on the root partition
+
+```
+show system disk-space
+```
+
+Has to be run manually to bring the disk usage to below 90%. It is designed for platforms when 95% automatic disk clean up is not sufficient to hold TSF generated. It includes cleanup by deleting backup logfiles.  If you need this command run periodically, an external periodic script may be invoked.
+
+```
+debug software disk-usage cleanup deep threshold <90%-100%>
+```
+
+Automatically applied when 95% disk usage is detected and more aggressive cleaning is applied, including removing more backup log files.  
+This will automatically truncate all old log files (entries under all *var/log/pan directories matching *.1, ... *.4, *.log.old) if the 95% occupancy alarm is tripped
+
+```
+debug software disk-usage aggressive-cleaning enable
+> show system state | match aggressive-cleaning
+cfg.debug-sw-du.config: { 'aggressive-cleaning': True, }
+```
+
+```
+delete content cache old-content
+```
+
+## Performance monitoring
 
 - Resource widget: both datalane and management CPU
 
@@ -3848,6 +3898,8 @@ Verify slots
 
 ## Prisma Access
 
+**Consepts**
+
 - Service connection to on-prem network and data center - IPSec tunnel - any device, PA is not mandatory - BGP or static routing
 - Service connections and remote networks are different: service connections are only inbound - you cannot route traffic from service connection to Prisma and to Internet
 - 100 locations are available for users to connect
@@ -3856,12 +3908,68 @@ Verify slots
 - All logs are sent to Cortex data lake, which can forward it to your Syslog
 - Management: Cloud Services Plugin in Panorama or Cloud Managed Prisma Access
 - All configuration: **Panorama > Cloud Services**
-- 
+
+**Configuration**
+
+- **Cloud Services > Configuration > Service Setup > Settings**:
+    - First we configure service infrastructure subnet - not routable - not used in other places = /23 is recommened
+    - Infrastructure BGP Private AS Number
+    - Template Stack
+    - Device Group
+- **Cloud Services > Configuration > Service Connection**  - Connections to Data Centers
+    - Closest location
+    - IPSec tunnel: we create it in earlier configured Prisma Template, in this template there are also many preconfigured tunnels for different vendors, IKE Gateways you configure there as well
+    - Corporate networks behind this tunnel
+    - High bandwidth service connections are available - up to 5 Gbps - via aggreagtion - async routing is used
+- Traffic Steering
+- Remote Networks - Branches - **Cloud Services > Configuration > Remote Networks**
+    - Location
+    - IPSec tunnel
+    - Static Routes or BGP
+- Push and commit to the cloud
 
 ## RMA
 
-- Backup
+The most difficult is to restore config, sync with HA node, restore connection with Panorama and successfully Push from Panorama.
+
+- All interfaces are disconnected except Mgmt
+- Version of RMA device should be the same
+- Do a Factory reset of new RMA device
+- Backup failed device if available
 - Check jumbo frames
 - Check session distribution policy for 7000
-- 
-- 
+- Configure Mgmt interface on new FW
+- Transfer licenses of Palo Alto Portal
+- Install license on new device
+- Install OS on new device the same as on old one
+- Install dynamic updates the same as on old
+- Replace Serial in Panorama
+- Restore configuration and Commit
+- Ensure the new device stays in a passive state, suspend it
+- Check that Panorama is connected
+- Push Template and Device Group
+- Go to Device > High Availability > General > Setup and uncheck the Enable Config Sync option
+- Disable "Preemptive" under Election Settings
+- Configure the device with the highest Device Priority value (255)
+- Perform a commit
+- Connect HA1 Interfaces
+- Make sure the replacement device has the same configuration as the active device
+- If the configurations are not the same, go to Device > High Availability and click "Push configuration to peer" from the active device
+- Verify there are no active commit jobs running and the devices are in sync
+  
+```
+show jobs all
+show high-availability all | match "Running Configuration"
+```
+
+- Verify there is no difference in idmgr between the devices
+
+```
+debug device-server dump idmgr high-availability state
+```
+
+- Log into the Active unit. Go to Device > Config Audit > Do config audit between "Running Config" and "Peers Running Config." Make sure both are the same. If the case of any differences, try to manually configure the passive unit
+- Connect the HA2 interface and wait for the session synchronization to be completed
+- If the Firewall is suspended make it functional now
+- Connect the other dataplane interfaces now
+- Test Failover
