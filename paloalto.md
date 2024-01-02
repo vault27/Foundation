@@ -584,6 +584,34 @@ cfg.debug-sw-du.config: { 'aggressive-cleaning': True, }
 delete content cache old-content
 ```
 
+Check Core files:
+
+```
+ show system files
+/opt/dpfs/var/cores/:
+total 4.0K
+drwxrwxrwx 2 root root 4.0K Jun 10 20:05 crashinfo
+
+/opt/dpfs/var/cores/crashinfo:
+total 0
+ 
+/var/cores/:
+total 115M
+drwxrwxrwx 2 root root 4.0K Jun 10 20:15 crashinfo
+-rw-rw-rw- 1 root root 867M Jun 12 13:38 devsrvr_4.0.3-c37_1.gz
+-rw-rw-rw- 1 root root  51M Jun 12 13:39 core.20053
+ 
+/var/cores/crashinfo:
+total 16K
+-rw-rw-rw- 1 root root 15K Jun 10 20:15 devsrvr_4.0.3-c37_0.info
+```
+
+Delete unnecessary core files. A core file can be deemed unnecessary if investigation around the core file is complete or they are very old files.
+
+```
+> delete core management-plane file devsrvr_4.0.3-c37_1.gz
+```
+
 ## Performance monitoring
 
 - Resource widget: both datalane and management CPU
