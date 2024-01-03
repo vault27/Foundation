@@ -612,6 +612,12 @@ Delete unnecessary core files. A core file can be deemed unnecessary if investig
 > delete core management-plane file devsrvr_4.0.3-c37_1.gz
 ```
 
+Limit amount of dowmloaded software images
+
+```
+> set max-num-images count x ( x can be any number between 2 to 64)
+```
+
 ## Performance monitoring
 
 - Resource widget: both datalane and management CPU
