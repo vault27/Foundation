@@ -29,6 +29,7 @@ All you need to know about Palo Alto firewalls and for PCNSE exam in short and s
 - Palo Alto Networks LIVEcommunity Youtube channel
 - All release notes - https://docs.paloaltonetworks.com/release-notes
 - Support PAN-OS Software Release Guidance - https://live.paloaltonetworks.com/t5/customer-resources/support-pan-os-software-release-guidance/ta-p/258304
+- Everything about hardware - https://docs.paloaltonetworks.com/hardware
 
 ## Portfolio
 
