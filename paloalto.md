@@ -3114,6 +3114,28 @@ show log system direction equal backward subtype equal ha eventid equal state-ch
 show log system direction equal backward start-time equal 2023/12/04@12:30:00 end-time equal 2023/12/04@14:00:00
 ```
 
+**Search for a certain word in System logs, for example failed Drive**
+
+```
+phiph@pa(active-secondary)> show log system | match Drive
+2023/08/10 14:31:17 high     general        general 0  Log1 Drive error detected.
+2023/08/10 14:31:17 critical ha             system- 0  HA Group 1: Drive error detected; going to state Non-Functional
+2023/08/10 14:31:17 high     general        general 0  Log1 Drive error detected.
+2023/12/12 00:31:37 high     general        general 0  Log2 Drive error detected.
+2023/12/12 00:31:37 critical ha             system- 0  HA Group 1: Drive error detected; going to state Non-Functional
+2023/12/12 00:31:41 high     general        general 0  Log2 Drive error detected.
+2023/12/12 00:31:44 high     general        general 0  Log2 Drive error detected.
+2023/12/12 00:31:48 high     general        general 0  Log2 Drive error detected.
+2023/12/12 00:31:51 high     general        general 0  Log2 Drive error detected.
+2023/12/12 00:31:55 high     general        general 0  Log2 Drive error detected.
+2023/12/12 00:31:58 high     general        general 0  Log2 Drive error detected.
+2023/12/12 00:32:02 high     general        general 0  Log2 Drive error detected.
+2023/12/12 00:32:05 high     general        general 0  Log2 Drive error detected.
+2023/12/12 00:32:09 high     general        general 0  Log2 Drive error detected.
+2023/12/12 00:32:13 high     general        general 0  Log2 Drive error detected.
+phiph@pa(active-secondary)>
+```
+
 ### Log files
 
 Every log section has many files.
