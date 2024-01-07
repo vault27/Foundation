@@ -1,4 +1,4 @@
-# OSPF
+# OSPF v2
 
 - Areas
 - LSAs
@@ -86,8 +86,6 @@
 
 ## Design
 
-We have to think through the following:
-
 - IP networks between routers - /31 is ok
 - Loopback interfaces and Router-IDs - loopback is actually not needed if we configure router-id manually, which is recomended. Loopback numbers on all devices.
 - Authentication
@@ -98,7 +96,7 @@ We have to think through the following:
 - Process ID - it has local significance, it is better to use the same ID on all devices
 - Timers, maybe it is better to harden them
 
-### Data centre CLOS specifics
+### Data centre
 
 - All routers are in area 0
 - In case of super spine: superspine is in backbone, POD is in non backbone, stub area. In this scheme Spine-1 stores everything about area 1 and backbone area  and so load on Spine is BIG! Such scheme is used rarely. OSPF is not recommended for Fabric!! Do not use unnumbered!
@@ -159,13 +157,34 @@ OSPF header is included in any OSPF packet
 - Destination IP: 224.0.0.5 - all OSPF routers, 224.0.0.6 - DRs
 - IP type: 89
 - Message type: Hello - 1
-- Router ID - unique within OSPF domain and processes - source router, who sent it - not origin, who generated
+- Router ID - Source OSPF router - unique within OSPF domain and processes - source router, who sent it - not origin, who generated
 - Area ID - 0.0.0.0 - The OSPF area that the OSPF interface belongs to. It is a 32-bit number that can be written in dotted-decimal format (0.0.1.0) or decimal (256)
 - Auth Data
 
+Example:
+
+```
+OSPF Header
+    Version: 2
+    Message Type: Hello Packet (1)
+    Packet Length: 52
+    Source OSPF Router: 10.10.10.10
+    Area ID: 0.0.0.2
+    Checksum: 0xae65 [correct]
+    Auth Type: Null (0)
+    Auth Data (none): 0000000000000000
+
+```
+
 **Hello Packet**
 
-OSPF routers periodically send Hello packets out OSPF enabled links every Hello lnterval  
+OSPF routers periodically send Hello packets out OSPF enabled links every Hello lnterval. Hellos are sent to Multicast addresses (both IP and MAC), so all devices int he segment get them.  
+
+- Active neighbors - their RIDs - all routers on this network segment
+- DR/BDR - their IP addresses in this segment
+- Router priority for DR/BDR
+- Network mask
+- RID is not here! It is in header
 
 Example:
 
@@ -645,12 +664,14 @@ Timers depend on interface network type
 
 - Hello: 1-65535 seconds
 - Dead: 4 times Hello by default
-- Wait - If no DR exists on the network, routes will wait until Wait Timer runs out. The Wait Timer is used in OSPF to allow newly-booted routers to determine the DR/BDR on their multiaccess segments. It allows these routers to wait to see if any DR/BDRs exist on those links, before declaring themselves as the DR/BDR.
+- Wait - If no DR exists on the network, routes will wait until Wait Timer runs out. The Wait Timer is used in OSPF to allow newly-booted routers to determine the DR/BDR on their multiaccess segments. It allows these routers to wait to see if any DR/BDRs exist on those links, before declaring themselves as the DR/BDR. The waiting timer (or state) is equal to OSPF dead interval on the interface
 - Retransmit - When OSPF sends an advertisement to an adjacent router, it expects to receive an acknowledgment from that neighbor. If no acknowledgment is received, the router will retransmit the advertisement to its neighbor. The retransmit-interval timer controls the number of seconds between retransmissions
 
 ```
-ip ospf hello-interval 1-65535
-ip ospf dead-interval 1-65535
+r1(config)#int ethernet 0/1
+  ip ospf hello-interval 1-65535
+  ip ospf dead-interval 1-65535
+
 show ip ospf interface | i Timer|line
 ```
 
@@ -701,7 +722,7 @@ show ip ospf serial 0/0 | include Type
 - Main goal is to avoid LSA flooding
 - DR/BDR are chosen based on hello messages in broadcast segment
 - Non-DR and non-BDR routers only exchange routing information with the DR and BDR, rather than exchanging updates with every other router upon the segment. This, in turn significantly reduces the amount of OSPF routing updates that need to be sent
-- Other routers have state FULL with DR/BDR, with other routers they have state 2WAYshow 
+- Other routers have state FULL with DR/BDR, with other routers they have state 2WAY
 - In the event of DR failure, a backup designated router (BDR) becomes the new DR; then an election occurs to replace the BDR
 - Only DR generates type 2 LSAs
 - To minimize transition time, the BDR also forms full OSPF adjacencies with all OSPF routers on that segment
@@ -710,15 +731,19 @@ show ip ospf serial 0/0 | include Type
 - The DR sends a unicast acknowledgment to the router that sent the initial LSA update
 - The DR floods the LSA to all the routers on the segment via the AllSPFRouters (224.0.0.5) address
 
-Elections:
+**Elections**
 
 - First router start sending HELLO with DR and BDR 0.0.0.0
 - After they elected DR nad BDR they put their values into Hello
+- If router is alone in segment: It waits for 40 seconds in broadcast network ( default dead interval is 40 in broadcast) and then elects itself as DR and then continues sending hello packets specifying itself as DR in the DR field in hello packets.  The waiting timer (or state) is equal to OSPF dead interval on the interface
+- Newly added router  does not wait for wait state timer. It gets hello from others, it agrees on R1 and R2 being DR and BDR and goes directly for DBD exchange even though it has higher interface IP address (eligible to be DR)
 - If next router is added to segment, and it has high priority or high RID - it does not mean anything - DR and BDR are already elected
+- Lets talk about a case when several routers come up at the same time. In this case they all send hello packets with 0.0.0.0 in DR/BDR field. They all wait until waiting state ends and then elect DR and BDR
+- 2 DRs at the same time - this is possible - if we connect two segements, which already have DRs
 - Only DR sends LSA-2, BDR does not
 - All routers have FULL neighbor state only with DR/BDR, with others they have 2WAY
 - If we kill BDR - only it will be reelected - DR will be untouched
-- If we kill DR, both DR and BDR are reelected
+- If we kill DR, BDR will become DR, new BDR will be reelected
 - The DR/BDR election occurs during OSPF neighborship—specifically during the last phase of 2-Way neighbor state and just before the ExStart state
 - If the hello packet includes a RID other than 0.0.0.0 for the DR or BDR, the new router assumes that the current routers are the actual DR and BDR
 - Any router with OSPF priority of 1 to 255 on its OSPF interface attempts to become the DR
@@ -730,6 +755,7 @@ Elections:
 - Then the election for the BDR takes place
 - The election follows the same logic for the DR election, except that the DR does not add its RID to the BDR field of the hello packet
 - The OSPF DR and BDR roles cannot be preempted after the DR/BDR election. Only upon the failure (or process restart of the DR or BDR) does the election start to replace the role that is missing
+- What routers send in Hello when reelection starts? - 
 - New routers added to DR/BDR domain do not influence DR/BDR election - they are already elected
 - Priority 0 - router does not pretend on DR
 - Modifying a router’s RID for DR placement is a bad design strategy. A better technique involves modifying the interface priority to a higher value than the existing DR has
@@ -816,6 +842,10 @@ Verify
 show ip ospf interface | include line|authetication|key
 ```
 
+## ECMP
+
+## Redistribution
+
 ## Virtual links
 
 - They are used when there are two area 0, and with them both area 0 are connected with each other. It can happen if 2 companies are merged
@@ -872,10 +902,6 @@ access-list 1 permit any
 router ospf 1
 distribute-list 1 in
 ```
-
-## OSPFv3
-
-- Separate instances for OSPFv2 and OSPFv3
 
 ## Configuration
 
@@ -1019,7 +1045,13 @@ ip ospf 1 area 1
 **Show all OSPF configuration details**
 
 ```
-
+r1#show ip ospf
+ Routing Process "ospf 1" with ID 1.1.1.1
+ Start time: 00:00:05.210, Time elapsed: 01:01:28.848
+ Supports only single TOS(TOS0) routes
+ Supports opaque LSA
+ Supports Link-local Signaling (LLS)
+ ...
 ```
 **Show OSPF interfaces in detail: up/down/disabled/timers/DR/BDR/area/**
 
@@ -1215,6 +1247,16 @@ To prove whether the virtual link works, a neighbor relationship between C1 and 
 show ip ospf virtual-links
 ```
 
+## Debug
+
+```
+debug ip ospf adj
+debug ip ospf hello
+debug ip ospf events
+
+undebug all
+```
+
 ## Wireshark display filters
 
 **Show only LSU packets**
@@ -1240,3 +1282,7 @@ ospf.srcrouter == 192.168.3.1
 ```
 ospf.advrouter == 3.3.3.3
 ```
+
+# OSPF v3
+
+- Separate instances for OSPFv2 and OSPFv3
