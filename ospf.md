@@ -543,9 +543,12 @@ When a new LSA is received it is checked against the database for changes such a
 - Areas are required to control amount of updates and SPF launches to decrease load on CPU of routers  
 - OSPF is like a flower - there is a center and petals around - the main mechanism against loops  
 - Each interface is in one area  
+- Area ID - 32 bit field - decimal 0 through 4294967295 - dotted decimal 0.0.0.0 through 255.255.255.255
+- Area ID is advertised in dotted decimal form in Hello packet
 - Inside area - detailed route exchange  
 - Outside area - brief exchange  
 - Area 0 backbone area - is connected to all areas and all thraffic goes via it  
+- If a router is connected to Area 1 and Area 2, it will not forward information between them, because non of them is Area 0
 - In general, NSSA is same as normal area except that it can generate LSA Type 7 (redistribute from another domain)  
 - Every area has its own LSDB
 - ABR does not pass denser and more detailed type 1 and 2 LSAs from one area to another—instead, it passes type 3 summary LSAs
@@ -610,6 +613,11 @@ router ospf 10
 
 - **The external and inter-area routes have been blocked**
 - By default default gateway is sent with metric 1
+
+## Route types
+
+- Intra-area - O
+- Inter-area - O IA
 
 ## Tables
 
