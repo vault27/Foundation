@@ -72,6 +72,8 @@
 - If there is an topology change - router sends LSA, if no changes LSAs are sent every 30 mins
 - Each router stores the data, composed of individual link-state advertisements (LSA) , in its own copy of the link-state database (LSDB) . Then, the router applies the Shortest Path First (SPF) algorithm to the LSDB to determine the best (lowest-cost) route for each reachable subnet (prefix/length)
 - Two routers can have 2 neighborships via different interfaces - and it is ok - router ID is the same
+- When nothing happens, only HELLO packets travel through network
+- If somethings happens and timers are default, changes will occur slowly
 
 ## Metric
 
@@ -149,7 +151,7 @@ There are 5 different types of OSPF packets:
 - 4 - LSU - Link State Update - contains LSA - sent in direct response to LSR
 - 5 - Link State Acknowledgment - acknowledge of LSA
 
-### OSPF header
+**OSPF header**
 
 OSPF header is included in any OSPF packet
 
@@ -161,7 +163,7 @@ OSPF header is included in any OSPF packet
 - Area ID - 0.0.0.0 - The OSPF area that the OSPF interface belongs to. It is a 32-bit number that can be written in dotted-decimal format (0.0.1.0) or decimal (256)
 - Auth Data
 
-### Hello Packet
+**Hello Packet**
 
 OSPF routers periodically send Hello packets out OSPF enabled links every Hello lnterval  
 
@@ -188,23 +190,23 @@ Explanation:
 - BDR: IP address of BDR in this broadcast domain
 - Active neighbor - all neighbors in broadcast domain - even if there are only 2 routers on the links, if R2 got Hello from R1, then it sends its own hello to R1 with R1's ID in this field > so R1 understands that R2 knows about him and 2-Way neighbor state is established
 
-### DBD - Database Description Packet
+**DBD - Database Description Packet**
 
 - Summary of what router knows - index
 - Sent during adjacency forming
 
-### Link State Request Packet
+**Link State Request Packet**
 
 - After router gets DBD, it requests details based on LS type and Link State ID
 - In reply to this LSR LSUs with LSAs are sent
 
-### LSU packet
+**LSU packet**
 
 - OSPF header
 - One or many LSAs
 - In one LSU can be many LSAs from different Advertising Routers
 
-### Link State Acknowledgment
+**Link State Acknowledgment**
 
 - Confirms that LSA has been received
 - LSA which was received is inside, but less details
@@ -710,6 +712,13 @@ show ip ospf serial 0/0 | include Type
 
 Elections:
 
+- First router start sending HELLO with DR and BDR 0.0.0.0
+- After they elected DR nad BDR they put their values into Hello
+- If next router is added to segment, and it has high priority or high RID - it does not mean anything - DR and BDR are already elected
+- Only DR sends LSA-2, BDR does not
+- All routers have FULL neighbor state only with DR/BDR, with others they have 2WAY
+- If we kill BDR - only it will be reelected - DR will be untouched
+- If we kill DR, both DR and BDR are reelected
 - The DR/BDR election occurs during OSPF neighborship—specifically during the last phase of 2-Way neighbor state and just before the ExStart state
 - If the hello packet includes a RID other than 0.0.0.0 for the DR or BDR, the new router assumes that the current routers are the actual DR and BDR
 - Any router with OSPF priority of 1 to 255 on its OSPF interface attempts to become the DR
@@ -725,7 +734,7 @@ Elections:
 - Priority 0 - router does not pretend on DR
 - Modifying a router’s RID for DR placement is a bad design strategy. A better technique involves modifying the interface priority to a higher value than the existing DR has
 
-**Show DR/BDR state of current router**
+**Show DR/BDR state of current router and neighbors**
 
 ```
 R1# show ip ospf interface brief
@@ -1007,6 +1016,11 @@ ip ospf 1 area 1
 
 ## Verification
 
+**Show all OSPF configuration details**
+
+```
+
+```
 **Show OSPF interfaces in detail: up/down/disabled/timers/DR/BDR/area/**
 
 ```
