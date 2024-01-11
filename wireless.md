@@ -29,10 +29,19 @@ minimum of 8 and a maximum of 11 for 2.4GHz and for 5GHz, a minimum of 14 and a 
 
 - CWNA
 
+## Organizations 
+
+- IEEE
+- Wi-Fi alliance
+- IETF
+- CWNP
+- WLA
+
+IEEE creates standards > Wi-Fi Alliance certifies Products > IETF manages RFCs > CWNP certifies Individuals > WLA brings together Industry Professionals
+  
 ## Standards
 
 - IEEE 802.11 - physical layer and datalink (MAC sublevel only)
-- IEEE creates standards > Wi-Fi Alliance certifies Products > IETF manages RFCs > CWNP certifies Individuals > WLA brings together Industry Professionals
 - 802.11-2020 standard - pack of documents
 - Wi-Fi 6 - 802.11ax - much faster
 
@@ -136,6 +145,9 @@ minimum of 8 and a maximum of 11 for 2.4GHz and for 5GHz, a minimum of 14 and a 
         - Symbol Duration - 12.8 us
         - Guard Interval - 0.8, 1.6, 3.2 us
         - OFDMA - Yes
+
+## Frequencies
+
 
 ## RF basics
 
