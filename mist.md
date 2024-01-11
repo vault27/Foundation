@@ -9,6 +9,7 @@
 
 - https://design.mist.com/
 - https://www.mist.com/
+- https://courses.mist.com/dashboard/
 
 ## Functions
 
