@@ -212,7 +212,7 @@ Only one device on a channel can send data at a time.
 
 ## Layer 1
 
-- Measusrment of Layer 1: how often rawradio frequency activity is heard  in the spectrum, measyred wuth spectrum analysis - legacy
+- Measusrment of Layer 1: how often raw radio frequency activity is heard  in the spectrum, measyred wuth spectrum analysis - legacy
 - Possible issues: bad radio design
 - Spatial stream - it is writeen in the form of 2 by 2 - how many antennas device has, 4 spacial streams max
 - SISO - SIngle Input Single Output
@@ -273,17 +273,12 @@ Autonomous AP > Controller and Lightweight APs > Controller and Intelligent APs 
 
 ## Reconnect to AP
 
-The AP sends a de-authentication packet to the client. The client then
-disconnects from the AP and is then immediately authorized and reassociated.
-The client then gets an IP address through DHCP, ARPs for its gateway, and then
-performs a DNS query
+The AP sends a de-authentication packet to the client. The client then disconnects from the AP and is then immediately authorized and reassociated. The client then gets an IP address through DHCP, ARPs for its gateway, and then performs a DNS query
 
 ## RoamS
 
 Fast roam
 Slow roam
-
-WPA 3 - management frames encrypted
 
 ## DHCP
 
@@ -307,3 +302,6 @@ Header
 - Address 2 - 6 bytes
 - Address 3 - 6 bytes
 
+## Security
+
+WPA 3 - management frames encrypted
