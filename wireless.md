@@ -1,23 +1,19 @@
-# Wi-Fi
+# Wireless
 
 mcsindex.com
 
 What is the RX MCS?
-Answer: In the example from step 3.7, the protocol is 802.11ax, the channel width
-is 40 MHz, and the spatial streams are 2, which narrows the possibility to the
-section of the table under "OFDM (802.11ax)", and under "40MHz" and limited to
-2 spatial streams. Because the client's RX PHY Rate is 541.6 Mbps, the RX MCS
-is 11.
+In the example from step 3.7, the protocol is 802.11ax, the channel width is 40 MHz, and the spatial streams are 2, which narrows the possibility to the section of the table under "OFDM (802.11ax)", and under "40MHz" and limited to 2 spatial streams. Because the client's RX PHY Rate is 541.6 Mbps, the RX MCS is 11.
 
-mDNS
+mDNS - ?
 
-SSDP
+SSDP - ?
 
-DTIM period
+DTIM period - ?
 
-4x4:4:ss
+4x4:4:ss - ?
 
-Different POE versions
+Different POE versions - ?
 
 6 Ghz requires many power and needs cool PoE
 PoE
@@ -26,13 +22,8 @@ PoE+ - 802.3at
 
 If you want to prefer 5 Ghz over 2.4, you need to configure it more powerfull on access point.
 
-When setting a range, your minimum power should use the base power of the design. The maximum 
-power is typically +3 dBm, but may go up to +6 dBm based on the scenario. Here, for example, our values are a 
-minimum of 8 and a maximum of 11 for 2.4GHz and for 5GHz, a minimum of 14 and a maximum of 17. Mist’s 
-RRM system will now work within these boundaries
-
-BSSID - Basic Service Set - MAC of AP - Unique
-Extended service set - 2 WLAN with the same SSID and different BSSID
+When setting a range, your minimum power should use the base power of the design. The maximum power is typically +3 dBm, but may go up to +6 dBm based on the scenario. Here, for example, our values are a 
+minimum of 8 and a maximum of 11 for 2.4GHz and for 5GHz, a minimum of 14 and a maximum of 17. Mist’s RRM system will now work within these boundaries BSSID - Basic Service Set - MAC of AP - Unique Extended service set - 2 WLAN with the same SSID and different BSSID
 
 ## Certificates
 
@@ -170,8 +161,6 @@ Extended service set - 2 WLAN with the same SSID and different BSSID
 - MCS index table - ?
 - Dynamic Rate Shifting
 
-DSSS (Direct Sequence Spread Spectrum) and OFDM (Orthogonal Frequency Division Multiplexing) are two different modulation techniques used in wireless communication systems, including Wi-Fi.
-
 ## Antenna
 
 - Isotropic Radiator
@@ -187,7 +176,8 @@ A method of encoding data into an RF signal
 - BPSK - a binary 0 is represented by a carrier signal with a phase of 0 degrees, while a binary 1 is represented by a carrier signal with a phase of 180 degrees. Simple. Good for noisy channels.
 - Amplitude Shift Keying - Amplitude is always different - used in Wi-fi
 - Frequency Shift Keying - Frequency is always changing
-
+  
+DSSS (Direct Sequence Spread Spectrum) and OFDM (Orthogonal Frequency Division Multiplexing) are two different modulation techniques used in wireless communication systems, including Wi-Fi.
 
 ## Physical characteristics
 
