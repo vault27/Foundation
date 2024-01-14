@@ -253,6 +253,7 @@ Explanation:
 - 4,5,7 - for external redistributed routes
 - Sequence number - 32 bit number - it is incremented after each sending LSA - if router receives LSA with sequence number larger than in LSDB it processes it, and if it is smaller, router discards it
 - LSA age - every 1800 seconds - 30 minutes - router sends new LSAs with LSA age set to 0 - every second this value increments in LSDB. When age is 3600 seconds and nothiing new arrived - LSA is purged
+- LSAs are forwarded unchanged, if router gets the same LSAs from different routers, it keeps only 1 copy in database, because they are the same
 
 LSA types (11 in total):
 
@@ -425,10 +426,13 @@ r10#show ip ospf database network
 
 **LSA-3**
 
+- Is called summary
 - Is sent by ABR, contains all prefixes available in neighbor area
+- When ABR receives LSA-1, it creates LSA-3 with same network as in LSA-1, LSA-2 are used to determine network mask for multi access network.
 - For example ABR sends everything he gets from Area 1 to Area 0 interfaces
 - Every prefix contains network, mask, metric
-- Metric depends on how far ABR is from prefix
+- Metric depends on how far ABR is from prefix, so ABR calculates metric to the network and sends it to other area
+- When LSA-3 from Area 1  travels inside Area 0 the Advertising Router (ABR) is not changed, metric is not changed as well
 - LSA-3 does not contain area, from which it arrived
 - All LSA-3 routes are marked as INTER in OSPF RIB
 - Advertising Router in LSA is ABR
@@ -449,6 +453,27 @@ LSA-type 3 (Summary-LSA (IP network)), len 28
     Netmask: 255.255.255.0
     TOS: 0
     Metric: 10
+```
+
+**Show LSA-3 in OSPF database**
+
+```
+r1#show ip ospf database summary
+
+            OSPF Router with ID (1.1.1.1) (Process ID 1)
+
+		Summary Net Link States (Area 0)
+
+  LS age: 1050
+  Options: (No TOS-capability, DC, Upward)
+  LS Type: Summary Links(Network)
+  Link State ID: 10.1.1.0 (summary Network Number)
+  Advertising Router: 1.1.1.1
+  LS Seq Number: 80000001
+  Checksum: 0x36EC
+  Length: 28
+  Network Mask: /24
+	MTID: 0 	Metric: 10
 ```
 
 **LSA-5**
