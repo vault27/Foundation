@@ -252,7 +252,7 @@ Explanation:
 - 1,2,3 - for all routes exchanges inside OSPF domain
 - 4,5,7 - for external redistributed routes
 - Sequence number - 32 bit number - it is incremented after each sending LSA - if router receives LSA with sequence number larger than in LSDB it processes it, and if it is smaller, router discards it
-- LSA age - every 1800 seconds - 3 minutes - router sends new LSAs with LSA age set to 0 - every second this value increments in LSDB. When age is 3600 seconds and nothiing new arrived - LSA is purged
+- LSA age - every 1800 seconds - 30 minutes - router sends new LSAs with LSA age set to 0 - every second this value increments in LSDB. When age is 3600 seconds and nothiing new arrived - LSA is purged
 
 LSA types (11 in total):
 
@@ -280,8 +280,9 @@ LSA types (11 in total):
   - LSA 2
   - LSA ...
 
-### LSA-1
+**LSA-1**
 
+- Is called Router LSA
 - Is sent inside the area, every router generates LSA-1 for every enabled interface  
 - Link-state ID and advertising router are shared for all links in LSA-1
 - Link-state ID is always equal Advertising router
@@ -296,8 +297,8 @@ LSA types (11 in total):
 - 4 types of Links are available:
     - 1 - Point-to-point link IP address assigned, Link ID Value - Neighbor RID, Link Data Value - Interface IP address
     - 1 - Point-to-point link IP unnumbered, Link ID Value - Neighbor RID, Link Data Value - MIB II IfIndex value
-    - 2 - Transit network, Link ID Value - Interface address of DR, Link Data Value - Interface IP address
-    - 3 - Sub network - Link ID Value - Network Address, Link Data Value - Subnet mask
+    - 2 - Transit network, Link ID Value - Interface address of DR, Link Data Value - Interface IP address - this type is used when interface type is Broadcast and there are other routers on the link
+    - 3 - Stub network - Link ID Value - Network Address, Link Data Value - Subnet mask
     - 4 - Virtual Link - Link ID Value - Neighbor RID, Link Data Value - Interface IP address
 - Transit - if there are other routers on a link, adjecency formed, DR elected
 - Secondary connected networks are always advertised as Stub because adjecencies are impossible on them
@@ -332,7 +333,7 @@ LSA-type 1 (Router-LSA), len 60
 
 ```
 
-**Show LSA-1 in OSPF database with Link ID, Link Data, Link type. Structured: All LSAs 1 for every router ID**
+**Show LSA-1 in OSPF database**
 
 ```
 show ip ospf database router
@@ -370,11 +371,12 @@ show ip ospf database router
        TOS 0 Metrics: 10
 ```
 
-### LSA-2
+**LSA-2**
 
+- Is called Network LSA
 - Sent by DR. Only inside area
 - Represents multi access network segment that uses DR
-- Identifies all the routers attached to this network segment
+- Identifies all the routers attached to this network segment, including itself
 - It contains:
   - IP address of DR in corresponding multi access network - in Link State ID field
   - Network mask
@@ -397,7 +399,31 @@ LSA-type 2 (Network-LSA), len 32
     Attached Router: 2.2.2.2
 ```
 
-### LSA-3
+**Show LSA-2 in OSPF Database**
+
+```
+r10#show ip ospf database network
+
+            OSPF Router with ID (10.10.10.10) (Process ID 1)
+
+		Net Link States (Area 2)
+
+  LS age: 76
+  Options: (No TOS-capability, DC)
+  LS Type: Network Links
+  Link State ID: 10.1.1.2 (address of Designated Router)
+  Advertising Router: 10.10.10.10
+  LS Seq Number: 80000003
+  Checksum: 0x4F3A
+  Length: 40
+  Network Mask: /24
+	Attached Router: 10.10.10.10
+	Attached Router: 1.1.1.1
+	Attached Router: 8.8.8.8
+	Attached Router: 9.9.9.9
+```
+
+**LSA-3**
 
 - Is sent by ABR, contains all prefixes available in neighbor area
 - For example ABR sends everything he gets from Area 1 to Area 0 interfaces
@@ -425,7 +451,7 @@ LSA-type 3 (Summary-LSA (IP network)), len 28
     Metric: 10
 ```
 
-### LSA-5
+**LSA-5**
 
 - Used for sending redistributed routes, including default gateway
 - Link State ID - network
