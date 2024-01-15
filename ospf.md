@@ -426,16 +426,25 @@ r10#show ip ospf database network
 
 **LSA-3**
 
-- Is called summary
+- Is called Summary
+- Link State ID in this LSA is network number
 - Is sent by ABR, contains all prefixes available in neighbor area
-- When ABR receives LSA-1, it creates LSA-3 with same network as in LSA-1, LSA-2 are used to determine network mask for multi access network.
+- LSA-3 are generated based on LSA-1 or LSA-3
+- For example ABR connected to Area 0 and Area 1, takes all LSA-1 from Area 1 and generates LSA-3 which are sent to Area 0
+- For example ABR connected to Area 0 and Area 2 receives LSA-3 from Area 0 regarding routes in Area 1, then it regenerates them to LSA-3 for area 2, during regeneration it changes Advertising router and Metric of LSA
+- When ABR receives LSA-1, it creates LSA-3 with same network as in LSA-1, LSA-2 are used to determine network mask for multi access network
 - For example ABR sends everything he gets from Area 1 to Area 0 interfaces
 - Every prefix contains network, mask, metric
-- Metric depends on how far ABR is from prefix, so ABR calculates metric to the network and sends it to other area
-- When LSA-3 from Area 1  travels inside Area 0 the Advertising Router (ABR) is not changed, metric is not changed as well
+- Metric:
+    - After metric is generated on ABR it is not changed, it can be changed only on next ABR
+    - ABR takes metric from LSA-1 and sends it as LSA-3 to Area 0, LSA-3 travels in Area 0, metric in LSA itself is not changed, but when routers install route to table they add to this metric distance till the ABR, which generated LSA-3
+    - When ABR area 0 and 1 receives LSA-3 from Area 2 it regenarates LSA-3 and add it distance till ABR area 0 and area 2 and sends it to Area 1
+- When LSA-3 from Area 1  travels inside Area 0 the Advertising Router (ABR) is not changed, metric is increasing not in LSA itself, but before installing to routing table
 - LSA-3 does not contain area, from which it arrived
 - All LSA-3 routes are marked as INTER in OSPF RIB
-- Advertising Router in LSA is ABR
+- O IA - this is how LSA-3 routes look like in routing table in Cisco
+- Advertising Router in LSA is ABR: it is not changed while travelling inside area 0, it is changed only when leaves Area 0 on other ABR
+- ABR generates only one LSA-3, even if it has several LSA-1 for this network, best metric is used before creating LSA-3 for network
 
 LSA-3 example for one prefix
 
@@ -474,6 +483,12 @@ r1#show ip ospf database summary
   Length: 28
   Network Mask: /24
 	MTID: 0 	Metric: 10
+```
+
+**Show Summary LSA for particular network**
+
+```
+R2#show ip ospf database summary 10.3.1.0
 ```
 
 **LSA-5**
