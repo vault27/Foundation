@@ -439,13 +439,23 @@ Configure for every Update type:
 - New App ID Threshold - hours
 - Sync to peer
 
+Best Practices for Content Updates 2 types:
+
+- Mission-Critical 
+- Security-First
+
+Mission critical
+
+- Always review Content Release Notes
+    -  Customer Support Portal > Preferences > Subscribe to Content Update Emails
+    -  Content Release Notes for apps and threats on the Palo Alto Networks Support Portal
+    -  On Firewall: Device > Dynamic Updates > Release Note
+- 6 to 12 hours for content updates
+
 Concepts
 
-- Whether your organization is mission-critical or security-first (or a mix of both)
-- 6 to 12 hours for content updates to be dynamically updated in security-first network
-- The Best Practices for Applications and Threats Content Updates
-- Schedule for Applications and Threat content updates
-- Commit
+
+- Commit - ?
 - Critical content alerts are logged as system log entries with the following Type and Event: (subtype eq content) and (eventid eq palo-alto-networks-message)
 
 ## Upgrade
