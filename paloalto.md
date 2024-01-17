@@ -297,15 +297,6 @@ Existing session 6 stages
 - Enterprise Data Loss Prevention (DLP) - cloud-based protection against unauthorized access, misuse, extraction, and sharing of sensitive information
 - SaaS Security Inline - works with Cortex Data Lake to discover all of the SaaS applications in use on your network
 
-## Databases
-
-4 in total
-
-- Apps and threat
-- Antivirus
-- URL filtering
-- Wildfire
-    
 ## AIOps
 
 - When enabled, Telemetry allows the firewall to collect and forward traffic information to Palo Alto Networks
@@ -394,7 +385,7 @@ commit force
     - Import named config snapshot - Imports a configuration file from any network location
     - Import device state (firewall only) - Import the device state information that was exported using the Export device state option. This includes the current running config, Panorama templates, and shared policies. If the device is a Global Protect Portal, the export includes the Certificate Authority (CA) information and the list of satellite devices and their authentication information
 
-## Reboot HA pair
+## Reboot
 
 - Backup both devices **Device > Setup > Operations > Export device state**
 - On both devices gather all possible information:
@@ -425,23 +416,37 @@ commit force
 - Check all parametres: *throughput, amount of sessions, IPSec VPN tunnels, BGP peers, physical interfaces, aggregation groups, total amount of routes, User-ID agents, group mappings, chassis*
 - Reboot Active device: **request shutdown/restart system**
   
-### Content updates
+## Dynamic updates
 
-- Applications and Threats Content Updates
+Device > Dynamic Updates
+
+- Apps and threats
+- Antivirus
+- URL filtering
+- Wildfire
+- GlobalProtect Clientless VPN
+- Global protect Data file
+- Device Dictionary
+- WF-Private
+
+Configure for every Update type:
+
+- Recurrance
+- Minutes past half an hour
+- Action: Download only/Download and install
+- Disable new apps
+- Threshold - hours - Content releases must be available on the Palo Alto Networks update server at least this amount of time before the firewall can retrieve the release and perform the Action you configured
+- New App ID Threshold - hours
+- Sync to peer
+
+Concepts
+
 - Whether your organization is mission-critical or security-first (or a mix of both)
 - 6 to 12 hours for content updates to be dynamically updated in security-first network
 - The Best Practices for Applications and Threats Content Updates
-- Device > Dynamic Updates
 - Schedule for Applications and Threat content updates
-- Installation Threshold for content releases - Content releases must be available on the Palo Alto Networks update server at least this amount of time before the firewall can retrieve the release and perform the Action you configured
-- New App-ID Threshold. The firewall only retrieves content updates that contain new App-IDs after they have been available for this amount of time
 - Commit
 - Critical content alerts are logged as system log entries with the following Type and Event: (subtype eq content) and (eventid eq palo-alto-networks-message)
-- Configure log forwarding
-
-### Signature updates
-
-- Device > Dynamic Updates
 
 ## Upgrade
 
