@@ -1861,12 +1861,12 @@ App-ID status in logs:
 Sberbank case: script sends via XML API Tag + IP, based on this Tag IP is added to DAG, DAG is used in a policy as destination, or source  
 
 - IP-Tag can be assigned to IP address via:
-        - XML API
-        - Log Forwarding Profile - For example, whenever the firewall generates a threat log, you can configure the firewall to tag the source IP address in the threat log with a specific tag name
-        - Device > VM Information Sources - monitor VMware ESXi, vCenter Server, AWS-VPCs, and Google Compute Engines natively on the firewall
-        - User-ID agent for Windows - monitor up to 100 VMware ESXi servers, vCenter Servers, or a combination of the two
-        - Panorama Plugin - Azure or AWS public cloud 
-        - VMware Service Manager - Integrated NSX solutions only
+  - XML API
+  - Log Forwarding Profile - For example, whenever the firewall generates a threat log, you can configure the firewall to tag the source IP address in the threat log with a specific tag name
+  - Device > VM Information Sources - monitor VMware ESXi, vCenter Server, AWS-VPCs, and Google Compute Engines natively on the firewall
+  - User-ID agent for Windows - monitor up to 100 VMware ESXi servers, vCenter Servers, or a combination of the two
+  - Panorama Plugin - Azure or AWS public cloud 
+  - VMware Service Manager - Integrated NSX solutions only
 - IP Tags can be seen via Monitor > IP tag
 - You can configure the firewall to dynamically unregister a tag after a configured amount of time using a timeout  
 
@@ -1880,8 +1880,12 @@ Sberbank case: script sends via XML API Tag + IP, based on this Tag IP is added 
 - This implies that a commit is not required to update dynamic tags
 - Each registered IP address can have up to 32 tags
 - We can view a list of addresses in DAG by pointing on DAG in Security Policy > Pressing Inspect > Pressing more OR going to Address Groups in Objects and pressing More
-- If you want to delete all registered IP addresses, use the CLI command debug object registered-ip clear all and then reboot the firewall after clearing the tags
+- If you want to delete all registered IP addresses, use the CLI command
 
+```
+debug object registered-ip clear all
+then reboot the firewall after clearing the tags
+```
 ## External Dynamic List
 
 - Text file that is hosted on an external web server so that the firewall can import objects—IP addresses, URLs, domains—included in the list and enforce policy
