@@ -418,7 +418,9 @@ commit force
   
 ## Dynamic updates
 
-Device > Dynamic Updates
+Device > Dynamic Updates  
+
+Update types:
 
 - Apps and threats
 - Antivirus
@@ -439,6 +441,14 @@ Configure for every Update type:
 - New App ID Threshold - hours
 - Sync to peer
 
+Action types:
+
+- Download
+- Install
+- Review policies
+- Review apps
+- Release notes
+
 Best Practices for Content Updates 2 types:
 
 - Mission-Critical 
@@ -450,6 +460,10 @@ Mission critical
     -  Customer Support Portal > Preferences > Subscribe to Content Update Emails
     -  Content Release Notes for apps and threats on the Palo Alto Networks Support Portal
     -  On Firewall: Device > Dynamic Updates > Release Note
+    - Notes section of Content Release Notes: future important updates - you can account for any policy impact in advance of the release
+- Always review the new and modified App-IDs that a content release introduces - 
+- Critical content alerts are logged as system log entries with the following Type and Event: (subtype eq dynamic-updates) and (eventid eq palo-alto-networks-message) - configure forwarding of these events to personell
+- Test new Applications and Threats content updates on a test firewall
 - 6 to 12 hours for content updates
 
 Concepts
