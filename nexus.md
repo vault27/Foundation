@@ -7,9 +7,9 @@
 - Upload image
 - Backup
 - Pre-checks
-- Implementationm
+- Implementation
 - Reboot
-- Verification - should match prechecks
+- Verification - should match pre-checks
 - Backout
 - Backout verification
 
