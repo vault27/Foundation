@@ -134,17 +134,19 @@ IEEE creates standards > Wi-Fi Alliance certifies Products > IETF manages RFCs >
         - Guard Interval - 0.8, 1.6, 3.2 us
         - OFDMA - Yes
 - Wi-Fi 7 - EHT - 802.11be - 2024
-        - Frequency Band - 2.4/5/6 Ghz
-        - Channel width - 20/40/80/160/320 MHz
-        - Spatial streams - 16
-        - Data Rate - Up to 40 Gbps
-        - MIMO - Yes
-        - MU-MIMO - DL & UL
-        - Max Modulation - 4096 QAM
-        - Subcarrier size - 78.125
-        - Symbol Duration - 12.8 us
-        - Guard Interval - 0.8, 1.6, 3.2 us
-        - OFDMA - Yes
+  - Frequency Band - 2.4/5/6 Ghz
+  - Channel width - 20/40/80/160/320 MHz
+  - Spatial streams - 16
+  - Data Rate - Up to 40 Gbps
+  - MIMO - Yes
+  - MU-MIMO - DL & UL
+  - Max Modulation - 4096 QAM
+  - Subcarrier size - 78.125
+  - Symbol Duration - 12.8 us
+  - Guard Interval - 0.8, 1.6, 3.2 us
+  - OFDMA - Yes
+  - 512 compressed block Ack
+  - Multiple RUs to a single STA
 
 ## Frequencies
 
