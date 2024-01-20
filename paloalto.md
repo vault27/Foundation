@@ -468,6 +468,8 @@ Mission critical
 - Critical content alerts are logged as system log entries with the following Type and Event: (subtype eq dynamic-updates) and (eventid eq palo-alto-networks-message) - configure forwarding of these events to personell
 - Test new Applications and Threats content updates on a test firewall
 - Schedule content updates so that they download-and-install automatically. Then, set a Threshold that determines the amount of time the firewall waits before installing the latest content. In a mission-critical network, schedule up to a 48 hour threshold
+- Create a security policy rule to always allow New App Ids in certain categories, for example auth-service, it is done here: **Objects > Application Filters > Add > Apply to New App-IDs only**
+- Deploy updates in small branches first to test
 
 ## Upgrade
 
