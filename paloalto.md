@@ -422,12 +422,12 @@ Device > Dynamic Updates
 
 Update types:
 
-- Apps and threats
-- Antivirus
+- Apps and threats - monthly
+- Antivirus - every 24 hours
 - URL filtering
-- Wildfire
-- GlobalProtect Clientless VPN
-- Global protect Data file
+- Wildfire - evry 5 minutes - You can set the firewall to check for new updates as frequently as every minute to ensure that the firewall retrieves the latest WildFire signatures within a minute of availability - only with Wildfire subscription
+- GlobalProtect Clientless VPN - new and updated application signatures to enable Clientless VPN access to common web applications from the GlobalProtect portal
+- Global protect Data file - Contains the vendor-specific information for defining and evaluating host information profile (HIP) data returned by GlobalProtect apps. You must have a GlobalProtect gateway subscription in order to receive these updates. In addition, you must create a schedule for these updates before GlobalProtect will function
 - Device Dictionary
 - WF-Private
 
@@ -450,6 +450,7 @@ Action types:
 - Review apps - shows new and modified apps
 - Release notes - future changes + New apps + modified apps + modified decoders + new vulnerability signatures + modified vulnerability signatures + new file types
 - Revert - to previous version
+- Commit is not required
 
 Best Practices for Content Updates 2 types:
 
@@ -463,17 +464,10 @@ Mission critical
     -  Content Release Notes for apps and threats on the Palo Alto Networks Support Portal
     -  Firewall: Device > Dynamic Updates > Release Note
     -  Notes section of Content Release Notes: future important updates - you can account for any policy impact in advance of the release
-    -  
 - Always review the new and modified App-IDs that a content release introduces - 
 - Critical content alerts are logged as system log entries with the following Type and Event: (subtype eq dynamic-updates) and (eventid eq palo-alto-networks-message) - configure forwarding of these events to personell
 - Test new Applications and Threats content updates on a test firewall
-- 6 to 12 hours for content updates
-
-Concepts
-
-
-- Commit - ?
-- Critical content alerts are logged as system log entries with the following Type and Event: (subtype eq content) and (eventid eq palo-alto-networks-message)
+- Schedule content updates so that they download-and-install automatically. Then, set a Threshold that determines the amount of time the firewall waits before installing the latest content. In a mission-critical network, schedule up to a 48 hour threshold
 
 ## Upgrade
 
