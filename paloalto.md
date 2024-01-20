@@ -436,18 +436,20 @@ Configure for every Update type:
 - Recurrance
 - Minutes past half an hour
 - Action: Download only/Download and install
-- Disable new apps
+- Disable new apps - you can first prepare policy updates for newly identified applications, then safely enable new applications that may be treated differently following the update. You can see all disabled applications in **Objects > Applications > Disabled Applications**
 - Threshold - hours - Content releases must be available on the Palo Alto Networks update server at least this amount of time before the firewall can retrieve the release and perform the Action you configured
 - New App ID Threshold - hours
 - Sync to peer
+- All these options may arrive via Panorama
 
 Action types:
 
 - Download
 - Install
-- Review policies
-- Review apps
-- Release notes
+- Review policies - shows policies from Security, QoS, PBF, SD-WAN with modified and new apps
+- Review apps - shows new and modified apps
+- Release notes - future changes + New apps + modified apps + modified decoders + new vulnerability signatures + modified vulnerability signatures + new file types
+- Revert - to previous version
 
 Best Practices for Content Updates 2 types:
 
@@ -459,8 +461,9 @@ Mission critical
 - Always review Content Release Notes
     -  Customer Support Portal > Preferences > Subscribe to Content Update Emails
     -  Content Release Notes for apps and threats on the Palo Alto Networks Support Portal
-    -  On Firewall: Device > Dynamic Updates > Release Note
-    - Notes section of Content Release Notes: future important updates - you can account for any policy impact in advance of the release
+    -  Firewall: Device > Dynamic Updates > Release Note
+    -  Notes section of Content Release Notes: future important updates - you can account for any policy impact in advance of the release
+    -  
 - Always review the new and modified App-IDs that a content release introduces - 
 - Critical content alerts are logged as system log entries with the following Type and Event: (subtype eq dynamic-updates) and (eventid eq palo-alto-networks-message) - configure forwarding of these events to personell
 - Test new Applications and Threats content updates on a test firewall
