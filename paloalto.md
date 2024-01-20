@@ -1,4 +1,4 @@
-## Palo Alto
+# Palo Alto
 
 All you need to know about Palo Alto firewalls and for PCNSE exam in short and structured form
 
@@ -470,6 +470,7 @@ Mission critical
 - Schedule content updates so that they download-and-install automatically. Then, set a Threshold that determines the amount of time the firewall waits before installing the latest content. In a mission-critical network, schedule up to a 48 hour threshold
 - Create a security policy rule to always allow New App Ids in certain categories, for example auth-service, it is done here: **Objects > Application Filters > Add > Apply to New App-IDs only**
 - Deploy updates in small branches first to test
+- Use New App-ID Threshold option and Threshold
 
 ## Upgrade
 
