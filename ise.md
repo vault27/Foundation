@@ -8,6 +8,12 @@
 - Command sets
 - Allowed protocols
 
+## TACACS
+
+## RADIUS
+
+## 802.1X
+
 ## Add device for TACACs auth
 
 Administartion > Network Resources > Network Devices
