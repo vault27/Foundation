@@ -4,7 +4,9 @@
 - Device groups: locations, types
 - Device profiles
 - Device admin policy sets
-- 
+- Shell profiles
+- Command sets
+- Allowed protocols
 
 ## Add device for TACACs auth
 
@@ -48,5 +50,12 @@ Authorization Policy
 Device Administration / Policy Elements / Results / TACACS Profiles
 
 - List of atttributes - that's all
+
+## TACACS command sets
+
+- Usually allow all
+- allow/deny
+- Command
+- Arguments
 
  
