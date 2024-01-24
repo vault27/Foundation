@@ -8,11 +8,22 @@
 - Command sets
 - Allowed protocols
 
-## TACACS
+
 
 ## RADIUS
 
 ## 802.1X
+
+## TACACS
+
+### Protocol
+
+### ISE logic
+
+- Device admin policy triggers based on Device Type, Location, Protocol, Username
+- Then it enforces a set of rules of Authorization policy
+- These rules add additional conditions
+- These rules apply Command Sets + Shell Profiles
 
 ## Add device for TACACs auth
 
