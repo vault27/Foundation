@@ -25,7 +25,7 @@
 - These rules add additional conditions
 - These rules apply Command Sets + Shell Profiles
 
-## Add device for TACACs auth
+### Add device for TACACs auth
 
 Administartion > Network Resources > Network Devices
 
@@ -36,7 +36,7 @@ Administartion > Network Resources > Network Devices
   - Device Type
 - TACACS shared secret
 
-## Device Admin Policy Sets
+### Device Admin Policy Sets
 
 Work Centers > Device Administration Policy Sets
 
@@ -62,17 +62,27 @@ Authorization Policy
   - Command sets
   - Shell Profiles
  
-## Shell profiles
+### Shell profiles
 
 Device Administration / Policy Elements / Results / TACACS Profiles
 
 - List of atttributes - that's all
 
-## TACACS command sets
+### TACACS command sets
 
 - Usually allow all
 - allow/deny
 - Command
 - Arguments
 
+### Logs
+
+Operations > TACACS > Live Logs
+
+- Each successfull login generates 2 logs: Authentication and Aithorization
+- All details are available:
+  - Authentication Policy
+  - Authorization Policy
+  - Shell profile
+  - Response attributes
  
