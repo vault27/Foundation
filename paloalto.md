@@ -888,6 +888,33 @@ tx-unicast: 0,
 - Policy rules do not influence these pings
 - Redistribution example: create redistribution profile, choose static, enter required destination prefix, choose redistribute, set priority: Profiles are matched in order (lowest number first), apply this path to OSPF and set metric that will be sent to OSPF
 
+### BGP
+
+BGP states
+
+- IDLE
+- Connect - 3-way handshake only - if stuck here - the problem is with the TCP
+- Active- - if stuck here - the problem is with the TCP
+- Open-sent - BGP_OPEN message sent with all parametres
+- Open-confirm - reply from neighbor received
+- Established - keepalive message received after Open-confirm
+
+Restart/Refresh BGP Sessions  
+Restarting a BGP session will build the BGP routing table from scratch (intrusive). Refreshing the session will only fetch/ look out for new routes (non-intrusive)  
+  
+For self initiation:
+
+```
+> test routing bgp virtual-router default restart self   (for restarting BGP connections)
+> test routing bgp virtual-router default refresh self   (for refreshing BGP connections)
+```
+
+From Peer side:
+```
+> test routing bgp virtual-router default restart peer <BGP peer>  (for restarting BGP connections)
+> test routing bgp virtual-router default refresh peer <BGP peer>  (for refreshing BGP connections)
+```
+
 ### Dual ISP design
 
 - One default gateway to ISP-1 with metric 10 - primary one
