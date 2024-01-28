@@ -982,30 +982,56 @@ summary-address 192.168.16.0 255.255.255.248.0
 
 ## Route filtering
 
-- Distribute list
-  	- Can use ACL, PFL, Route Map
-  	- Can be applied to transmitted, received, redistributed route updates
-- Prefix list
-  	- Better performance than ACL
-  	- Easier to configure than extended ACL
-  	- Subnet mask cannot be easily matched
- 
-Configure route filtering with prefix list
+OSPF supports filtering when type 3 LSA generation occurs
+  
+**3 methods**
+
+1. **Via summarization**
+
+Use word not-advertise - then summary will not be sent to other area. We may use it not for all summary but only for one network:
 
 ```
-ip prefix-list TEST deny 192.168.0.24/24
+area 12 range 192.168.1.0 255.255.255.0 not-advertise
+```
+
+2. **Area filtering**
+
+  - Filtering happens before sending or receiving route
+  - Prefix list is used
+
+Router will not send LSA-3 to area 2 about 192.168.3.0/24 from area 0
+
+```
+ip prefix-list TEST deny 192.168.3.0/24
 ip prefix-list TEST permit 0.0.0.0/0 le 32
 
 router ospf 1
-area 1 filter-list prefix TEST out
+area 2 filter-list prefix TEST in
 ```
 
-After this route will dissapear from LSA database and routing table.
-  
-Configure route filtering with distribute list + ACL
+The same but using different approach: 192.168.3.0/24 will be blocked from Area 0 to all areas
 
 ```
-access-list 1 deny 192.168.4.0 0.0.0/255
+area 0 filter-list prefix TEST out
+```
+
+After this route will dissapear from LSA database and routing table on all routers after ABR
+
+3. **Local OSPF filtering**
+
+- Route is in LSDB, but not installed in RIB 
+- Distribute list is used
+- It is applied to all ospf process, not to area
+- It prevents route from installing to RIB
+- It can be used on any router, not only on ABR/ASBR, even inside area 
+- Distribute list can use ACL, prefix list, Route Map
+- Word IN is always used
+- Word OUT is used for filtering LSA type 5
+ 
+This configuration will remove 192.168.1.0/24 from RIB
+
+```
+access-list 1 deny 192.168.1.0 0.0.0.255
 access-list 1 permit any
 
 router ospf 1
