@@ -243,13 +243,14 @@ Explanation:
   - 4 - The Router ID of the described AS boundary router
   - 5 - The destination network's IP address
 - Every router stores all LSAs in its LSDB, where his own LSAs are stored as well
+- LSDB is per area: every area has its own LSDB
 - Only a router that has originated a particular LSA is allowed to modify it or withdraw it
 - So Link State ID, Advertising Router, Metric are not changed! Metric is not accumulated!
 - Other routers must process and flood this LSA within its defined flooding scope if they recognize the LSA’s type and contents, but they must not ever change its contents, block it, or drop it before its maximum lifetime has expired
 - Summarization and route filtering can be done in a very limited fashion, unlike in distance vector protocols, where summarization and route filtering can be performed at any point in the network
 - In one LSU can be many LSAs, including LSAs from different Advertising Routers
 - Mostly used: 1,2,3,4,5,7
-- 1,2,3 - for all routes exchanges inside OSPF domain
+- 1,2,3 - for all routes exchanges inside OSPF domain - CCNP Core exam
 - 4,5,7 - for external redistributed routes
 - Sequence number - 32 bit number - it is incremented after each sending LSA - if router receives LSA with sequence number larger than in LSDB it processes it, and if it is smaller, router discards it
 - LSA age - every 1800 seconds - 30 minutes - router sends new LSAs with LSA age set to 0 - every second this value increments in LSDB. When age is 3600 seconds and nothiing new arrived - LSA is purged
@@ -288,7 +289,8 @@ LSA types (11 in total):
 - Link-state ID and advertising router are shared for all links in LSA-1
 - Link-state ID is always equal Advertising router
 - We see this as “O” routes in the routing table
-- In one LSA-1 can be several number of links 
+- One LSA-1 for all links on router is sent with particular sequence number
+- Link State ID: Router ID
 - Every link has fields:
   - Link type
   - Link ID
@@ -432,6 +434,7 @@ r10#show ip ospf database network
 - LSA-3 are generated based on LSA-1 or LSA-3
 - For example ABR connected to Area 0 and Area 1, takes all LSA-1 from Area 1 and generates LSA-3 which are sent to Area 0
 - For example ABR connected to Area 0 and Area 2 receives LSA-3 from Area 0 regarding routes in Area 1, then it regenerates them to LSA-3 for area 2, during regeneration it changes Advertising router and Metric of LSA
+- LSA 3 received from non backbone area will be installed to routing table but will not be propogated further
 - When ABR receives LSA-1, it creates LSA-3 with same network as in LSA-1, LSA-2 are used to determine network mask for multi access network
 - For example ABR sends everything he gets from Area 1 to Area 0 interfaces
 - Every prefix contains network, mask, metric
@@ -445,6 +448,8 @@ r10#show ip ospf database network
 - O IA - this is how LSA-3 routes look like in routing table in Cisco
 - Advertising Router in LSA is ABR: it is not changed while travelling inside area 0, it is changed only when leaves Area 0 on other ABR
 - ABR generates only one LSA-3, even if it has several LSA-1 for this network, best metric is used before creating LSA-3 for network
+- If route is deleted from LSDB ABR sends LSA-3 with maximum metric 16777215 to other Areas
+- Separate LSA-3 for every route
 
 LSA-3 example for one prefix
 
@@ -518,6 +523,30 @@ LSA-type 5 (AS-External-LSA (ASBR)), len 36
     Forwarding Address: 1.1.1.2
     External Route Tag: 1
 ```
+
+## Route Deletion
+
+- Router looses link
+- It sends new LSA-1 with new sequence number and without this link
+- After this ABRs send LSA-3 with maximum metric 16777215 to other Areas
+
+## Discontiguous networks
+
+Example:
+
+```
+Area 12 > R2 > Area 23 > R3 > Area 34
+          |               |
+        Area 0          Area 0
+```
+
+- Area 34 LSA-1 are converted to LSA 3 in Area 0
+- LSA 3 from Area 0 are converted to LSA 3 in Area 23
+- R2 installs LSA 3 into its routing table
+- BUT IT WILL NOT BE SENT FURTHER TO AREA 12
+- LSA 3 received from non backbone area will not be propogated to other areas
+- Area 0 should be contigous
+- Workaround: GRE tunnels and virtual links
 
 ## Neighbors
 
@@ -636,13 +665,11 @@ When a new LSA is received it is checked against the database for changes such a
 - Outside area - brief exchange  
 - Area 0 backbone area - is connected to all areas and all thraffic goes via it  
 - If a router is connected to Area 1 and Area 2, it will not forward information between them, because non of them is Area 0
-- In general, NSSA is same as normal area except that it can generate LSA Type 7 (redistribute from another domain)  
 - Every area has its own LSDB
 - ABR does not pass denser and more detailed type 1 and 2 LSAs from one area to another—instead, it passes type 3 summary LSAs
 - OSPF always chooses an intra-area route over an inter-area route for the same prefix, regardless of metric
 - ABRs ignore type 3 LSAs learned in a nonbackbone area during SPF calculation, which prevents an ABR from choosing a route that goes into a nonbackbone area and then back into the backbone
-
-Note that these conditions can result in both asymmetric routing and suboptimal routing across multiarea OSPF networks.
+- Router can be connected to 3 and more areas: for example to area 0, 1 and 2, routes between areas 1 and 2 are exchanged via area 0
   
 Using areas provides the following benefits:
 
@@ -877,6 +904,16 @@ To change RID we need to restart OSPF
 ```
 clear ip ospf process
 ```
+
+## Path Selection
+
+- Intra-area - with the lowest metric, intra-area is chosen even if it is slower then inter-area
+- Inter-area
+- External routes
+
+If two routes have equal metric, both of them are installed in RIB  
+Default max ECMP is 4 paths, it can be changed
+
 ## Authentication
 
 - Enabled per interface basis or per areantication-key CISO
