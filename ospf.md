@@ -957,14 +957,20 @@ show ip ospf interface | include line|authetication|key
 ## Summarization
 
 - Disabled by default
-- Configured on ABR or ASBR
+- Method 1: create many areas, mnay LSA-1 and LSA-2 inside area are transformed into s small amount of LSA-3
+- Method 2: sunnarize network prefixes on ABR or ASBR
+- On ABR the lowest metric among summarized networks will be used. If new network with lower metric appears then it will be used instead
+- Metric on the ABR can be configured manually
+- Small routes are suppressed
+- ABR installs discard route to its RIB to avoid loops and points this route to interface Null0s - if he gets packet for small network which does not exist on it he will not send this packet back, he will drop it
+- ABR will only summarize LSA-1s from source area, if he gets LSA-3 from source area, it will not add it to summary, and will advertise separatly :)
 - On ASBR default metric will be 20 for routes redistributed from other protocols
 
-On ABR, send to Area 0 only summery from area 1 instead of 10 nerworks
+On ABR, send to Area 0 only summary from area 1 instead of 10 nerworks
 
 ```
 router ospf 1
-area 1 range 192.168.16.0 255.255.255.248.0
+area 1 range 192.168.16.0 255.255.255.248.0 [cost 45]
 ```
 
 Summarization on ASBR router - it will send only one external route, from BGP for example, to OSPF domain
@@ -1005,6 +1011,17 @@ access-list 1 permit any
 router ospf 1
 distribute-list 1 in
 ```
+
+## Route types in Cisco
+
+6 in total
+
+- O - inside area
+- IA - Inter Area
+- N1 - NSSA external type 1
+- N2 - NSSA external type 2
+- E1 - external type 1
+- E2 - external type 2
 
 ## Configuration
 
