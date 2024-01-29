@@ -306,7 +306,7 @@ Existing session 6 stages
 - Install device certificate. It is used for connection with cloud services. It is installed from the cloud via OTP. Some firewall models already have it. OTP is generated on support portal for particular Serial
 - Be sure that the device is registered in the Customer Support Portal
 - Activate AIOps for NGFW (Free): https://apps.paloaltonetworks.com/hub > Toggle View by Support Account > AIOps > Activate > for NGFW > Create tenant
-- Add device to account: Hub https://apps.paloaltonetworks.com/apps > Toggle View by Support Account > Common Services > Device Associations > Add appliance choosing via Serial
+- Add device to particular Tenant in an account: Hub https://apps.paloaltonetworks.com/apps > Toggle View by Support Account > Common Services > Device Associations > Add appliance choosing via Serial
 - Log in to AIOps for NGFW by clicking on its icon in the hub
 
 ## Configuration management
