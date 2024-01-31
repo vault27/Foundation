@@ -309,6 +309,45 @@ Existing session 6 stages
 - Add device to particular Tenant in an account: Hub https://apps.paloaltonetworks.com/apps > Toggle View by Support Account > Common Services > Device Associations > Add appliance choosing via Serial
 - Log in to AIOps for NGFW by clicking on its icon in the hub
 
+Troubleshooting
+
+```
+phiph@PA(passive)> show device-telemetry details 
+Device telemetry details:
+    Send interval       : 60 minutes
+    Timestamp for send  : 00:06:41
+    End point           : br-prd1.us.cdl.paloaltonetworks.com
+
+phiph@PA(passive)> show device-telemetry settings 
+Device Telemetry Settings:
+    device-health-performance: yes
+    product-usage: yes
+    threat-prevention: yes
+    region: Americas
+    status: Device Certificate is valid 
+
+phiph@PA2(passive)> show device-telemetry stats all 
+Device Telemetry Statistics:
+    device-health-performance: 
+        last-attempt: Thu Feb  1 02:28:20 HKT 2024
+        last-success: Mon Jan  8 10:37:56 HKT 2024
+        num-of-failed-attempts: 2263
+        reason: Server not reachable
+        status: failed
+    product-usage: 
+        last-attempt: Thu Feb  1 02:28:20 HKT 2024
+        last-success: Mon Jan  8 10:37:56 HKT 2024
+        num-of-failed-attempts: 2263
+        reason: Server not reachable
+        status: failed
+    threat-prevention: 
+        last-attempt: Thu Feb  1 02:28:20 HKT 2024
+        last-success: Mon Jan  8 10:37:56 HKT 2024
+        num-of-failed-attempts: 2263
+        reason: Server not reachable
+        status: failed
+```
+
 ## Configuration management
 
 Configuration files:
