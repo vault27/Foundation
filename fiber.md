@@ -11,6 +11,8 @@
 
 ## Troubleshoot SFP
 
+Large minus numbers in Tx/Rx numbers will lead to Interface Down. Usuaully, if Rx has large number, then it means that sneding side has an issue. And we need to change SFP there.
+
 ```
 qprk-e-cor-swi01-c200#sh int tw1/0/17 transceiver 
 ITU Channel not available (Wavelength not available),
