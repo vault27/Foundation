@@ -309,6 +309,16 @@ Existing session 6 stages
 - Add device to particular Tenant in an account: Hub https://apps.paloaltonetworks.com/apps > Toggle View by Support Account > Common Services > Device Associations > Add appliance choosing via Serial
 - Log in to AIOps for NGFW by clicking on its icon in the hub
 
+Addresses
+
+- *.prod.di.paloaltonetworks.cloud
+- *.paloaltonetworks.com
+- *.prod.di.paloaltonetworks.com
+- *.prod.reporting.paloaltonetworks.com
+- *.receiver.telemetry.paloaltonetworks.com
+- https://storage.googleapis.com
+- http://br-prd1.us.cdl.paloaltonetworks.com/ - for US
+
 Troubleshooting
 
 ```
