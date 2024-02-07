@@ -2781,7 +2781,6 @@ Configuration
 - Delete Panorama IP
 - Save all these actions is only possible using auth key from panorama
 
-
 **Commit actions**
 
 - Commit > Commit to Panorama — Activates the changes you made in the configuration of the Panorama management server. This action also commits device group, template, Collector Group, and WildFire cluster and appliance changes to the Panorama configuration without pushing the changes to firewalls, Log Collectors, or WildFire clusters and appliances. Committing just to the Panorama configuration enables you to save the changes that are not ready for activation on the firewalls, Log Collectors, or WildFire clusters and appliances
@@ -2810,8 +2809,12 @@ Commit options when you commit to Panorama:
 
 **Locks**
 
-- ?
-
+- Config — Blocks other administrators from changing the candidate configuration
+- Commit — Blocks other administrators from changing the running configuration
+- Shared—Restricts changes to the entire Panorama configuration, including all device groups and templates.
+- Template—Restricts changes to the firewalls included in the selected template. (You can’t take a lock for a template stack, only for individual templates within the stack.)
+- Device group—Restricts changes to the selected device group but not its descendant device groups
+  
 **Pushing to firewalls**
 
 - Push all changes OR only incremental - made by me or other admin - it is not connected with scope
