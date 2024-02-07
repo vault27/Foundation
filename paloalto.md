@@ -2808,6 +2808,21 @@ Commit options when you commit to Panorama:
 - Change Summary
 - Validate Commit
 
+**Locks**
+
+- ?
+
+**Pushing to firewalls**
+
+- Push all changes OR only incremental - made by me or other admin - it is not connected with scope
+- Configure Push Scope - Edit Selections
+- Merge with device candidate config - ?
+- Include Device and Network templates - ?
+- Force template values - ?
+- No Default Selections - ?
+- Validate Device Group Push
+- Validate Template Push
+
 **Import firewall configs to Panorama**
 
 - You cannot manage the setting through both Panorama and the firewall. If you want to exclude certain firewall settings from Panorama management, you can either:
