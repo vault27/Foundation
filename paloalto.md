@@ -3447,7 +3447,7 @@ Palo Alto Supports 3 VPN deployments:
 
 All tunnels are configured in Network section  
 
-### IPSec tunnels
+**IPSec tunnels**
 
 How traffic is routed:
 
@@ -3473,7 +3473,7 @@ Concepts
 - For every site you need IKE Gateway and tunnel.x interface
 - Remote Peer IP in IKE Gateway can be dynamic, but in this case we need to configure ID for remote peer, for example domain name
 
-#### Policy-based VPN and Proxy-ID
+**Policy-based VPN and Proxy-ID**
 
 - Palo Alto to Palo Alto policy based VPN is not supported
 - Policy-based VPN only for connection with third party devices, old ones, you must configure a local and remote Proxy ID for them
@@ -3493,7 +3493,7 @@ Concepts
     - With IKEv1, Palo Alto Networks devices support only proxy-ID exact match. In the event where the Peer's Proxy ID's do not match, then there will be problems with the VPN working correctly.
     - With IKEv2, there is support traffic selector narrowing when the proxy ID setting is different on the two VPN gateways
 
-#### Configuration
+**Configuration**
 
 Configuration overview
 
@@ -3550,7 +3550,7 @@ If we need another site, we:
 - Enable dynamic routing on this tunnel
 - Add required rules
 
-#### Redundancy
+**Redundancy**
 
 - Two different ISPs - 2 different tunnels
 - Tunnel.1 is configured for Primary VPN tunnel
@@ -3567,7 +3567,7 @@ There are three methods to do VPN tunnel traffic automatic failover. Any one of 
 - Failover using Static Route Path monitoring
 - Dynamic routing protocol
 
-#### Verify
+**Verify**
 
 **Test gateway**
 
@@ -3651,7 +3651,7 @@ debug ike global on debug
 > debug ike pcap off
 ```
 
-### GRE tunnels
+**GRE tunnels**
 
 - The firewall encapsulates the tunneled packet in a GRE packet, and so the additional 24 bytes of GRE header automatically result in a smaller MSS in the MTU. If you don’t change the IPv4 MSS adjustment size for the interface, the firewall reduces the MTU by 64 bytes by default (40 bytes of IP header + 24 bytes of GRE header)
 - GRE tunneling does not support NAT between the GRE tunnel endpoints
@@ -3680,7 +3680,7 @@ Check the GRE session
 - Filter by using session filter protocol 47
 - Find the session ID and filter for session ID
 
-### LSVPN
+**LSVPN**
 
 - The LSVPN does not require a GlobalProtect subscription
 - Enable SSL Between GlobalProtect LSVPN Components
@@ -3689,7 +3689,7 @@ Check the GRE session
 - Configure the GlobalProtect Portal for LSVPN
 - Prepare the Satellite to Join the LSVPN
 
-#### GlobalProtect Satellite 
+**GlobalProtect Satellite** 
 
 - Simplifies the deployment of traditional hub and spoke VPNs, enabling you to quickly deploy enterprise networks with several branch offices with a minimum amount of configuration required on the remote satellite devices. This solution uses certificates for device authentication and IPSec to secure data
 - The setup includes configuring the portal, gateway, and satellite
@@ -3710,13 +3710,12 @@ GlobalProtect has three major components:
 
 <img width="977" alt="image" src="https://github.com/philipp-ov/foundation/assets/116812447/f3ec9794-9a39-4d33-8ebf-d4e12411c3e6">
 
-### Features
+**Features**
 
 - GlobalProtect authentication event logs in Monitor > Logs > System
 - Separate GlobalProtect log
-- 
 
-### MFA
+**MFA**
 
  - It is possible to request MFA for a certain application access, not only for VPN connection or User-ID
  - For example User > External Palo Alto Global Protect Gate way > LAN > Internal MFA Gateway > Application Server
@@ -3725,7 +3724,7 @@ GlobalProtect has three major components:
  - And sends notifications to global protect client for non browser apps
  - To facilitate MFA notifications for non-HTTP applications (such as Perforce) on Windows or macOS endpoints, a GlobalProtect app is required. When a session matches an Authentication policy rule, the firewall sends a UDP notification to the GlobalProtect app with an embedded URL link to the Authentication Portal page. The GlobalProtect app then displays this message as a pop up notification to the user
 
-### Xauth
+**Xauth**
 
 - Xauth (Extended Authentication within IKE) is what Palo Alto Networks use to support third party VPN software using the Globalprotect Gateway
 - It allows the third party VPN client to authenticate through the Globalprotect auth profile as part of the IKE negotiation
@@ -3738,14 +3737,14 @@ GlobalProtect has three major components:
 
 - If several VSYSes are connected via extermal equipment then there is an issue - to many sessions!
 
-### Inter-vsys routing
+**Inter-vsys routing**
 
 - Special external Zone is created on every VSYS
 - Interface is added to it
 - Routes are added, next hop is VR - and you choose wich one
 - Rules are created to allow communication between VSYS
 
-### CLI
+**CLI**
 
 ```
 admin@PA> show system info | match vsys 
