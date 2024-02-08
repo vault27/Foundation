@@ -590,7 +590,8 @@ Mission critical
 - show user group list - where applicable
 - show global-protect-gateway current-user | match users - where applicable
 
-** Upgrade Passive Device**
+**Upgrade Passive Device**
+
 - request system software check
 - request system software download version <insert version number>
 - show jobs id <insert ID>
@@ -3780,14 +3781,14 @@ admin@PA>
 
 - SCEP - ?
 
-### SSL/TLS service profile
+**SSL/TLS service profile**
 
 - Used by Captive portal, GlobalProtect portals and gateways, inbound traffic on the management (MGT) interface, the URL Admin Override feature, and the User-ID™ syslog listening service
 - Device > Certificate Management > SSL/TLS Service Profile
 - Certificate
 - TLS versions
 
-### Certificate profile
+**Certificate profile**
 
 - User and device authentication for Captive Portal, multi-factor authentication (MFA), GlobalProtect, site-to-site IPSec VPN, external dynamic list (EDL) validation, Dynamic DNS (DDNS), User-ID agent and TS agent access, and web interface access to Palo Alto Networks firewalls or Panorama
 - Specify which certificates to use, how to verify certificate revocation status, and how that status constrains access
@@ -3798,7 +3799,7 @@ admin@PA>
 - OCSP - takes precedence over CRL - use or not
 - Block session if cert is unknown, if cert is expired
 
-### Firewall Features Using Certificates
+**Firewall Features Using Certificates**
 
 - TLS decryption
 - MGTM interface auth
@@ -3810,6 +3811,21 @@ admin@PA>
 - IPSec IKE Auth
 - HA Auth
 - Secure Syslog Auth
+- AIOPS
+
+**Device Certificate**
+
+Install
+
+```
+request certificate fetch
+```
+
+Verify
+
+```
+show device-certificate status
+```
 
 ## Management Profiles
 
