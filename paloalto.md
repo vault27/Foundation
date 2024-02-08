@@ -4042,6 +4042,14 @@ test
 
 ## SSL mirror
 
+- Free license
+- Connect the traffic collection tool directly to an Ethernet interface on the firewall and set the Interface Type to Decrypt Mirror
+- Decryption port mirroring is not available on the VM-Series for public cloud platforms
+- Device > Setup> Content - ID > Allow forwarding of decrypted content
+- Objects > Decryption Profile
+- Specify whether to mirror decrypted traffic before or after policy enforcement
+- Policies > Decryption > Specify decryption Decryption Profile in Rule
+
 ## Autofocus
 
 - It is a web portal
