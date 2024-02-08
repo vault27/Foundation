@@ -3779,7 +3779,12 @@ admin@PA>
 
 ## Certificates
 
-- SCEP - ?
+**SCEP**
+
+- SCEP operation is dynamic in that the enterprise PKI generates a user-specific certificate when the SCEP client requests it and sends the certificate to the SCEP client
+- The SCEP client then transparently deploys the certificate to the client device
+- You can use a SCEP profile with GlobalProtect to assign user-specific client certificates to each GlobalProtect user
+- GlobalProtect portal acts as a SCEP client to the SCEP server in your enterprise PKI
 
 **SSL/TLS service profile**
 
@@ -3895,13 +3900,6 @@ Supported authentication types include the following:
 - Local
 
 Roles are available in RADIUS Vendor-Specific Attributes (VSAs), TACACS+ VSAs, or SAML attributes.
-
-## SCEP
-
-- SCEP operation is dynamic in that the enterprise PKI generates a user-specific certificate when the SCEP client requests it and sends the certificate to the SCEP client
-- The SCEP client then transparently deploys the certificate to the client device
-- You can use a SCEP profile with GlobalProtect to assign user-specific client certificates to each GlobalProtect user
-- GlobalProtect portal acts as a SCEP client to the SCEP server in your enterprise PKI
 
 ## Global Protect
 
@@ -4027,7 +4025,7 @@ test
     - IPSec or SSL
     - Satelite
 
-##v HIP
+## HIP
 
 - HIP checks are performed when the app connects to the gateway
 - Subsequent checks are performed hourly
