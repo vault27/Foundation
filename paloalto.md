@@ -2949,13 +2949,13 @@ request certificate fetch
 
 Default username/pass - admin/admin  
 
-### Show all system data
+**Show all system data**
 
 ```
 show system info
 ```
 
-### Show Top - management plane
+**Show Top - management plane**
 
 ```
 show system resources
@@ -2964,6 +2964,7 @@ show system resources
 **Check status of all processes**
 
 ```
+show system software status 
 Slot 0, Role mp
 ----------------------------------------
  
@@ -2975,13 +2976,13 @@ Group    batch_secondary      running
 Group    chassis              running
 ```
 
-### Check if web server is running
+**Check if web server is running**
 
 ```
 show system software status | match appweb
 ```
 
-### Configure network
+**Configure MGMT**
 
 ```
 configure
@@ -2992,26 +2993,26 @@ commit
 show interface management
 ```
 
-### Show data-plane CPU load
+**Show data-plane CPU load**
 
 ```
 show running resource-monitor
 ```
 
-### Show routing table
+**Show routing table**
 
 ```
 show routing route
 show routing fib
 ```
 
-### Test route
+**Test route**
 
 ```
 admin@Palto-1(active)> test routing fib-lookup ip 98.139.183.24 virtual-router default
 ```
 
-### Show sessions - with NAT data
+**Show sessions - with NAT data**
 
 ```
 show session all filter application ping
@@ -3024,7 +3025,7 @@ Vsys                                          Dst[Dport]/Zone (translated IP[Por
 vsys1                                          1.1.1.1[26]/Outside  (1.1.1.1[26])
 ```
 
-### Show detailed info about session: NAT, app, rule names, vsys, interfaces, bytes, type, state, user, QoS, end reason, logging...
+**Show detailed info about session: NAT, app, rule names, vsys, interfaces, bytes, type, state, user, QoS, end reason, logging...**
 
 ```
 admin@PA-1-1> show session id 25
@@ -3078,13 +3079,13 @@ Session              25
         end-reason                           : aged-out
 ```
 
-### Clear session
+**Clear session**
 
 ```
 clear session id 27240
 ```
 
-### Show NAT policy
+**Show NAT policy**
 
 ```
 admin@PA-1-1> show running nat-policy
@@ -3102,19 +3103,19 @@ admin@PA-1-1> show running nat-policy
 }
 ```
 
-### Ping
+**Ping**
 
 ```
 ping source 10.2.62.150 host 10.2.62.1
 ```
 
-### Reboot
+**Reboot**
 
 ```
 request restart system
 ```
 
-### Debug silent packet drop
+**Debug silent packet drop**
 
 ```
 debug dataplane packet-diag set filter match destination 192.168.1.100
@@ -3122,19 +3123,19 @@ debug dataplane packet-diag set filter on
 show counter global filter packet-filter  yes delta yes severity drop
 ```
 
-### Check connection to URL database
+**Check connection to URL database**
 
 ```
 show url-cloud status
 ```
 
-### Show Wildfire submissions
+**Show Wildfire submissions**
 
 ```
 debug wildfire upload -log show
 ```
 
-### Disable hardware offload 
+**Disable hardware offload** 
 
 In order to capture traffic  
 Supported on the following firewalls: PA-3200 Series, PA-5200 Series,and PA-7000 Series firewall
@@ -3143,25 +3144,25 @@ Supported on the following firewalls: PA-3200 Series, PA-5200 Series,and PA-7000
 admin@PA-7050>set session offload no
 ```
 
-### Switch to suspended state
+**Switch to suspended state**
 
 ```
 request high-availability state suspend
 ```
 
-### Switch to functional state
+**Switch to functional state**
 
 ```
 request high-availability state functional
 ```
 
-### Sync config to remote peer
+**Sync config to remote peer**
 
 ```
 request high-availability sync-to-remote running-config
 ```
 
-### Show network connections
+**Show network connections**
 
 For example with Panorama
 
@@ -3171,7 +3172,7 @@ tcp        0      0 10.2.55.119:50914       10.2.23.154:3978        ESTABLISHED
 tcp        0      0 10.2.55.119:34314       10.2.23.154:3978        TIME_WAIT  
 ```
 
-### Show Panorama status
+**Show Panorama status**
 
 ```
 admin@PA-1-1(active-primary)> show panorama-status 
@@ -3181,13 +3182,13 @@ Panorama Server 1 : 10.2.23.154
     HA state      : disconnected
 ```
 
-### Reset to factory configuration
+**Reset to factory configuration**
 
 ```
 request system private-data-reset
 ```
 
-### Export tcpdump
+**Export tcpdump**
 
 ```
 scp export mgmt-pcap from mgmt.pcap to < username@host:path>
