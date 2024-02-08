@@ -2051,7 +2051,7 @@ What is not synced?
 - Jumbo frames
 - Log Export Settings
 
-### HA prerequisites
+**Prerequisites**
 
 - Model
 - PAN-OS version
@@ -2061,18 +2061,8 @@ What is not synced?
 - Slot configuration
 - For VMs: HYpervisor, number of CPU cores
 
-### HA states
 
-- Initial - A/P or A/A
-- Active - A/P
-- Passive - A/P
-- Active-Primary - A/A
-- Active-Secondary - A/A - A firewall in active-secondary state does not support DHCP relay
-- Tetntative - A/A - Failure, monitored object (a link or path), firewall leaves suspended or non-functional state
-- Non-Functional - A/P or A/A - Failure - In active/passive mode, all of the causes listed for Tentative state cause non-functional state
-- Suspended - A/P or A/A - manually disabled
-  
-### Links
+**Links**
 
 7 Links in total, all are configured in HA Communications section
 - HA-1 control link (Control Plane) - should be HA type or management
@@ -2103,15 +2093,15 @@ What is not synced?
 - HA4
     - Layer 3 type no gateway, no spaning over subnets, HA type
     - Session cache synchronization among all HA cluster members having the same cluster ID + keep-alives between Cluster members
-- HA4 BAckup
+- HA4 Backup
 
-### CLoud limitations
+**CLoud limitations**
 
 - The VM-Series firewall on Azure and VM-Series firewall on AWS only support active/passive HA
 - When you deploy the firewall with the Amazon Elastic Load Balancing (ELB) service on AWS, it does not support HA (in this case, ELB service provides the failover capabilities
 - The VM-Series firewall on Google Cloud Platform does not support traditional HA
 
-### Active/Passive
+**Active/Passive**
 
 Supported deployments
 
@@ -2145,18 +2135,20 @@ Configuration workflow
 Out of sync state  
 Possible when person makes change to active host, does not commit. Then someone from Panorama commits amd push configs to both devices. But panorama does not touch what we did locally. As a result new configuration only on Active device and we have out of sync state. Now we can sync from both devices, we need to choose which one is better for us.
 
-### Firewall states
+**Firewall states**
 
-- Initial - after boot-up and before it finds peer
-- Active - normal traffic handling state
-- Passive - normal traffic is discarded, except LACP and LLDP
+8 in total
+
+- Initial - after boot-up and before it finds peer - A/P or A/A
+- Active - normal traffic handling state - A/P
+- Passive - normal traffic is discarded, except LACP and LLDP - A/P
 - Active-Primary - A/A only
-- Active-Secondary - A/A only
-- Tentative - A/A only
-- Suspended - administratively disabled
-- Non Functional - error state
+- Active-Secondary - A/A only - A firewall in active-secondary state does not support DHCP relay
+- Tentative - A/A only - Failure, monitored object (a link or path), firewall leaves suspended or non-functional state - 
+- Suspended - administratively disabled - A/P or A/A 
+- Non Functional - error state - A/P or A/A - Failure - In active/passive mode, all of the causes listed for Tentative state cause non-functional state
 
-### Troubleshoot HA
+**Troubleshoot**
 
 Show HA logs in **Monitor > System**
 
@@ -2170,7 +2162,7 @@ Show HA logs in **Monitor > System**
 show log system direction equal backward subtype equal ha eventid equal state-change
 ```
 
-### Active/Active
+**Active/Active**
 
 - Advanced design concepts
 - Complex troubleshooting
@@ -2212,14 +2204,14 @@ Configuration workflow
     - Floating IP can be bound to Active Primary Device
     - OR Device priority can be configured for devices 0 and 1 - ?
 
-### Virtual MAC address
+**Virtual MAC address**
 
 - Manually configure different gateways on end systems or use load balancers
 - Each firewall in the HA pair creates a virtual MAC address for each of its interfaces that has a floating IP address or ARP Load-Sharing IP address
 - After the failed firewall recovers, by default the floating IP address and virtual MAC address move back to firewall with the Device ID [0 or 1] to which the floating IP address is bound
 - When a new active firewall takes over, it sends gratuitous ARPs from each of its connected interfaces to inform the connected Layer 2 switches of the new location of the virtual MAC address. 
 
-### Route based redundancy
+**Route based redundancy**
 
 - Firewalls are connected  to routers, not switches
 - Each firewall has separate IP addresses, sessions are synced
@@ -2228,13 +2220,13 @@ Configuration workflow
   
 <img width="602" alt="image" src="https://user-images.githubusercontent.com/116812447/215494580-eeaed00c-52a0-479c-b8db-909f8cce27fc.png">
 
-### ARP load sharing
+**ARP load sharing**
 
 - Use only when firewall is default gateway for end hosts
 - Everytime different firewall replies on ARP request with its own virtual MAC, IP is the same for both firewalls
 - ARP load sharing on LAN side and floating IP on the other
 
-### Cluster
+**Cluster**
 
 - 2 HA4 interfaces(primary and backup) with type HA, IP address, mask
 - On every device add all over devices with serial number, HA4 and HA4 backup IP addresses and sessions sync
