@@ -703,7 +703,7 @@ Limit amount of dowmloaded software images
 
 - Resource widget: both datalane and management CPU
 
-### Best Practice Assessment (BPA) tool
+## Best Practice Assessment (BPA) tool
 
 - BPA is available via Customer Support Portal
 - After you gain access to the BPA, you can generate a BPA report for a Panorama appliance or for a next-generation firewal
@@ -715,7 +715,7 @@ Limit amount of dowmloaded software images
 - The Best Practices Assessment Plus (BPA+) fully integrates with BPA to provide customers with the ability to easily remediate failed best practice checks and improve overall adoption and security posture
 - Three class summaries for BPA: Technical, Operational, Management
 
-### Heat map
+**Heat map**
 
 - For every zone pair, for ezmple Internal > External, it shows in percents adoption rate for all features
 - The Heatmap Measures Adoption Rate. The Heatmap can filter information by device groups, serial numbers, zones, areas of architecture, and other categories. The results chart the progress of security improvement toward a Zero Trust network
@@ -739,7 +739,7 @@ The Heatmap measures the adoption rate of the following Palo Alto Networks firew
 - Service/Port
 - Logging
 
-### BPA report
+**BPA report**
 
 - Executive summary in Palo Alto web site
 - Detailed HTML report is downloaded
@@ -790,7 +790,7 @@ Concepts
 - Policy check relies on pre-NAT IP addresses
 - Zone protection profile, usually for outside zone
 
-### Zone protection profile
+**Zone protection profile**
 
 Features:
 
@@ -1148,7 +1148,7 @@ Enables the firewall to mark traffic with the same DSCP value that was detected 
 - QoS egress interface - this is where you apply QoS profile. If you limit Youtube then Egress interface is Internal interface of FW. You apply it in separate section Network > QoS
 - DSCP classification allows you to both honor DSCP values for incoming traffic and mark a session with a DSCP value as session traffic exits the firewall
   
-QoS policy  
+**QoS policy**  
   
 **Policies > QoS**  
 Define a QoS policy rule to match to traffic based on:
@@ -1166,7 +1166,7 @@ Define a QoS policy rule to match to traffic based on:
     - Custom Codepoint: Can be used to match to traffic by entering a codepoint name and binary value
 - At the end you define a class for this traffic: 1 of 8 + schedule
   
-QoS profile
+**QoS profile**
   
 **Network > Network Profiles > QoS Profile**
 
@@ -1362,7 +1362,7 @@ You can also force some of these sites to be decrypted
 
 Basicly it defines whom to show captive portal.
 
-Policies > Authentication
+**Policies > Authentication**
 
 - Source in all forms
 - Destination in all forms
@@ -1373,7 +1373,7 @@ Policies > Authentication
 The following logical objects are used to support Authentication Policy:  
 **MFA profile > Authentication profile > Authentication enforcement object > Authentication Policy + Captive Portal settings in paralell + Authentication sequence in parallel**
 
-#### Multi-Factor authentication
+**Multi-Factor authentication**
 
 - **Device > Server Profiles > Muli Factor Authentication**
 - Create a profile
@@ -1381,7 +1381,7 @@ The following logical objects are used to support Authentication Policy:
 - The MFA factors that the firewall supports include push, Short Message Service (SMS), voice, and one-time password (OTP) authentication
 - These profiles are connected as Factors to Authentication profile, several Factors can be addded
 
-#### Authentication profile
+**Authentication profile**
 
 Types:
 
@@ -1401,14 +1401,14 @@ Types:
 - Failed attempts
 - User domain
 
-#### Authentication sequence
+**Authentication sequence**
 
 - **Device > Authentication Sequence**
 - We can create several
 - We add different authentication profiles to a sequence
 - Order of profiles matter
 
-#### Authentication enforcement object
+**Authentication enforcement object**
 
 - **Objects > Authentication**
 - Is assigned to Authentication policy rules
@@ -1419,7 +1419,7 @@ Types:
     - no-captive-portal — The firewall evaluates Security policy without authenticating users
 - Authetication profile my be none, then one in Captive portal settings is used
 
-#### Captive Portal - Authentication Portal
+**Captive Portal - Authentication Portal**
 
 **Device > User Identification > Authentication Portal Settings**  
 
@@ -1514,7 +1514,7 @@ connection.
 - reset-both: For TCP, this action resets the connection on both client and server ends. For
 UDP, it drops the connection
 
-### Antivirus
+**Antivirus**
 
 - Protect against viruses, worms, trojans, spyware downloads
 - Enable protocol decoders: ftp, http, imap, pop3, smb, smtp
@@ -1532,7 +1532,7 @@ UDP, it drops the connection
 - WildFire-based signatures are used in addition to Antivirus
 - WildFire inline ML, you must possess an active WildFire subscription
 
-### Anti-Spyware
+**Anti-Spyware**
 
 - Several policies in one Profile
 - Signatures are added to Policy by severity and by name and by category
@@ -1548,7 +1548,7 @@ UDP, it drops the connection
 - In this profile DNS Security is also configured - Palo Alto Networks DNS Security service, a cloud-based analytics platform providing your firewall with access to DNS signatures generated using advanced predictive analysis and machine learning, with malicious domain data from a growing threat intelligence sharing community
 - Active DNS Security and Threat Prevention (or Advanced Threat Prevention) subscription is required
 
-Advanced Threat Prevention
+**Advanced Threat Prevention**
 
 - Advanced Threat Prevention is a cloud-delivered security service that works in conjunction with the existing Threat Prevention license to deliver protections for advanced and evasive C2 threats
 - No update packages required
@@ -1558,7 +1558,7 @@ Advanced Threat Prevention
 - Advanced Threat Prevention is enabled and configured under inline cloud analysis in the Anti-Spyware Profile
 - In addition to signatre based, inline detection system to prevent unknown and evasive C2 threats
 
-### Vulnerability Protection
+**Vulnerability Protection**
 
 - Create profile, Add rules and exceptions too profile
 - Signatures are added to rule, based on CVE, Vendor ID, Severity, Category
@@ -1568,7 +1568,7 @@ Advanced Threat Prevention
 - When the vulnerability protection action profile is set to reset-both, the associated threat log might display action as reset-server. As discussed earlier, this occurs when the firewall detects the threat at the beginning of a session and presents the client with a 503-block page. Since, the block place disallows the connection, only the server-side connection is reset
 - The default Vulnerability Protection Profile protects clients and servers from all known critical-, high-, and medium-severity threats
 
-### URL Filtering
+**URL Filtering**
 
 - Works without decryption, but does not show Block Page - just drops
 - Without decryption Application in URL filtering logs is always SSL  
@@ -1595,7 +1595,7 @@ What it does:
 - Inline ML or Advanced URL filtering
 - Custom URL categories
 
-#### Control access to site
+**Control access to site**
 
 Actions for site access:
 
@@ -1606,7 +1606,7 @@ Actions for site access:
 - override - Displays a response page that prompts the user to enter a valid password to gain access to the site. Configure URL Admin Override settings (Device > Setup > Content ID) to manage password and other override settings
 - none - custom URL category only
 
-#### Credential detection
+**Credential detection**
 
 - Configure user-credential detection so that users can submit credentials only to the sites in specified URL categories
 - Credential phishing prevention works by scanning username and password submissions to websites and comparing those submissions against valid corporate credentials. You can choose which websites you want to allow or block corporate credential submissions based on the URL category of the website
@@ -1623,14 +1623,14 @@ Actions for credential detections:
 - block - block page is displayed
 - continue - Anti Physhing continue page is displayed - then user may enter credentials
 
-#### Safe search enforcement
+**Safe search enforcement**
 
 - Palo Alto Networks enforces filtering based only on search engine providers filtering mechanisms
 - If users search using Google, Bing, Yahoo, Yandex, or YouTube search engines and they did not set their safe search setting to the strictest setting, then your firewall responds in one of two ways
     - Blocks Search Results When Strict Safe Search Is Off (Default
     - Forces Strict Safe Search - The firewall automatically and transparently enforces the strictest safe search settings
 
-#### HTTP Header Insertion
+**HTTP Header Insertion**
 
 In URL filtering Objects > Security Profiles > URL Filtering > HTTP Header Insertion HTTP header insertion is supported  
 The firewall supports header insertion for HTTP/1.x traffic only  
@@ -1643,13 +1643,13 @@ HTTP header insertion can only be performed by using the following methods:
 - PUT
 - HEAD
 
-#### Custom categories
+**Custom categories**
 
 - Objects > Custom objects > URL Category
 - URL list
 - Category match: specifying two or more PAN-DB categories of which the new category will consist, allows you to target enforcement for a website or page that matches all of the categories specified in the custom URL category object
 
-#### Inline ML or Advanced URL Filtering
+**Inline ML or Advanced URL Filtering**
 
 - Advanced URL Filtering is a subscription service that works natively with the Palo Alto Networks NGFW
 - Advanced URL Filtering uses ML to analyze URLs in real time and classify them into benign or malicious categories
@@ -1662,7 +1662,7 @@ HTTP header insertion can only be performed by using the following methods:
 - Select Inline ML and define an Action for each inline ML model
 - Add URL exceptions to your URL Filtering profile if you encounter false-positives
 
-#### Using URL Categories as Match Criteria vs. Applying URL Filtering Profile to a Security Policy Rule
+**Using URL Categories as Match Criteria vs. Applying URL Filtering Profile to a Security Policy Rule**
 
 Use URL categories as match criteria in the following cases:
 
@@ -1675,7 +1675,7 @@ Use a URL Filtering profile in the following cases:
 - To specify more granular actions, such as alert, on traffic for a specific category
 - To configure a response page that displays when users access a blocked or blocked-continue website.
 
-### Data Filtering
+**Data Filtering**
 
 - Prevent sensitive information, such as credit card numbers or Social Security numbers, from leaving a protected network
 - Filter on keywords, such as a sensitive project name or the word “confidential.”
@@ -1683,7 +1683,7 @@ Use a URL Filtering profile in the following cases:
 - Regular expressions: Filter for a string of characters
 - File properties: Filter for file properties and values based on file type
 
-### File Blocking
+**File Blocking**
 
 - Create profile, add rules
 - Every rule has application, file types, direction and action
@@ -1696,7 +1696,7 @@ Use a URL Filtering profile in the following cases:
     - continue: After the specified file type is detected, a customizable response page is presented to the user. The user can click through the page to download the file. A log is also generated in the Data Filtering log. This type of forwarding action requires user interaction and is therefore only applicable for web traffic
 - Monitor > Logs > Data Filtering - All File Block logs are here
 
-### WildFire
+**WildFire**
 
 Operation workflow
 
@@ -1737,7 +1737,7 @@ Configuration workflow
 - WildFire public cloud or the WildFire private cloud (hosted with a WF-500 appliance)
 - WildFire hybrid cloud deployment: WildFire appliance to analyze sensitive files (such as PDFs) locally, less-sensitive file types (such as PE files) or file types that are not supported for WildFire appliance analysis (such as APKs) to be analyzed by the WildFire public cloud
 
-Verdicts
+**Verdicts**
 
 - Benign
 - Grayware - do not pose a direct security threat but might display otherwise obtrusive behavior. Grayware can include adware, spyware, and Browser Helper Objects (BHOs)
@@ -1764,7 +1764,7 @@ Licenses
 - Standalone subscription that provides API-only access
 
 
-### DoS Protection
+**DoS Protection**
 
 - In a profile you configure: Type, Flood protection, Resources protection
 - Profile is not applied in security policy, it is applied in separate DoS policy
@@ -1824,7 +1824,7 @@ Show maximum number of sessions for each VSYS
 show session meter
 ```
 
-### Session types
+**Session types**
 
 - Flow - Regular type of session where the flow is the same between c2s and s2c (ex. HTTP, Telnet, SSH)
 - Predict - This type is applied to sessions that are created when Layer7 Application Layer Gateway (ALG) is required. The application has been identified and there is need for a new session to be allowed on the firewall without any additional security rule (ex. FTP active/passive, voice protocols h323/sip etc). These sessions may be created with a 0 as source/destination IP/port, since that information may not be known yet. Packets that match the Predict sessions will then change to normal FLOW session
@@ -1835,19 +1835,19 @@ Show all predict sessions - show only the predict sessions that are currently pe
 show session all filter type predict
 ```
 
-### Session flow
+**Session flow**
 
 - Init > Opening > Active > Discard/Closing > Closed > Free
 - If the session timeout has been reached, the session will timeout and transition to Closing
 - If the traffic has been denied due to a security rule or a threat has been detected(with the action set to drop), the session will transition to Discard
 
-### Stable session states
+**Stable session states**
 
 - INIT - Every session begins, by default, in INIT state. A session in the INIT state is part of the free pool and can be used at anytime. The session may been used previously, but has now been returned back into the free pool
 - ACTIVE - Any session that matches a particular traffic flow, and has been processed for inspection and forwarding.
 - DISCARD - Traffic that has been matched by a session but is denied due to a security policy, threat detection
 
-### Transient session states
+**Transient session states**
 
 Sessions in Transient states are difficult to see as they make the transition to one of the Stable states very quickly
 
@@ -1856,14 +1856,14 @@ Sessions in Transient states are difficult to see as they make the transition to
 - Closed
 - Free
 
-### Session Flags
+**Session Flags**
 
 - NS - There has been Source NAT applied on the session
 - ND - There has been Destination NAT applied on the session
 - NB -There has been Both Source + Destination NAT applied on the session
 - No flag - There is no NAT applied on the session.
 
-### Session end reasons
+**Session end reasons**
 
 - threat
 - policy-deny
@@ -1879,13 +1879,13 @@ Sessions in Transient states are difficult to see as they make the transition to
 - aged-out - no ARP of router, routing issues, no reply from server
 - unknown
 
-### Session timeouts
+**Session timeouts**
 
 - Timeout - The specific timeout configured for the application
 - Time to live - The time left until the session will expire. In the example, there are 2 seconds left until the session will expire and session state will change
 - Session in session ager - For each session there is a flow ager, which is an aging process that keeps track of the lifetime of sessions. As long as the session is Active and time to live did not reach 0 sec, the session in session ager will be marked as True
 
-### Sessions in HA deployment
+**Sessions in HA deployment**
 
 The user can tell if a session has not been created on the local firewall by looking at the session synced from HA peer from
 >show session id
