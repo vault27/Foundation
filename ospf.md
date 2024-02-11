@@ -74,6 +74,7 @@
 - Two routers can have 2 neighborships via different interfaces - and it is ok - router ID is the same
 - When nothing happens, only HELLO packets travel through network
 - If somethings happens and timers are default, changes will occur slowly
+- Path cost and path metric are synonims
 
 ## Metric
 
@@ -256,7 +257,7 @@ Explanation:
 - LSA age - every 1800 seconds - 30 minutes - router sends new LSAs with LSA age set to 0 - every second this value increments in LSDB. When age is 3600 seconds and nothiing new arrived - LSA is purged
 - LSAs are forwarded unchanged, if router gets the same LSAs from different routers, it keeps only 1 copy in database, because they are the same
 
-LSA types (11 in total):
+**LSA types (11 in total) (6 used for IPv4)**
 
 - 1 - Router LSA
 - 2 - Network
@@ -434,7 +435,7 @@ r10#show ip ospf database network
 - LSA-3 are generated based on LSA-1 or LSA-3
 - For example ABR connected to Area 0 and Area 1, takes all LSA-1 from Area 1 and generates LSA-3 which are sent to Area 0
 - For example ABR connected to Area 0 and Area 2 receives LSA-3 from Area 0 regarding routes in Area 1, then it regenerates them to LSA-3 for area 2, during regeneration it changes Advertising router and Metric of LSA
-- LSA 3 received from non backbone area will be installed to routing table but will not be propogated further
+- **LSA 3 received from non backbone area will be installed to routing table but will not be propogated further**
 - When ABR receives LSA-1, it creates LSA-3 with same network as in LSA-1, LSA-2 are used to determine network mask for multi access network
 - For example ABR sends everything he gets from Area 1 to Area 0 interfaces
 - Every prefix contains network, mask, metric
@@ -916,7 +917,8 @@ Default max ECMP is 4 paths, it can be changed
 
 ## Authentication
 
-- Enabled per interface basis or per areantication-key CISO
+- Enabled per interface basis or per area
+- Password is always per interface
 - Plaintext
 - MD5
 
@@ -1042,12 +1044,23 @@ distribute-list 1 in
 
 6 in total
 
-- O - inside area
-- IA - Inter Area
+- O - inside area - LSA-1 + LSA-2
+- IA - Inter Area - LSA-3
 - N1 - NSSA external type 1
 - N2 - NSSA external type 2
-- E1 - external type 1
-- E2 - external type 2
+- E1 - external type 1 - preffered over Type 2 - redistribution metric + tptal path metric to ASBR
+- E2 - external type 2 - always equals to redistribution metric
+
+## Default route
+
+Default route is sent via different LSAs, depending on Area type:
+
+- LSA 5 - in normal Areas
+- LSA 3 - in stub & totally-stub area
+- LSA 7 - in NSSA
+- ? - In a NSSA-totally-stub area
+
+Default route is required to be advertised
 
 ## Configuration
 
@@ -1108,12 +1121,6 @@ router ospf 1
   default-information originate
 ```
 
-Default route is sent via different LSAs, depending on Area type:
-
-- LSA 5 - in normal Areas
-- LSA 3 - in stub & totally-stub area
-- LSA 7 - in NSSA
-- ? - In a NSSA-totally-stub area
 
 **IOS interface specific configuration**
 
