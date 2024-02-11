@@ -306,8 +306,57 @@ Existing session 6 stages
 - Install device certificate. It is used for connection with cloud services. It is installed from the cloud via OTP. Some firewall models already have it. OTP is generated on support portal for particular Serial
 - Be sure that the device is registered in the Customer Support Portal
 - Activate AIOps for NGFW (Free): https://apps.paloaltonetworks.com/hub > Toggle View by Support Account > AIOps > Activate > for NGFW > Create tenant
-- Add device to account: Hub https://apps.paloaltonetworks.com/apps > Toggle View by Support Account > Common Services > Device Associations > Add appliance choosing via Serial
+- Add device to particular Tenant in an account: Hub https://apps.paloaltonetworks.com/apps > Toggle View by Support Account > Common Services > Device Associations > Add appliance choosing via Serial
 - Log in to AIOps for NGFW by clicking on its icon in the hub
+
+Addresses
+
+- *.prod.di.paloaltonetworks.cloud
+- *.paloaltonetworks.com
+- *.prod.di.paloaltonetworks.com
+- *.prod.reporting.paloaltonetworks.com
+- *.receiver.telemetry.paloaltonetworks.com
+- https://storage.googleapis.com
+- http://br-prd1.us.cdl.paloaltonetworks.com/ - for US
+
+Troubleshooting
+
+```
+phiph@PA(passive)> show device-telemetry details 
+Device telemetry details:
+    Send interval       : 60 minutes
+    Timestamp for send  : 00:06:41
+    End point           : br-prd1.us.cdl.paloaltonetworks.com
+
+phiph@PA(passive)> show device-telemetry settings 
+Device Telemetry Settings:
+    device-health-performance: yes
+    product-usage: yes
+    threat-prevention: yes
+    region: Americas
+    status: Device Certificate is valid 
+
+phiph@PA2(passive)> show device-telemetry stats all 
+Device Telemetry Statistics:
+    device-health-performance: 
+        last-attempt: Thu Feb  1 02:28:20 HKT 2024
+        last-success: Mon Jan  8 10:37:56 HKT 2024
+        num-of-failed-attempts: 2263
+        reason: Server not reachable
+        status: failed
+    product-usage: 
+        last-attempt: Thu Feb  1 02:28:20 HKT 2024
+        last-success: Mon Jan  8 10:37:56 HKT 2024
+        num-of-failed-attempts: 2263
+        reason: Server not reachable
+        status: failed
+    threat-prevention: 
+        last-attempt: Thu Feb  1 02:28:20 HKT 2024
+        last-success: Mon Jan  8 10:37:56 HKT 2024
+        num-of-failed-attempts: 2263
+        reason: Server not reachable
+        status: failed
+```
 
 ## Configuration management
 
@@ -541,7 +590,8 @@ Mission critical
 - show user group list - where applicable
 - show global-protect-gateway current-user | match users - where applicable
 
-** Upgrade Passive Device**
+**Upgrade Passive Device**
+
 - request system software check
 - request system software download version <insert version number>
 - show jobs id <insert ID>
@@ -653,7 +703,7 @@ Limit amount of dowmloaded software images
 
 - Resource widget: both datalane and management CPU
 
-### Best Practice Assessment (BPA) tool
+## Best Practice Assessment (BPA) tool
 
 - BPA is available via Customer Support Portal
 - After you gain access to the BPA, you can generate a BPA report for a Panorama appliance or for a next-generation firewal
@@ -665,7 +715,7 @@ Limit amount of dowmloaded software images
 - The Best Practices Assessment Plus (BPA+) fully integrates with BPA to provide customers with the ability to easily remediate failed best practice checks and improve overall adoption and security posture
 - Three class summaries for BPA: Technical, Operational, Management
 
-### Heat map
+**Heat map**
 
 - For every zone pair, for ezmple Internal > External, it shows in percents adoption rate for all features
 - The Heatmap Measures Adoption Rate. The Heatmap can filter information by device groups, serial numbers, zones, areas of architecture, and other categories. The results chart the progress of security improvement toward a Zero Trust network
@@ -689,7 +739,7 @@ The Heatmap measures the adoption rate of the following Palo Alto Networks firew
 - Service/Port
 - Logging
 
-### BPA report
+**BPA report**
 
 - Executive summary in Palo Alto web site
 - Detailed HTML report is downloaded
@@ -740,7 +790,7 @@ Concepts
 - Policy check relies on pre-NAT IP addresses
 - Zone protection profile, usually for outside zone
 
-### Zone protection profile
+**Zone protection profile**
 
 Features:
 
@@ -1098,7 +1148,7 @@ Enables the firewall to mark traffic with the same DSCP value that was detected 
 - QoS egress interface - this is where you apply QoS profile. If you limit Youtube then Egress interface is Internal interface of FW. You apply it in separate section Network > QoS
 - DSCP classification allows you to both honor DSCP values for incoming traffic and mark a session with a DSCP value as session traffic exits the firewall
   
-QoS policy  
+**QoS policy**  
   
 **Policies > QoS**  
 Define a QoS policy rule to match to traffic based on:
@@ -1116,7 +1166,7 @@ Define a QoS policy rule to match to traffic based on:
     - Custom Codepoint: Can be used to match to traffic by entering a codepoint name and binary value
 - At the end you define a class for this traffic: 1 of 8 + schedule
   
-QoS profile
+**QoS profile**
   
 **Network > Network Profiles > QoS Profile**
 
@@ -1312,7 +1362,7 @@ You can also force some of these sites to be decrypted
 
 Basicly it defines whom to show captive portal.
 
-Policies > Authentication
+**Policies > Authentication**
 
 - Source in all forms
 - Destination in all forms
@@ -1323,7 +1373,7 @@ Policies > Authentication
 The following logical objects are used to support Authentication Policy:  
 **MFA profile > Authentication profile > Authentication enforcement object > Authentication Policy + Captive Portal settings in paralell + Authentication sequence in parallel**
 
-#### Multi-Factor authentication
+**Multi-Factor authentication**
 
 - **Device > Server Profiles > Muli Factor Authentication**
 - Create a profile
@@ -1331,7 +1381,7 @@ The following logical objects are used to support Authentication Policy:
 - The MFA factors that the firewall supports include push, Short Message Service (SMS), voice, and one-time password (OTP) authentication
 - These profiles are connected as Factors to Authentication profile, several Factors can be addded
 
-#### Authentication profile
+**Authentication profile**
 
 Types:
 
@@ -1351,14 +1401,14 @@ Types:
 - Failed attempts
 - User domain
 
-#### Authentication sequence
+**Authentication sequence**
 
 - **Device > Authentication Sequence**
 - We can create several
 - We add different authentication profiles to a sequence
 - Order of profiles matter
 
-#### Authentication enforcement object
+**Authentication enforcement object**
 
 - **Objects > Authentication**
 - Is assigned to Authentication policy rules
@@ -1369,7 +1419,7 @@ Types:
     - no-captive-portal — The firewall evaluates Security policy without authenticating users
 - Authetication profile my be none, then one in Captive portal settings is used
 
-#### Captive Portal - Authentication Portal
+**Captive Portal - Authentication Portal**
 
 **Device > User Identification > Authentication Portal Settings**  
 
@@ -1464,7 +1514,7 @@ connection.
 - reset-both: For TCP, this action resets the connection on both client and server ends. For
 UDP, it drops the connection
 
-### Antivirus
+**Antivirus**
 
 - Protect against viruses, worms, trojans, spyware downloads
 - Enable protocol decoders: ftp, http, imap, pop3, smb, smtp
@@ -1482,7 +1532,7 @@ UDP, it drops the connection
 - WildFire-based signatures are used in addition to Antivirus
 - WildFire inline ML, you must possess an active WildFire subscription
 
-### Anti-Spyware
+**Anti-Spyware**
 
 - Several policies in one Profile
 - Signatures are added to Policy by severity and by name and by category
@@ -1498,7 +1548,7 @@ UDP, it drops the connection
 - In this profile DNS Security is also configured - Palo Alto Networks DNS Security service, a cloud-based analytics platform providing your firewall with access to DNS signatures generated using advanced predictive analysis and machine learning, with malicious domain data from a growing threat intelligence sharing community
 - Active DNS Security and Threat Prevention (or Advanced Threat Prevention) subscription is required
 
-Advanced Threat Prevention
+**Advanced Threat Prevention**
 
 - Advanced Threat Prevention is a cloud-delivered security service that works in conjunction with the existing Threat Prevention license to deliver protections for advanced and evasive C2 threats
 - No update packages required
@@ -1508,7 +1558,7 @@ Advanced Threat Prevention
 - Advanced Threat Prevention is enabled and configured under inline cloud analysis in the Anti-Spyware Profile
 - In addition to signatre based, inline detection system to prevent unknown and evasive C2 threats
 
-### Vulnerability Protection
+**Vulnerability Protection**
 
 - Create profile, Add rules and exceptions too profile
 - Signatures are added to rule, based on CVE, Vendor ID, Severity, Category
@@ -1518,7 +1568,7 @@ Advanced Threat Prevention
 - When the vulnerability protection action profile is set to reset-both, the associated threat log might display action as reset-server. As discussed earlier, this occurs when the firewall detects the threat at the beginning of a session and presents the client with a 503-block page. Since, the block place disallows the connection, only the server-side connection is reset
 - The default Vulnerability Protection Profile protects clients and servers from all known critical-, high-, and medium-severity threats
 
-### URL Filtering
+**URL Filtering**
 
 - Works without decryption, but does not show Block Page - just drops
 - Without decryption Application in URL filtering logs is always SSL  
@@ -1545,7 +1595,7 @@ What it does:
 - Inline ML or Advanced URL filtering
 - Custom URL categories
 
-#### Control access to site
+**Control access to site**
 
 Actions for site access:
 
@@ -1556,7 +1606,7 @@ Actions for site access:
 - override - Displays a response page that prompts the user to enter a valid password to gain access to the site. Configure URL Admin Override settings (Device > Setup > Content ID) to manage password and other override settings
 - none - custom URL category only
 
-#### Credential detection
+**Credential detection**
 
 - Configure user-credential detection so that users can submit credentials only to the sites in specified URL categories
 - Credential phishing prevention works by scanning username and password submissions to websites and comparing those submissions against valid corporate credentials. You can choose which websites you want to allow or block corporate credential submissions based on the URL category of the website
@@ -1573,14 +1623,14 @@ Actions for credential detections:
 - block - block page is displayed
 - continue - Anti Physhing continue page is displayed - then user may enter credentials
 
-#### Safe search enforcement
+**Safe search enforcement**
 
 - Palo Alto Networks enforces filtering based only on search engine providers filtering mechanisms
 - If users search using Google, Bing, Yahoo, Yandex, or YouTube search engines and they did not set their safe search setting to the strictest setting, then your firewall responds in one of two ways
     - Blocks Search Results When Strict Safe Search Is Off (Default
     - Forces Strict Safe Search - The firewall automatically and transparently enforces the strictest safe search settings
 
-#### HTTP Header Insertion
+**HTTP Header Insertion**
 
 In URL filtering Objects > Security Profiles > URL Filtering > HTTP Header Insertion HTTP header insertion is supported  
 The firewall supports header insertion for HTTP/1.x traffic only  
@@ -1593,13 +1643,13 @@ HTTP header insertion can only be performed by using the following methods:
 - PUT
 - HEAD
 
-#### Custom categories
+**Custom categories**
 
 - Objects > Custom objects > URL Category
 - URL list
 - Category match: specifying two or more PAN-DB categories of which the new category will consist, allows you to target enforcement for a website or page that matches all of the categories specified in the custom URL category object
 
-#### Inline ML or Advanced URL Filtering
+**Inline ML or Advanced URL Filtering**
 
 - Advanced URL Filtering is a subscription service that works natively with the Palo Alto Networks NGFW
 - Advanced URL Filtering uses ML to analyze URLs in real time and classify them into benign or malicious categories
@@ -1612,7 +1662,7 @@ HTTP header insertion can only be performed by using the following methods:
 - Select Inline ML and define an Action for each inline ML model
 - Add URL exceptions to your URL Filtering profile if you encounter false-positives
 
-#### Using URL Categories as Match Criteria vs. Applying URL Filtering Profile to a Security Policy Rule
+**Using URL Categories as Match Criteria vs. Applying URL Filtering Profile to a Security Policy Rule**
 
 Use URL categories as match criteria in the following cases:
 
@@ -1625,7 +1675,7 @@ Use a URL Filtering profile in the following cases:
 - To specify more granular actions, such as alert, on traffic for a specific category
 - To configure a response page that displays when users access a blocked or blocked-continue website.
 
-### Data Filtering
+**Data Filtering**
 
 - Prevent sensitive information, such as credit card numbers or Social Security numbers, from leaving a protected network
 - Filter on keywords, such as a sensitive project name or the word “confidential.”
@@ -1633,7 +1683,7 @@ Use a URL Filtering profile in the following cases:
 - Regular expressions: Filter for a string of characters
 - File properties: Filter for file properties and values based on file type
 
-### File Blocking
+**File Blocking**
 
 - Create profile, add rules
 - Every rule has application, file types, direction and action
@@ -1646,7 +1696,7 @@ Use a URL Filtering profile in the following cases:
     - continue: After the specified file type is detected, a customizable response page is presented to the user. The user can click through the page to download the file. A log is also generated in the Data Filtering log. This type of forwarding action requires user interaction and is therefore only applicable for web traffic
 - Monitor > Logs > Data Filtering - All File Block logs are here
 
-### WildFire
+**WildFire**
 
 Operation workflow
 
@@ -1687,7 +1737,7 @@ Configuration workflow
 - WildFire public cloud or the WildFire private cloud (hosted with a WF-500 appliance)
 - WildFire hybrid cloud deployment: WildFire appliance to analyze sensitive files (such as PDFs) locally, less-sensitive file types (such as PE files) or file types that are not supported for WildFire appliance analysis (such as APKs) to be analyzed by the WildFire public cloud
 
-Verdicts
+**Verdicts**
 
 - Benign
 - Grayware - do not pose a direct security threat but might display otherwise obtrusive behavior. Grayware can include adware, spyware, and Browser Helper Objects (BHOs)
@@ -1714,7 +1764,7 @@ Licenses
 - Standalone subscription that provides API-only access
 
 
-### DoS Protection
+**DoS Protection**
 
 - In a profile you configure: Type, Flood protection, Resources protection
 - Profile is not applied in security policy, it is applied in separate DoS policy
@@ -1774,7 +1824,7 @@ Show maximum number of sessions for each VSYS
 show session meter
 ```
 
-### Session types
+**Session types**
 
 - Flow - Regular type of session where the flow is the same between c2s and s2c (ex. HTTP, Telnet, SSH)
 - Predict - This type is applied to sessions that are created when Layer7 Application Layer Gateway (ALG) is required. The application has been identified and there is need for a new session to be allowed on the firewall without any additional security rule (ex. FTP active/passive, voice protocols h323/sip etc). These sessions may be created with a 0 as source/destination IP/port, since that information may not be known yet. Packets that match the Predict sessions will then change to normal FLOW session
@@ -1785,19 +1835,19 @@ Show all predict sessions - show only the predict sessions that are currently pe
 show session all filter type predict
 ```
 
-### Session flow
+**Session flow**
 
 - Init > Opening > Active > Discard/Closing > Closed > Free
 - If the session timeout has been reached, the session will timeout and transition to Closing
 - If the traffic has been denied due to a security rule or a threat has been detected(with the action set to drop), the session will transition to Discard
 
-### Stable session states
+**Stable session states**
 
 - INIT - Every session begins, by default, in INIT state. A session in the INIT state is part of the free pool and can be used at anytime. The session may been used previously, but has now been returned back into the free pool
 - ACTIVE - Any session that matches a particular traffic flow, and has been processed for inspection and forwarding.
 - DISCARD - Traffic that has been matched by a session but is denied due to a security policy, threat detection
 
-### Transient session states
+**Transient session states**
 
 Sessions in Transient states are difficult to see as they make the transition to one of the Stable states very quickly
 
@@ -1806,14 +1856,14 @@ Sessions in Transient states are difficult to see as they make the transition to
 - Closed
 - Free
 
-### Session Flags
+**Session Flags**
 
 - NS - There has been Source NAT applied on the session
 - ND - There has been Destination NAT applied on the session
 - NB -There has been Both Source + Destination NAT applied on the session
 - No flag - There is no NAT applied on the session.
 
-### Session end reasons
+**Session end reasons**
 
 - threat
 - policy-deny
@@ -1829,13 +1879,13 @@ Sessions in Transient states are difficult to see as they make the transition to
 - aged-out - no ARP of router, routing issues, no reply from server
 - unknown
 
-### Session timeouts
+**Session timeouts**
 
 - Timeout - The specific timeout configured for the application
 - Time to live - The time left until the session will expire. In the example, there are 2 seconds left until the session will expire and session state will change
 - Session in session ager - For each session there is a flow ager, which is an aging process that keeps track of the lifetime of sessions. As long as the session is Active and time to live did not reach 0 sec, the session in session ager will be marked as True
 
-### Sessions in HA deployment
+**Sessions in HA deployment**
 
 The user can tell if a session has not been created on the local firewall by looking at the session synced from HA peer from
 >show session id
@@ -2001,7 +2051,7 @@ What is not synced?
 - Jumbo frames
 - Log Export Settings
 
-### HA prerequisites
+**Prerequisites**
 
 - Model
 - PAN-OS version
@@ -2011,18 +2061,8 @@ What is not synced?
 - Slot configuration
 - For VMs: HYpervisor, number of CPU cores
 
-### HA states
 
-- Initial - A/P or A/A
-- Active - A/P
-- Passive - A/P
-- Active-Primary - A/A
-- Active-Secondary - A/A - A firewall in active-secondary state does not support DHCP relay
-- Tetntative - A/A - Failure, monitored object (a link or path), firewall leaves suspended or non-functional state
-- Non-Functional - A/P or A/A - Failure - In active/passive mode, all of the causes listed for Tentative state cause non-functional state
-- Suspended - A/P or A/A - manually disabled
-  
-### Links
+**Links**
 
 7 Links in total, all are configured in HA Communications section
 - HA-1 control link (Control Plane) - should be HA type or management
@@ -2053,15 +2093,15 @@ What is not synced?
 - HA4
     - Layer 3 type no gateway, no spaning over subnets, HA type
     - Session cache synchronization among all HA cluster members having the same cluster ID + keep-alives between Cluster members
-- HA4 BAckup
+- HA4 Backup
 
-### CLoud limitations
+**CLoud limitations**
 
 - The VM-Series firewall on Azure and VM-Series firewall on AWS only support active/passive HA
 - When you deploy the firewall with the Amazon Elastic Load Balancing (ELB) service on AWS, it does not support HA (in this case, ELB service provides the failover capabilities
 - The VM-Series firewall on Google Cloud Platform does not support traditional HA
 
-### Active/Passive
+**Active/Passive**
 
 Supported deployments
 
@@ -2095,18 +2135,20 @@ Configuration workflow
 Out of sync state  
 Possible when person makes change to active host, does not commit. Then someone from Panorama commits amd push configs to both devices. But panorama does not touch what we did locally. As a result new configuration only on Active device and we have out of sync state. Now we can sync from both devices, we need to choose which one is better for us.
 
-### Firewall states
+**Firewall states**
 
-- Initial - after boot-up and before it finds peer
-- Active - normal traffic handling state
-- Passive - normal traffic is discarded, except LACP and LLDP
+8 in total
+
+- Initial - after boot-up and before it finds peer - A/P or A/A
+- Active - normal traffic handling state - A/P
+- Passive - normal traffic is discarded, except LACP and LLDP - A/P
 - Active-Primary - A/A only
-- Active-Secondary - A/A only
-- Tentative - A/A only
-- Suspended - administratively disabled
-- Non Functional - error state
+- Active-Secondary - A/A only - A firewall in active-secondary state does not support DHCP relay
+- Tentative - A/A only - Failure, monitored object (a link or path), firewall leaves suspended or non-functional state - 
+- Suspended - administratively disabled - A/P or A/A 
+- Non Functional - error state - A/P or A/A - Failure - In active/passive mode, all of the causes listed for Tentative state cause non-functional state
 
-### Troubleshoot HA
+**Troubleshoot**
 
 Show HA logs in **Monitor > System**
 
@@ -2120,7 +2162,7 @@ Show HA logs in **Monitor > System**
 show log system direction equal backward subtype equal ha eventid equal state-change
 ```
 
-### Active/Active
+**Active/Active**
 
 - Advanced design concepts
 - Complex troubleshooting
@@ -2162,14 +2204,14 @@ Configuration workflow
     - Floating IP can be bound to Active Primary Device
     - OR Device priority can be configured for devices 0 and 1 - ?
 
-### Virtual MAC address
+**Virtual MAC address**
 
 - Manually configure different gateways on end systems or use load balancers
 - Each firewall in the HA pair creates a virtual MAC address for each of its interfaces that has a floating IP address or ARP Load-Sharing IP address
 - After the failed firewall recovers, by default the floating IP address and virtual MAC address move back to firewall with the Device ID [0 or 1] to which the floating IP address is bound
 - When a new active firewall takes over, it sends gratuitous ARPs from each of its connected interfaces to inform the connected Layer 2 switches of the new location of the virtual MAC address. 
 
-### Route based redundancy
+**Route based redundancy**
 
 - Firewalls are connected  to routers, not switches
 - Each firewall has separate IP addresses, sessions are synced
@@ -2178,13 +2220,13 @@ Configuration workflow
   
 <img width="602" alt="image" src="https://user-images.githubusercontent.com/116812447/215494580-eeaed00c-52a0-479c-b8db-909f8cce27fc.png">
 
-### ARP load sharing
+**ARP load sharing**
 
 - Use only when firewall is default gateway for end hosts
 - Everytime different firewall replies on ARP request with its own virtual MAC, IP is the same for both firewalls
 - ARP load sharing on LAN side and floating IP on the other
 
-### Cluster
+**Cluster**
 
 - 2 HA4 interfaces(primary and backup) with type HA, IP address, mask
 - On every device add all over devices with serial number, HA4 and HA4 backup IP addresses and sessions sync
@@ -2732,7 +2774,6 @@ Configuration
 - Delete Panorama IP
 - Save all these actions is only possible using auth key from panorama
 
-
 **Commit actions**
 
 - Commit > Commit to Panorama — Activates the changes you made in the configuration of the Panorama management server. This action also commits device group, template, Collector Group, and WildFire cluster and appliance changes to the Panorama configuration without pushing the changes to firewalls, Log Collectors, or WildFire clusters and appliances. Committing just to the Panorama configuration enables you to save the changes that are not ready for activation on the firewalls, Log Collectors, or WildFire clusters and appliances
@@ -2758,6 +2799,25 @@ Commit options when you commit to Panorama:
 - Preview Changes
 - Change Summary
 - Validate Commit
+
+**Locks**
+
+- Config — Blocks other administrators from changing the candidate configuration
+- Commit — Blocks other administrators from changing the running configuration
+- Shared—Restricts changes to the entire Panorama configuration, including all device groups and templates.
+- Template—Restricts changes to the firewalls included in the selected template. (You can’t take a lock for a template stack, only for individual templates within the stack.)
+- Device group—Restricts changes to the selected device group but not its descendant device groups
+  
+**Pushing to firewalls**
+
+- Push all changes OR only incremental - made by me or other admin - it is not connected with scope
+- Configure Push Scope - Edit Selections
+- Merge with device candidate config - ?
+- Include Device and Network templates - ?
+- Force template values - ?
+- No Default Selections - ?
+- Validate Device Group Push
+- Validate Template Push
 
 **Import firewall configs to Panorama**
 
@@ -2889,13 +2949,13 @@ request certificate fetch
 
 Default username/pass - admin/admin  
 
-### Show all system data
+**Show all system data**
 
 ```
 show system info
 ```
 
-### Show Top - management plane
+**Show Top - management plane**
 
 ```
 show system resources
@@ -2904,6 +2964,7 @@ show system resources
 **Check status of all processes**
 
 ```
+show system software status 
 Slot 0, Role mp
 ----------------------------------------
  
@@ -2915,13 +2976,13 @@ Group    batch_secondary      running
 Group    chassis              running
 ```
 
-### Check if web server is running
+**Check if web server is running**
 
 ```
 show system software status | match appweb
 ```
 
-### Configure network
+**Configure MGMT**
 
 ```
 configure
@@ -2932,26 +2993,26 @@ commit
 show interface management
 ```
 
-### Show data-plane CPU load
+**Show data-plane CPU load**
 
 ```
 show running resource-monitor
 ```
 
-### Show routing table
+**Show routing table**
 
 ```
 show routing route
 show routing fib
 ```
 
-### Test route
+**Test route**
 
 ```
 admin@Palto-1(active)> test routing fib-lookup ip 98.139.183.24 virtual-router default
 ```
 
-### Show sessions - with NAT data
+**Show sessions - with NAT data**
 
 ```
 show session all filter application ping
@@ -2964,7 +3025,7 @@ Vsys                                          Dst[Dport]/Zone (translated IP[Por
 vsys1                                          1.1.1.1[26]/Outside  (1.1.1.1[26])
 ```
 
-### Show detailed info about session: NAT, app, rule names, vsys, interfaces, bytes, type, state, user, QoS, end reason, logging...
+**Show detailed info about session: NAT, app, rule names, vsys, interfaces, bytes, type, state, user, QoS, end reason, logging...**
 
 ```
 admin@PA-1-1> show session id 25
@@ -3018,13 +3079,13 @@ Session              25
         end-reason                           : aged-out
 ```
 
-### Clear session
+**Clear session**
 
 ```
 clear session id 27240
 ```
 
-### Show NAT policy
+**Show NAT policy**
 
 ```
 admin@PA-1-1> show running nat-policy
@@ -3042,19 +3103,19 @@ admin@PA-1-1> show running nat-policy
 }
 ```
 
-### Ping
+**Ping**
 
 ```
 ping source 10.2.62.150 host 10.2.62.1
 ```
 
-### Reboot
+**Reboot**
 
 ```
 request restart system
 ```
 
-### Debug silent packet drop
+**Debug silent packet drop**
 
 ```
 debug dataplane packet-diag set filter match destination 192.168.1.100
@@ -3062,19 +3123,19 @@ debug dataplane packet-diag set filter on
 show counter global filter packet-filter  yes delta yes severity drop
 ```
 
-### Check connection to URL database
+**Check connection to URL database**
 
 ```
 show url-cloud status
 ```
 
-### Show Wildfire submissions
+**Show Wildfire submissions**
 
 ```
 debug wildfire upload -log show
 ```
 
-### Disable hardware offload 
+**Disable hardware offload** 
 
 In order to capture traffic  
 Supported on the following firewalls: PA-3200 Series, PA-5200 Series,and PA-7000 Series firewall
@@ -3083,25 +3144,25 @@ Supported on the following firewalls: PA-3200 Series, PA-5200 Series,and PA-7000
 admin@PA-7050>set session offload no
 ```
 
-### Switch to suspended state
+**Switch to suspended state**
 
 ```
 request high-availability state suspend
 ```
 
-### Switch to functional state
+**Switch to functional state**
 
 ```
 request high-availability state functional
 ```
 
-### Sync config to remote peer
+**Sync config to remote peer**
 
 ```
 request high-availability sync-to-remote running-config
 ```
 
-### Show network connections
+**Show network connections**
 
 For example with Panorama
 
@@ -3111,7 +3172,7 @@ tcp        0      0 10.2.55.119:50914       10.2.23.154:3978        ESTABLISHED
 tcp        0      0 10.2.55.119:34314       10.2.23.154:3978        TIME_WAIT  
 ```
 
-### Show Panorama status
+**Show Panorama status**
 
 ```
 admin@PA-1-1(active-primary)> show panorama-status 
@@ -3121,13 +3182,13 @@ Panorama Server 1 : 10.2.23.154
     HA state      : disconnected
 ```
 
-### Reset to factory configuration
+**Reset to factory configuration**
 
 ```
 request system private-data-reset
 ```
 
-### Export tcpdump
+**Export tcpdump**
 
 ```
 scp export mgmt-pcap from mgmt.pcap to < username@host:path>
@@ -3387,7 +3448,7 @@ Palo Alto Supports 3 VPN deployments:
 
 All tunnels are configured in Network section  
 
-### IPSec tunnels
+**IPSec tunnels**
 
 How traffic is routed:
 
@@ -3413,7 +3474,7 @@ Concepts
 - For every site you need IKE Gateway and tunnel.x interface
 - Remote Peer IP in IKE Gateway can be dynamic, but in this case we need to configure ID for remote peer, for example domain name
 
-#### Policy-based VPN and Proxy-ID
+**Policy-based VPN and Proxy-ID**
 
 - Palo Alto to Palo Alto policy based VPN is not supported
 - Policy-based VPN only for connection with third party devices, old ones, you must configure a local and remote Proxy ID for them
@@ -3433,7 +3494,7 @@ Concepts
     - With IKEv1, Palo Alto Networks devices support only proxy-ID exact match. In the event where the Peer's Proxy ID's do not match, then there will be problems with the VPN working correctly.
     - With IKEv2, there is support traffic selector narrowing when the proxy ID setting is different on the two VPN gateways
 
-#### Configuration
+**Configuration**
 
 Configuration overview
 
@@ -3490,7 +3551,7 @@ If we need another site, we:
 - Enable dynamic routing on this tunnel
 - Add required rules
 
-#### Redundancy
+**Redundancy**
 
 - Two different ISPs - 2 different tunnels
 - Tunnel.1 is configured for Primary VPN tunnel
@@ -3507,7 +3568,7 @@ There are three methods to do VPN tunnel traffic automatic failover. Any one of 
 - Failover using Static Route Path monitoring
 - Dynamic routing protocol
 
-#### Verify
+**Verify**
 
 **Test gateway**
 
@@ -3591,7 +3652,7 @@ debug ike global on debug
 > debug ike pcap off
 ```
 
-### GRE tunnels
+**GRE tunnels**
 
 - The firewall encapsulates the tunneled packet in a GRE packet, and so the additional 24 bytes of GRE header automatically result in a smaller MSS in the MTU. If you don’t change the IPv4 MSS adjustment size for the interface, the firewall reduces the MTU by 64 bytes by default (40 bytes of IP header + 24 bytes of GRE header)
 - GRE tunneling does not support NAT between the GRE tunnel endpoints
@@ -3620,7 +3681,7 @@ Check the GRE session
 - Filter by using session filter protocol 47
 - Find the session ID and filter for session ID
 
-### LSVPN
+**LSVPN**
 
 - The LSVPN does not require a GlobalProtect subscription
 - Enable SSL Between GlobalProtect LSVPN Components
@@ -3629,7 +3690,7 @@ Check the GRE session
 - Configure the GlobalProtect Portal for LSVPN
 - Prepare the Satellite to Join the LSVPN
 
-#### GlobalProtect Satellite 
+**GlobalProtect Satellite** 
 
 - Simplifies the deployment of traditional hub and spoke VPNs, enabling you to quickly deploy enterprise networks with several branch offices with a minimum amount of configuration required on the remote satellite devices. This solution uses certificates for device authentication and IPSec to secure data
 - The setup includes configuring the portal, gateway, and satellite
@@ -3650,13 +3711,12 @@ GlobalProtect has three major components:
 
 <img width="977" alt="image" src="https://github.com/philipp-ov/foundation/assets/116812447/f3ec9794-9a39-4d33-8ebf-d4e12411c3e6">
 
-### Features
+**Features**
 
 - GlobalProtect authentication event logs in Monitor > Logs > System
 - Separate GlobalProtect log
-- 
 
-### MFA
+**MFA**
 
  - It is possible to request MFA for a certain application access, not only for VPN connection or User-ID
  - For example User > External Palo Alto Global Protect Gate way > LAN > Internal MFA Gateway > Application Server
@@ -3665,7 +3725,7 @@ GlobalProtect has three major components:
  - And sends notifications to global protect client for non browser apps
  - To facilitate MFA notifications for non-HTTP applications (such as Perforce) on Windows or macOS endpoints, a GlobalProtect app is required. When a session matches an Authentication policy rule, the firewall sends a UDP notification to the GlobalProtect app with an embedded URL link to the Authentication Portal page. The GlobalProtect app then displays this message as a pop up notification to the user
 
-### Xauth
+**Xauth**
 
 - Xauth (Extended Authentication within IKE) is what Palo Alto Networks use to support third party VPN software using the Globalprotect Gateway
 - It allows the third party VPN client to authenticate through the Globalprotect auth profile as part of the IKE negotiation
@@ -3678,14 +3738,14 @@ GlobalProtect has three major components:
 
 - If several VSYSes are connected via extermal equipment then there is an issue - to many sessions!
 
-### Inter-vsys routing
+**Inter-vsys routing**
 
 - Special external Zone is created on every VSYS
 - Interface is added to it
 - Routes are added, next hop is VR - and you choose wich one
 - Rules are created to allow communication between VSYS
 
-### CLI
+**CLI**
 
 ```
 admin@PA> show system info | match vsys 
@@ -3711,16 +3771,21 @@ admin@PA>
 
 ## Certificates
 
-- SCEP - ?
+**SCEP**
 
-### SSL/TLS service profile
+- SCEP operation is dynamic in that the enterprise PKI generates a user-specific certificate when the SCEP client requests it and sends the certificate to the SCEP client
+- The SCEP client then transparently deploys the certificate to the client device
+- You can use a SCEP profile with GlobalProtect to assign user-specific client certificates to each GlobalProtect user
+- GlobalProtect portal acts as a SCEP client to the SCEP server in your enterprise PKI
+
+**SSL/TLS service profile**
 
 - Used by Captive portal, GlobalProtect portals and gateways, inbound traffic on the management (MGT) interface, the URL Admin Override feature, and the User-ID™ syslog listening service
 - Device > Certificate Management > SSL/TLS Service Profile
 - Certificate
 - TLS versions
 
-### Certificate profile
+**Certificate profile**
 
 - User and device authentication for Captive Portal, multi-factor authentication (MFA), GlobalProtect, site-to-site IPSec VPN, external dynamic list (EDL) validation, Dynamic DNS (DDNS), User-ID agent and TS agent access, and web interface access to Palo Alto Networks firewalls or Panorama
 - Specify which certificates to use, how to verify certificate revocation status, and how that status constrains access
@@ -3731,7 +3796,7 @@ admin@PA>
 - OCSP - takes precedence over CRL - use or not
 - Block session if cert is unknown, if cert is expired
 
-### Firewall Features Using Certificates
+**Firewall Features Using Certificates**
 
 - TLS decryption
 - MGTM interface auth
@@ -3743,6 +3808,21 @@ admin@PA>
 - IPSec IKE Auth
 - HA Auth
 - Secure Syslog Auth
+- AIOPS
+
+**Device Certificate**
+
+Install
+
+```
+request certificate fetch
+```
+
+Verify
+
+```
+show device-certificate status
+```
 
 ## Management Profiles
 
@@ -3812,13 +3892,6 @@ Supported authentication types include the following:
 - Local
 
 Roles are available in RADIUS Vendor-Specific Attributes (VSAs), TACACS+ VSAs, or SAML attributes.
-
-## SCEP
-
-- SCEP operation is dynamic in that the enterprise PKI generates a user-specific certificate when the SCEP client requests it and sends the certificate to the SCEP client
-- The SCEP client then transparently deploys the certificate to the client device
-- You can use a SCEP profile with GlobalProtect to assign user-specific client certificates to each GlobalProtect user
-- GlobalProtect portal acts as a SCEP client to the SCEP server in your enterprise PKI
 
 ## Global Protect
 
@@ -3944,7 +4017,7 @@ test
     - IPSec or SSL
     - Satelite
 
-##v HIP
+## HIP
 
 - HIP checks are performed when the app connects to the gateway
 - Subsequent checks are performed hourly
@@ -3960,6 +4033,14 @@ test
 - For the explicit proxy method, the request contains the destination IP address of the configured proxy and the client browser sends requests to the proxy directly
 
 ## SSL mirror
+
+- Free license
+- Connect the traffic collection tool directly to an Ethernet interface on the firewall and set the Interface Type to Decrypt Mirror
+- Decryption port mirroring is not available on the VM-Series for public cloud platforms
+- Device > Setup> Content - ID > Allow forwarding of decrypted content
+- Objects > Decryption Profile
+- Specify whether to mirror decrypted traffic before or after policy enforcement
+- Policies > Decryption > Specify decryption Decryption Profile in Rule
 
 ## Autofocus
 
