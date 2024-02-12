@@ -2273,7 +2273,7 @@ Can be used in:
 - Security policy
 - Tunnel inspection policy
 
-### User mapping methods
+**User mapping methods**
 
 - Server monitoring - User-ID agent, PAN-OS built-in, AD, Exchange, Novell eDirectory, Sun ONE Directory Server
 - Port mapping - Microsoft Terminal Services - Citrix Environments - Palo Alto Networks Terminal Services agent - the source port of each client connection to map each user to a session. Linux terminal servers do not support the Terminal Services agent and must use the XML API to send user mapping information from login or logout events to User-ID
@@ -2287,7 +2287,7 @@ Can be used in:
 - XML API
 - Client probing - in a Microsoft Windows environment - User-ID agent probes client systems by using Windows Management Instrumentation or NetBIOS. Client probing is not a recommended method for user mapping - WMI is recomended - probes are sent ebery 20 mins to verify that user is still loged in - client probes can be sent outside - large amount of network traffic
 
-### Concepts
+**Concepts**
 
 - 100 domain controllers or 50 syslog servers - MAX - per agent or per PAN-OS
 - Firewalls share user mappings and authentication timestamps as part of the same redistribution flow
@@ -2298,7 +2298,7 @@ Can be used in:
 - Special User-ID log
 - Source NAT destroys User-ID
 
-### Agentless (PAN-OS)
+**Agentless (PAN-OS)**
 
 - If you have a small-to-medium deployment with few users and 10 or fewer domain controllers or exchange servers
 - If you want to share the PAN-OS-sourced mappings from Microsoft Active Directory (AD), Captive Portal, or GlobalProtect with other PA devices (maximum 255 devices)
@@ -2314,7 +2314,7 @@ Configure
 - Verify that the usernames are correctly displayed in the Source User column under Monitor > Logs > Traffic
 - Verify that the users are mapped to the correct usernames in the User Provided by Source column under Monitor > Logs > User-ID.
 
-### User-ID Agent (Windows)
+**User-ID Agent (Windows)**
 
 Use User-ID Agent (Windows)
 
@@ -2340,7 +2340,7 @@ Configure User-ID Agent
 - Enable User-ID in zone configuration
 - Device > Data Redistribution - Configure Agent host and port - verify that its status is connected
 
-### User-ID redistribution
+**User-ID redistribution**
 
 - If you configure an Authentication policy, you have to configure firewall to redistribute mappings + timestamps to other firewalls, time stamps are sent automatically, no additional configuration
 - In **Device > Data Redistribution > Agents** you can configure other Firewall, Panorama or Windows agent as agent
@@ -2390,7 +2390,7 @@ Search in System logs
 show log system direction equal backward subtype equal userid
 ```
 
-### Dynamic User Groups
+**Dynamic User Groups**
 
 - Objects > Dynamic User Groups
 - For every group you create match criteria
@@ -2410,7 +2410,7 @@ show log system direction equal backward subtype equal userid
 - Another example: user goes to URL from anonymous-proxy category, URL filtering logs it and user added to Anonymous group
 
 
-### Map users to groups via LDAP
+**Map users to groups via LDAP**
 
 - Add LDAP server profile Device > Server > Profiles > LDAP
         - Port - 389
@@ -2428,7 +2428,7 @@ show log system direction equal backward subtype equal userid
 show user user-attributes user all
 ```
 
-### Configure managed service account on Windows AD
+**Configure managed service account on Windows AD**
 
 - Active Directory Users and Computers > Managed Service Accounts > New User
 - Allow the service account to read the security log events
@@ -2442,11 +2442,11 @@ AD has to generate logs for Audit Logon, Audit Kerberos Authentication Service, 
 - Service Ticket Granted (4769)
 - Ticket Granted Renewed (4770)
 
-### Authentication portal
+**Authentication portal**
 
 MFA profile > Authentication profile > Authentication enforcement object > Authentication Policy + Captive Portal settings in paralell + Authentication sequence in parallel 
 
-### Multi-Factor authentication
+**Multi-Factor authentication**
 
 - Device > Server Profiles > Muli Factor Authentication
 - Create a profile
@@ -2454,7 +2454,7 @@ MFA profile > Authentication profile > Authentication enforcement object > Authe
 - The MFA factors that the firewall supports include push, Short Message Service (SMS), voice, and one-time password (OTP) authentication
 - These profiles are connected as Factors to Authentication profile, several Factors can be addded
 
-### Authentication profile
+**Authentication profile**
 
 Types:
 
@@ -2474,14 +2474,14 @@ Types:
 - Failed attempts
 - User domain
 
-## Authentication sequence
+**Authentication sequence**
 
 - **Device > Authentication Sequence**
 - We can create several
 - We add different authentication profiles to a sequence
 - Order of profiles matter
 
-### Authentication enforcement object
+**Authentication enforcement object**
 
 - Objects > Authentication
 - Is assigned to Authentication policy rules
@@ -2492,7 +2492,7 @@ Types:
     - no-captive-portal — The firewall evaluates Security policy without authenticating users
 - Authetication profile my be none, then one in Captive portal settings is used
 
-### Captive Portal - Authentication Portal
+**Captive Portal - Authentication Portal**
 
 Device > User Identification > Authentication Portal Settings  
 
@@ -2505,7 +2505,7 @@ Device > User Identification > Authentication Portal Settings
     - Redirect - intranet hostname (a hostname with no period in its name) that resolves to the IP address of the Layer 3 interface on the firewall to which web requests are redirected. The firewall intercepts unknown HTTP or HTTPS sessions and redirects them to a Layer 3 interface on the firewall using an HTTP 302 redirect to perform authentication. This is the preferred mode because it provides a better end-user experience (no certificate errors). If you use Kerberos SSO or NTLM authentication, you must use Redirect mode because the browser will provide credentials only to trusted sites. Redirect mode is also required if you use Multi-Factor Authentication to authenticate Captive Portal users
 - Certificate authentication profile - for authenticating users via certificate
 
-### Selecting Users and Groups for Security Policy
+**Selecting Users and Groups for Security Policy**
 
 - Any
 - Pre-logon - with Global-Protect
@@ -2513,7 +2513,7 @@ Device > User Identification > Authentication Portal Settings
 - Unknown - user cannot be identified by User-ID
 - Select - specific user or group
 
-### Debug
+**Debug**
 
 **Show logged in users**
 
