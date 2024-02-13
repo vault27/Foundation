@@ -5,6 +5,7 @@
 - Network types
 - DR/BDR
 - Virtual links
+- \Route types
 
 ## Standards
 
@@ -97,7 +98,7 @@
 - Process ID - it has local significance, it is better to use the same ID on all devices
 - Timers, maybe it is better to harden them
 
-### Data centre
+**Data centre**
 
 - All routers are in area 0
 - In case of super spine: superspine is in backbone, POD is in non backbone, stub area. In this scheme Spine-1 stores everything about area 1 and backbone area  and so load on Spine is BIG! Such scheme is used rarely. OSPF is not recommended for Fabric!! Do not use unnumbered!
@@ -644,6 +645,8 @@ LS age: 129
 
 ## Discontiguous networks
 
+This is when interarea traffic is trying to cross a non-backbone area.  
+  
 Example:
 
 ```
@@ -1086,8 +1089,8 @@ show ip ospf interface | include line|authetication|key
 ## Summarization
 
 - Disabled by default
-- Method 1: create many areas, mnay LSA-1 and LSA-2 inside area are transformed into s small amount of LSA-3
-- Method 2: sunnarize network prefixes on ABR or ASBR
+- Method 1: create many areas, many LSA-1 and LSA-2 inside area are transformed into small amount of LSA-3
+- Method 2: summarize network prefixes on ABR or ASBR
 - On ABR the lowest metric among summarized networks will be used. If new network with lower metric appears then it will be used instead
 - Metric on the ABR can be configured manually
 - Small routes are suppressed
