@@ -151,3 +151,35 @@ https://datatracker.ietf.org/doc/html/draft-beaulieu-ike-xauth-02
 
 
 ## AH
+
+## Troubleshooting
+
+**Show status of all Tunnel interfaces**
+
+```
+router#show ip int br
+Interface              IP-Address      OK? Method Status                Protocol
+
+Tunnel0                10.125.6.1      YES NVRAM  up                    up      
+Tunnel1                10.125.6.5      YES NVRAM  up                    up      
+Tunnel3                unassigned      YES unset  administratively down down    
+Tunnel4                10.125.6.9      YES NVRAM  up                    down    
+Tunnel5                10.125.6.13     YES NVRAM  up                    down    
+```
+
+**Flapping tunnels on Cisco**
+
+```
+Router#show logging | inc changed
+20995065: Feb 13 2024 00:59:36.794 EST: %LINK-3-UPDOWN: Interface TenGigabitEthernet0/1/0, changed state to down
+20995067: Feb 13 2024 00:59:37.794 EST: %LINEPROTO-5-UPDOWN: Line protocol on Interface TenGigabitEthernet0/1/0, changed state to down
+20995068: Feb 13 2024 00:59:36.794 EST: %LINK-3-UPDOWN: SIP0/1: Interface TenGigabitEthernet0/1/0, changed state to down
+20995078: Feb 13 2024 00:59:58.197 EST: %LINEPROTO-5-UPDOWN: Line protocol on Interface Tunnel1, changed state to down
+20995079: Feb 13 2024 00:59:58.845 EST: %LINEPROTO-5-UPDOWN: Line protocol on Interface Tunnel102, changed state to down
+20995084: Feb 13 2024 01:00:00.167 EST: %LINEPROTO-5-UPDOWN: Line protocol on Interface Tunnel0, changed state to down
+20995085: Feb 13 2024 01:00:00.787 EST: %LINEPROTO-5-UPDOWN: Line protocol on Interface Tunnel16, changed state to down
+20995086: Feb 13 2024 01:00:01.385 EST: %LINEPROTO-5-UPDOWN: Line protocol on Interface Tunnel11, changed state to down
+20995087: Feb 13 2024 01:00:01.765 EST: %LINEPROTO-5-UPDOWN: Line protocol on Interface Tunnel12, changed state to down
+20995088: Feb 13 2024 01:00:02.035 EST: %LINEPROTO-5-UPDOWN: Line protocol on Interface Tunnel15, changed state to down
+20995111: Feb 13 2024 01:01:35.759 EST: %LINEPROTO-5-UPDOWN: Line protocol on Interface Tunnel102, changed state to up
+```
