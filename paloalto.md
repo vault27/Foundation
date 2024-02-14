@@ -1025,6 +1025,17 @@ From Peer side:
 - You can add many DHCP relays
 - You configure interface where it will listen for requests + IPv4 Server addresses + IPv6 Server Addresses
 
+### Monitor profiles
+
+- Network > Network Profiles > Monitor
+- Monitor IPSec tunnels and to monitor a next-hop device for policy-based forwarding (PBF)
+- Monitor profiles are optional
+- Action
+    - wait-recover—Wait for the tunnel to recover; do not take additional action. Packets will continue to be sent according to the PBF rule
+    - fail-over—Traffic will fail over to a backup path, if one is available. The firewall uses routing table lookup to determine routing for the duration of this session
+- Interval - time between heartbeats
+- Threshold - number of heartbeats to be lost
+
 ## Policies
 
 **10 in total**
