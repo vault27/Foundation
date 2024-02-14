@@ -2631,6 +2631,7 @@ Types:
 - Commit to Panorama
 - Push the device state
 - Commit the device groups and templates
+- A CLI command will forward the pre-existing logs to Panorama
 
 If you migrate HA pair:
 
