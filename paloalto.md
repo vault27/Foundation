@@ -4045,6 +4045,7 @@ test
 ## Autofocus
 
 - It is a web portal
+- AutoFocus lets you know if adversaries and campaigns discovered by Unit 42 have targeted your network, or networks like yours
 - It is Enabled in Setup > Management Section: https://autofocus.paloaltonetworks.com:10443
 - It should be licensed
 
