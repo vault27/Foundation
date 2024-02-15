@@ -564,11 +564,12 @@ Mission critical
 
 **System pre checks**
 
+On both devices in HA pair
+
 - Check that Preemptive is disabled **Device > High Availability > Election Settings**
 - Check HA Status on Dashboard
 - Log all SSH output
 - Disable pager - set cli pager off
-- System Prechecks on Active and Passive Devices
 - show system info | match version
 - show chassis status - only for Chassis
 - show system raid detail - where applicable
@@ -584,6 +585,8 @@ Mission critical
 - show vpn ike-sa - where applicable
 - show routing protocol bgp summary | match Established
 - show routing summary
+
+?
 - show user user-id-agent state all | match Agent\|Status - where applicable
 - show user group-mapping state all - where applicable
 - show user ip-user-mapping all - where applicable
@@ -2437,6 +2440,12 @@ show log system direction equal backward subtype equal userid
 
 ```text
 show user user-attributes user all
+```
+
+Show all received groups
+
+```
+show user group list
 ```
 
 **Configure managed service account on Windows AD**
