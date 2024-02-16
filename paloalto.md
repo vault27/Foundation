@@ -3221,7 +3221,7 @@ scp export mgmt-pcap from mgmt.pcap to < username@host:path>
 - Everything is in a Log Forwarding profile: **Objects > Log Forwarding**
 - Logging Profile is attached to Security, Authentication, DoS Protection, and Tunnel Inspection policy rules  
 
-### Logging profile
+***Logging profile***
 
 - Several rules in one profile
 - We configure all in one profile and then apply it to all rules, for example we can negate DNS and ICMP int it: ICMP and DNS are logged only locally to NGFW to lesses load on Panorama
@@ -3239,7 +3239,7 @@ scp export mgmt-pcap from mgmt.pcap to < username@host:path>
         - Add/del tag for src/dst address or User
 - All other logs forwarding: Device > Log Settings - System, Configuration, User-ID....
 
-### Logs in CLI
+***Logs in CLI***
 
 show log **traffic type** **log option** equal **value**
 
@@ -3279,7 +3279,7 @@ phiph@pa(active-secondary)> show log system | match Drive
 phiph@pa(active-secondary)>
 ```
 
-### Log files
+**Log files**
 
 Every log section has many files.
 
@@ -3307,7 +3307,7 @@ tail follow yes mp-log paninstaller_content.log
 - /<keyword> to search , while in search use 'n' to go to the next or 'N' (shift+n) to go to the previous
 - only use arrow keys to scroll up or down
   
-### Log forwarding
+**Log forwarding**
 
 Is done to filter and forward logs to external storage and also assign tags.  
 Can be done via profile for certain logs and via system settings 
@@ -3329,7 +3329,7 @@ All types (other than Panorama) support customization of the message format
 It is configured in Server Profile  
 You can control which fields are sent + design + arbitrary text: A threat was detected from $src  
 
-### Storage and quota
+**Storage and quota**
 
 - Device > Setup > Management
 - Quota in percentage
@@ -3337,7 +3337,7 @@ You can control which fields are sent + design + arbitrary text: A threat was de
 - Predefined reports
 - Log collector status
 
-### Log filtering
+**Log filtering**
 
 Logical operators
 
@@ -3372,7 +3372,7 @@ Date and time
 Before date: (receive_time leq '2015/08/31 08:30:00’)
 After date: (receive_time geq '2015/08/31 08:30:00')
 
-### Pre defined reports
+**Pre defined reports**
 
 - Device > Setup > Management > Logging and Reporting Settings - configuration
 - These reports typically run once per day and summarize all the activity on the firewall
