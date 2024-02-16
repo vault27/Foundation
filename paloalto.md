@@ -2867,7 +2867,7 @@ debug software restart process management-server
 - Templates > Deselect All > Uncheck Filter Selected > Choose devices
 - Push 
 
-### Log collectors
+**Log collectors**
 
 - You can use Panorama as management server + send all logs to it, or you can send logs to log collectors (Panorama) and from them management Panorama will request all required data, you can also send logs to Cortex Data Lake
 - Log collectors can be combined into groups - up to 16 in one
@@ -2932,12 +2932,12 @@ show log-collector-es-cluster health
 clear log log-type
 ```
 
-### Health monitoring
+**Health monitoring**
 
 - Panorama > Managed devices > Health
 - Throughput, sessions, connections, packets, interfaces, logging rate, memory, CPU (management plane, data plane), packet buffers, HA, Cluster
 
-### Telemetry in Panorama
+**Telemetry in Panorama**
 
 Show cert issues and fix it
 
