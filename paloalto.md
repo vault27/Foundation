@@ -37,7 +37,7 @@ All you need to know about Palo Alto firewalls and for PCNSE exam in short and s
 - Prisma - Cloud Security
 - Cortex - Security Operations
 
-### Strata
+**Strata**
 
 - PA-220, PA-800, PA-3200, PA-5200, and PA-7000 Series
 - PA-7500 (1.5 Tbps), PA-5445, PA-45OR, PA-415-5G, PA-455
@@ -53,7 +53,7 @@ All you need to know about Palo Alto firewalls and for PCNSE exam in short and s
 - Panorama
 - CN-Series - for Kubernetes - secure traffic between pods in different trust zones and namespaces, for protection against known and zero-day malware, and to block data exfiltration from your containerized environments
 
-### Prisma
+**Prisma**
 
 - Prisma Cloud - Cloud Security Posture Management (CSPM) - Prisma Cloud taps into the cloud providers’ APIs for read-only access to network traffic, user activity, and the configuration of systems and services.
   - Alibaba Cloud
@@ -70,7 +70,7 @@ All you need to know about Palo Alto firewalls and for PCNSE exam in short and s
 - Prisma SaaS - multimode CASB service that allows you to govern any sanctioned software as a service (SaaS) application - complete visibility and granular enforcement across all user, folder, and file activity within the sanctioned SaaS applications
 - VM-Series ML-powered NGFWs
 
-### Cortex
+**Cortex**
 
 Detection, investigation, automation, and response capabilities.
 
