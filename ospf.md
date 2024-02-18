@@ -1045,6 +1045,29 @@ To change RID we need to restart OSPF
 clear ip ospf process
 ```
 
+Show Router ID
+
+```
+Router>show ip protocols
+
+Routing Protocol is "ospf 1"
+  Outgoing update filter list for all interfaces is not set
+  Incoming update filter list for all interfaces is not set
+  Router ID 192.168.7.2
+  It is an area border router
+  Number of areas in this router is 3. 3 normal 0 stub 0 nssa
+  Maximum path: 4
+  Routing for Networks:
+    192.168.5.0 0.0.0.255 area 1
+    192.168.6.0 0.0.0.255 area 0
+    192.168.7.0 0.0.0.255 area 45
+  Routing Information Sources:
+    Gateway         Distance      Last Update
+    2.2.2.2              110      00:10:57
+    192.168.4.1          110      00:14:04
+  Distance: (default is 110)
+```
+
 ## Authentication
 
 - Enabled per interface basis or per area
@@ -1083,8 +1106,7 @@ show ip ospf interface | include line|authetication|key
 
 ## Virtual links
 
-- They are used when there are two area 0, and with them both area 0 are connected with each other. It can happen if 2 companies are merged
-- A virtual link is not a tunnel for data packets; rather, it is a targeted session that allows two remote routers within a single area to become fully adjacent and synchro- nize their LSDBs. The virtual link is internally represented as an unnumbered point-to- point link between the two endpoint routers and exists in the backbone area, regardless of the area through which it is created. The area through which the virtual link is created is called a transit area and it must be a regular area: As no tunneling is involved, packets routed through this transit area are forwarded based on their true destination addresses, requiring the transit area to know all networks in the OSPF domain, intra-area, inter-area, and external
+- 
 
 ## Summarization
 
@@ -1317,22 +1339,43 @@ clear ip ospf process
 
 ## Virtual Links
 
+Why?
+
+- Reason 1: Connect area to backbone area via non backbone area, if it is not possibly directly  
+Area 7 > Area 5 > Area 0  
+ABR in Area 7 builds neighborship to Area 0 via Area 5
+- Second reason: connect two parts of a partitioned backbone through a non-backbone area  
+
+Concepts
+
+- The area through which you configure the virtual link, known as a transit area, must have full routing information
+- The transit area cannot be a stub area
+- VL1 OSPF interface is created always in Area 0: P2P, Cost - 20
+- Next this interface works like any other interface - the same logic - Area 0 sends its LSA-1 via it
+- When we enable Virtual Links on a router it starts sending Hello via unicast: from 192.168.4.2 to 192.168.5.2 - even if there is no direct connection - several hops can be made
+- After neighborship is established all LSA exchange is done via Unicast as well
+- Virtual link LSA-1 + all other LSA-1 are sent in one big LSA-1 is sent like any regular LSA-1, but:
+    - LS age: 1 (DoNotAge)
+    - Virtual link has type - Virtual Link
+    - (Link ID) Neighboring Router ID: 2.2.2.2
+    - (Link Data) Router Interface address: 192.168.5.2 - From which virtal link is established
+
+Reason 1 example
+
+Reason 2 example
+
 ```
-! On Router C1:
-router ospf 1
-area 1 virtual-link 4.4.4.4
-!
-interface fastethernet0/0
-ip address 10.1.1.1 255.255.255.0
-ip ospf 1 area 0
-!
-interface fastethernet0/1
-ip address 10.21.1.1 255.255.255.0
-ip ospf 1 area 1
-!
-interface loopback 1
-ip address 1.1.1.1 255.255.255.0
-ip ospf 1 area 1 
+(Area 0)R2(Area 1)R4(Area 1)R5(Area 0)
+        |                   |      
+      (Area 12)         (Area 45)
+
+Will be migrated to
+
+          (Area 0)
+          |       |
+(Area 12)-R2      R5-(Area 45)
+          |       |
+        Area1-R4-Area1
 ```
 
 ## Verification
