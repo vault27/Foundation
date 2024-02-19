@@ -13,6 +13,7 @@ All you need to know about Palo Alto firewalls and for PCNSE exam in short and s
 - Education services - https://www.paloaltonetworks.com/services/education
 - Reference architechtures - https://www.paloaltonetworks.com/resources/reference-architectures
 - Panorama Sizing and Design Guide - https://knowledgebase.paloaltonetworks.com/KCSArticleDetail?id=kA10g000000Clc8CAC
+- How to Design and Size Panorama Log Collector Environments - https://knowledgebase.paloaltonetworks.com/KCSArticleDetail?id=kA14u000000HBw7CAG
 - PAN-OS CLI Quick Start Guide
 - PAN-OS Upgrade Guide
 - PAN-OS New Features Guide
@@ -2666,8 +2667,12 @@ If you migrate HA pair:
 - Stack have a configurable priority order to ensure that Panorama pushes only one value for any duplicate setting. If there is the same object in 2 templates, object from the uppest template in the stack will be installed, for example interface management profile, no options for this profile from lower template will be installed
 - Different firewall models - different stacks
 - Object created in template, is available only in this template
+- When we import firewall, template is automatically configured for it and template stack as well
+- To change only parameter we can configure firewall directly and do not use force during pushing on panorama
+- We can use variables, for example to configure different IP addresses in one template stack
+- 1024 template stacks max
 
-It is impossible to configure with templates:
+It is **impossible** to configure with templates:
 
 - Configure a device block list
 - Clear logs
@@ -2698,6 +2703,7 @@ Configuration
 - Use this variable in proper configurations
 - You can import CSV with values for variables into Stack, depending on a device
 - In CSV you configure variable name, which you already created + variable type (IP/netmask for example) + value for each firewall - Serial/Hostname
+- 4096 variables MAX in template
 
 **Device groups**
 
@@ -3221,7 +3227,7 @@ scp export mgmt-pcap from mgmt.pcap to < username@host:path>
 - Everything is in a Log Forwarding profile: **Objects > Log Forwarding**
 - Logging Profile is attached to Security, Authentication, DoS Protection, and Tunnel Inspection policy rules  
 
-***Logging profile***
+**Logging profile**
 
 - Several rules in one profile
 - We configure all in one profile and then apply it to all rules, for example we can negate DNS and ICMP int it: ICMP and DNS are logged only locally to NGFW to lesses load on Panorama
@@ -3239,8 +3245,24 @@ scp export mgmt-pcap from mgmt.pcap to < username@host:path>
         - Add/del tag for src/dst address or User
 - All other logs forwarding: Device > Log Settings - System, Configuration, User-ID....
 
-***Logs in CLI***
+**Logs in CLI**
 
+Verify that firewall sends logs
+
+```
+show logging-status
+```
+
+Show preference list
+
+```
+show log-collector preference-list
+Forward to all: No 
+Log collector Preference List 
+Serial Number: 003001000024 
+IP Address: 10.2.133.48 
+IPV6 Address: unknown
+```
 show log **traffic type** **log option** equal **value**
 
 Examples:
@@ -4194,3 +4216,59 @@ debug device-server dump idmgr high-availability state
 - If the Firewall is suspended make it functional now
 - Connect the other dataplane interfaces now
 - Test Failover
+
+## Assymetric routing
+
+- Abnormal and asymmetric packets are dropped by default and are not logged in traffic or threat logs
+- Show counters
+```
+admin@PA-1-1(active-primary)> show counter global
+```
+
+Signs of assymetric routing, counters to increment:
+
+- tcp_drop_out_of_wnd   out-of-window packets dropped
+- tcp_out_of_sync       can't continue tcp reassembly because it is out of sync
+- flow_tcp_non_syn      Non-SYN TCP packets without session match
+- flow_tcp_non_syn_drop Packets dropped: non-SYN TCP without session match
+
+flow_tcp_non_syn_drop - Packets dropped: non-SYN TCP without session match 
+The Palo Alto Networks Next-Generation Firewall builds TCP sessions based on the three-way handshake. By default, the device drops TCP packets unless a TCP three-way handshake is first established. Good non-SYN TCP communication can occur on networks with asymmetric routing, where the device may see only some of the packets. Good non-SYN TCP communication can also occur when a device is first put on a live network.
+
+tcp_drop_out_of_wnd - out-of-window packets dropped 
+The Palo Alto Networks Firewall creates a sliding sequence window starting with the original ACK (the window size is based on the type of traffic within the session). It is expected that the packet sequence numbers within the current session reside within this sliding window. This window adjusts with the type of traffic and whenever new ACK messages are received. The default behavior on the device is to drop packets when sequence numbers are outside this window.
+
+tcp_exceed_flow_oo_seg_limit - Out-of-window packets dropped due to the limitation on tcp out-of-order queue size 
+The Palo Alto Networks Firewall tries to handle out-of-window conditions if the packets are out of order, collecting up to 32 out-of-order packets per session. This counter identifies that packets have exceeded the 32-packet limit. If the device reaches the 32-packet limit before identifying the correct sequence, the device will bypass L4-L7 scanning for the session, by default.
+
+tcp_out_of_sync - Can't continue tcp reassembly because it is out of sync 
+This counter increments when the firewall detects an ACK sequence number outside the sliding sequence window. The sliding sequence window is calculated based on the original ACK and the type of traffic within the session. By default, the device rejects these out-of-sync packets. To disable this feature, change the setting to ignore. Bypass can be used, but effectively bypasses the scanning of the session, once the session is identified as out-of-sync.
+
+View current Global settings
+
+```
+admin@PA-1-1(active-primary)> show session info
+```
+
+Disable TCP sanity checks
+
+```
+> configure 
+Entering configuration mode
+[edit]         
+# set deviceconfig setting tcp asymmetric-path bypass
+# set deviceconfig setting session tcp-reject-non-syn no
+# commit
+```
+
+We may also configure these options only for one zone in Zone Protection Profile > Packet based attacks > TCP Drop.
+Zone Protection Profiles are applied to sessions that ingress on the zone where the protection profile is enabled
+
+Session setup requires one cluster member to see the complete TCP three-way handshake.
+For example it can be required on a member of cluster when assymetric routing is used. Request goes via one PA and reply via another, without these options long sessions with downloading a file will not work.
+More specifically for this case only asymmetric-path bypass is required
+Main reason why traffic will not work without it:
+tcp_drop_out_of_wnd - out-of-window packets dropped 
+
+After either the systemwide settings are disabled, or the Zone Protection Profile is added to a zone, the only counter that should still increment is
+flow_tcp_non_syn
