@@ -433,11 +433,11 @@ r10#show ip ospf database network
 
 - Is called Summary
 - Link State ID in this LSA is network number
-- Is sent by ABR, contains all prefixes available in neighbor area
+- Is sent by ABR between non backbone area and area 0, contains all prefixes available in neighbor area
 - LSA-3 are generated based on LSA-1 or LSA-3
 - For example ABR connected to Area 0 and Area 1, takes all LSA-1 from Area 1 and generates LSA-3 which are sent to Area 0
 - For example ABR connected to Area 0 and Area 2 receives LSA-3 from Area 0 regarding routes in Area 1, then it regenerates them to LSA-3 for area 2, during regeneration it changes Advertising router and Metric of LSA
-- **LSA 3 received from non backbone area will be installed to routing table but will not be propogated further**
+- **LSA 3 received from non backbone area will be installed to routing table of ABR but will not be propogated further to other areas**
 - When ABR receives LSA-1, it creates LSA-3 with same network as in LSA-1, LSA-2 are used to determine network mask for multi access network
 - For example ABR sends everything he gets from Area 1 to Area 0 interfaces
 - Every prefix contains network, mask, metric
@@ -1068,6 +1068,13 @@ Routing Protocol is "ospf 1"
   Distance: (default is 110)
 ```
 
+```
+R2#show ip ospf interface
+Ethernet0/1 is up, line protocol is up
+  Internet Address 192.168.1.2/24, Area 0, Attached via Network Statement
+  Process ID 1, Router ID 2.2.2.2, Network Type BROADCAST, Cost: 10
+```
+
 ## Authentication
 
 - Enabled per interface basis or per area
@@ -1360,6 +1367,19 @@ Concepts
     - (Link ID) Neighboring Router ID: 2.2.2.2
     - (Link Data) Router Interface address: 192.168.5.2 - From which virtal link is established
 
+Example 1
+
+- R5 sends as LSA-3 infornation about 192.168.7.0 to R2 via Virtual Link
+- R5 DOES NOT send anything to R4 in Area 1 - because it is prohibited to exchange routes between 2 non backbone areas
+- R2 gets LSA-3 about 192.168.7.0 in Area 0 with advertising router 192.168.7.2
+- R2 forwards this LSA-3 from Area 0 to Area 1 with advertising router without changing it: 192.168.7.2
+- R4 gets this LSA-3 with advertising router 192.168.7.2
+
+Route flow:
+
+```
+Area 45 LSA-1 > R5 > Area 0 LSA-3 > Virtual Link > R2 > Area 0 LSA-3 > Area 1 LSA-3
+```
 
 ## Verification
 
