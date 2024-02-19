@@ -1369,6 +1369,8 @@ Concepts
 
 Example 1
 
+<img width="1072" alt="image" src="https://github.com/phiphs/Foundation/assets/116812447/dd49bc41-6eec-454a-8660-ffb22b3fccbf">
+
 - R5 sends as LSA-3 infornation about 192.168.7.0 to R2 via Virtual Link
 - R5 DOES NOT send anything to R4 in Area 1 - because it is prohibited to exchange routes between 2 non backbone areas
 - R2 gets LSA-3 about 192.168.7.0 in Area 0 with advertising router 192.168.7.2
