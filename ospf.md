@@ -5,12 +5,13 @@
 - Network types
 - DR/BDR
 - Virtual links
-- \Route types
+- Route types
 
 ## Standards
 
 - RFC 2328 "OSPF Version 2" - https://datatracker.ietf.org/doc/html/rfc2328
 - RFC 5340 "OSPF for IPv6"
+- RFC 1793 - Extending OSPF to Support Demand Circuits - Virtual Links
 
 ## History
 
@@ -1375,6 +1376,7 @@ Concepts
     - (Link ID) Neighboring Router ID: 2.2.2.2
     - (Link Data) Router Interface address: 192.168.5.2 - From which virtal link is established
 - All LSAs sent via Virtual Links have LS age value DoNotAge - they will never expire, until explicitly told - and they never sent again, no refresh - OSPF considers Virtual Links “demand circuits”, like old dial-up links, and tries to minimize the amount of information sent across them
+- HELLOs are not sent via Virtual Links
 
 **Example**
 
@@ -1392,7 +1394,7 @@ Route flow:
 Area 45 LSA-1 > R5 > Area 0 LSA-3 > Virtual Link > R2 > Area 0 LSA-3 > Area 1 LSA-3 > R4
 ```
 
-Configuration
+**Configuration**
 
 R5
 
@@ -1407,6 +1409,26 @@ R2
 router ospf 1
  router-id 2.2.2.2
  area 1 virtual-link 192.168.7.2
+```
+
+**Verification**
+
+```
+Router#show ip ospf virtual-links
+Virtual Link OSPF_VL0 to router 2.2.2.2 is up
+  Run as demand circuit
+  DoNotAge LSA allowed.
+  Transit area 1, via interface Ethernet0/0
+ Topology-MTID    Cost    Disabled     Shutdown      Topology Name
+        0           20        no          no            Base
+  Transmit Delay is 1 sec, State POINT_TO_POINT,
+  Timer intervals configured, Hello 10, Dead 40, Wait 40, Retransmit 5
+    Hello due in 00:00:09
+    Adjacency State FULL (Hello suppressed)
+    Index 1/1/2, retransmission queue length 0, number of retransmission 0
+    First 0x0(0)/0x0(0)/0x0(0) Next 0x0(0)/0x0(0)/0x0(0)
+    Last retransmission scan length is 0, maximum is 0
+    Last retransmission scan time is 0 msec, maximum is 0 msec
 ```
 
 ## Verification
