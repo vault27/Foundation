@@ -1104,9 +1104,6 @@ show ip ospf interface | include line|authetication|key
 
 ## Redistribution
 
-## Virtual links
-
-- 
 
 ## Summarization
 
@@ -1342,9 +1339,12 @@ clear ip ospf process
 Why?
 
 - Reason 1: Connect area to backbone area via non backbone area, if it is not possibly directly  
-Area 7 > Area 5 > Area 0  
-ABR in Area 7 builds neighborship to Area 0 via Area 5
-- Second reason: connect two parts of a partitioned backbone through a non-backbone area  
+
+<img width="601" alt="image" src="https://github.com/phiphs/Foundation/assets/116812447/b31aac60-3289-4132-9f25-e43cec086153">
+
+- Second reason: connect two parts of a partitioned backbone through a non-backbone area
+
+<img width="326" alt="image" src="https://github.com/phiphs/Foundation/assets/116812447/82984e7a-0e36-4e7f-bfc3-55eb3eebe364">
 
 Concepts
 
@@ -1360,23 +1360,6 @@ Concepts
     - (Link ID) Neighboring Router ID: 2.2.2.2
     - (Link Data) Router Interface address: 192.168.5.2 - From which virtal link is established
 
-Reason 1 example
-
-Reason 2 example
-
-```
-(Area 0)R2(Area 1)R4(Area 1)R5(Area 0)
-        |                   |      
-      (Area 12)         (Area 45)
-
-Will be migrated to
-
-          (Area 0)
-          |       |
-(Area 12)-R2      R5-(Area 45)
-          |       |
-        Area1-R4-Area1
-```
 
 ## Verification
 
