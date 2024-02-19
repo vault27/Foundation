@@ -472,6 +472,13 @@ LSA-type 3 (Summary-LSA (IP network)), len 28
     Metric: 10
 ```
 
+- Link state ID - network address
+- Advertising Router - Router ID of ABR, which generated this LSA-3
+- Netmask
+- Metric
+
+From LSA-3 we cannot know the IP of next hop. We know only advertised router RID.   In order to find the next hop we use OSPF database based on LSA-1 and LSA-2  to find out where this RID is located.
+
 **Show LSA-3 in OSPF database**
 
 ```
@@ -1355,6 +1362,7 @@ Why?
 
 Concepts
 
+- Virtual links do not influence traffic flow, they just about exchanging LSAs
 - The area through which you configure the virtual link, known as a transit area, must have full routing information
 - The transit area cannot be a stub area
 - VL1 OSPF interface is created always in Area 0: P2P, Cost - 20
@@ -1366,8 +1374,9 @@ Concepts
     - Virtual link has type - Virtual Link
     - (Link ID) Neighboring Router ID: 2.2.2.2
     - (Link Data) Router Interface address: 192.168.5.2 - From which virtal link is established
+- All LSAs sent via Virtual Links have LS age value DoNotAge - they will never expire, until explicitly told - and they never sent again, no refresh - OSPF considers Virtual Links “demand circuits”, like old dial-up links, and tries to minimize the amount of information sent across them
 
-Example 1
+**Example**
 
 <img width="1072" alt="image" src="https://github.com/phiphs/Foundation/assets/116812447/dd49bc41-6eec-454a-8660-ffb22b3fccbf">
 
@@ -1380,7 +1389,24 @@ Example 1
 Route flow:
 
 ```
-Area 45 LSA-1 > R5 > Area 0 LSA-3 > Virtual Link > R2 > Area 0 LSA-3 > Area 1 LSA-3
+Area 45 LSA-1 > R5 > Area 0 LSA-3 > Virtual Link > R2 > Area 0 LSA-3 > Area 1 LSA-3 > R4
+```
+
+Configuration
+
+R5
+
+```
+router ospf 1
+ area 1 virtual-link 2.2.2.2
+```
+
+R2
+
+```
+router ospf 1
+ router-id 2.2.2.2
+ area 1 virtual-link 192.168.7.2
 ```
 
 ## Verification
