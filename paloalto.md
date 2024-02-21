@@ -703,9 +703,12 @@ Limit amount of dowmloaded software images
 > set max-num-images count x ( x can be any number between 2 to 64)
 ```
 
-## Performance monitoring
+## Performance
+
+**CPU**
 
 - Resource widget: both datalane and management CPU
+- show running resource-monitor - data plane, per core, per group of resources
 
 ## Best Practice Assessment (BPA) tool
 
@@ -3018,12 +3021,6 @@ set deviceconfig system type static
 commit
 
 show interface management
-```
-
-**Show data-plane CPU load**
-
-```
-show running resource-monitor
 ```
 
 **Show routing table**
