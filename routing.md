@@ -22,10 +22,16 @@ Routing table input data:
 
 If ECMP is enabled several routes can be installed to the same destination, we can do it with static routes as well.
 
-Wich route to use is determined by administrative ditsnce or metric.  
+Which route to use is determined by administrative distance or metric.  
 On Linux (and, I think, on Windows) priority is determined by metric, but it is not the case on macOS as you correctly pointed out. Instead of assigning metrics to individual routes, macOS assigns priorities to interfaces.  
 
-## Packet processing
+## Forwarding methods
+
+- Process switching
+- Fast switching
+- CEF - Cisco Express Forwarding
+
+**Process switching**
 
 - Router receives a frame, FCS is checked, router checks the Ethernet Type field for the packet type
 - Data Link header and trailer can now be discarded
@@ -37,20 +43,23 @@ On Linux (and, I think, on Windows) priority is determined by metric, but it is 
 - Change TTL + recalculate checksum
 - New Data Link frame is built: new header and trailer, including new FCS
 
-## Switching paths - methods to optimize the forwarding processing
+**Fast switching**
 
-In basic forwarding router has to perform for every packet two lookups in two separate tables: routing table + Layer 2 addresses table
-- Process switching - described above
-- Fast switching - first packet goes through process switching, results are added to fast switching cache or route cache. The cache contains the destination IP address, the next-hop information, and the data-link header information that needs to be added to the packet before forwarding. An entry **per each destination address, not per destination subnet/prefix**. All future packets with the same destination addresses use this data and are switched faster. Also called **route once, forward many times**  
-Draw backs: first packets are fully processed, cache entries are timed out quickly, if tables are changed, route entries are invalid, load balancing can only occur per destination  
-Not used any more 
-Disable Fast switching
+- First packet goes through process switching, results are added to fast switching cache or route cache. The cache contains the destination IP address, the next-hop information, and the data-link header information that needs to be added to the packet before forwarding. An entry **per each destination address, not per destination subnet/prefix**. All future packets with the same destination addresses use this data and are switched faster. Also called **route once, forward many times**  
+- Draw backs: first packets are fully processed, cache entries are timed out quickly, if tables are changed, route entries are invalid, load balancing can only occur per destination  
+- Not used any more 
+
+Disable Fast switching:
+
 ```
 Router#configure terminal
 Router(config)#interface Ethernet 0
 Router(config-if)#no ip route-cache
 ```
-- CEF - Cisco Express Forwarding - Preconstruct the Layer 2 frame headers and egress interface information for each neighbor, and keep them ready in an adjacency table stored in the router’s memory. This adjacency table can be constructed immediately as the routing table is populated. No need to visit ARP table for every packet.  
+
+**CEF - Cisco Express Forwarding**
+
+- Preconstruct the Layer 2 frame headers and egress interface information for each neighbor, and keep them ready in an adjacency table stored in the router’s memory. This adjacency table can be constructed immediately as the routing table is populated. No need to visit ARP table for every packet.  
 Routing table is very slow to search and contains too much data, that is why the destination prefixes alone from the routing table can be stored in a separate data structure called the Forwarding Information Base, or **FIB**, optimized for rapid lookups (usually, tree-based data structures meet this require- ment). Each entry in the FIB that represents a destination prefix can instead contain
 a pointer toward the particular entry in the adjacency table that stores the appropriate rewrite information: Layer 2 frame header and egress interface indication.  
 After the FIB and adjacency table are created, the routing table is not used anymore.  
