@@ -43,7 +43,7 @@ On Linux (and, I think, on Windows) priority is determined by metric, but it is 
 - Change TTL + recalculate checksum
 - New Data Link frame is built: new header and trailer, including new FCS
 
-**Fast switching**
+  **Fast switching**
 
 - First packet goes through process switching, results are added to fast switching cache or route cache. The cache contains the destination IP address, the next-hop information, and the data-link header information that needs to be added to the packet before forwarding. An entry **per each destination address, not per destination subnet/prefix**. All future packets with the same destination addresses use this data and are switched faster. Also called **route once, forward many times**  
 - Draw backs: first packets are fully processed, cache entries are timed out quickly, if tables are changed, route entries are invalid, load balancing can only occur per destination  
@@ -59,13 +59,19 @@ Router(config-if)#no ip route-cache
 
 **CEF - Cisco Express Forwarding**
 
-- Preconstruct the Layer 2 frame headers and egress interface information for each neighbor, and keep them ready in an adjacency table stored in the router’s memory. This adjacency table can be constructed immediately as the routing table is populated. No need to visit ARP table for every packet.  
-Routing table is very slow to search and contains too much data, that is why the destination prefixes alone from the routing table can be stored in a separate data structure called the Forwarding Information Base, or **FIB**, optimized for rapid lookups (usually, tree-based data structures meet this require- ment). Each entry in the FIB that represents a destination prefix can instead contain
-a pointer toward the particular entry in the adjacency table that stores the appropriate rewrite information: Layer 2 frame header and egress interface indication.  
-After the FIB and adjacency table are created, the routing table is not used anymore.  
-Routing Information Base (RIB)—it is the master copy of routing information from which the FIB and other structures are populated, but it is not necessarily used to route packets itself. RIBs for different routing protocols are different case.  
-CEF is implemented in software.  
-High end routers use specialized circuits (specifically, Ternary Content Addressable Memory [TCAM]) to store the FIB contents and perform even faster lookups.  
+- Enabled by default on most platforms
+- Cisco Express Forwarding (CEF) maintains two tables in the data plane
+- Preconstruct the Layer 2 frame headers and egress interface information for each next hop, and keep them ready in an adjacency table stored in the router’s memory 
+- This adjacency table can be constructed immediately as the routing table is populated
+- No need to visit ARP table for every packet
+- Routing table is very slow to search and contains too much data, that is why the destination prefixes alone from the routing table can be stored in a separate data structure called the Forwarding Information Base, or **FIB**, optimized for rapid lookups (usually, tree-based data structures meet this requirement)
+- Each entry in the FIB that represents a destination prefix can instead contain
+a pointer toward the particular entry in the adjacency table that stores the appropriate rewrite information: Layer 2 frame header and egress interface indication
+- After the FIB and adjacency table are created, the routing table is not used anymore
+- Routing Information Base (RIB)—it is the master copy of routing information from which the FIB and other structures are populated, but it is not necessarily used to route packets itself
+- RIBs for different routing protocols are different case
+- CEF is implemented in software.  
+- High end routers use specialized circuits (specifically, Ternary Content Addressable Memory [TCAM]) to store the FIB contents and perform even faster lookups 
 
 **Activation**
 
