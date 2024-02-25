@@ -703,9 +703,12 @@ Limit amount of dowmloaded software images
 > set max-num-images count x ( x can be any number between 2 to 64)
 ```
 
-## Performance monitoring
+## Performance
+
+**CPU**
 
 - Resource widget: both datalane and management CPU
+- show running resource-monitor - data plane, per core, per group of resources
 
 ## Best Practice Assessment (BPA) tool
 
@@ -2588,7 +2591,7 @@ debug software restart process user-id
 
 ## Panorama
 
-Features:
+**Features**
 
 - Dashboard: configurable widgets, configurable device groups, configurable devices
 - Centralized view on all activities via **ACC**:
@@ -2627,26 +2630,11 @@ Features:
 - **Panorama > Log Ingestion Profile** - receive logs from external sources, attach the log ingestion profile to a Log Collector group
 - **Panorama > Policy Recomendation > IoT + SaaS** - ?
 
-Types:
+**Types**
 
 - Management Only
 - Log Collector
 - Panorama: both
-
-**Migrate Firewall to Panorama**
-
-- Add new device
-- Import configuration
-- Fine-tune the configuration
-- Commit to Panorama
-- Push the device state
-- Commit the device groups and templates
-- A CLI command will forward the pre-existing logs to Panorama
-
-If you migrate HA pair:
-
-- Disable automatic sync between peers
-- Add both firewalls to Panorama
 
 **Templates & stacks**
  
@@ -2752,6 +2740,13 @@ Configuration
     - Default rules
 - When we import firewall config to Panorama, its rules go to Pre rules section of Device Group
 
+**Gear Icon Color**
+
+- Solid green gear icon indicates that Force Template Values option was used on Panorama during template push operation
+- Orange overlay green gear icon indicates panorama pushed configuration was overwritten on the local firewall or the Force Template Values was not selected during panorama commit push operation
+- Using Force Template Values on Panorama causes the Network and Object values on firewall to be overwritten by the Panorama pushed configuration. Please use caution while using this option
+- It is possible to clear local override and push locally
+
 **Licensing + Software Upgrades + Dynamic Updates**
 
 - Panorama > Device Deployment 
@@ -2854,7 +2849,22 @@ Commit options when you commit to Panorama:
 - Firewalls do not lose logs during the transition to Panorama management
 - Prepare according to official plan
 - Panorama > Setup > Operations, click Import device configuration to Panorama, and select the Device
-- Migrate HA pair: Disable configuration synchronization between the HA peers, 
+- Migrate HA pair: Disable configuration synchronization between the HA peers,
+
+- **Migrate Firewall to Panorama**
+
+- Add new device
+- Import configuration
+- Fine-tune the configuration
+- Commit to Panorama
+- Push the device state
+- Commit the device groups and templates
+- A CLI command will forward the pre-existing logs to Panorama
+
+If you migrate HA pair:
+
+- Disable automatic sync between peers
+- Add both firewalls to Panorama
 
 **Firewall is disconnected in Panorama**
 
@@ -3018,12 +3028,6 @@ set deviceconfig system type static
 commit
 
 show interface management
-```
-
-**Show data-plane CPU load**
-
-```
-show running resource-monitor
 ```
 
 **Show routing table**
