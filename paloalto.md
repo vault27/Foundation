@@ -1317,7 +1317,7 @@ Decryption policy can apply to
 - FTPS
 - SSH - inbound and outbound - called SSH proxy - does not require certificates
 
-Without decryption:
+**Without decryption**
 
 - Application in traffic logs: SSL or Youtube base (Based on cert or SNI)
 - No Decrypted tick in log details
@@ -1327,7 +1327,7 @@ Without decryption:
 - Content-ID does not work
 - The firewall can’t decrypt traffic inside an SSH tunnel
 
-Policy includes:
+**Policy includes**
 
 - Source (IP, Zone, User, Device)
 - Destination (Zone, address, device)
@@ -1337,7 +1337,7 @@ Policy includes:
 - Decryption profile
 - Logging
 
-Profile includes:
+**Profile includes**
 
 - Expired certs, untrusted certs
 - Unsupported ciphers
@@ -1345,27 +1345,27 @@ Profile includes:
 - Key exchange algorithms, Protocols version, Encryption algorithms, Authentication algorithms
 - Unsupported versions and algorithms in SSH
 
-Concepts
+**Concepts**
 
 - We can use Decryption policy with action No decrypt in order to Block untrusted certs + Expired certs
-- You can block all the SSH tunnel traffic by configuring a Security policy rule for the application ssh-tunnel with the Action set to Deny (along with a Security policy rule to allow traffic from the ssh application)
+- You can block all the SSH tunnel traffic by configuring a Security policy rule for the application ssh-tunnel with the Action set to **Deny** (along with a Security policy rule to allow traffic from the ssh application)
 - When you apply an SSH Decryption profile to traffic, for each channel in the connection, the firewall examines the App-ID of the traffic and identifies the channel type. The channel type can be one of the following:
     - session
     - X11
     - forwarded-tcpip
     - direct-tcpip
-- When the channel type is session, the firewall identifies the traffic as allowed SSH traffic, such as SFTP or SCP
-- When the channel type is X11, forwarded-tcpip, or direct-tcpip, the firewall identifies the traffic as SSH tunneling traffic and blocks it
+- When the channel type is session, the firewall identifies the traffic as allowed **SSH traffic**, such as SFTP or SCP
+- When the channel type is X11, forwarded-tcpip, or direct-tcpip, the firewall identifies the traffic as **SSH tunneling** traffic and blocks it
 - It is recomended to configure Decryption profile: block unsupported versions and algorithms for SSH
 - If firewall uses Forward Untrust certificate to decrypt normal website, then this website does not send intermediate certificate and firewall cannot trace its server cert to CA cert
 - Decryption policies enable you to specify traffic for decryption according to destination, source, user/user group, or URL category
 - Untrusted servers are sighned using special forward untrust certificate - ensures that clients are prompted with a certificate warning when attempting to access sites hosted by a server with untrusted certificates
 - Decryption policy rules are compared against the traffic in sequence, so more specific rules must precede the more general ones
 - The key used to decrypt SSH sessions is generated automatically on the firewall during bootup. With SSH decryption enabled, the firewall decrypts SSH traffic and blocks or restricts it based on your decryption policy and Decryption Profile settings. The traffic is re-encrypted as it exits the firewall
-- Decryption can be performed only on the virtual wire, Layer 2, or Layer 3 interfaces
+- Decryption can be performed only on the **virtual wire, Layer 2, or Layer 3 interfaces**
 - Decrypting traffic based on URL categories is a best practice for both URL Filtering and Decryption
 
-Configuration:  
+**Configuration** 
 
 We configure policy based on profile  
 In profile we configure all SSL settings - avoid weak ciphers and protocols  
@@ -1389,6 +1389,15 @@ Palo Alto Networks provides a predefined SSL Decryption Exclusion list that excl
 You can add more sites to this list  
 **Device > Certificate management > SSL Decryption Exclusion**  
 You can also force some of these sites to be decrypted
+
+**Troubleshooting**
+
+- Enable Log at session start for security rule for connectivity troubleshooting
+- **ACC > SSL Activity**: successful and unsuccessful decryption activity in your network, including decryption failures, TLS versions, key exchanges, and the amount and type of decrypted and undecrypted traffic
+- **Monitor > Logs > Decryption**: comprehensive information about individual sessions that match a Decryption policy, use a No Decryption policy for traffic you don’t decrypt, and GlobalProtect sessions when you enable Decryption logging in GlobalProtect Portal or GlobalProtect Gateways configuration
+- SSL Decryption Exclusion List -  from Palo Alto - Automatically Updated
+- Local Decryption Exclusion Cache - automatically adds the servers that local users encounter that break decryption for technical reasons and excludes them from decryption - when Decryption Profile allows unsupported modes
+- Custom Report Templates for Decryption
 
 ### Tunnel Inspection
 
@@ -3432,13 +3441,7 @@ Show system logs
 show log system
 ```
 
-- Some appliances support transiever monitoring via CLI
-- Enable Log at session start for security rule for connectivity troubleshooting
-- ACC > SSL Activity: successful and unsuccessful decryption activity in your network, including decryption failures, TLS versions, key exchanges, and the amount and type of decrypted and undecrypted traffic
-- Monitor > Logs > Decryption: comprehensive information about individual sessions that match a Decryption policy, use a No Decryption policy for traffic you don’t decrypt, and GlobalProtect sessions when you enable Decryption logging in GlobalProtect Portal or GlobalProtect Gateways configuration
-- SSL Decryption Exclusion List -  from Palo Alto - Automatically Updated
-- Local Decryption Exclusion Cache - automatically adds the servers that local users encounter that break decryption for technical reasons and excludes them from decryption - when Decryption Profile allows unsupported modes
-- Custom Report Templates for Decryption
+
 
 Show service routes
 
@@ -3456,7 +3459,7 @@ test nat-policy-match + traffic logs and session browser
 Security Policy troubleshooting:  
 test security-policy match + traffic logs and the session browser
 
-### Packet capture
+**Packet capture**
 
 Packet capture types:
 
