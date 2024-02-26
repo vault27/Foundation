@@ -23,6 +23,7 @@ All you need to know about Palo Alto firewalls and for PCNSE exam in short and s
 - Book "Mastering Palo Alto Networks: Build, configure, and deploy network solutions for your infrastructure using features of PAN-OS", 2nd Edition
 - GlobalProtect Administrator's Guide - 670 pages - whole world
 - PAN-OS® Administrator’s Guide - 1542 pages
+- PAN-OS Web Interface References
 - Panorama Admin Guide
 - Compatibility Matrix - https://docs.paloaltonetworks.com/compatibility-matrix
 - Palo Alto General Logs and Log files that are in the managment, data and control planes overview/review - https://live.paloaltonetworks.com/t5/general-topics/knowledge-sharing-palo-alto-general-logs-and-log-files-that-are/td-p/410110
@@ -173,6 +174,23 @@ Bootstrap allows you to automatically config, upgrade, update signatures, licens
     - /software folder: This folder contains the software images that are required to upgrade a newly provisioned VM-Series firewall to the desired PAN-OS version for the network
     - /content folder: This folder contains the Applications and Threats updates and WildFire updates for the valid subscriptions on the VM-Series firewall. You must include the minimum content versions that are required for the desired PAN-OS version
     - /plugins folder: This optional folder contains a single VM-Series plugin image
+
+## Master key
+
+- Is it enabled by default? - Yes default one is used everywhere
+- Palo Alto Networks recommends you configure a new master key instead of using the default key, store the key in a safe location, and periodically change it
+- After you enter a new key you will need it only during changing it
+- On physical and virtual Palo Alto Networks devices, you can configure the master key to use the AES-256-CBC or the AES-256-GCM (introduced in PAN-OS 10.0) encryption algorithm to encrypt data such as keys and passwords. AES-256-GCM provides stronger encryption than AES-256-CBC and improves your security posture
+- Master Key - Every firewall and Panorama management server has a **default master key** that encrypts all the private keys and passwords in the configuration to secure them (such as the private key used for SSL Forward Proxy Decryption
+- In HA and in Panorama everywhere should be the same Masterkey and algorithm
+- The only way to restore the default master key is to perform a factory reset
+- **Device > Master Key and Diagnostics** - create a new Master Key + Lifetime
+- You must configure a new master key before the current key expires. If the master key expires, the firewall or Panorama automatically reboots in Maintenance mode
+- Time for Reminder - firewall generates an expiration alarm - The firewall automatically opens the System Alarms dialog to display the alarm
+- Auto Renew Master Key to configure the firewall to automatically renew the master key for a specified number of days and hours so just to avoid expiration! - it is not a replacement for configuring a new key if the existing master key lifetime expires soon
+- HSM can be used to encrypt the master key:  **Device > Setup > HSM**
+- Master Key can be controlled centrally from Panorama: **Panorama > Managed Devices > Summary and Deploy Master Key**
+- It cannot be edited via Templates
 
 ## Packet Flow Sequence
 
@@ -3962,6 +3980,20 @@ Roles are available in RADIUS Vendor-Specific Attributes (VSAs), TACACS+ VSAs, o
 - In route table pool for clients appeares as static route via tunnel interface configured in gateway
 - Than we can redistribute this static route to OSPF for example, so all LAN hosts may access Globalprotect clients
 
+**Configuration: High level**
+
+- Configure certs for portal and gateway
+- Configure SSL service profile for portal and gateway
+- Then LDAP server profile, sAMAccountName
+- Authentication profile
+- Next is portal: **Network > GlobalProtect > Portals**
+- Download GlobalProtect client: **Device > GlobalProtect client**
+- Next tunnel interface: Network > Interfaces > Tunnel, separate zone for VPN
+- IP pool
+- Access route
+- Next, gateway
+- Next connect
+
 **Concepts**
 
 - GlobalProtect is an SSL VPN client that also supports IPSec
@@ -4003,18 +4035,6 @@ needed
 - Satelite
 - After you configured Portal user can access it with browser and download required Agent
 
-???
-
-- Provides clients with a download portal to get the client package, provides configuration to the agents once installed, and provides a Clientless VPN
-- Requires a Layer 3 or loopback interface for the GlobalProtect apps’ connection. If the portal and gateway are on the same firewall, they can use the same interface. The portal must be in a zone that is accessible from outside your network, such as a DMZ
-- Network > GlobalProtect > Portals
-- Create and configure:
-    - Interface
-    - IP
-    - TLS service profile
-    - Client auth rule - Specify OS, Auth profile - the same as for captive portal, Allow list
-    - Custom checks for Windows and Mac
-
 **Agent configuration for portal**
 
 - Trusted root CAs - add to client
@@ -4027,21 +4047,6 @@ to the specified Hostname - if result is positive, internal gateway is used. Int
 - External gateways: IP, FQDN, Source region(any maybe), Priority
 - App configuration: very many options!
 - HIP data collection
-
-
-test
-
-- Configure certs for portal and gateway
-- Configure SSL service profile for portal and gateway
-- Then LDAP server profile, sAMAccountName
-- Authentication profile
-- Next is portal: Network > GlobalProtect > Portals
-- Download GlobalProtect client: Device > GlobalProtect client
-- Next tunnel interface: Network > Interfaces > Tunnel, separate zone for VPN
-- IP pool
-- Access route
-- Next, gateway
-- Next connect
 
 **Gateway**
 
@@ -4063,6 +4068,23 @@ test
     - DNS servers
     - IPSec or SSL
     - Satelite
+
+**GlobalProtect Connect Methods**
+
+- On-demand: Requires manually connecting when access to the VPN is required
+- User-logon: VPN is established as soon as the user logs into the machine. When SSO is enabled, user credentials are automatically pulled from the Windows logon information and used to authenticate the GlobalProtect client user
+- Pre-logon: VPN is established before the user logs into the machine. Machine certificate is required for this type of connection
+
+Where is it configured? 
+
+**GlobalProtect Authentication Methods**
+
+- Local Authentication
+- External Authentication
+- Client Certificate Authentication
+- Two-Factor Authentication
+- Multi-Factor Authentication for Non-Browser-Based Applications
+- Single Sign-On
 
 ## HIP
 
