@@ -1796,8 +1796,9 @@ File sizes
 Licenses
 
 - The basic WildFire service is included as part of the Palo Alto Networks next generation firewall and does not require an Advanced WildFire or WildFire subscription
-- Firewall can forward portable executable (PE) files for analysis, and can retrieve Advanced WildFire signatures only with antivirus and/or Threat Prevention updates which are made available every 24-48 hours
-- WildFire license
+    - Firewall can forward portable executable (PE) files for analysis: EXE, DLL, SCR, FON, etc...
+    - Can retrieve Advanced WildFire signatures only with antivirus and/or Threat Prevention updates which are made available every 24-48 hours
+- Advanced WildFire license
     - Advanced WildFire signature updates - Real time
     - Advanced WildFire Inline ML
     - Advanced file type forwarding: APKs, Flash files, PDFs, Microsoft Office files, Java Applets, Java files (.jar and .class), and HTTP/HTTPS email links contained in SMTP and POP3 email messages
@@ -1807,7 +1808,6 @@ Licenses
 - Advanced WildFire subscription
     - Advanced cloud-based detector
 - Standalone subscription that provides API-only access
-
 
 **DoS Protection**
 
