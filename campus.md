@@ -29,3 +29,11 @@
 - Layer 2 Core - routing only on Core level
 - Routed Access - L3 starting from Access Switches - BGP is already between Access and Distribution/Core switches
 - Routed Distribution - L3 between distribution switches and Core, L2 between distribution and access
+
+## Typical campus
+
+- 16 switches in total
+- Every floor has a large access chassis - Catalyst 9410R
+- 2 Core switches Catalyst 9500
+- Every access switch is connected to 2 Core switches with port channels: total 4 physical links from each Access switch to Core switches, links to core switches are L3 with BGP
+- 2 Nexus switches for servers
