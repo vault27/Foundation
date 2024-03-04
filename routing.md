@@ -321,6 +321,38 @@ First hop redundancy protocol (FHRP)
 - Gateway Load Balancing Protocol (GLBP) is a Cisco proprietary protocol that attempts to overcome the limitations of existing redundant router protocols by adding basic load balancing functionality - round robin. Allows setting priorities and weights. 224.0.0.102 to send hello packets to their peers every 3 seconds over UDP 3222.
 - Virtual Router Redundancy Protocol (VRRP) - an open standard protocol
 
+**HSRP**
+
+Config example
+
+```
+interface Vlan230
+description Test
+ip address 172.31.13.154 255.255.255.240
+standby 230 ip 172.31.13.156
+standby 230 priority 130
+standby 230 preempt
+```
+
+Verification
+
+```
+router#show standby 
+Vlan2 - Group 2
+  State is Active
+    1 state change, last state change 48w6d
+  Virtual IP address is 172.22.33.1
+  Active virtual MAC address is 0000.0c07.ac02 (MAC In Use)
+    Local virtual MAC address is 0000.0c07.ac02 (v1 default)
+  Hello time 3 sec, hold time 10 sec
+    Next hello sent in 2.800 secs
+  Preemption enabled
+  Active router is local
+  Standby router is 172.22.33.3, priority 120 (expires in 9.408 sec)
+  Priority 130 (configured 130)
+  Group name is "hsrp-Vl2-2" (default)
+```
+
 ## VRF
 
 - Virtual router: separate control plane and data plane, overlapping IP addresses, VPN in general
