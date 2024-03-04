@@ -876,9 +876,6 @@ Floods:
 
 - L2
      - There are: **L2 interface, VLAN interface, VLAN, subinterface based on VLAN**
-     - Each Layer 2 interface defined on the firewall can be associated with a VLAN
-     - The same VLAN can be assigned to multiple Layer 2 interfaces but each interface can belong to only one VLAN
-     -  
 - L3: IP address, zone, virtual router
 - Virtual wire - no routing or switching, no MAC or IP addresses, blocking or allowing of traffic based on the virtual LAN (VLAN) tags. You assign 2 physical interfaces to one virtual wire.
     - It ignores any Layer 2 or Layer 3 addresses for switching or routing purposes
@@ -887,21 +884,25 @@ Floods:
 - TAP passively monitor traffic flows across a network by using a switch port analyzer (SPAN) or mirror port
 - HA
 - Aggregate interfaces - IEEE 802.1AX link aggregation - harwdware media can be mixed - interface type must be the same - 8 groups, some models - 16, 8 interfaces un each group - naming: ae.1-8
+- Decrypt Mirror - routing of copied decrypted traffic through an external interface to another system, such as a data loss prevention (DLP) service
 
 **Logical interfaces rypes**
 
 - Subinterfaces: Layer 3, Layer 2, and Virtual Wire - using 802.1Q
-- Virtual Wire Subinterfaces using VLAN tags only: You assign 2 physical interfaces to one virtual wire, on each interface you create sub interface with particular VLAN-ID. The same VLAN tag must not be defined on the parent virtual wire interface and the subinterface.
-- Virtual Wire Deployment with Subinterfaces (VLAN Tags and IP Classifiers): First firewall looks on the VLAN tag and matches against proper subinterface, but several subinterfaces may use the same VLAN - 100, then it uses IP classifier: source IP address and this helps him to match proper subinterface. For return-path traffic, the firewall compares the destination IP address as defined in the IP classifier on the customer-facing subinterface and selects the appropriate virtual wire to route traffic through the accurate subinterface
+    - Virtual Wire Subinterfaces using VLAN tags only: You assign 2 physical interfaces to one virtual wire, on each interface you create sub interface with particular VLAN-ID. The same VLAN tag must not be defined on the parent virtual wire interface and the subinterface
+    - Virtual Wire Deployment with Subinterfaces (VLAN Tags and IP Classifiers): First firewall looks on the VLAN tag and matches against proper subinterface, but several subinterfaces may use the same VLAN - 100, then it uses IP classifier: source IP address and this helps him to match proper subinterface. For return-path traffic, the firewall compares the destination IP address as defined in the IP classifier on the customer-facing subinterface and selects the appropriate virtual wire to route traffic through the accurate subinterface
 - Tunnel interfaces - virtual interfaces for VPN, should be in the same virtual router as physical - separate VPN zone for them is recomended. IP is required only when dynamic routing is used or for tunnel monitoring. Policy based VPN requires Proxy ID on both sides. 
 - Loopback interfaces - connect to the virtual routers in the firewall, DNS sinkholes, GlobalProtect service interfaces (such as portals and gateways)
-- Decrypt mirror interfaces - routing of copied decrypted traffic through an external interface to another system, such as a data loss prevention (DLP) service
-- VLAN interface
+- VLAN interface - this is L3 interface, connected to a VLAN, like in Cisco
 - SD-WAN - ?
 
 **VLANs**
 
-
+- Each Layer 2 interface defined on the firewall can be associated with a VLAN
+- The same VLAN can be assigned to multiple Layer 2 interfaces but each interface can belong to only one VLAN
+- In VLAN configuration we add L2 interfaces
+- We also add static MAC configuration: which MAC on which interface
+- And we assign VLAN interface - this is like on Cisco, so VLAN has an IP address
 
 **MAC addresses + speed/duplex**
 
@@ -4121,7 +4122,7 @@ Where is it configured?
 ## SSL mirror
 
 - Free license
-- Connect the traffic collection tool directly to an Ethernet interface on the firewall and set the Interface Type to Decrypt Mirror
+- Connect the traffic collection tool directly to an Ethernet interface on the firewall and set the **Interface Type to Decrypt Mirror**
 - Decryption port mirroring is not available on the VM-Series for public cloud platforms
 - Device > Setup> Content - ID > Allow forwarding of decrypted content
 - Objects > Decryption Profile
