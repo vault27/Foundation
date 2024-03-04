@@ -890,7 +890,8 @@ Floods:
 
 - Subinterfaces: Layer 3, Layer 2, and Virtual Wire - using 802.1Q
     - On one physical aggegate interface we can create many L3 or L2 subinterfaces, based on VLAN ID
-    - **Aggegate/Ethernet interface type should match all subinterfaces types** 
+    - **Aggegate/Ethernet interface type should match all subinterfaces types**
+    - When you you create a subinterface, you cannot even choose its type, it is taken from physical interface
     - Virtual Wire Subinterfaces using VLAN tags only: You assign 2 physical interfaces to one virtual wire, on each interface you create sub interface with particular VLAN-ID. The same VLAN tag must not be defined on the parent virtual wire interface and the subinterface
     - Virtual Wire Deployment with Subinterfaces (VLAN Tags and IP Classifiers): First firewall looks on the VLAN tag and matches against proper subinterface, but several subinterfaces may use the same VLAN - 100, then it uses IP classifier: source IP address and this helps him to match proper subinterface. For return-path traffic, the firewall compares the destination IP address as defined in the IP classifier on the customer-facing subinterface and selects the appropriate virtual wire to route traffic through the accurate subinterface
 - Tunnel interfaces - virtual interfaces for VPN, should be in the same virtual router as physical - separate VPN zone for them is recomended. IP is required only when dynamic routing is used or for tunnel monitoring. Policy based VPN requires Proxy ID on both sides. 
