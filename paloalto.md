@@ -872,6 +872,8 @@ Floods:
 
 ### Interfaces
 
+**Physical interfaces types**
+
 - L2
      - There are: **L2 interface, VLAN interface, VLAN, subinterface based on VLAN**
      - Each Layer 2 interface defined on the firewall can be associated with a VLAN
@@ -879,19 +881,27 @@ Floods:
      -  
 - L3: IP address, zone, virtual router
 - Virtual wire - no routing or switching, no MAC or IP addresses, blocking or allowing of traffic based on the virtual LAN (VLAN) tags. You assign 2 physical interfaces to one virtual wire.
-- It ignores any Layer 2 or Layer 3 addresses for switching or routing purposes
-- A virtual wire interface does not use an Interface Management Profile
-- All the firewalls that are shipped from the factory have two Ethernet ports (port 1 and port 2) preconfigured as virtual wire interfaces. These interfaces allow all of the untagged traffic
+    - It ignores any Layer 2 or Layer 3 addresses for switching or routing purposes
+    - A virtual wire interface does not use an Interface Management Profile
+    - All the firewalls that are shipped from the factory have two Ethernet ports (port 1 and port 2) preconfigured as virtual wire interfaces. These interfaces allow all of the untagged traffic
 - TAP passively monitor traffic flows across a network by using a switch port analyzer (SPAN) or mirror port
+- HA
+- Aggregate interfaces - IEEE 802.1AX link aggregation - harwdware media can be mixed - interface type must be the same - 8 groups, some models - 16, 8 interfaces un each group - naming: ae.1-8
+
+**Logical interfaces rypes**
+
 - Subinterfaces: Layer 3, Layer 2, and Virtual Wire - using 802.1Q
 - Virtual Wire Subinterfaces using VLAN tags only: You assign 2 physical interfaces to one virtual wire, on each interface you create sub interface with particular VLAN-ID. The same VLAN tag must not be defined on the parent virtual wire interface and the subinterface.
 - Virtual Wire Deployment with Subinterfaces (VLAN Tags and IP Classifiers): First firewall looks on the VLAN tag and matches against proper subinterface, but several subinterfaces may use the same VLAN - 100, then it uses IP classifier: source IP address and this helps him to match proper subinterface. For return-path traffic, the firewall compares the destination IP address as defined in the IP classifier on the customer-facing subinterface and selects the appropriate virtual wire to route traffic through the accurate subinterface
 - Tunnel interfaces - virtual interfaces for VPN, should be in the same virtual router as physical - separate VPN zone for them is recomended. IP is required only when dynamic routing is used or for tunnel monitoring. Policy based VPN requires Proxy ID on both sides. 
-- Aggregate interfaces - IEEE 802.1AX link aggregation - harwdware media can be mixed - interface type must be the same - 8 groups, some models - 16, 8 interfaces un each group - naming: ae.1-8
 - Loopback interfaces - connect to the virtual routers in the firewall, DNS sinkholes, GlobalProtect service interfaces (such as portals and gateways)
 - Decrypt mirror interfaces - routing of copied decrypted traffic through an external interface to another system, such as a data loss prevention (DLP) service
 - VLAN interface
 - SD-WAN - ?
+
+**VLANs**
+
+
 
 **MAC addresses + speed/duplex**
 
