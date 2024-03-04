@@ -873,6 +873,10 @@ Floods:
 ### Interfaces
 
 - L2
+     - There are: **L2 interface, VLAN interface, VLAN, subinterface based on VLAN**
+     - Each Layer 2 interface defined on the firewall can be associated with a VLAN
+     - The same VLAN can be assigned to multiple Layer 2 interfaces but each interface can belong to only one VLAN
+     -  
 - L3: IP address, zone, virtual router
 - Virtual wire - no routing or switching, no MAC or IP addresses, blocking or allowing of traffic based on the virtual LAN (VLAN) tags. You assign 2 physical interfaces to one virtual wire.
 - It ignores any Layer 2 or Layer 3 addresses for switching or routing purposes
