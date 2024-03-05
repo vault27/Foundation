@@ -274,11 +274,11 @@ Possible types of MAC
 
 Possible Ports values
 
-- CPU
+- CPU - mac-address is assigned by CPU and is an internal allocation for some internal process. Every switch has a pool of mac-addreses for internal allocation for its processes.For example, for STP process, VTP process, switch assings the internal mac-addresses
 - Port number
-- Drop
+- Drop - port drops traffic due to security violations, for example if port security is configured, or 802.1X
 
-Show all ARPs
+**Show all ARPs**
 
 ```
 cisco9300#show ip arp            
