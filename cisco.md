@@ -278,6 +278,37 @@ Possible Ports values
 - Port number
 - Drop - port drops traffic due to security violations, for example if port security is configured, or 802.1X
 
+**Show 802.1X port status**
+
+```
+Device# show dot1x interface fastethernet7/1 details
+
+Dot1x Info for FastEthernet7/1
+-----------------------------------
+PAE                       = AUTHENTICATOR
+PortControl               = AUTO
+ControlDirection          = Both 
+HostMode                  = SINGLE_HOST
+ReAuthentication          = Disabled
+QuietPeriod               = 60
+ServerTimeout             = 30
+SuppTimeout               = 30
+ReAuthPeriod              = 3600 (Locally configured)
+ReAuthMax                 = 2
+MaxReq                    = 2
+TxPeriod                  = 30
+RateLimitPeriod           = 0
+Dot1x Authenticator Client List
+-------------------------------
+Supplicant                = 1000.0000.2e00
+        Auth SM State     = AUTHENTICATED
+        Auth BEND SM Stat = IDLE
+Port Status               = AUTHORIZED
+          
+Authentication Method     = Dot1x
+Authorized By             = Authentication Server
+Vlan Policy               = N/A
+```
 **Show all ARPs**
 
 ```
