@@ -140,12 +140,14 @@ IOS version naming
 
 
 ## IOS XR
+
 - Focuses on the needs of service providers
 - Modular, Linux based, memory protection between processes
 - Has a completely different code base and whose developers implemented a different CLI command set
 - IOS XR is based on QNX (since version 5.0 it's also based on linux), where the IOSd application has been separated into many different applications
 
 ## IOS XE
+
 - Supports next-generation platforms
 - Combination of a Linux kernel and a monolithic application (IOSd) that runs on top of this kernel
 - Separates the data plane and control plane
@@ -205,7 +207,55 @@ IOSv is performance limited when forwarding traffic. Achieved throughputs are ~2
 
 ## Switch commands
 
-Show all MAC addresses on a port
+**Show all MAC addresses on the switch**
+
+```
+switch#show mac address-table 
+          Mac Address Table
+-------------------------------------------
+ 
+Vlan    Mac Address       Type        Ports
+----    -----------       --------    -----
+All    0100.0ccc.cccc    STATIC      CPU
+All    0100.0ccc.cccd    STATIC      CPU
+All    0180.c200.0000    STATIC      CPU
+All    0180.c200.0001    STATIC      CPU
+All    0180.c200.0002    STATIC      CPU
+All    0180.c200.0003    STATIC      CPU
+All    0180.c200.0004    STATIC      CPU
+All    0180.c200.0005    STATIC      CPU
+All    0180.c200.0006    STATIC      CPU
+All    0180.c200.0007    STATIC      CPU
+All    0180.c200.0008    STATIC      CPU
+All    0180.c200.0009    STATIC      CPU
+All    0180.c200.000a    STATIC      CPU
+All    0180.c200.000b    STATIC      CPU
+All    0180.c200.000c    STATIC      CPU
+All    0180.c200.000d    STATIC      CPU
+All    0180.c200.000e    STATIC      CPU
+All    0180.c200.000f    STATIC      CPU
+All    0180.c200.0010    STATIC      CPU
+All    0180.c200.0021    STATIC      CPU
+All    ffff.ffff.ffff    STATIC      CPU
+  20    0000.0c07.ac14    DYNAMIC     Te1/1/8
+  20    34f8.e769.f756    STATIC      Vl20 
+  20    4488.165b.db3f    DYNAMIC     Te1/1/8
+  20    4488.165b.e21f    DYNAMIC     Te1/1/8
+  20    cc90.70a1.0399    DYNAMIC     Te1/1/8
+111    0000.0c07.ac6f    DYNAMIC     Te1/1/8
+111    083a.8858.80f3    DYNAMIC     Te1/1/8
+111    34bd.c8c7.c7f8    DYNAMIC     Te1/1/8
+111    4488.165b.db3f    DYNAMIC     Te1/1/8
+111    4488.165b.e21f    DYNAMIC     Te1/1/8
+111    5405.db73.dc08    STATIC      Tw1/0/17 
+111    5405.dbce.279b    STATIC      Tw1/0/1 
+111    8c8c.aa3d.38ea    DYNAMIC     Te1/1/8
+111    a029.1992.b989    DYNAMIC     Te1/1/8
+111    a0ce.c8ef.49ba    DYNAMIC     Drop
+has context menu
+```
+**Show all MAC addresses on a port**
+
 ```
 cisco9300#sh mac address-table interface gigabitEthernet1/0/22
           Mac Address Table
@@ -217,7 +267,19 @@ Vlan    Mac Address       Type        Ports
 Total Mac Addresses for this criterion: 1
 ```
 
+Possible types of MAC
+
+- Dynamic
+- Static
+
+Possible Ports values
+
+- CPU
+- Port number
+- Drop
+
 Show all ARPs
+
 ```
 cisco9300#show ip arp            
 Protocol  Address          Age (min)  Hardware Addr   Type   Interface
