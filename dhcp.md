@@ -2,10 +2,23 @@
 
 - Server - UDP port 68
 - Client - UDP port 67
+- Client with Static IP can use DHCP as well - to get all other information
+- If server cannot reply on Discover - it sends nothing
+- Client may renew address from another DHCP server
+- To renew address REQUEST message is sent
 
+  
 ## DHCP options
 
 ## DHCP message types
+
+## Timers
+
+## States
+
+- INIT
+- SELECTING
+- BOUND
 
 ## Message flow
 
@@ -29,3 +42,7 @@ If client gets many offers - it will use the first one
     - IP dst 255.255.255.255
     - Client IP: offered IP
     - - Option 53 - Message type Offer
+
+## Relay
+
+- Adds Relay Agent IP address to the request - this is the address of router on network side, from which DHCP request arrived
