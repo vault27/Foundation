@@ -690,7 +690,7 @@ delete content cache old-content
 Check Core files:
 
 ```
- show system files
+show system files
 /opt/dpfs/var/cores/:
 total 4.0K
 drwxrwxrwx 2 root root 4.0K Jun 10 20:05 crashinfo
@@ -719,6 +719,12 @@ Limit amount of dowmloaded software images
 
 ```
 > set max-num-images count x ( x can be any number between 2 to 64)
+```
+
+SMART monitoring
+
+```
+debug system disk-smart-info disk-1 | match Media_Wearout_Indicator
 ```
 
 ## Performance
