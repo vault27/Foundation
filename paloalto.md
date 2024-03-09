@@ -2729,6 +2729,15 @@ Configuration
 - The Template at the top of the Stack has the highest priority in the presence of overlapping config
 - Commit to Panorama and devices
 
+**Overrides**
+
+- Any option on firewall received from stack can be changed locally
+- We just need to choose required option and click Override and then change it how we want
+- All options received from Panorama are marked with green icons in local FW interface
+- All overriden options are marked with orange-green signs
+- To cancel override we need to click on orange sign - it will become green and after this commit locally on firewall
+- Another way to cancel override is to push Stack from Panorama with Option Force Template Values
+
 **Variables**
 
 - They are created in order not to create 200 templates with different IPs inside
