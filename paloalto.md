@@ -2720,7 +2720,7 @@ It is **impossible** to configure with templates:
 - Configure a master key and diagnostics
 - Compare configuration files (Config Audit)
 
-Configuration
+**Templates & stacks Configuration**
 
 - Create Template: **Panorama > Templates > Add - Name + VSYS**
 - Commit to Panorama
@@ -2827,7 +2827,7 @@ Configuration
  - HA configuration syncs might occur only after each HA successfully tests the connectivity to Panorama and verifies its connection
  - Device > Setup > Panorama Settings > Enable Automatic commit recovery: Number of attempts to check for Panorama connectivity, Interval between retries (sec)
 
-**Configuration**
+**General Configuration Overview**
 
 - Add Panorama and Secondary Panorama IP on device
 - Insert auth key from Panorama: **Panorama > Device Registration Auth Key**
@@ -2845,6 +2845,11 @@ Configuration
 - Create templates - all configurations are there - **Panorama > Templates**
 - Combine them into stack - **Panorama > Templates** - add devices to Stack
 - You can add audit comment for every rule edit and then use audit comment archive to see all comment for all rule changes + you can make audit comment mandatory
+
+**Configuration management**
+
+- **Panorama > Setup > Operations >Configuration Management**
+- Revert to last saved Panorama configuration - 
 
 **Remove firewall from Panorama**
 
