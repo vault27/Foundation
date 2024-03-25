@@ -89,6 +89,83 @@ Cortex XDR)
     - Traps running version 5.0+ with the Traps management service
 - AutoFocus - cloud-based threat intelligence service - takes data from every where and provides it for XSOAR, XDR
 
+## Features
+
+- Device-ID
+- Dynamic address groups, user groups, external lists
+- The Palo Alto Networks firewall was designed to use an efficient system known as next-generation processing. Next-generation processing enables packet evaluation, application identification, policy decisions, and content scanning in a single, efficient processing pass - Single Pass Architecture
+- Zone based firewall
+- Full hardware separate mgmt
+- 6 Tulip stateful firewall
+- App-ID - Scans traffic to identify the application involved, regardless of the protocol or port number used
+- Content-ID - Scans traffic for security threats (e.g., data leak prevention and URL filtering, viruses, spyware, unwanted file transfers, specific data patterns, vulnerability attacks, and appropriate browsing access
+- User-ID - Matches a user to an IP address (or multiple IP addresses
+- Decryption
+- Security profiles
+  - Antivirus
+  - Anti-Spyware - botnet
+  - Vulnerability Protection - IPS
+  - URL filtering - categories
+  - File blocking - block files by types and applications
+  - Wildfire - send file to cloud for check
+  - Data Filtering - in files, patterns, credit card numbers
+- Traps
+- DoS - in three places! Zone protection profiles - protect whole zones + port scan protection only there. Separate DoS policy. DoS security profile applied to Security rule!
+- NAT
+- Site-to-site IPSec or GRE or GRE inside IPSec tunnels
+- Global Protect RA VPN via IPSec or SSL
+- Global Protect Satelite
+- Global Protect HIP
+- QoS
+- SD-WAN
+- DNS-Proxy
+- Tags
+- IP Tags
+- VM Monitoring
+- Dynamic Address Groups
+- Dynamic External Lists
+- XML API - full control of every aspect of your security, and build deep integrations with a variety of other systems. You can make XML API calls directly to the firewall, directly to Panorama, or to a firewall via Panorama
+- REST API - simplifies access to resources as high-level URIs. You can use this API to create, change, and delete resources
+- VSYS
+- FIPS mode
+- Decryption mirror
+- Decryption broker
+- Network Packet Brocker
+- Best Practice Assessment (BPA)
+- IoT Security
+- DNS Security
+- Autofocus
+- Cortex Data Lake
+- DLP
+- SAAS Security Inline
+- IPv4/v6
+- TAP mode
+- Virtual Wire
+- L2/L3 mode
+- VLAN subinterfaces
+- LACP
+- Bonjour reflector
+- Virtual routers
+- Logical routers
+- Service routes
+- Static routing
+- BGP
+- OSPF
+- RIP
+- IP Multicast (PIM-SM, PIM-SSM, IGMP v1, v2, and v3)
+- Route redistribution
+- DHCP Client/PPPoE/Static
+- DHCP Server/DHCP Relay/Static
+- Dynamic DNS (DDNS)
+- NPTv6 
+- NDP Proxy 
+- NAT64
+- ECMP
+- LLDP
+- BFD
+- Tunnel Content Inspection
+- FQDNs
+
 ## Configuration hierarchy
 
 - Policies: Policies section - all about traffic control
@@ -248,86 +325,6 @@ Existing session 6 stages
 - Session allocation - Session state changes from INIT (pre-allocation) to OPENING (post-allocation)
 - Session is added to the flow lookup table for both C2S and S2C flows and firewall changes the session’s state from  OPENING to ACTIVE
 - The firewall then sends the packet into Session Fast Path phase for security processing
-
-## Features
-
-- Device-ID
-- Dynamic address groups, user groups, external lists
-- The Palo Alto Networks firewall was designed to use an efficient system known as next-generation processing. Next-generation processing enables packet evaluation, application identification, policy decisions, and content scanning in a single, efficient processing pass - Single Pass Architecture
-- Zone based firewall
-- Full hardware separate mgmt
-- 6 Tulip stateful firewall
-- App-ID - Scans traffic to identify the application involved, regardless of the protocol or port number used
-- Content-ID - Scans traffic for security threats (e.g., data leak prevention and URL filtering, viruses, spyware, unwanted file transfers, specific data patterns, vulnerability attacks, and appropriate browsing access
-- User-ID - Matches a user to an IP address (or multiple IP addresses
-- Decryption
-- Security profiles
-  - Antivirus
-  - Anti-Spyware - botnet
-  - Vulnerability Protection - IPS
-  - URL filtering - categories
-  - File blocking - block files by types and applications
-  - Wildfire - send file to cloud for check
-  - Data Filtering - in files, patterns, credit card numbers
-- Traps
-- DoS - in three places! Zone protection profiles - protect whole zones + port scan protection only there. Separate DoS policy. DoS security profile applied to Security rule!
-- NAT
-- Site-to-site IPSec or GRE or GRE inside IPSec tunnels
-- Global Protect RA VPN via IPSec or SSL
-- Global Protect Satelite
-- Global Protect HIP
-- QoS
-- SD-WAN
-- DNS-Proxy
-- Tags
-- IP Tags
-- VM Monitoring
-- Dynamic Address Groups
-- Dynamic External Lists
-- XML API - full control of every aspect of your security, and build deep integrations with a variety of other systems. You can make XML API calls directly to the firewall, directly to Panorama, or to a firewall via Panorama
-- REST API - simplifies access to resources as high-level URIs. You can use this API to create, change, and delete resources
-- VSYS
-- FIPS mode
-- Decryption mirror
-- Decryption broker
-- Network Packet Brocker
-- Best Practice Assessment (BPA)
-- IoT Security
-- DNS Security
-- Autofocus
-- Cortex Data Lake
-- DLP
-- SAAS Security Inline
-- IPv4/v6
-- TAP mode
-- Virtual Wire
-- L2/L3 mode
-- VLAN subinterfaces
-- LACP
-- Bonjour reflector
-- Virtual routers
-- Logical routers
-- Service routes
-- Static routing
-- BGP
-- OSPF
-- RIP
-- IP Multicast (PIM-SM, PIM-SSM, IGMP v1, v2, and v3)
-- Route redistribution
-- DHCP Client/PPPoE/Static
-- DHCP Server/DHCP Relay/Static
-- Dynamic DNS (DDNS)
-- NPTv6 
-- NDP Proxy 
-- NAT64
-- ECMP
-- LLDP
-- BFD
-- Tunnel Content Inspection
-- FQDNs
-
-
-
 
 ## Subscriptions
 
