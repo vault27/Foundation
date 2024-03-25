@@ -278,9 +278,7 @@ Existing session 6 stages
 - Global Protect HIP
 - QoS
 - SD-WAN
-- DHCP
 - DNS-Proxy
-- Routing
 - Tags
 - IP Tags
 - VM Monitoring
@@ -292,7 +290,44 @@ Existing session 6 stages
 - FIPS mode
 - Decryption mirror
 - Decryption broker
+- Network Packet Brocker
 - Best Practice Assessment (BPA)
+- IoT Security
+- DNS Security
+- Autofocus
+- Cortex Data Lake
+- DLP
+- SAAS Security Inline
+- IPv4/v6
+- TAP mode
+- Virtual Wire
+- L2/L3 mode
+- VLAN subinterfaces
+- LACP
+- Bonjour reflector
+- Virtual routers
+- Logical routers
+- Service routes
+- Static routing
+- BGP
+- OSPF
+- RIP
+- IP Multicast (PIM-SM, PIM-SSM, IGMP v1, v2, and v3)
+- Route redistribution
+- DHCP Client/PPPoE/Static
+- DHCP Server/DHCP Relay/Static
+- Dynamic DNS (DDNS)
+- NPTv6 
+- NDP Proxy 
+- NAT64
+- ECMP
+- LLDP
+- BFD
+- Tunnel Content Inspection
+- FQDNs
+
+
+
 
 ## Subscriptions
 
