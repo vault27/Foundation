@@ -518,7 +518,7 @@ commit force
   
 ## Dynamic updates
 
-Device > Dynamic Updates  
+**Device > Dynamic Updates**  
 
 Update types:
 
@@ -571,6 +571,12 @@ Mission critical
 - Create a security policy rule to always allow New App Ids in certain categories, for example auth-service, it is done here: **Objects > Application Filters > Add > Apply to New App-IDs only**
 - Deploy updates in small branches first to test
 - Use New App-ID Threshold option and Threshold
+
+Forcefully install dynamic updates
+
+```
+request content upgrade install force yes commit no file panupv2-all-contents-8827-8653.tgz
+```
 
 ## Upgrade
 
