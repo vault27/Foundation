@@ -35,3 +35,9 @@ Show everything about current user
 ```
 whoami /all
 ```
+
+Show group info
+
+```
+net user joe.doe /domain | findstr /i "juniper"
+```
