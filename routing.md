@@ -429,8 +429,6 @@ interface GigabitEthernet0/0/0/0
 **Show all VRFs in a system with their RD**
 
 ```
-show ip vrf
-
 switch#show ip vrf
   Name                             Default RD            Interfaces
   Mgmt-vrf                         <not set>             Gi0/0
@@ -458,6 +456,19 @@ Twe1/0/34.10           10.90.3.100     core                             down
 Vl530                  10.90.0.230     core                             up      
 Vl595                  10.90.0.97      core                             down    
 Vl908                  10.90.0.85      core                             up 
+```
+
+** Show in which VRF all IPs**
+
+```
+switch#show ip vrf interfaces 
+Interface              IP-Address      VRF                              Protocol
+Gi0/0                  10.90.1.4       Mgmt-vrf                         up      
+Lo0                    10.90.2.1       core                             up      
+Twe1/0/9.905           10.90.0.21      core                             up      
+Twe1/0/34.10           10.90.3.100     core                             down    
+Vl530                  10.90.0.230     core                             up      
+Vl595                  10.90.0.97      core                             down    
 ```
 
 ## Route leaking
