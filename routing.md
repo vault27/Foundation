@@ -426,11 +426,38 @@ interface GigabitEthernet0/0/0/0
 
 ## Verification on Cisco IOS
 
+**Show all VRFs in a system with their RD**
+
 ```
-#Show all VRFs in a system with their RD
 show ip vrf
-#Show all config related to VRF
+
+switch#show ip vrf
+  Name                             Default RD            Interfaces
+  Mgmt-vrf                         <not set>             Gi0/0
+  core                             4294963200:5          Lo0
+                                                         Twe1/0/9.905
+                                                         Twe1/0/34.10
+                                                         Vl530
+                                                         Vl595
+```
+
+**Show all config related to VRF**
+
+```
 show run vrf
+```
+
+**Show all IP addresses for VRF**
+
+```
+switch#show ip vrf interfaces core
+Interface              IP-Address      VRF                              Protocol
+Lo0                    10.90.2.1       core                             up      
+Twe1/0/9.905           10.90.0.21      core                             up      
+Twe1/0/34.10           10.90.3.100     core                             down    
+Vl530                  10.90.0.230     core                             up      
+Vl595                  10.90.0.97      core                             down    
+Vl908                  10.90.0.85      core                             up 
 ```
 
 ## Route leaking
