@@ -458,7 +458,7 @@ Vl595                  10.90.0.97      core                             down
 Vl908                  10.90.0.85      core                             up 
 ```
 
-** Show in which VRF all IPs**
+**Show in which VRF all IPs**
 
 ```
 switch#show ip vrf interfaces 
