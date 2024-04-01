@@ -380,3 +380,11 @@ Debug crypto condition peer ipv4 140.238.149.242
 Debug crypto ikev2
 Debug crypto ipsec
 ```
+
+## Nagle
+
+```
+service nagle
+```
+
+The Nagle congestion-control algorithm to improve the performance of their Telnet sessions to and from the router. When using a standard TCP implementation to send keystrokes between machines, TCP tends to send one packet for each keystroke typed. John Nagle's algorithm (RFC 896) helps alleviate the small-packet problem in TCP. In general, it works this way: The first character typed after connection establishment is sent in a single packet, but TCP holds any additional characters typed until the receiver acknowledges the previous packet. The second, larger packet is sent, and additional typed characters are saved until the acknowledgment comes back. The effect is to accumulate characters into larger chunks and pace them out to the network at a rate matching the round-trip time of the given connection. This method is usually good for all TCP-based traffic and helps when connectivity to the router is poor or congested or the router itself is busier than normal. Without service nagle on a Cisco router, each character in a Telnet session is a separate CPU interrupt. Hence, a command such as show tech will force a large number of CPU interrupts, impacting the performance of the router. From a Cisco point of view, the Nagle service not only helps to optimize the Telnet session but also lessens the load on the router
