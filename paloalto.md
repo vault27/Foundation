@@ -2748,6 +2748,7 @@ debug software restart process user-id
 - To change only parameter we can configure firewall directly and do not use force during pushing on panorama
 - We can use variables, for example to configure different IP addresses in one template stack
 - 1024 template stacks max
+- When you commit and push you cannot choose template, you can choose Stack or device....
 
 It is **impossible** to configure with templates:
 
@@ -2766,6 +2767,12 @@ It is **impossible** to configure with templates:
 - Create a Stack: **Panorama > Templates > Add Stack** - Assign a template to it + assign devices + default VSYS
 - The Template at the top of the Stack has the highest priority in the presence of overlapping config
 - Commit to Panorama and devices
+
+**Certificate management**
+
+- Import cert for GUI manegement to Global Template
+- Configure TLS profile for GUI management with this cert in Global Template
+- Install all Stacks during the night
 
 **Overrides**
 
