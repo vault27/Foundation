@@ -1,5 +1,16 @@
 # Wireless
 
+## Cisco WLC
+
+- Access Point has an IP address
+- Access pint is connected to regular switch to a particular VLAN
+- Access point builds CAPWAP tunnel to WLC
+- Access point sends all traffic to WLC
+- WLC is connected to switch
+- Switch is default gateway for users
+
+
+
 mcsindex.com
 
 What is the RX MCS?
