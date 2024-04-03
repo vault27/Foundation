@@ -6,7 +6,8 @@
 - Access pint is connected to regular switch to a particular VLAN
 - Access point builds CAPWAP tunnel to WLC
 - Access point sends all traffic to WLC
-- WLC is connected to switch
+- WLC is connected to switch: each WLC in HA pair is connected with 2 optic cables to 2 switches
+- 2 WLCs are connected between each other with copper cable
 - Switch is default gateway for users
 
 
