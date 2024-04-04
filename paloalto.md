@@ -2773,6 +2773,8 @@ It is **impossible** to configure with templates:
 - Import cert for GUI manegement to Global Template
 - Configure TLS profile for GUI management with this cert in Global Template
 - Install all Stacks during the night
+- In MGMT cert put to SAN field all firewall hostnames and IPs
+- Everytime you add new firewall add new IP and hostname and regenerate cert and push it to firewalls and reconfigure TLS profile
 
 **Overrides**
 
