@@ -2776,6 +2776,15 @@ It is **impossible** to configure with templates:
 - In MGMT cert put to SAN field all firewall hostnames and IPs
 - Everytime you add new firewall add new IP and hostname and regenerate cert and push it to firewalls and reconfigure TLS profile
 
+**Backup/Restore**
+
+- Panorama automatically saves a new version of the running configuration whenever you commit changes and you can restore any of those versions
+- You can save named configuration snapshot manually choosing Templates and Device Groups
+- When you revert changes, you are replacing settings in the current candidate configuration with settings from another configuration
+- Reverting a Panorama management server configuration requires a full commit after revert and must be performed by a superuser
+- Revert to a previous version of the running configuration that is stored on Panorama: **PanoramaSetupOperations, Load Panorama configuration version**
+- You can select Templates and Device Groups
+  
 **Overrides**
 
 - Any option on firewall received from stack can be changed locally
