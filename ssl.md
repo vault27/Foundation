@@ -1,7 +1,41 @@
 # TLS/SSL
 
+## RFC
+
+- TLS 1.2 - RFC 5246 - https://datatracker.ietf.org/doc/html/rfc5246
+  
 ## SSL/TLS Protocols 
 
+- In a nutshell TLS is all about different records. Different records serve different purposes. Records have Content-Type field and Message fields (Some other fields too)
+- Depending upon the Content-Type field's value, you know what is the purpose of a particular record. For eg: Content-Type=21 means that this is an Alert protocol and Content-Type=22 means that this is a Handshake protocol
+- Message field will contain the actual message related to a particular Record Protocol type
+- The Alert protocol further has a field called Description. This field contains the actual error information
+- <mark> The 21 shown in the wireshark capture is not a code but it is value in the Content-Type field of the TLS record. In plain words, the wireshark is telling us that this is a TLS Alert protocol </mark>
+
+Alert example
+
+![image](https://github.com/phph9/Foundation/assets/116812447/84324f16-9698-41df-a068-f0c4f2597b33)
+
+**Alerts**
+
+close_notify(0)
+unexpected_message(10),
+bad_record_mac(20),
+decryption_failed_RESERVED(21),
+record_overflow(22),
+decompression_failure(30),
+          handshake_failure(40),
+          no_certificate_RESERVED(41),
+          bad_certificate(42),
+          unsupported_certificate(43),
+          certificate_revoked(44),
+          certificate_expired(45),
+          certificate_unknown(46),
+          illegal_parameter(47),
+          unknown_ca(48),
+          access_denied(49),
+          decode_error(50),
+          decrypt_error(51)
 Handshake protocol
 - Authentication
 - Cryptographic modes negotiation
@@ -221,6 +255,10 @@ Extension: server_name (len=13)
 - Auth is dependent on which key exchange algorithm is used
 - During the RSA key exchange, the client generates a random value as the premaster secret  and sends it encrypted with the server’s public key. The server, which is in possession of the corresponding private key, decrypts the message to obtain the premaster secret. The authentication is implicit: it is assumed that only the server in possession of the corresponding private key can retrieve the premaster secret, construct the correct session keys, and producethe correct Finished message
 - During the DHE and ECDHE exchanges, the server contributes to the key exchange with its parameters. The parameters are signed with its private key. The client, which is in possession of the corresponding public key (obtained from the validated certificate), can verify that the parameters genuinely arrived from the intended server
+
+
+## Alerts
+
 
 ## SNI
 
