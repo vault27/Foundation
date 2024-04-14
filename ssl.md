@@ -6,6 +6,14 @@
   
 ## SSL/TLS Protocols 
 
+Record types ( Specified in Content-type Field) + Some recoeds have types
+
+- Handshake - code 22
+     - Client Hello
+     - Server Hello
+- Application Data - code 23
+- Alert - code 21
+
 - In a nutshell TLS is all about different records. Different records serve different purposes. Records have Content-Type field and Message fields (Some other fields too)
 - Depending upon the Content-Type field's value, you know what is the purpose of a particular record. For eg: Content-Type=21 means that this is an Alert protocol and Content-Type=22 means that this is a Handshake protocol
 - Message field will contain the actual message related to a particular Record Protocol type
