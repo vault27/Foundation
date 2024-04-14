@@ -10,7 +10,8 @@
 - Depending upon the Content-Type field's value, you know what is the purpose of a particular record. For eg: Content-Type=21 means that this is an Alert protocol and Content-Type=22 means that this is a Handshake protocol
 - Message field will contain the actual message related to a particular Record Protocol type
 - The Alert protocol further has a field called Description. This field contains the actual error information
-- <mark> The 21 shown in the wireshark capture is not a code but it is value in the Content-Type field of the TLS record. In plain words, the wireshark is telling us that this is a TLS Alert protocol </mark>
+- The 21 shown in the wireshark capture is not a code but it is value in the Content-Type field of the TLS record. In plain words, the wireshark is telling us that this is a TLS Alert protocol
+- The 21 shown in the wireshark capture is not a code but it is value in the Content-Type field of the TLS record. In plain words, the wireshark is telling us that this is a TLS Alert protocol
 
 Alert example
 
