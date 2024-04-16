@@ -2124,7 +2124,7 @@ HA Lite:
 - No HA-2
 - Synchronization of IPsec security associations
 
-HA Concepts:
+**HA Concepts**
 
 - Up to 16 firewalls as peer members of an HA cluster
 - Configure HA then everything else: Interfaces, policies....
@@ -2135,6 +2135,7 @@ HA Concepts:
 - In Active/Passive mode IPs and MACs are identical, when failover happens, gratuitous ARPs (GARPs) are sent. On hypervisors MACs are different, because they are set by Hypervisor, it can be changed in Palo Ato Settings
 - After commit changes are automatically sent to Passive
 - You can make changes on Passive, press Commit and it will go to Active
+- ICMP sessions are not synced
 
 Failover reasons
 
