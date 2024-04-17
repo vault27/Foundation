@@ -2731,6 +2731,7 @@ debug software restart process user-id
  <img width="576" alt="image" src="https://github.com/philipp-ov/foundation/assets/116812447/813aef71-ce9f-401e-80a9-81e34f4c42c3">
   
 - To control configuration and updates
+- Every template has different configurations for different VSYSs, we can choose
 - All Device parts and Network parts
 - Template is a copy of firewall's configuration interface
 - Configuration is written to template
