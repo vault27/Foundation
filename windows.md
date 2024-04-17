@@ -21,6 +21,12 @@ Identify DN of a group name
 dsquery group -samid "L-MSK-KLTN-ACC-Internet-Audio"
 ```
 
+Show all users in a group
+
+```
+dsget group "CN=GroupName,DC=domain,DC=name,DC=com" -members
+```
+
 Show list of domain controllers
 ```
 dsquery -server x5.ru
