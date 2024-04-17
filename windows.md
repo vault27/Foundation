@@ -25,6 +25,8 @@ Show all users in a group
 
 ```
 dsget group "CN=GroupName,DC=domain,DC=name,DC=com" -members
+
+net group /domain DP_APP_Access
 ```
 
 Show list of domain controllers
