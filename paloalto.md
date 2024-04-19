@@ -3879,6 +3879,7 @@ GlobalProtect has three major components:
 
 - GlobalProtect authentication event logs in Monitor > Logs > System
 - Separate GlobalProtect log
+- 
 
 **MFA**
 
@@ -4133,6 +4134,7 @@ needed
 - Clientless VPN
 - Satelite
 - After you configured Portal user can access it with browser and download required Agent
+- "Max Times User Can Disable" is configured on Portal - how many tims User can disable Global Protect - in App section
 
 **Agent configuration for portal**
 
