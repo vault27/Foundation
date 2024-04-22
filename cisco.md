@@ -42,6 +42,10 @@
 
 **Upgrade**
 
+- On-site person
+- Local password
+- vPC and STP peculiarities
+
 Backup 
 
 ```
