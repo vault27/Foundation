@@ -16,3 +16,5 @@ Cisco IOS XE software can suppress the generation of ICMP unreachable destinatio
 ```
 ip icmp rate-limit unreachable 500
 ```
+
+![image](https://github.com/phph9/Foundation/assets/116812447/b3cd1bce-c83a-42ac-9bf8-68672020549c)
