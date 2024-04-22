@@ -61,9 +61,15 @@ https://bgpfilterguide.nlnog.net/guides/bogon_prefixes
 
 ### ARP
 
-## MTU
+## MTU + Do not fragment bit
 
 - Some applications put DF bit and packet cannot be fragmented - for such apps MTU should be proper configured along all path
+- Most encrypted traffic has this bit
+- Application puts this bit and we cannot control it
+- When router gets packet with this bit and packet is bigger then MTU to next hop, router sends ICMP Unreachable Error Messages
+- These messages tell the source to reduce the packet size
+- These messages can be rate limited
+- If they do not reach source - connection will not work
 
 
 
