@@ -12,3 +12,7 @@ Type 3 error messages are sent when a message cannot be delivered completely to 
 - 5—Source route failed
   
 Cisco IOS XE software can suppress the generation of ICMP unreachable destination error messages, which is called rate-limiting. The default is no unreachable messages more often than once every half second. Separate intervals can be configured for code 4 and all other unreachable destination error messages. However, there is no method of displaying how many ICMP messages have not been sent.
+
+```
+ip icmp rate-limit unreachable 500
+```
