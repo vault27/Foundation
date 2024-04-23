@@ -3865,40 +3865,6 @@ Check the GRE session
 - Configure Gateway + configure Satellite there as well
 - Configure Satelite itself: Create a new IPSec tunnel config and select the type as GlobalProtect Satellite. Add the tunnel interface, portal config, and the interface that can reach the portal address
 
-## GlobalProtect
-
-GlobalProtect has three major components:
-
-- GlobalProtect portal
-- GlobalProtect gateways
-- GlobalProtect client software
-
-<img width="977" alt="image" src="https://github.com/philipp-ov/foundation/assets/116812447/f3ec9794-9a39-4d33-8ebf-d4e12411c3e6">
-
-**Features**
-
-- GlobalProtect authentication event logs in Monitor > Logs > System
-- Separate GlobalProtect log
-- 
-
-**MFA**
-
- - It is possible to request MFA for a certain application access, not only for VPN connection or User-ID
- - For example User > External Palo Alto Global Protect Gate way > LAN > Internal MFA Gateway > Application Server
- - Internal MFA Gateway may request second factor for particular application
- - Authentication policy is used, which generates captive portal for browser based apps
- - And sends notifications to global protect client for non browser apps
- - To facilitate MFA notifications for non-HTTP applications (such as Perforce) on Windows or macOS endpoints, a GlobalProtect app is required. When a session matches an Authentication policy rule, the firewall sends a UDP notification to the GlobalProtect app with an embedded URL link to the Authentication Portal page. The GlobalProtect app then displays this message as a pop up notification to the user
-
-**Xauth**
-
-- Xauth (Extended Authentication within IKE) is what Palo Alto Networks use to support third party VPN software using the Globalprotect Gateway
-- It allows the third party VPN client to authenticate through the Globalprotect auth profile as part of the IKE negotiation
-- IKE V.1 must be used on the 3rd party clients: iOS, Android
-- The Palo Alto Network firewall uses the OpenSSL crypto library
-- Globalprotect IPsec crypto profiles aren't used for the X-auth clients
-- Troubleshooting of the tunnel is done much the same way as any IPSec tunnel would be troubleshot
-
 ## VSYS
 
 - If several VSYSes are connected via extermal equipment then there is an issue - to many sessions!
@@ -4060,6 +4026,38 @@ Roles are available in RADIUS Vendor-Specific Attributes (VSAs), TACACS+ VSAs, o
 
 ## Global Protect
 
+GlobalProtect has three major components:
+
+- GlobalProtect portal
+- GlobalProtect gateways
+- GlobalProtect client software
+
+<img width="977" alt="image" src="https://github.com/philipp-ov/foundation/assets/116812447/f3ec9794-9a39-4d33-8ebf-d4e12411c3e6">
+
+**Features**
+
+- GlobalProtect authentication event logs in Monitor > Logs > System
+- Separate GlobalProtect log
+- 
+
+**MFA**
+
+ - It is possible to request MFA for a certain application access, not only for VPN connection or User-ID
+ - For example User > External Palo Alto Global Protect Gate way > LAN > Internal MFA Gateway > Application Server
+ - Internal MFA Gateway may request second factor for particular application
+ - Authentication policy is used, which generates captive portal for browser based apps
+ - And sends notifications to global protect client for non browser apps
+ - To facilitate MFA notifications for non-HTTP applications (such as Perforce) on Windows or macOS endpoints, a GlobalProtect app is required. When a session matches an Authentication policy rule, the firewall sends a UDP notification to the GlobalProtect app with an embedded URL link to the Authentication Portal page. The GlobalProtect app then displays this message as a pop up notification to the user
+
+**Xauth**
+
+- Xauth (Extended Authentication within IKE) is what Palo Alto Networks use to support third party VPN software using the Globalprotect Gateway
+- It allows the third party VPN client to authenticate through the Globalprotect auth profile as part of the IKE negotiation
+- IKE V.1 must be used on the 3rd party clients: iOS, Android
+- The Palo Alto Network firewall uses the OpenSSL crypto library
+- Globalprotect IPsec crypto profiles aren't used for the X-auth clients
+- Troubleshooting of the tunnel is done much the same way as any IPSec tunnel would be troubleshot
+
 **High level**
 
 - Client connects with browser to Portal and authenticates there
@@ -4186,6 +4184,14 @@ Where is it configured?
 - Two-Factor Authentication
 - Multi-Factor Authentication for Non-Browser-Based Applications
 - Single Sign-On
+
+**Client**
+
+- Complete uninstall client on MAC with reseting passcode counter
+
+```
+sudo /Applications/GlobalProtect.app/Contents/Resources/uninstall_gp.sh
+```
 
 ## HIP
 
