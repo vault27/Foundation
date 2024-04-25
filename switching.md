@@ -84,6 +84,25 @@ SW1(config-vlan)#exit
  spanning-tree bpduguard enable
 ```
 
+## Power over Ethernet
+
+- Shows which ports consumes Watts
+- Shows which ports have Access POints and Phones and Cameras...
+  
+```
+lava-e-acc-swi01-cr#show power inline 
+
+Available:10260.0(w)  Used:126.4(w)  Remaining:10133.6(w)
+
+Interface Admin  Oper       Power   Device              Class Max
+                            (Watts)                            
+--------- ------ ---------- ------- ------------------- ----- ----
+Gi1/0/1   auto   off        0.0     n/a                 n/a   60.0 
+Gi1/0/2   auto   off        0.0     n/a                 n/a   60.0 
+Gi1/0/3   auto   off        0.0     n/a                 n/a   60.0
+Te1/0/35  auto   on         3.6     IP Phone 7841       1     60.0
+```
+
 ## SPAN
 
 - Can be oversubscribed
