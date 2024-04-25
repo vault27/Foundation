@@ -53,6 +53,9 @@ All you need to know about Palo Alto firewalls and for PCNSE exam in short and s
   - OpenStack
   - VMware ESXi, VMware NSX, and VMware vCloud Air
 - Panorama
+- Strata Cloud Manager
+- SD-WAN
+- PAN-OS
 - CN-Series - for Kubernetes - secure traffic between pods in different trust zones and namespaces, for protection against known and zero-day malware, and to block data exfiltration from your containerized environments
 
 **Prisma**
@@ -71,6 +74,8 @@ All you need to know about Palo Alto firewalls and for PCNSE exam in short and s
 - Prisma Access Secure Access Service Edge (SASE) - Users connect to Prisma Access to access the internet and cloud and data center applications safely, regardless of their location
 - Prisma SaaS - multimode CASB service that allows you to govern any sanctioned software as a service (SaaS) application - complete visibility and granular enforcement across all user, folder, and file activity within the sanctioned SaaS applications
 - VM-Series ML-powered NGFWs
+- Prisma Access Browser
+- Autonomous Digital Experience Management (ADEM)
 
 **Cortex**
 
@@ -78,15 +83,15 @@ Detection, investigation, automation, and response capabilities.
 
 - Cortex XDR - Extended Detection and Response - detection and response platform that runs on integrated endpoint, network, and cloud data.  Immediate response actions. Define indicators of compromise (IOCs) and behavioral indicators of compromise (BIOCs)
 - Cortex XSOAR - extended Security Orchestration, Automation, and Response - automate up to 95 percent of all of the response actions - gets data from XDR and Autofocus
-- Cortex Data Lake - central log storage - Effortlessly run advanced artificial intelligence and ML with cloud-scale data - Constantly learn from new data sources to evolve defenses
-- The following products can utilize Cortex Data Lake:
+- Cortex Data Lake - central log storage - Effortlessly run advanced artificial intelligence and ML with cloud-scale data - Constantly learn from new data sources to evolve defenses. The following products can utilize Cortex Data Lake:
     - Prisma Access
-    - Palo Alto Networks NGFWs and Panorama devices with the ability to connect to the cloud
-service
+    - Palo Alto Networks NGFWs and Panorama devices with the ability to connect to the cloud service
     - Cortex XDR
-    - Previous versions of Palo Alto Networks Traps for endpoint protection and response (now
-Cortex XDR)
+    - Previous versions of Palo Alto Networks Traps for endpoint protection and response (now Cortex XDR)
     - Traps running version 5.0+ with the Traps management service
+- Xpanse - active attack surface management solution
+- Xsiam - ?
+
 - AutoFocus - cloud-based threat intelligence service - takes data from every where and provides it for XSOAR, XDR
 
 ## Features
