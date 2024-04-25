@@ -90,7 +90,7 @@ SW1(config-vlan)#exit
 - Shows which ports have Access POints and Phones and Cameras...
   
 ```
-lava-e-acc-swi01-cr#show power inline 
+switch#show power inline 
 
 Available:10260.0(w)  Used:126.4(w)  Remaining:10133.6(w)
 
@@ -196,7 +196,7 @@ switch(config)# port-channel load-balance
 
 ### Verification
 
-Show port-channel overview on Catalyst. Status, Layer-2 or Layer-3, protocol LACP or PAGP
+**Show port-channel overview on Catalyst. Status, Layer-2 or Layer-3, protocol LACP or PAGP**
 
 ```
 show etherchannel summary 
@@ -230,6 +230,42 @@ Group  Port-channel  Protocol    Ports
 34     Po34(SU)        LACP        Twe1/0/8(P)     Twe1/0/20(P)    
 40     Po40(SU)        LACP        Twe1/0/11(P)    Twe1/0/23(P)    
 41     Po41(SU)        LACP        Twe1/0/12(P)    Twe1/0/24(P)    
+```
+
+**Show all trunk ports**
+
+Management donain, spanning tre...
+
+```
+switch#show int trunk
+
+Port           Mode             Encapsulation  Status        Native vlan  
+Te2/0/46       on               802.1q         trunking      888
+Te3/0/1        on               802.1q         trunking      1
+Te4/0/1        on               802.1q         trunking      1
+Te6/0/45       on               802.1q         trunking      888
+Te6/0/46       on               802.1q         trunking      888
+
+Port           Vlans allowed on trunk
+Te2/0/46       844,888
+Te3/0/1        1,10,20,30,50,610-611,836,844-845,888,1000
+Te4/0/1        1,10,20,30,50,610-611,836,844-845,888,1000
+Te6/0/45       844,888
+Te6/0/46       844,888
+
+Port           Vlans allowed and active in management domain
+Te2/0/46       844,888
+Te3/0/1        1,10,20,30,50,610-611,836,844-845,888,1000
+Te4/0/1        1,10,20,30,50,610-611,836,844-845,888,1000
+Te6/0/45       844,888
+Te6/0/46       844,888
+
+Port           Vlans in spanning tree forwarding state and not pruned
+Te2/0/46       844,888
+Te3/0/1        1,10,20,30,50,610-611,836,844-845,888,1000
+Te4/0/1        none
+Te6/0/45       844,888
+Te6/0/46       844,888
 ```
 
 ## ESI
