@@ -68,12 +68,16 @@ install add file flash:cat9k_iosxe.17.09.04a.SPA.bin activate commit prompt-leve
 ## Interface configuration
 
 ```
+SW1(config)#vlan 101
+SW1(config-vlan)#name VOIP
+SW1(config-vlan)#exit
+
  interface TenGigabitEthernet7/0/40
  description USR_Voice/Data
  switchport access vlan 836
  switchport mode access
  switchport nonegotiate - On switches that support both ISL and 802.1Q trunking, DTP can be used to negotiate the appropriate trunking encapsulation. When negotiation is configured, ISL is always preferred, with 802.1Q being negotiated only if either side of the trunk does not support ISL
- switchport voice vlan 20
+ switchport voice vlan 20 -  trunk between our switch and IP phone, port on the IP phone that connects to the computer is an access port, all traffic from the computer to the switch untagged, traffic from the IP phone itself will be tagged, Phone will learn through CDP which VLANs it should use
  no logging event link-status
  no mdix auto
  spanning-tree portfast
