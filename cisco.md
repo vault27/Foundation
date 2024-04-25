@@ -40,46 +40,7 @@
 - One switch is master, if master fails - another is a master
 - Stackwise physically connects the switch stack using special stack interconnect cables
 
-**Upgrade**
 
-- On-site person
-- Local password
-- vPC and STP peculiarities
-
-Backup 
-
-```
-copy run start
-ter len 0
-sh log 
-sh run
-```
-
-Pre checks
-
-```
-term len 0
-show logging
-show environment all
-show ver
-show mac add dynamic
-show spanning-tree summary
-show spanning-tree root
-show cdp nei
-show interfaces status err-disabled
-show interfaces status | i connected
-show power inline
-show int trunk
-show inventory
-show module
-show switch
-```
-
-Upgrade
-
-```
-install add file flash:cat9k_iosxe.17.09.04a.SPA.bin activate commit prompt-level none
-```
 
 ## Documentation
 
