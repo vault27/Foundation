@@ -2535,6 +2535,7 @@ show log system direction equal backward subtype equal userid
         - Choose server profile
 - Verify that the user and group mapping has correctly identified users Device > User Identification > Group Mapping > Group Include List
 - If you have universal groups, create an LDAP server profile to connect to the root domain of the global catalog server on port 3268 or 3269 for SSL
+- If OU is changed for group, rules will stop working, we need to readd the group
 - To verify that all of the user attributes have been correctly captured, use the following CLI command:
 
 ```text
