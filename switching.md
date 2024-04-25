@@ -65,6 +65,21 @@ show switch
 install add file flash:cat9k_iosxe.17.09.04a.SPA.bin activate commit prompt-level none
 ```
 
+## Interface configuration
+
+```
+ interface TenGigabitEthernet7/0/40
+ description USR_Voice/Data
+ switchport access vlan 836
+ switchport mode access
+ switchport nonegotiate - On switches that support both ISL and 802.1Q trunking, DTP can be used to negotiate the appropriate trunking encapsulation. When negotiation is configured, ISL is always preferred, with 802.1Q being negotiated only if either side of the trunk does not support ISL
+ switchport voice vlan 20
+ no logging event link-status
+ no mdix auto
+ spanning-tree portfast
+ spanning-tree bpduguard enable
+```
+
 ## SPAN
 
 - Can be oversubscribed
