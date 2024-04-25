@@ -14,6 +14,14 @@
 - MC-LAG
 - LACP
 - Etherchannel - port channel
+- Power over Ethernet
+
+## Hardware
+
+- Show inventory - chassis, modules, SFP, power, fans
+- Show module - modules, SFPs, status, supervisors
+- Show redundancy - spuervisor modules HA
+
 
 ## Native VLAN
 
