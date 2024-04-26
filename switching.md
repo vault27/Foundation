@@ -37,6 +37,7 @@
 - Access points
 - Cameras
 - ARP + MAC tables from core switch
+- Disable monitoring system
 
 **Backup**
 
