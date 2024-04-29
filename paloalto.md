@@ -60,7 +60,7 @@ All you need to know about Palo Alto firewalls and for PCNSE exam in short and s
 
 **Prisma**
 
-- Prisma Cloud - Cloud Security Posture Management (CSPM) - Prisma Cloud taps into the cloud providers’ APIs for read-only access to network traffic, user activity, and the configuration of systems and services.
+- **Prisma Cloud** - Cloud Security Posture Management (CSPM) - Prisma Cloud taps into the cloud providers’ APIs for read-only access to network traffic, user activity, and the configuration of systems and services.
   - Alibaba Cloud
   - Amazon Web Services
   - Docker EE
@@ -71,11 +71,11 @@ All you need to know about Palo Alto firewalls and for PCNSE exam in short and s
   - Rancher
   - Red Hat OpenShift
   - VMware Tanzu
-- Prisma Access Secure Access Service Edge (SASE) - Users connect to Prisma Access to access the internet and cloud and data center applications safely, regardless of their location
-- Prisma SaaS - multimode CASB service that allows you to govern any sanctioned software as a service (SaaS) application - complete visibility and granular enforcement across all user, folder, and file activity within the sanctioned SaaS applications
-- VM-Series ML-powered NGFWs
-- Prisma Access Browser
-- Autonomous Digital Experience Management (ADEM)
+- **Prisma Access Secure Access Service Edge (SASE)** - Users connect to Prisma Access cloud with GP client to access the internet and cloud and data center applications, IPSec tunnels from cloud to ON-prem, Panorama or CLoud managed
+- **Prisma SaaS** - multimode CASB service that allows you to govern any sanctioned software as a service (SaaS) application - complete visibility and granular enforcement across all user, folder, and file activity within the sanctioned SaaS applications
+- **VM-Series** ML-powered NGFWs
+- **Prisma Access Browser**
+- **Autonomous Digital Experience Management (ADEM)**
 
 **Cortex**
 
