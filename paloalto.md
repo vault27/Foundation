@@ -4285,16 +4285,16 @@ Verify slots
 - **Service connection** to on-prem network and data center - IPSec tunnel - any device, PA is not mandatory - BGP or static routing - **for Data Center**
     - Service connections and remote networks are different: service connections are only inbound - you cannot route traffic from service connection to Prisma and to Internet
     - Max 5 service connections - 5 Gbps
-- **Corporate access nodes (CANs)** - things in a cloud, which establish service connection, no security policy here - CANs are used only to route traffic and User-ID redistribution and have a throughput of up to 1GBPS per service connection
-- 100 locations are available for users to connect
+- **Corporate access nodes (CANs)** - things in a cloud, which establish service connection,  no security policy here - CANs are used only to route traffic and User-ID redistribution and have a throughput of up to 1GBPS per service connection
+- 100 locations are available for users to connect - **cannot go to Internet directly**
 - **Remote Networks** connect to offices that require connections to and from the internet - **for Branches**
-- **Remote Networks Security Processing Nodes (RN-SPN)** - thing in a cloud, which termintaes IPSec tunnel from branch  -  inspect and secure traffic from remote sites
+- **Remote Networks Security Processing Nodes (RN-SPN)** - thing in a cloud, which termintaes IPSec tunnel from branch  -  inspect and secure traffic from remote sites - **can go directly to internet**
 - **Prisma Access portal**
       - Can be used with on-prem gateways
       - Multiple virtual portals (up to four) may be created around the world while they are still managed as one logical portal
-- **The MU-SPN (formerly the gateway)** - terminates user VPN
-- **Service Infrastructure Subnet** - In most cases a /23 subnet is sufficient
-- **Cloud Secure Web Gateway (SWG)** - explicit proxy connection method, auto-scale, load-balanced across the scope of SWG nodes
+- **The MU-SPN (formerly the gateway)** - terminates user VPN - **can go directly to Internet**
+- **Service Infrastructure Subnet** - In most cases a /23 subnet is sufficient - it cannot overlap any existing IP subnets within your network
+- **Cloud Secure Web Gateway (SWG)** - explicit proxy connection method, auto-scale, load-balanced across the scope of SWG nodes - **Can go directly to internet**
 - Hybrid mode is available together with appliances where Prisma location is not available
 - Portal identifies which location is better for user - user establishes IPSec tunnel
 - All logs are sent to Cortex data lake, which can forward it to your Syslog
