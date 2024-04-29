@@ -4280,16 +4280,29 @@ Verify slots
 
 ## Prisma Access
 
-**Consepts**
+**Concepts**
 
-- Service connection to on-prem network and data center - IPSec tunnel - any device, PA is not mandatory - BGP or static routing
-- Service connections and remote networks are different: service connections are only inbound - you cannot route traffic from service connection to Prisma and to Internet
+- **Service connection** to on-prem network and data center - IPSec tunnel - any device, PA is not mandatory - BGP or static routing - **for Data Center**
+    - Service connections and remote networks are different: service connections are only inbound - you cannot route traffic from service connection to Prisma and to Internet
+    - Max 5 service connections - 5 Gbps
+- **Corporate access nodes (CANs)** - things in a cloud, which establish service connection, no security policy here - CANs are used only to route traffic and User-ID redistribution and have a throughput of up to 1GBPS per service connection
 - 100 locations are available for users to connect
+- **Remote Networks** connect to offices that require connections to and from the internet - **for Branches**
+- **Remote Networks Security Processing Nodes (RN-SPN)** - thing in a cloud, which termintaes IPSec tunnel from branch  -  inspect and secure traffic from remote sites
+- **Prisma Access portal**
+      - Can be used with on-prem gateways
+      - Multiple virtual portals (up to four) may be created around the world while they are still managed as one logical portal
+- **The MU-SPN (formerly the gateway)** - terminates user VPN
+- **Service Infrastructure Subnet** - In most cases a /23 subnet is sufficient
+- **Cloud Secure Web Gateway (SWG)** - explicit proxy connection method, auto-scale, load-balanced across the scope of SWG nodes
 - Hybrid mode is available together with appliances where Prisma location is not available
 - Portal identifies which location is better for user - user establishes IPSec tunnel
 - All logs are sent to Cortex data lake, which can forward it to your Syslog
 - Management: Cloud Services Plugin in Panorama or Cloud Managed Prisma Access
 - All configuration: **Panorama > Cloud Services**
+
+  ![image](https://github.com/phph9/Foundation/assets/116812447/2f28b800-1cf6-433a-b850-bbad3e3f5a16)
+
 
 **Configuration**
 
