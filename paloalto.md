@@ -3492,40 +3492,43 @@ You can control which fields are sent + design + arbitrary text: A threat was de
 - Predefined reports
 - Log collector status
 
-**Log filtering**
+### Log filtering**
 
-Logical operators
+**Logical operators**
 
 - (proto neq udp) or ( addr.src notin 192.168.0.0/24 ) or !(addr in 1.1.1.1) или not (app eq ssl)
 - AND: (port.src eq 23459) and (port.dst eq 22)
 - OR: (port.src eq 23459) or (port.dst eq 22) 
 
-Addresses
+**Addresses**
 
 - (addr.src in 1.1.1.1)
 - (addr.dst in 2.2.2.2)
 - (addr in 1.1.1.1)
 
-Protocols: (proto eq udp)
+**Protocol**
 
-Ports
+- (proto eq udp)
+
+**Ports**
 
 - (port.src eq 22)
 - (port.dst eq 25)
 
 Apps: (app eq ssh)
 
-Users
+**Users**
 
 - Unindentified user: (user.src eq ’’)
 - User in group: (user.src in 'group1')
 
 Action: (action eq allow)  
 
-Date and time
+**Date and time**
 
-Before date: (receive_time leq '2015/08/31 08:30:00’)
-After date: (receive_time geq '2015/08/31 08:30:00')
+```
+receive_time geq '2015/08/30 08:30:00') and (receive_time leq '2015/08/31 01:25:00')
+```
 
 **Pre defined reports**
 
