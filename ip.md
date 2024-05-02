@@ -66,10 +66,13 @@ https://bgpfilterguide.nlnog.net/guides/bogon_prefixes
 - Some applications put DF bit and packet cannot be fragmented - for such apps MTU should be proper configured along all path
 - Most encrypted traffic has this bit
 - Application puts this bit and we cannot control it
-- When router gets packet with this bit and packet is bigger then MTU to next hop, router sends ICMP Unreachable Error Messages
+- When router gets packet with this bit and packet is bigger then MTU to next hop, router sends ICMP Unreachable Error Messages - MTU Discovery Technology
 - These messages tell the source to reduce the packet size
-- These messages can be rate limited
+- These messages can be rate limited - if it is, application may get ICMP notifications that fragmentation needed not for all packets, and it partia;;y will not work
+- Is ICMP packet considered only for one packet or for whole flow?
 - If they do not reach source - connection will not work
+- Usually we see packets in a capture - 1514 bytes - 14 bytes is for Ethernet frame
+- 
 
 
 
