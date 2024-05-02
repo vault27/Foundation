@@ -73,6 +73,12 @@ https://bgpfilterguide.nlnog.net/guides/bogon_prefixes
 - If they do not reach source - connection will not work
 - Usually we see packets in a capture - 1514 bytes - 14 bytes is for Ethernet frame
 - Internet Control Message Protocol (ICMP) Fragmentation Needed (Type 3, Code 4) message containing its MTU
+- As IPv6 routers do not fragment packets, there is no Don't Fragment option in the IPv6 header. For IPv6, Path MTU Discovery works by initially assuming the path MTU is the same as the MTU on the link layer interface where the traffic originates. Then, similar to IPv4, any device along the path whose MTU is smaller than the packet will drop the packet and send back an ICMPv6 Packet Too Big (Type 2) message containing its MTU, allowing the source host to reduce its path MTU appropriately
+- Path MTU discovery (PMTUD) is typically performed on a per-connection basis
+- Different connections may have different MTU sizes determined through separate PMTUD processes
+- Path MTU discovery (PMTUD) is typically performed by the operating system rather than the application
+- We cannot see MTU for existing particular connection in Windows, but we can see in Linux
+- We cannot configure MTU for particular process, only for interface
 
 
 
