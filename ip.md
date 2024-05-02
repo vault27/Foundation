@@ -72,7 +72,7 @@ https://bgpfilterguide.nlnog.net/guides/bogon_prefixes
 - Is ICMP packet considered only for one packet or for whole flow?
 - If they do not reach source - connection will not work
 - Usually we see packets in a capture - 1514 bytes - 14 bytes is for Ethernet frame
-- 
+- Internet Control Message Protocol (ICMP) Fragmentation Needed (Type 3, Code 4) message containing its MTU
 
 
 
