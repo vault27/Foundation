@@ -79,6 +79,7 @@ https://bgpfilterguide.nlnog.net/guides/bogon_prefixes
 - Path MTU discovery (PMTUD) is typically performed by the operating system rather than the application
 - We cannot see MTU for existing particular connection in Windows, but we can see in Linux
 - We cannot configure MTU for particular process, only for interface
+- CLient VPN adapter has 1400 MTU - Global Protect
 
 
 
