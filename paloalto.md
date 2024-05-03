@@ -4035,6 +4035,16 @@ Roles are available in RADIUS Vendor-Specific Attributes (VSAs), TACACS+ VSAs, o
 
 ## Global Protect
 
+### Workflow
+
+### Portal
+
+![image](https://github.com/phph9/Foundation/assets/116812447/a6eb1042-e13c-4023-94fd-0274cef312a3)
+
+
+### Gateway
+
+
 GlobalProtect has three major components:
 
 - GlobalProtect portal
