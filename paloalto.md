@@ -4127,7 +4127,10 @@ needed
     - Excluded or included based on the access route
 - All interaction between the GlobalProtect components occurs over an SSL/TLS connection
 
-**Portal configuration**    
+**Portals**    
+
+![image](https://github.com/phph9/Foundation/assets/116812447/632c4eeb-361d-41ce-bf91-8ec24fd82ae3)
+
 
 - Create GlobalProtect Portal: **Network > Global Protect > Portals**
 - Specify: Interface, IP, Logging, Page, TLS profile, Many Client Authentication Rules, Certificate Profile, Portal Data Collection, Agent, Clientless VPN, Satelite
