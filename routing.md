@@ -1,5 +1,8 @@
 # Routing
 
+## Resources
+
+- [Cisco Routing Library](https://www.cisco.com/c/en/us/tech/ip/ip-routing/index.html?referring_site=bodynav)
 - Routing=Forwarding  
 - In two words: Layer 2 frame rewrite and send it to correct interface  
 - IPv4: TTL and checksum are modified  
