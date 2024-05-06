@@ -3111,6 +3111,15 @@ status: failed
 request certificate fetch
 ```
 
+## Hardware
+
+**Top command: show CPU + memory**  
+Used Mem= (used)-(Buffers +Cached)
+
+```
+show system resources
+```
+
 ## CLI
 
 Default username/pass - admin/admin  
@@ -3123,9 +3132,7 @@ show system info
 
 **Show Top - management plane**
 
-```
-show system resources
-```
+
 
 **Check status of all processes**
 
