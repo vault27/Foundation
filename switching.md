@@ -70,8 +70,21 @@ show switch
 
 **Upgrade**
 
+If show boot shows bin file, then it is old catalyst
+
+For new Catalyst
 ```
 install add file flash:cat9k_iosxe.17.09.04a.SPA.bin activate commit prompt-level none
+```
+
+For old ones
+
+```
+no boot system
+boot system flash:c3560cx-universalk9-mz.152-7.E9.bin
+exit
+copy run start
+reload
 ```
 
 ## Interface configuration
