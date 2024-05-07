@@ -306,8 +306,6 @@ Show description of all interfaces to understand what goes where
 show int description
 ```
 
-
-
 ## IOS VS ASA
 
 ## Wildcard masks
