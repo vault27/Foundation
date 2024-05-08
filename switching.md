@@ -1,6 +1,6 @@
 # Switching
 
-## Main features
+## Tecgnologies
 
 - VLANs
 - STP
@@ -15,19 +15,6 @@
 - LACP
 - Etherchannel - port channel
 - Power over Ethernet
-
-## Hardware
-
-- Show inventory - chassis, modules, SFP, power, fans
-- Show module - modules, SFPs, status, supervisors
-- Show redundancy - spuervisor modules HA
-
-
-## Native VLAN
-
-- The native VLAN should match on both trunk ports, or traffic can change VLANs unintentionally
-- A native VLAN is a port-specific configuration and is changed with the interface command switchport trunk native vlan vlan-id
-- All switch control plane traffic (DTP, VTP and CDP frames and also BPDU’s) is advertised using VLAN 1. The Cisco security hardening guidelines recommend changing the native VLAN to something other than VLAN 1. More specifically, it should be set to a VLAN that is not used at all (that is, has no hosts attached to it). Somebody may add port in VLAN 1 and forget about it
 
 ## Switch upgrade
 
@@ -142,6 +129,20 @@ if it doesn't boot on the new code, it'll automatically go to rommon
 - Access-points
 - Cameras
 - Security locks
+
+## Hardware
+
+- Show inventory - chassis, modules, SFP, power, fans
+- Show module - modules, SFPs, status, supervisors
+- Show redundancy - spuervisor modules HA
+
+
+## Native VLAN
+
+- The native VLAN should match on both trunk ports, or traffic can change VLANs unintentionally
+- A native VLAN is a port-specific configuration and is changed with the interface command switchport trunk native vlan vlan-id
+- All switch control plane traffic (DTP, VTP and CDP frames and also BPDU’s) is advertised using VLAN 1. The Cisco security hardening guidelines recommend changing the native VLAN to something other than VLAN 1. More specifically, it should be set to a VLAN that is not used at all (that is, has no hosts attached to it). Somebody may add port in VLAN 1 and forget about it
+
   
 ## Interface configuration
 
