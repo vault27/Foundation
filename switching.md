@@ -47,6 +47,8 @@ Show flash2:
 verify /md5 flash:c3750e-universalk9-mz.152-4.E10.bin
 ```
 
+- Enable SSH log to file
+
 **Backup**
 
 ```
