@@ -26,9 +26,17 @@
 - Local password
 - vPC and STP peculiarities
 - Disable monitoring system
-- Verify hash of images
 - Verify that image is on both nodes of the stack
+- Upload image
 
+  ```
+  copy /verify ftp://ftpuser:pass@1.1.1.1/IOS/c3560cx-universalk9-mz.152-7.E9.bin flash:
+  ```
+- Veriify MD5 hash
+
+```
+
+```
 **Backup**
 
 ```
