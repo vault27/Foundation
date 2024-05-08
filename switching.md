@@ -26,6 +26,8 @@
 - Local password
 - vPC and STP peculiarities
 - Disable monitoring system
+- Verify hash of images
+- Verify that image is on both nodes of the stack
 
 **Backup**
 
