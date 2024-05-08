@@ -27,6 +27,12 @@
 - vPC and STP peculiarities
 - Disable monitoring system
 - Verify that image is on both nodes of the stack
+
+```
+Show flash1:
+Show flash2:
+```
+
 - Upload image
 
   ```
@@ -35,8 +41,9 @@
 - Veriify MD5 hash
 
 ```
-
+verify /md5 flash:c3750e-universalk9-mz.152-4.E10.bin
 ```
+
 **Backup**
 
 ```
