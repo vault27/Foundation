@@ -133,6 +133,7 @@ Enter ROMMODE
 boot flash:IMAGE_NAME
 if flash is not detected, then you can try flash_init
 you can do "dir" to see if flash is detected
+if it doesn't boot on the new code, it'll automatically go to rommon
 ```
 
 **Post-Checks**
