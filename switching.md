@@ -129,7 +129,7 @@ reload
 If switch does not boot with new image, we need to connect with console and load switch with previous image:
 
 ```
-Enter ROMMODE
+Enter ROMMODE - CTRl+Break
 boot flash:IMAGE_NAME
 if flash is not detected, then you can try flash_init
 you can do "dir" to see if flash is detected
