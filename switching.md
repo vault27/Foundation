@@ -66,7 +66,7 @@ show spanning-tree root
 show cdp nei
 ```
 
-**L3 Prechecks**
+**L3 Pre-checks**
 
 General
 
@@ -125,7 +125,7 @@ you can do "dir" to see if flash is detected
 if it doesn't boot on the new code, it'll automatically go to rommon
 ```
 
-**Post-Checks**
+**Post-checks**
 
 - Pre-checks
 - Access-points
