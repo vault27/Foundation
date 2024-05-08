@@ -31,13 +31,13 @@
 
 ## Switch upgrade
 
+**Preparation**
+
 - On-site person
+- Notify on-site people
 - Local password
 - vPC and STP peculiarities
-- Routing details: VRFs + Routing protocols
-- Access points
-- Cameras
-- ARP + MAC tables from core switch
+- - ARP + MAC tables from core switch
 - Disable monitoring system
 
 **Backup**
@@ -45,21 +45,13 @@
 ```
 copy run start
 ter len 0
-sh log 
 sh run
 ```
 
-**Pre checks**
+**Hardware Pre-checks**
 
 ```
-term len 0
-show logging
 show environment all
-show ver
-show mac add dynamic
-show spanning-tree summary
-show spanning-tree root
-show cdp nei
 show interfaces status err-disabled
 show interfaces status | i connected
 show power inline
@@ -69,7 +61,23 @@ show module
 show switch
 ```
 
-If it is a L3 switch, check VRFs, ARP table, routing table, and routing protocols
+**Software Pre-checks**
+
+```
+show logging
+show ver
+```
+
+**L2 Pre-checks**
+
+```
+show mac add dynamic
+show spanning-tree summary
+show spanning-tree root
+show cdp nei
+```
+
+**L3 Prechecks**
 
 General
 
@@ -127,6 +135,13 @@ if flash is not detected, then you can try flash_init
 you can do "dir" to see if flash is detected
 ```
 
+**Post-Checks**
+
+- Pre-checks
+- Access-points
+- Cameras
+- Security locks
+  
 ## Interface configuration
 
 ```
