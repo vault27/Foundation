@@ -26,7 +26,10 @@
 - Local password
 - vPC and STP peculiarities
 - Disable monitoring system
-- Verify that image is on both nodes of the stack
+- Verify that image is on both nodes of the stack.
+    - "flash:" means the flash directory of the MASTER switch.
+    - "flash1:" means the flash directory of switch 1 of the stack.
+    - "flash1:" does NOT necessarily mean it's the flash memory of the master switch.
 
 ```
 Show flash1:
