@@ -35,9 +35,9 @@
 
 - On-site person
 - Notify on-site people
+- Notify servers people, if servers are connected
 - Local password
 - vPC and STP peculiarities
-- - ARP + MAC tables from core switch
 - Disable monitoring system
 
 **Backup**
