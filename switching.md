@@ -34,6 +34,7 @@
 - On-site person
 - Local password
 - vPC and STP peculiarities
+- Routing details: VRFs + Routing protocols
 - Access points
 - Cameras
 - ARP + MAC tables from core switch
@@ -68,6 +69,36 @@ show module
 show switch
 ```
 
+If it is a L3 switch, check VRFs, ARP table, routing table, and routing protocols
+
+General
+
+```
+show ip arp
+show ip route
+```
+
+OSPF
+
+```
+show ip ospf neighbor
+show ip ospf database
+show ip ospf interface
+```
+
+BGP
+
+```
+show ip bgp vpnv4 all summary
+```
+
+VRF
+
+```
+show ip route vrf 1
+show ip route vrf 2
+```
+
 **Upgrade**
 
 If show boot shows bin file, then it is old catalyst
@@ -85,6 +116,15 @@ boot system flash:c3560cx-universalk9-mz.152-7.E9.bin
 exit
 copy run start
 reload
+```
+
+If switch does not boot with new image, we need to connect with console and load switch with previous image:
+
+```
+Enter ROMMODE
+boot flash:IMAGE_NAME
+if flash is not detected, then you can try flash_init
+you can do "dir" to see if flash is detected
 ```
 
 ## Interface configuration
