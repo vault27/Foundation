@@ -33,7 +33,7 @@
 
 **Preparation**
 
-- On-site person
+- On-site person + console cable + wired keyboard with Break key
 - Notify on-site people
 - Notify servers people, if servers are connected
 - Local password
