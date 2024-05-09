@@ -64,7 +64,6 @@ show environment all
 show interfaces status err-disabled
 show interfaces status | i connected
 show power inline
-show int trunk
 show inventory
 show module
 show switch
@@ -82,6 +81,7 @@ show ver
 
 ```
 show mac add dynamic
+show int trunk
 show spanning-tree summary
 show spanning-tree root
 show cdp nei
