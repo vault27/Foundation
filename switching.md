@@ -68,6 +68,7 @@ show int trunk
 show inventory
 show module
 show switch
+show redundancy
 ```
 
 **Software Pre-checks**
