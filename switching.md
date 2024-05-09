@@ -74,7 +74,7 @@ show redundancy
 
 ```
 show logging
-show ver
+show ver - verify version on all switches in the stack
 ```
 
 **L2 Pre-checks**
