@@ -146,12 +146,13 @@ you can do "dir" to see if flash is detected
 if it doesn't boot on the new code, it'll automatically go to rommon
 ```
 
-**Post-checks**
+**Post-upgrade**
 
 - Pre-checks
 - Access-points
 - Cameras
 - Security locks
+- Unmute monitoring system
 
 ## Hardware
 
