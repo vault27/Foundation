@@ -66,7 +66,7 @@ show interfaces status | i connected
 show power inline
 show inventory
 show module
-show switch
+show switch - shows members of a stak + who is Master
 show redundancy
 ```
 
