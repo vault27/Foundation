@@ -5,7 +5,7 @@
 - Network types
 - DR/BDR
 - Virtual links
-- Route types
+- Route types: External type 1, External type 2, NSSA External Type 1, NSSA External Type 2
 
 ## Standards
 
