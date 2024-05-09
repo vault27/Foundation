@@ -136,6 +136,12 @@ copy run start
 reload
 ```
 
+For old one Stack - update all switches in a stack
+
+```
+boot system switch all flash:c3750e-universalk9-mz.152-4.E10.bin
+```
+
 If switch does not boot with new image, we need to connect with console and load switch with previous image:
 
 ```
@@ -149,6 +155,14 @@ if it doesn't boot on the new code, it'll automatically go to rommon
 **Post-upgrade**
 
 - Pre-checks
+- If Stack: check that member switches are upgraded as well, enter on Master switch:
+
+```
+session #switch_number
+Enter username and pass - local only???
+show boot
+```
+
 - Access-points
 - Cameras
 - Security locks
