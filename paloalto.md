@@ -4042,29 +4042,51 @@ Roles are available in RADIUS Vendor-Specific Attributes (VSAs), TACACS+ VSAs, o
 
 ## Global Protect
 
-### Workflow
-
-### Portal
-
-![image](https://github.com/phph9/Foundation/assets/116812447/a6eb1042-e13c-4023-94fd-0274cef312a3)
-
-
-### Gateway
-
-
 GlobalProtect has three major components:
 
 - GlobalProtect portal
 - GlobalProtect gateways
 - GlobalProtect client software
 
+### Workflow
+
+### Portal
+
+- Create GlobalProtect Portal: **Network > Global Protect > Portals**
+- Specify: Interface, IP, Logging, Page, TLS profile, Many Client Authentication Rules, Certificate Profile, Portal Data Collection, Agent, Clientless VPN, Satelite
+- Many Client Authentication Rules - Every rule is responsible for its own OS or browser + auth profile + use cert or not. Example: Windows - local auth, no certs; MAC users - LDAP auth, certs maybe used
+    - Certificate Profile - To authenticate users based on a client certificate or a smart card/CAC
+         - To authenticate the user, one of the certificate fields, such as the Subject Name field, must identify the username
+         - To authenticate the endpoint, the Subject field of the certificate must identify the device type instead of the username. (With the pre-logon connect methods, the portal or gateway authenticates the endpoint before the user logs in
+- User/Pass and certificate can be used together or either one
+- Portal Data Collection: Registry Keys from Windows, plist for MAC, Certificate Profile that specifies the machines certificates that you want to collect
+- Agent - After a GlobalProtect user connects to the portal and is authenticated by the GlobalProtect portal, the portal sends the agent configuration to the app. The portal uses the OS of the endpoint and the username or group name to determine which agent configuration to deploy + Serial Number + Certificate + Registry Checks + Plists. Several rules can be added. The portal starts to search for a match at the top of the list. When it finds a match, the portal sends the configuration to the app
+- Clientless VPN
+- Satelite
+- After you configured Portal user can access it with browser and download required Agent
+- "Max Times User Can Disable" is configured on Portal - how many tims User can disable Global Protect - in App section
+
+**Agent configuration for portal**
+
+- Trusted root CAs - add to client
+- Agent User Override Key - change or disable client
+- Many Agent config rules
+- Define which components require 2 factor auth: portal, internal gateways, external gateways...
+- Config selection criteria: OS,User, Group, Serail Number, Machine certificate, registry keys, plists - Any by default
+- Internal gateways - if required - When the user attempts to log in, the app does a reverse DNS lookup of an internal host using the specified IP Address
+to the specified Hostname - if result is positive, internal gateway is used. Internal gateways are useful in sensitive environments where authenticated access to critical resources is required
+- External gateways: IP, FQDN, Source region(any maybe), Priority
+- App configuration: very many options!
+- HIP data collection
+
+### Gateway
+
 <img width="977" alt="image" src="https://github.com/philipp-ov/foundation/assets/116812447/f3ec9794-9a39-4d33-8ebf-d4e12411c3e6">
 
 **Features**
 
 - GlobalProtect authentication event logs in Monitor > Logs > System
-- Separate GlobalProtect log
-- 
+- Separate GlobalProtect log- 
 
 **MFA**
 
@@ -4144,38 +4166,6 @@ needed
     - Excluded or included based on the access route
 - All interaction between the GlobalProtect components occurs over an SSL/TLS connection
 
-**Portals**    
-
-![image](https://github.com/phph9/Foundation/assets/116812447/632c4eeb-361d-41ce-bf91-8ec24fd82ae3)
-
-
-- Create GlobalProtect Portal: **Network > Global Protect > Portals**
-- Specify: Interface, IP, Logging, Page, TLS profile, Many Client Authentication Rules, Certificate Profile, Portal Data Collection, Agent, Clientless VPN, Satelite
-- Many Client Authentication Rules - Every rule is responsible for its own OS or browser + auth profile + use cert or not. Example: Windows - local auth, no certs; MAC users - LDAP auth, certs maybe used
-    - Certificate Profile - To authenticate users based on a client certificate or a smart card/CAC
-         - To authenticate the user, one of the certificate fields, such as the Subject Name field, must identify the username
-         - To authenticate the endpoint, the Subject field of the certificate must identify the device type instead of the username. (With the pre-logon connect methods, the portal or gateway authenticates the endpoint before the user logs in
-- User/Pass and certificate can be used together or either one
-- Portal Data Collection: Registry Keys from Windows, plist for MAC, Certificate Profile that specifies the machines certificates that you want to collect
-- Agent - After a GlobalProtect user connects to the portal and is authenticated by the GlobalProtect portal, the portal sends the agent configuration to the app. The portal uses the OS of the endpoint and the username or group name to determine which agent configuration to deploy + Serial Number + Certificate + Registry Checks + Plists. Several rules can be added. The portal starts to search for a match at the top of the list. When it finds a match, the portal sends the configuration to the app
-- Clientless VPN
-- Satelite
-- After you configured Portal user can access it with browser and download required Agent
-- "Max Times User Can Disable" is configured on Portal - how many tims User can disable Global Protect - in App section
-
-**Agent configuration for portal**
-
-- Trusted root CAs - add to client
-- Agent User Override Key - change or disable client
-- Many Agent config rules
-- Define which components require 2 factor auth: portal, internal gateways, external gateways...
-- Config selection criteria: OS,User, Group, Serail Number, Machine certificate, registry keys, plists - Any by default
-- Internal gateways - if required - When the user attempts to log in, the app does a reverse DNS lookup of an internal host using the specified IP Address
-to the specified Hostname - if result is positive, internal gateway is used. Internal gateways are useful in sensitive environments where authenticated access to critical resources is required
-- External gateways: IP, FQDN, Source region(any maybe), Priority
-- App configuration: very many options!
-- HIP data collection
-
 **Gateway**
 
 - The interface and zone requirements for the gateway depend on whether the gateway you are configuring is external or internal, as follows:
@@ -4202,6 +4192,12 @@ to the specified Hostname - if result is positive, internal gateway is used. Int
 - On-demand: Requires manually connecting when access to the VPN is required
 - User-logon: VPN is established as soon as the user logs into the machine. When SSO is enabled, user credentials are automatically pulled from the Windows logon information and used to authenticate the GlobalProtect client user
 - Pre-logon: VPN is established before the user logs into the machine. Machine certificate is required for this type of connection
+    - To authenticate the endpoint (not the user) and enable domain scripts or other tasks to run as soon as the endpoint powers on
+    - To allow endpoints to access resources, you must create security policies that match the pre-logon user
+    - These policies should allow access to only the basic services for starting up the system, for example DHCP, DNS, specific Active Directory services, antivirus, or operating system update services
+    - After the user authenticates to the gateway, the GlobalProtect app reassigns the VPN tunnel to that user (the IP address mapping on the firewall changes from the pre-logon endpoint to the authenticated user)
+    - Windows endpoints behave differently from macOS endpoints with pre-logon. With macOS endpoints, the pre-logon tunnel is torn down, and then a new tunnel is created when the user logs in
+    - 
 
 Where is it configured? 
 
