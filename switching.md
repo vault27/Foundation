@@ -155,24 +155,26 @@ if it doesn't boot on the new code, it'll automatically go to rommon
 **Post-upgrade**
 
 - Pre-checks
-- If Stack: check that member switches are upgraded as well, enter on Master switch:
-
-```
-session #switch_number
-Enter username and pass - local only???
-show boot
-```
-
+- If Stack: check that member switches are upgraded as well
 - Access-points
 - Cameras
 - Security locks
 - Unmute monitoring system
+- Add change to monitoring system
 
 ## Hardware
 
 - Show inventory - chassis, modules, SFP, power, fans
 - Show module - modules, SFPs, status, supervisors
 - Show redundancy - spuervisor modules HA
+
+## Catalyst stack
+
+```
+session #switch_number
+Enter username and pass - local only???
+show boot
+```
 
 
 ## Native VLAN
