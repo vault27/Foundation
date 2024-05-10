@@ -4048,7 +4048,51 @@ GlobalProtect has three major components:
 - GlobalProtect gateways
 - GlobalProtect client software
 
+**Concepts**
+
+- GlobalProtect is an SSL VPN client that also supports IPSec
+- You can have one portal per GlobalProtect deployment and as many gateways as
+needed
+- By default, you can deploy the GlobalProtect portals and gateways (without HIP checks) without a license
+- If you want to use the advanced GlobalProtect features (HIP checks and related content updates, the GlobalProtect mobile app, IPv6 connections, or a GlobalProtect clientless VPN), you will need a GlobalProtect license (subscription) for each gateway
+- Clients: Windows, MacOS, Linux, iOS, and Android
+- Authentication methods
+    - Local authentication
+    - External authentication
+    - Client certificate authentication
+    - Two-factor authentication
+    - MFA for non-browser-based applications
+    - SSO
+- If a client configuration contains more than one gateway, the app attempts to connect to all the gateways listed in its client configuration
+- You can configure split tunnel traffic based on the access route, destination domain, application, and HTTP/HTTPS video streaming application
+- Split tunnel: Tunnel enterprise SaaS and public cloud applications for comprehensive SaaS application visibility and control, VoIP outside the tunnel, video streaming outside the tunnel
+- The split tunnel rules are applied for the Windows and macOS endpoints in the following order:
+    - Exclude based on the application process name
+    - Include based on the application process name
+    - Domains are excluded
+    - Domains are included
+    - Excluded or included based on the access route
+- All interaction between the GlobalProtect components occurs over an SSL/TLS connection
+
 ### Workflow
+
+- Client connects with browser to Portal and authenticates there
+- Downloads Agent for his OS
+- Install Agent and connects to Portal
+- Portal sends him all configs + list of gateways
+- Client connects to gateway with received configs
+- Gateway configures agent in terms of networking
+- Split tunnel, IP pool and DNS are defined in Gateway
+- All settings, sent by Portal and Gateway are defined based on matching criteria, mostly Username and OS and Region
+- User have to trust portal and gateway certs
+- Protocol used: IPSec - if IPSec is selected in Agent config in Gateway
+- Routes are added to client without gateway, just using interface
+- Interface mask is 255.255.255.255
+- If IPSec is used, All encrypted Data is sent via UDP port 4501: IPSec + NAT-T
+- If IPSec is not used, Everything goes via 443 and TLS
+- GlobalProtect is slower on SSL VPN because SSL requires more overhead than IPSec. Also, Transmission Control Protocol (TCP) is more prone to latency than User Datagram Protocol (UDP), which is used in IPsec GlobalProtect
+- In route table pool for clients appeares as static route via tunnel interface configured in gateway
+- Than we can redistribute this static route to OSPF for example, so all LAN hosts may access Globalprotect clients
 
 ### Portal
 
@@ -4081,93 +4125,6 @@ to the specified Hostname - if result is positive, internal gateway is used. Int
 
 ### Gateway
 
-<img width="977" alt="image" src="https://github.com/philipp-ov/foundation/assets/116812447/f3ec9794-9a39-4d33-8ebf-d4e12411c3e6">
-
-**Features**
-
-- GlobalProtect authentication event logs in Monitor > Logs > System
-- Separate GlobalProtect log- 
-
-**MFA**
-
- - It is possible to request MFA for a certain application access, not only for VPN connection or User-ID
- - For example User > External Palo Alto Global Protect Gate way > LAN > Internal MFA Gateway > Application Server
- - Internal MFA Gateway may request second factor for particular application
- - Authentication policy is used, which generates captive portal for browser based apps
- - And sends notifications to global protect client for non browser apps
- - To facilitate MFA notifications for non-HTTP applications (such as Perforce) on Windows or macOS endpoints, a GlobalProtect app is required. When a session matches an Authentication policy rule, the firewall sends a UDP notification to the GlobalProtect app with an embedded URL link to the Authentication Portal page. The GlobalProtect app then displays this message as a pop up notification to the user
-
-**Xauth**
-
-- Xauth (Extended Authentication within IKE) is what Palo Alto Networks use to support third party VPN software using the Globalprotect Gateway
-- It allows the third party VPN client to authenticate through the Globalprotect auth profile as part of the IKE negotiation
-- IKE V.1 must be used on the 3rd party clients: iOS, Android
-- The Palo Alto Network firewall uses the OpenSSL crypto library
-- Globalprotect IPsec crypto profiles aren't used for the X-auth clients
-- Troubleshooting of the tunnel is done much the same way as any IPSec tunnel would be troubleshot
-
-**High level**
-
-- Client connects with browser to Portal and authenticates there
-- Downloads Agent for his OS
-- Install Agent and connects to Portal
-- Portal sends him all configs + list of gateways
-- Client connects to gateway with received configs
-- Gateway configures agent in terms of networking
-- Split tunnel, IP pool and DNS are defined in Gateway
-- All settings, sent by Portal and Gateway are defined based on matching criteria, mostly Username and OS and Region
-- User have to trust portal and gateway certs
-- Protocol used: IPSec - if IPSec is selected in Agent config in Gateway
-- Routes are added to client without gateway, just using interface
-- Interface mask is 255.255.255.255
-- If IPSec is used, All encrypted Data is sent via UDP port 4501: IPSec + NAT-T
-- If IPSec is not used, Everything goes via 443 and TLS
-- GlobalProtect is slower on SSL VPN because SSL requires more overhead than IPSec. Also, Transmission Control Protocol (TCP) is more prone to latency than User Datagram Protocol (UDP), which is used in IPsec GlobalProtect
-- In route table pool for clients appeares as static route via tunnel interface configured in gateway
-- Than we can redistribute this static route to OSPF for example, so all LAN hosts may access Globalprotect clients
-
-**Configuration: High level**
-
-- Configure certs for portal and gateway
-- Configure SSL service profile for portal and gateway
-- Then LDAP server profile, sAMAccountName
-- Authentication profile
-- Next is portal: **Network > GlobalProtect > Portals**
-- Download GlobalProtect client: **Device > GlobalProtect client**
-- Next tunnel interface: Network > Interfaces > Tunnel, separate zone for VPN
-- IP pool
-- Access route
-- Next, gateway
-- Next connect
-
-**Concepts**
-
-- GlobalProtect is an SSL VPN client that also supports IPSec
-- You can have one portal per GlobalProtect deployment and as many gateways as
-needed
-- By default, you can deploy the GlobalProtect portals and gateways (without HIP checks) without a license
-- If you want to use the advanced GlobalProtect features (HIP checks and related content updates, the GlobalProtect mobile app, IPv6 connections, or a GlobalProtect clientless VPN), you will need a GlobalProtect license (subscription) for each gateway
-- Clients: Windows, MacOS, Linux, iOS, and Android
-- Authentication methods
-    - Local authentication
-    - External authentication
-    - Client certificate authentication
-    - Two-factor authentication
-    - MFA for non-browser-based applications
-    - SSO
-- If a client configuration contains more than one gateway, the app attempts to connect to all the gateways listed in its client configuration
-- You can configure split tunnel traffic based on the access route, destination domain, application, and HTTP/HTTPS video streaming application
-- Split tunnel: Tunnel enterprise SaaS and public cloud applications for comprehensive SaaS application visibility and control, VoIP outside the tunnel, video streaming outside the tunnel
-- The split tunnel rules are applied for the Windows and macOS endpoints in the following order:
-    - Exclude based on the application process name
-    - Include based on the application process name
-    - Domains are excluded
-    - Domains are included
-    - Excluded or included based on the access route
-- All interaction between the GlobalProtect components occurs over an SSL/TLS connection
-
-**Gateway**
-
 - The interface and zone requirements for the gateway depend on whether the gateway you are configuring is external or internal, as follows:
     - External gateways—Requires a Layer 3 or loopback interface and a logical tunnel interface for the app to establish a connection. The Layer 3/loopback interface must be in an external zone, such as a DMZ. A tunnel interface can be in the same zone as the interface connecting to your internal resources (for example, trust). For added security and better visibility, you can create a separate zone, such as corp-vpn. If you create a separate zone for your tunnel interface, you must create security policies that enable traffic to flow between the VPN zone and the trust zone
     - Internal gateways—Requires a Layer 3 or loopback interface in your trust zone. You can also create a tunnel interface for access to your internal gateways, but this is not required
@@ -4187,6 +4144,59 @@ needed
     - IPSec or SSL
     - Satelite
 
+<img width="977" alt="image" src="https://github.com/philipp-ov/foundation/assets/116812447/f3ec9794-9a39-4d33-8ebf-d4e12411c3e6">
+
+### Logs
+
+- GlobalProtect authentication event logs in Monitor > Logs > System
+- Separate GlobalProtect log- 
+
+### Authentication
+
+- By default, the GlobalProtect app attempts to use the same login credentials for the gateway that it used for portal login. In the simplest case, where the gateway and the portal use the same authentication profile or certificate profile, the app connects to the gateway transparently
+- We can configure authentication cookie for both portal and gateway, each with its own timeout, for example 1 day for gateway and 5 days for portal
+
+**MFA**
+
+ - It is possible to request MFA for a certain application access, not only for VPN connection or User-ID
+ - For example User > External Palo Alto Global Protect Gate way > LAN > Internal MFA Gateway > Application Server
+ - Internal MFA Gateway may request second factor for particular application
+ - Authentication policy is used, which generates captive portal for browser based apps
+ - And sends notifications to global protect client for non browser apps
+ - To facilitate MFA notifications for non-HTTP applications (such as Perforce) on Windows or macOS endpoints, a GlobalProtect app is required. When a session matches an Authentication policy rule, the firewall sends a UDP notification to the GlobalProtect app with an embedded URL link to the Authentication Portal page. The GlobalProtect app then displays this message as a pop up notification to the user
+
+**Xauth**
+
+- Xauth (Extended Authentication within IKE) is what Palo Alto Networks use to support third party VPN software using the Globalprotect Gateway
+- It allows the third party VPN client to authenticate through the Globalprotect auth profile as part of the IKE negotiation
+- IKE V.1 must be used on the 3rd party clients: iOS, Android
+- The Palo Alto Network firewall uses the OpenSSL crypto library
+- Globalprotect IPsec crypto profiles aren't used for the X-auth clients
+- Troubleshooting of the tunnel is done much the same way as any IPSec tunnel would be troubleshot
+
+**Authentication Methods**
+
+- Local Authentication
+- External Authentication
+- Client Certificate Authentication
+- Two-Factor Authentication
+- Multi-Factor Authentication for Non-Browser-Based Applications
+- Single Sign-On
+
+**Configuration: High level**
+
+- Configure certs for portal and gateway
+- Configure SSL service profile for portal and gateway
+- Then LDAP server profile, sAMAccountName
+- Authentication profile
+- Next is portal: **Network > GlobalProtect > Portals**
+- Download GlobalProtect client: **Device > GlobalProtect client**
+- Next tunnel interface: Network > Interfaces > Tunnel, separate zone for VPN
+- IP pool
+- Access route
+- Next, gateway
+- Next connect
+
 **GlobalProtect Connect Methods**
 
 - On-demand: Requires manually connecting when access to the VPN is required
@@ -4200,15 +4210,6 @@ needed
     - 
 
 Where is it configured? 
-
-**GlobalProtect Authentication Methods**
-
-- Local Authentication
-- External Authentication
-- Client Certificate Authentication
-- Two-Factor Authentication
-- Multi-Factor Authentication for Non-Browser-Based Applications
-- Single Sign-On
 
 **Client**
 
