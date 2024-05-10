@@ -4096,18 +4096,30 @@ needed
 
 ### Portal
 
-- Create GlobalProtect Portal: **Network > Global Protect > Portals**
-- Specify: Interface, IP, Logging, Page, TLS profile, Many Client Authentication Rules, Certificate Profile, Portal Data Collection, Agent, Clientless VPN, Satelite
-- Many Client Authentication Rules - Every rule is responsible for its own OS or browser + auth profile + use cert or not. Example: Windows - local auth, no certs; MAC users - LDAP auth, certs maybe used
-    - Certificate Profile - To authenticate users based on a client certificate or a smart card/CAC
-         - To authenticate the user, one of the certificate fields, such as the Subject Name field, must identify the username
-         - To authenticate the endpoint, the Subject field of the certificate must identify the device type instead of the username. (With the pre-logon connect methods, the portal or gateway authenticates the endpoint before the user logs in
-- User/Pass and certificate can be used together or either one
-- Portal Data Collection: Registry Keys from Windows, plist for MAC, Certificate Profile that specifies the machines certificates that you want to collect
-- Agent - After a GlobalProtect user connects to the portal and is authenticated by the GlobalProtect portal, the portal sends the agent configuration to the app. The portal uses the OS of the endpoint and the username or group name to determine which agent configuration to deploy + Serial Number + Certificate + Registry Checks + Plists. Several rules can be added. The portal starts to search for a match at the top of the list. When it finds a match, the portal sends the configuration to the app
-- Clientless VPN
-- Satelite
-- After you configured Portal user can access it with browser and download required Agent
+**Network > Global Protect > Portals**
+
+Structure (6):
+
+- **General**: VSYS, Interface, IP, LOgin Page, Landing Page
+- **Authentication**: how to authenticate to portal, many rules based on OS, first match
+    - Cert profile - For checking user certs - For Portal in general
+    - TLS profile - for connecting to portal - ForPortal in General
+    - For every rule:
+        - Auth profile OR Auth sequence
+        - (User cert + pass) OR (User cert OR pass)
+- **Portal Data collection** - Registry Keys from Windows, plist for MAC, Certificate Profile that specifies the machines certificates that you want to collect
+- **Agent**: many rules based on OS and User/Group/Prelogon
+    - Authentication
+    - Config Selection Criteria
+    - Internal
+    - External
+    - App
+    - HIP Data Collection
+- **Clientless VPN**
+- **Satellite**
+
+**App configuration subsection in Agent section**
+
 - "Max Times User Can Disable" is configured on Portal - how many tims User can disable Global Protect - in App section
 
 **Agent configuration for portal**
