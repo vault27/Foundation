@@ -4079,10 +4079,13 @@ needed
 - Client connects with browser to Portal and authenticates there
 - Downloads Agent for his OS
 - Install Agent and connects to Portal
-- If prelogon is used: client connects to Portal before user logs in to OS, GP protect uses certificate to authenticate, next portal sends configuration for prelogin users
+- If prelogon is used(GP gets cert instead of user/pass): client connects to Portal before user logs in to OS, GP uses certificate to authenticate, next portal sends configuration for prelogin users, connect method in this config is pre-logon
 - GP chooses gateway and connects to it
 - After user logs in into OS, GP client requests from user login and pass and connects to portal again
-- Portal sends him all configs + list of gateways, again, but package is different now, not for prelogin
+- Portal sends him all configs + list of gateways, again, but package is different now, not for prelogin, different configs for different users, based on user groups - if it is used in conjuction with pre-logon, here connection method should be prelogon as well
+- Can we leave only prelogon for user and do not ask for password from him?
+- Why GP asks for username if it is connected already?
+- According to this config agent keeps username for portal and uses it for gateway - Save Users Credential Option
 - Client chooses gateway and  connects to gateway with received configs
 - Gateway configures agent in terms of networking
 - Split tunnel, IP pool and DNS are defined in Gateway
