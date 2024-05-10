@@ -4124,6 +4124,11 @@ Structure (6):
 - **Clientless VPN**
 - **Satellite**
 
+**Authentication in Agent section**
+
+- Client certificate - install certificate with key to client - why?
+- Save user credentials - if No - User will have to enter login/pass manually every time 
+
 **App configuration subsection in Agent section**
 
 - "Max Times User Can Disable" is configured on Portal - how many tims User can disable Global Protect - in App section
