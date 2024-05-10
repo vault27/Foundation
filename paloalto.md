@@ -4079,8 +4079,11 @@ needed
 - Client connects with browser to Portal and authenticates there
 - Downloads Agent for his OS
 - Install Agent and connects to Portal
-- Portal sends him all configs + list of gateways
-- Client connects to gateway with received configs
+- If prelogon is used: client connects to Portal before user logs in to OS, GP protect uses certificate to authenticate, next portal sends configuration for prelogin users
+- GP chooses gateway and connects to it
+- After user logs in into OS, GP client requests from user login and pass and connects to portal again
+- Portal sends him all configs + list of gateways, again, but package is different now, not for prelogin
+- Client chooses gateway and  connects to gateway with received configs
 - Gateway configures agent in terms of networking
 - Split tunnel, IP pool and DNS are defined in Gateway
 - All settings, sent by Portal and Gateway are defined based on matching criteria, mostly Username and OS and Region
