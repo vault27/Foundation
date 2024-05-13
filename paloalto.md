@@ -2732,7 +2732,13 @@ debug software restart process user-id
 - Log Collector
 - Panorama: both
 
-**Templates & stacks**
+**Shared objects**
+
+- In Device Groups: Shared Object is avalable for all Device Groups
+- What if we change its name and it is used in a Policy?
+- In Templates: Shared Object is avalable for all VSYSs in a Template
+
+### Templates & stacks
  
  <img width="576" alt="image" src="https://github.com/philipp-ov/foundation/assets/116812447/813aef71-ce9f-401e-80a9-81e34f4c42c3">
   
@@ -2817,7 +2823,7 @@ It is **impossible** to configure with templates:
 - In CSV you configure variable name, which you already created + variable type (IP/netmask for example) + value for each firewall - Serial/Hostname
 - 4096 variables MAX in template
 
-**Device groups**
+### Device groups
 
 - To control policies and objects
 - To create a device group: Name, parent group, devices, User-ID master device - The device selected as the Master Device is used to gather user information.  The gathered user and group mapping information is used for shared policy configiration. It is required if you want to use users in a policy, Cloud Identity Engine
