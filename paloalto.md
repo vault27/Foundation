@@ -298,17 +298,14 @@ https://knowledgebase.paloaltonetworks.com/KCSArticleDetail?id=kA10g000000ClVHCA
 **1. Ingress**
 
 - Any inconsistencies, errors, mismatches will be dropped
-- Layer 2 headers are parsed
-- Layer 3 headers are parsed
-- Layer 4 headers are parsed
-- Tunnel decapsulation
-- Layer 3 headers of packets inside tunnel are parsed > L4
+- Layer 2,3,4 headers are parsed
+- Tunnel decapsulation, IPSec decryption
+- Layer 3 headers of packets inside tunnel are parsed
 - IP fragments are parsed
 - Ingress port, 802.1q tag, and destination MAC address are used as keys to lookup the ingress logical interface. If the interface is not found, the packet is discarded. The hardware interface counter "receive error" and global counter  “flow_rcv_dot1q_tag_err” are incremented
 - Some traffic maybe dropped: broadcast on L3 interface, almost all traffic on TAP interface
 - Some traffic maybe forwarded without inspection: broadcast on L2 interface
 - If the packet is subject to firewall inspection next stages are involved
-
 
 **2. Firewall session lookup**
 
@@ -330,6 +327,28 @@ https://knowledgebase.paloaltonetworks.com/KCSArticleDetail?id=kA10g000000ClVHCA
 - Session is added to the flow lookup table for both C2S and S2C flows and firewall changes the session’s state from  OPENING to ACTIVE
 - The firewall then sends the packet into Session Fast Path phase for security processing
 
+  **4.FW Fastpath**
+
+- Session refresh
+- TCP reassembly
+- NAT
+- SSL Decryption
+- Captive Portal
+
+**5.App-ID**
+
+**6.Content inspection**
+
+- Apply security Profile Action
+- Re-encrypt packet
+
+**7.Egress**
+
+- Identify forwarding domain: L2, L3, TAP, Virtual Wire
+- QoS shaping
+- IP fragmentation according to MTU, if needed
+- IPSec encryption
+   
 ## Subscriptions
 
 **15 in Total**
