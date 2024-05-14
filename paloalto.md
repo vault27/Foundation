@@ -280,24 +280,17 @@ https://knowledgebase.paloaltonetworks.com/KCSArticleDetail?id=kA10g000000ClVHCA
 
 <img width="1071" alt="image" src="https://user-images.githubusercontent.com/116812447/215520946-0255d873-1931-4799-b57e-4a62d4e48765.png">
 
+- Palo Alto Networks next-generation firewalls use a unique Single Pass Parallel Processing (SP3) Architecture + Parallel Processing hardware
+- A  firewall session consists of two unidirectional flows, each uniquely identified
 - The ingress and forwarding/egress stages handle network functions and make packet—forwarding decisions on a per-packet basis
 - The remaining stages are session-based security modules highlighted by App-ID and Content-ID
 
-New session 7 Stages:
+**Stages:**
 
 - Ingress
 - Firewall session lookup
-- FW Session Setup SlowPath
-- FW Fastpath
-- Application identification
-- Content Inspection
-- Forwarding/Egress
-
-Existing session 6 stages
-
-- Ingress
-- Firewall session lookup
-- FW Fastpath
+- FW Session Setup SlowPath - For New sessions
+- FW Fastpath - For existing sessions
 - Application identification
 - Content Inspection
 - Forwarding/Egress
@@ -311,14 +304,20 @@ Existing session 6 stages
 - Tunnel decapsulation
 - Layer 3 headers of packets inside tunnel are parsed > L4
 - IP fragments are parsed
+- Ingress port, 802.1q tag, and destination MAC address are used as keys to lookup the ingress logical interface. If the interface is not found, the packet is discarded. The hardware interface counter "receive error" and global counter  “flow_rcv_dot1q_tag_err” are incremented
+- Some traffic maybe dropped: broadcast on L3 interface, almost all traffic on TAP interface
+- Some traffic maybe forwarded without inspection: broadcast on L2 interface
+- If the packet is subject to firewall inspection next stages are involved
+
 
 **2. Firewall session lookup**
 
-- Packet is subject for inspection depending on packet type: IP/IPv6/Broadcast/Unicast/Non-IP/Multicast and interface type: L3/L2/VW/TAP
 - Session (flow) lookup based on 6 tuple
 - Each flow has a client and server component, where the client is the sender of the first  packet of the session from firewall’s perspective, and the server is the receiver of this first packet
+- If session does not exist, packet goes to Stage 3
+- If session exists, packet goes to Stage 4
 
-**3. FW new session setup**
+**3. FW new session setup - slow path**
 
 - Zone protection checks
 - TCP state check
@@ -326,7 +325,7 @@ Existing session 6 stages
 - NAT
 - User-ID, Group mapping
 - DoS protection Policy
-- Security Policy Lookup
+- Security Policy Lookup - checks 6 Tuples with App - Any - Pre-NAT
 - Session allocation - Session state changes from INIT (pre-allocation) to OPENING (post-allocation)
 - Session is added to the flow lookup table for both C2S and S2C flows and firewall changes the session’s state from  OPENING to ACTIVE
 - The firewall then sends the packet into Session Fast Path phase for security processing
