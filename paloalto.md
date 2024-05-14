@@ -5,7 +5,7 @@ All you need to know about Palo Alto firewalls and for PCNSE exam in short and s
 ## Data Sources
 
 - Technical documentation - https://docs.paloaltonetworks.com
-- Knowledge Base - https://knowledgebase.paloaltonetworks.com
+- [Knowledge Base](https://knowledgebase.paloaltonetworks.com)
 - Application Database - https://applipedia.paloaltonetworks.com
 - Learning center Beacon - https://beacon.paloaltonetworks.com
 - Live community - https://live.paloaltonetworks.com
@@ -238,7 +238,7 @@ Data plane:
 - Each maintenance release is cumulative, that means it contains all the fixes from all the previous maintenance releases. 10.1.10 contains all fixes from 10.1.0.
 - The higher the maintenance release version number is, the more mature the version is
 - Major version and minor version numbers are to distinguish the amount of features : PAN-OS 10.0 will have more features than PAN-OS 8.1, there is no relation to the software stability
-    
+  
 ## Bootstraping
 
 Bootstrap allows you to automatically config, upgrade, update signatures, license a device during initial boot.
@@ -348,7 +348,7 @@ https://knowledgebase.paloaltonetworks.com/KCSArticleDetail?id=kA10g000000ClVHCA
 - QoS shaping
 - IP fragmentation according to MTU, if needed
 - IPSec encryption
-   
+  
 ## Subscriptions
 
 **15 in Total**
@@ -684,7 +684,6 @@ On both devices in HA pair
 - request restart system  
 - System Prechecks after reboot
 
-  
 - Failover, run on Active Device:
     - request high-availability state suspend
     - request high-availability state functional
@@ -849,6 +848,7 @@ Firewall types
 - Route based firewall - zones are simply an architectural or topological concept that helps identify which areas comprise the global network
 - Zone based firewall - use zones as a means to internally classify the source and destination in its state table  
   
+
 What we configure in zone:
 
 - Log setting
@@ -1061,7 +1061,7 @@ BGP states
 
 Restart/Refresh BGP Sessions  
 Restarting a BGP session will build the BGP routing table from scratch (intrusive). Refreshing the session will only fetch/ look out for new routes (non-intrusive)  
-  
+
 For self initiation:
 
 ```
@@ -1255,7 +1255,7 @@ Rule types:
 ### QoS
 
 QoS is enforced on traffic as it egresses the firewall   
-  
+
 Unclassified traffic enters firewall > **QoS Policy** assignes **class** to traffic > **QoS Profile** on Egress interface prioritizes traffic accorsing to **QoS class**  
 
 You can also mark traffic in a security policy - in a security rule  
@@ -1269,8 +1269,9 @@ Enables the firewall to mark traffic with the same DSCP value that was detected 
 - QoS egress interface - this is where you apply QoS profile. If you limit Youtube then Egress interface is Internal interface of FW. You apply it in separate section Network > QoS
 - DSCP classification allows you to both honor DSCP values for incoming traffic and mark a session with a DSCP value as session traffic exits the firewall
   
+
 **QoS policy**  
-  
+
 **Policies > QoS**  
 Define a QoS policy rule to match to traffic based on:
 
@@ -1287,8 +1288,9 @@ Define a QoS policy rule to match to traffic based on:
     - Custom Codepoint: Can be used to match to traffic by entering a codepoint name and binary value
 - At the end you define a class for this traffic: 1 of 8 + schedule
   
+
 **QoS profile**
-  
+
 **Network > Network Profiles > QoS Profile**
 
 - For the profile you configure Egress Max and Egress guaranteed 
@@ -1583,7 +1585,7 @@ Actions:
 - Protect — The firewall protects the devices defined in the DoS Protection policy rule by applying the specified DoS Protection profile or profiles thresholds to traffic that matches the rule. A rule can have one aggregate DoS Protection profile and one classified DoS Protection profile, and for classified profiles, you can use the source IP, destination IP, or both to increment the flood threshold counters, as described in Classified Versus Aggregate DoS Protection. Incoming packets count against both DoS Protection profile thresholds if the they match the rule. 
 
 The Allow and Deny actions enable you to make exceptions within larger groups  
-  
+
 **DoS profile Objects > Security Profiles > DoS Protection**
 
 - Two types: Aggregate or Classified
@@ -2349,6 +2351,7 @@ Configuration workflow
 - If firewall fails, then based on routing protocol traffic is not sent to it
 - No need to configure virtual MAC address/floating IP address, arp load sharing, failover conditions
   
+
 <img width="602" alt="image" src="https://user-images.githubusercontent.com/116812447/215494580-eeaed00c-52a0-479c-b8db-909f8cce27fc.png">
 
 **ARP load sharing**
@@ -2757,9 +2760,9 @@ debug software restart process user-id
 - In Templates: Shared Object is avalable for all VSYSs in a Template
 
 ### Templates & stacks
- 
+
  <img width="576" alt="image" src="https://github.com/philipp-ov/foundation/assets/116812447/813aef71-ce9f-401e-80a9-81e34f4c42c3">
-  
+
 - To control configuration and updates
 - Every template has different configurations for different VSYSs, we can choose
 - All Device parts and Network parts
@@ -2817,6 +2820,7 @@ It is **impossible** to configure with templates:
 - Revert to a previous version of the running configuration that is stored on Panorama: **PanoramaSetupOperations, Load Panorama configuration version**
 - You can select Templates and Device Groups
   
+
 **Overrides**
 
 - Any option on firewall received from stack can be changed locally
@@ -2983,6 +2987,7 @@ Commit options when you commit to Panorama:
 - Template—Restricts changes to the firewalls included in the selected template. (You can’t take a lock for a template stack, only for individual templates within the stack.)
 - Device group—Restricts changes to the selected device group but not its descendant device groups
   
+
 **Pushing to firewalls**
 
 - Push all changes OR only incremental - made by me or other admin - it is not connected with scope
@@ -3071,7 +3076,7 @@ threat:28105597
 ```
 
 Or WebUI: **Panorama > Managed Collectors**
-  
+
 **Log collector processes**
 
 - logd— Process responsible for ingesting logs received from the managed firewall and for transferring ingested logs to the vldmgr
@@ -3493,12 +3498,13 @@ tail follow yes mp-log paninstaller_content.log
 - /<keyword> to search , while in search use 'n' to go to the next or 'N' (shift+n) to go to the previous
 - only use arrow keys to scroll up or down
   
+
 **Log forwarding**
 
 Is done to filter and forward logs to external storage and also assign tags.  
 Can be done via profile for certain logs and via system settings 
 Cortex Data Lake is also available   
-  
+
 Can be configured for the following logs in Log Forwarding Profiles - Objects > Log Forwarding:
 
 - Authentication
@@ -3605,6 +3611,7 @@ Packet capture types:
 - Management Interface Packet Capture
 - GTP Event Packet Capture  
   
+
 Security profiles which have packet capture:   
 Antivirus  
 Vulnerability protection  
@@ -3879,7 +3886,7 @@ show counter global filter value all | match flow_gre
 ```
 
 Run "show log system" with the filter of tunnel name  
-  
+
 Check the GRE session
 
 - Filter by using session filter protocol 47
@@ -4010,10 +4017,10 @@ show device-certificate status
 - Panorama > Zero Touch Provisioning
 
 ## Administrators, types, roles
- 
+
  - **Device > Administrators**
  - **Device > Admin Roles**
- 
+
  When you create an Admin for PA you need specify the following:
 
  - Name
@@ -4043,7 +4050,7 @@ The firewall has three predefined roles you can use for common criteria purposes
 - securityadmin
 
 Create **custom** roles to limit administrator access to only what each type of administrator needs. For each type of administrator, enable, disable, or set read-only access for Web UI, XML API, Command Line, and REST API access.  
-  
+
 For Command Line only 4 options exist in Role Configuration:
 
 - superuser
