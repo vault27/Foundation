@@ -317,25 +317,45 @@ https://knowledgebase.paloaltonetworks.com/KCSArticleDetail?id=kA10g000000ClVHCA
 **3. FW new session setup - slow path**
 
 - Zone protection checks
+
 - TCP state check
+
 - Determine  the  packet-forwarding path: TAP - Discard, VW - Exit interface, L2 - MAC table, L3 - next hop
+
 - NAT
+
 - User-ID, Group mapping
+
 - DoS protection Policy
+
 - Security Policy Lookup - checks 6 Tuples with App - Any - Pre-NAT
+
 - Session allocation - Session state changes from INIT (pre-allocation) to OPENING (post-allocation)
+
 - Session is added to the flow lookup table for both C2S and S2C flows and firewall changes the session’s state from  OPENING to ACTIVE
+
 - The firewall then sends the packet into Session Fast Path phase for security processing
 
-  **4.FW Fastpath**
+**4.FW Fastpath**
 
 - Session refresh
+
 - TCP reassembly
+
 - NAT
+
 - SSL Decryption
+
 - Captive Portal
 
 **5.App-ID**
+
+- Part of the fast path
+- Application override policy first
+- Application signatures
+- Check security policy again, now with known App
+- QoS policy lookup, assigns QoS class
+- Mark session to be decrypted if needed
 
 **6.Content inspection**
 
