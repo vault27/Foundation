@@ -121,7 +121,7 @@ Detection, investigation, automation, and response capabilities.
 - Global Protect RA VPN via IPSec or SSL
 - Global Protect Satelite
 - Global Protect HIP
-- QoS
+- QoS - support App-ID and Users - defined in QoS policy
 - SD-WAN
 - DNS-Proxy
 - Tags
@@ -132,7 +132,7 @@ Detection, investigation, automation, and response capabilities.
 - XML API - full control of every aspect of your security, and build deep integrations with a variety of other systems. You can make XML API calls directly to the firewall, directly to Panorama, or to a firewall via Panorama
 - REST API - simplifies access to resources as high-level URIs. You can use this API to create, change, and delete resources
 - VSYS
-- FIPS mode
+- Support the Common Criteria and the Federal Information Processing Standard 140-2 (FIPS 140-2), which are security certifications
 - Decryption mirror
 - Decryption broker
 - Network Packet Brocker
@@ -1720,23 +1720,23 @@ UDP, it drops the connection
 - When the vulnerability protection action profile is set to reset-both, the associated threat log might display action as reset-server. As discussed earlier, this occurs when the firewall detects the threat at the beginning of a session and presents the client with a 503-block page. Since, the block place disallows the connection, only the server-side connection is reset
 - The default Vulnerability Protection Profile protects clients and servers from all known critical-, high-, and medium-severity threats
 
-**URL Filtering**
+### URL Filtering
 
 - Works without decryption, but does not show Block Page - just drops
 - Without decryption Application in URL filtering logs is always SSL  
 - By default, categories set to allow do not generate URL filtering log entries. The exception is if you configure log forwarding
 - If you want the firewall to log traffic to categories that you allow but would like more visibility into, set Site Access for these categories to alert in your URL Filtering profiles
 - We cannot see domains in traffic logs
-- Separate logs vault: Monitor > URL Filtering
+- Separate logs vault: **Monitor > URL Filtering**
 - In traffic logs blocked URLs will appear as Allow action, but session end reason will be Threat
-- Device > Setup > Content-ID > URL-filtering >  Category lookup timeout (sec) + all other timers are there
-- Device > Setup > Content-ID > URL Admin Override - enter password, after this user can with this password visit the URL - To create a URL admin override, set the action for a category to override
+- **Device > Setup > Content-ID > URL-filtering >  Category lookup timeout (sec)** + all other timers are there
+- **Device > Setup > Content-ID > URL Admin Override** - enter password, after this user can with this password visit the URL - To create a URL admin override, set the action for a category to override
 - You can also use URL categories as match criteria in Security policy rules
 - You can also use URL categories to enforce different types of policy, such as Authentication, Decryption, QoS, and Security
 - Every URL can have up to four categories
 - Brightcloud database can also be used
 
-What it does:
+**What it does**
 
 - For every category 2 options: Site Access (alert, allow, block, continue, override, none) and User Credential Submission (alert, allow, block, continue)
 - Safe Search Enforcement
@@ -1827,7 +1827,7 @@ Use a URL Filtering profile in the following cases:
 - To specify more granular actions, such as alert, on traffic for a specific category
 - To configure a response page that displays when users access a blocked or blocked-continue website.
 
-**Data Filtering**
+### Data Filtering
 
 - Prevent sensitive information, such as credit card numbers or Social Security numbers, from leaving a protected network
 - Filter on keywords, such as a sensitive project name or the word “confidential.”
@@ -1835,7 +1835,7 @@ Use a URL Filtering profile in the following cases:
 - Regular expressions: Filter for a string of characters
 - File properties: Filter for file properties and values based on file type
 
-**File Blocking**
+### File Blocking
 
 - Create profile, add rules
 - Every rule has application, file types, direction and action
@@ -1848,7 +1848,7 @@ Use a URL Filtering profile in the following cases:
     - continue: After the specified file type is detected, a customizable response page is presented to the user. The user can click through the page to download the file. A log is also generated in the Data Filtering log. This type of forwarding action requires user interaction and is therefore only applicable for web traffic
 - Monitor > Logs > Data Filtering - All File Block logs are here
 
-**WildFire**
+### WildFire
 
 Operation workflow
 
@@ -1880,7 +1880,7 @@ Platform in general:
 - WildFire typically renders a verdict on a file within 5 to 10 minutes of receipt
 - Wildfire never quarantine files
 
-Configuration workflow
+**Configuration workflow**
 
 - Create profile, add rules
 - Every rule has application, file types, direction and anaylysis type: public cloud or private cloud
@@ -1900,7 +1900,7 @@ File sizes
 
 <img width="827" alt="image" src="https://github.com/philipp-ov/foundation/assets/116812447/9b8ad671-00d7-47e8-93f4-78e8e21b953f">
 
-Licenses
+**Licenses**
 
 - The basic WildFire service is included as part of the Palo Alto Networks next generation firewall and does not require an Advanced WildFire or WildFire subscription
     - Firewall can forward portable executable (PE) files for analysis: EXE, DLL, SCR, FON, etc...
@@ -2047,7 +2047,7 @@ A session created locally on the firewall will have the False value and one crea
 ## App-ID
 
 - 6-Tuple is checked against the security policy > known application signatures > check if it is SSH, TLS, or SSL > decryption policy (if exists) > checked again for a known application signature inside TLS > the application has not been identified (a maximum of 4 packets after the handshake, or 2,000 bytes) > will use the base protocol to determine which decoder to use to analyze the packets more deeply > unknown-tcp > check policy if unknown is allowed  
-- SSL > Web-Browsing > flickr > flickr-uploading: NGFW continiously watches at traffic app, the more data it gets, then identificationis changed
+- **SSL > Web-Browsing > flickr > flickr-uploading**: NGFW continiously watches at traffic app, the more data it gets, then identificationis changed
 - The application decoder will continuously scan the session for expected and deviant behavior, in case the application changes to a sub-application or a malicious actor is trying to tunnel a different application or protocol over the existing session
 - App-ID database does not require license for upgrade
 - New App-IDs are released on the third Tuesday of every month
@@ -2082,7 +2082,7 @@ A session created locally on the firewall will have the False value and one crea
       - Create best-practice Security Profiles for the internet gateway for all allow rules
       - Define the initial internet gateway Security policy, Using the application and user group inventory
 
-App-ID database
+**App-ID database**
 
 - Description
 - Depends on Applications
@@ -2093,9 +2093,9 @@ App-ID database
 - Technology 
 - Deny action 
 
-App-ID status in logs:
+**App-ID status in logs**
 
-- Icomplete - three-way TCP handshake did not complete OR no enough data after the handshake - is not really an application
+- Incomplete - three-way TCP handshake did not complete OR no enough data after the handshake - is not really an application
 - Insufficient data - not enough data to identify the application - for example one data packet after the handshake
 - unknown-tcp - firewall captured the three-way TCP handshake, but the application was not identified - custom app, no signatures
  - unknown-udp - custom app, no signatures
@@ -4265,7 +4265,7 @@ to the specified Hostname - if result is positive, internal gateway is used. Int
 - Authentication profile
 - Next is portal: **Network > GlobalProtect > Portals**
 - Download GlobalProtect client: **Device > GlobalProtect client**
-- Next tunnel interface: Network > Interfaces > Tunnel, separate zone for VPN
+- Next tunnel interface: **Network > Interfaces > Tunnel**, separate zone for VPN
 - IP pool
 - Access route
 - Next, gateway
@@ -4313,10 +4313,10 @@ sudo /Applications/GlobalProtect.app/Contents/Resources/uninstall_gp.sh
 - Free license
 - Connect the traffic collection tool directly to an Ethernet interface on the firewall and set the **Interface Type to Decrypt Mirror**
 - Decryption port mirroring is not available on the VM-Series for public cloud platforms
-- Device > Setup> Content - ID > Allow forwarding of decrypted content
-- Objects > Decryption Profile
+- **Device > Setup> Content - ID** > Allow forwarding of decrypted content
+- **Objects > Decryption Profile**
 - Specify whether to mirror decrypted traffic before or after policy enforcement
-- Policies > Decryption > Specify decryption Decryption Profile in Rule
+- **Policies > Decryption** > Specify decryption Decryption Profile in Rule
 
 ## Autofocus
 
