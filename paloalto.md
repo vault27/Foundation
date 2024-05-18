@@ -2773,6 +2773,24 @@ debug software restart process user-id
 - Log Collector
 - Panorama: both
 
+**Administrators**
+
+3 types:
+
+- Dynamic - When new features are added, Panorama automatically updates the definitions of dynamic roles; you never need to manually update them
+- Custom Panorama admin - everything configurable
+- Device Group and Template Admin - you need to specify access domain for these admins
+
+Roles for dynamic type:
+
+- Super user
+- Super user read only
+- Panorama administrator - cannot create admins, cannot export, save, load configs
+
+Profiles for Custom Panorama admin type  
+
+Access domains for Device Group and Template Admin administrator type
+
 **Shared objects**
 
 - In Device Groups: Shared Object is avalable for all Device Groups
