@@ -2253,8 +2253,7 @@ What is not synced?
 - The VM-Series firewall on Azure and VM-Series firewall on AWS only support active/passive HA
 - When you deploy the firewall with the Amazon Elastic Load Balancing (ELB) service on AWS, it does not support HA (in this case, ELB service provides the failover capabilities
 - The VM-Series firewall on Google Cloud Platform does not support traditional HA
-
-**Active/Passive**
+### Active/Passive
 
 Supported deployments
 
@@ -2315,7 +2314,7 @@ Show HA logs in **Monitor > System**
 show log system direction equal backward subtype equal ha eventid equal state-change
 ```
 
-**Active/Active**
+## Active/Active
 
 - Advanced design concepts
 - Complex troubleshooting
@@ -2380,7 +2379,7 @@ Configuration workflow
 - Everytime different firewall replies on ARP request with its own virtual MAC, IP is the same for both firewalls
 - ARP load sharing on LAN side and floating IP on the other
 
-**Cluster**
+## Cluster
 
 - 2 HA4 interfaces(primary and backup) with type HA, IP address, mask
 - On every device add all over devices with serial number, HA4 and HA4 backup IP addresses and sessions sync
