@@ -2348,10 +2348,14 @@ You need to distribute traffic somehow between them
     - 
 - **ARP Load-Sharing**
     - Use only when firewall is default gateway for end hosts
+    - The end hosts are configured with the same gateway, which is the shared IP address of the HA firewalls
     - Everytime different firewall replies on ARP request with its own virtual MAC, IP is the same for both firewalls
+    - Which FW will reply? 2 options exist:
+        - IP Modulo—The firewall that will respond to ARP requests is based on the parity of the ARP requester's IP address.
+        - IP Hash—The firewall that will respond to ARP requests is based on a hash of the ARP requester's IP address.
     - ARP load sharing on LAN side and floating IP on the other
 
-#### Route based redundancy**
+#### Route based redundancy
 
 <img width="602" alt="image" src="https://user-images.githubusercontent.com/116812447/215494580-eeaed00c-52a0-479c-b8db-909f8cce27fc.png">
 
