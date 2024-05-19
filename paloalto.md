@@ -1183,7 +1183,7 @@ From Peer side:
 
 ### Security policy 
 
-Options
+**Options**
 
 - Source
   - Zone
@@ -1200,10 +1200,13 @@ Options
 - GlobalProtect Host Information Profile (HIP)
 - Security Profiles (Content-ID) - use signatures to identify known threats. Unknown threats are identified by WildFire
 
-Concepts
+**Concepts**
 
 - Top to down
 - Left to right
+- The highlight unused rule function clears with a system reboot.  This only measures whether a rule was used or not since the most recent reboot
+- Rule Usage Hit counter will not be reset
+- Highlight unused rules will highlight all rules if not used since start
 - New rule is created under currently selected rule
 - Mandatory match criterias: Source Zone and Destination Zone
 - More specific rules first
@@ -1229,7 +1232,7 @@ The policy evaluation then uses the 'six tuple' (6-Tuple) to match establishing 
 5. Source Zone
 6. Protocol
 
-Policy optimizer
+**Policy optimizer**
 
 - Enable Policy Rule Hit Count
 - Policies > Security > Left Down part of screen
@@ -2314,7 +2317,21 @@ Show HA logs in **Monitor > System**
 show log system direction equal backward subtype equal ha eventid equal state-change
 ```
 
-## Active/Active
+### Active/Active
+
+**Impelementation options**
+
+- **Route-based redundancy**
+        - Firewalls like 2 different routers: other routers send traffic to them based on routing protocols
+        - No direct connection to endpoints via switches
+        - Dynamic routing protocols are used to load share
+        - Each FW has unique IP address
+        - No floating IP addresses
+- **Floating IP Addresses**
+        - Direct connection to endpoints via switches
+        - The end hosts are each configured with a gateway, which is the floating IP address of one of the HA firewalls
+        - Each FW has its own floating IP
+        - Different Endpoints have different gateway IPs, for example half of endpoints have FW1 floating IP as gateway, over half have FW2 floating IP as gateway
 
 - Advanced design concepts
 - Complex troubleshooting
