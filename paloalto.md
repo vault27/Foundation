@@ -2320,22 +2320,36 @@ show log system direction equal backward subtype equal ha eventid equal state-ch
 
 ### Active/Active
 
+You need to distribute traffic somehow between them
+
+- Routing protocols
+- Active primary firewall
+- Load balancer
+- Endpoints
+
 **4 Impelementation options**
 
 - **Route-based redundancy**
-        - Firewalls like 2 different routers: other routers send traffic to them based on routing protocols
-        - No direct connection to endpoints via switches
-        - Dynamic routing protocols are used to load share
-        - Each FW has unique IP address
-        - No floating IP addresses, virtual MAC address, arp load sharing, failover conditions
+    - Firewalls like 2 different routers: other routers send traffic to them based on routing protocols
+    - No direct connection to endpoints via switches
+    - Dynamic routing protocols are used to load share
+    - Each FW has unique IP address
+    - No floating IP addresses, virtual MAC address, arp load sharing, failover conditions
 - **Floating IP Addresses with Virtual MAC address**
-        - Direct connection to endpoints via switches
-        - The end hosts are each configured with a gateway, which is the floating IP address of one of the HA firewalls
-        - Each FW has its own floating IP
-        - Different Endpoints have different gateway IPs, for example half of endpoints have FW1 floating IP as gateway, over half have FW2 floating IP as gateway
+    - Floating IP address and virtual MAC address may travel between firewalls seemlessly, users will not notice
+    - Direct connection to endpoints via switches
+    - The end hosts are each configured with a gateway, which is the floating IP address of one of the HA firewalls
+    - Each FW has its own floating IP
+    - Different Endpoints have different gateway IPs, for example half of endpoints have FW1 floating IP as gateway, over half have FW2 floating IP as gateway
+    - Each firewall in the HA pair creates a virtual MAC address for each of its interfaces that has a floating IP address or ARP Load-Sharing IP address
+    - After the failed firewall recovers, by default the floating IP address and virtual MAC address move back to firewall with the Device ID [0 or 1] to which the floating IP address is bound
+    - When a new active firewall takes over, it sends gratuitous ARPs from each of its connected interfaces to inform the connected Layer 2 switches of the new location of the virtual MAC address. 
 - **Floating IP Address Bound to Active-Primary Firewall**
-        - 
+    - 
 - **ARP Load-Sharing**
+    - Use only when firewall is default gateway for end hosts
+    - Everytime different firewall replies on ARP request with its own virtual MAC, IP is the same for both firewalls
+    - ARP load sharing on LAN side and floating IP on the other
 
 
 #### Route based redundancy**
@@ -2345,6 +2359,7 @@ show log system direction equal backward subtype equal ha eventid equal state-ch
 **Concepts**
 
 - Advanced design concepts
+- Sessions are always synced
 - Complex troubleshooting
 - Additional configuration on both firewalls
 - Recommended if each firewall needs its own routing instances and you require full, real-time redundancy out of both firewalls all the time
@@ -2376,20 +2391,7 @@ show log system direction equal backward subtype equal ha eventid equal state-ch
     - Floating IP can be bound to Active Primary Device
     - OR Device priority can be configured for devices 0 and 1 - ?
 
-**Virtual MAC address**
-
-- Manually configure different gateways on end systems or use load balancers
-- Each firewall in the HA pair creates a virtual MAC address for each of its interfaces that has a floating IP address or ARP Load-Sharing IP address
-- After the failed firewall recovers, by default the floating IP address and virtual MAC address move back to firewall with the Device ID [0 or 1] to which the floating IP address is bound
-- When a new active firewall takes over, it sends gratuitous ARPs from each of its connected interfaces to inform the connected Layer 2 switches of the new location of the virtual MAC address. 
-
-**ARP load sharing**
-
-- Use only when firewall is default gateway for end hosts
-- Everytime different firewall replies on ARP request with its own virtual MAC, IP is the same for both firewalls
-- ARP load sharing on LAN side and floating IP on the other
-
-## Cluster
+### Cluster
 
 - 2 HA4 interfaces(primary and backup) with type HA, IP address, mask
 - On every device add all over devices with serial number, HA4 and HA4 backup IP addresses and sessions sync
