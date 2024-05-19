@@ -2256,6 +2256,7 @@ What is not synced?
 - The VM-Series firewall on Azure and VM-Series firewall on AWS only support active/passive HA
 - When you deploy the firewall with the Amazon Elastic Load Balancing (ELB) service on AWS, it does not support HA (in this case, ELB service provides the failover capabilities
 - The VM-Series firewall on Google Cloud Platform does not support traditional HA
+
 ### Active/Passive
 
 Supported deployments
@@ -2319,19 +2320,29 @@ show log system direction equal backward subtype equal ha eventid equal state-ch
 
 ### Active/Active
 
-**Impelementation options**
+**4 Impelementation options**
 
 - **Route-based redundancy**
         - Firewalls like 2 different routers: other routers send traffic to them based on routing protocols
         - No direct connection to endpoints via switches
         - Dynamic routing protocols are used to load share
         - Each FW has unique IP address
-        - No floating IP addresses
-- **Floating IP Addresses**
+        - No floating IP addresses, virtual MAC address, arp load sharing, failover conditions
+- **Floating IP Addresses with Virtual MAC address**
         - Direct connection to endpoints via switches
         - The end hosts are each configured with a gateway, which is the floating IP address of one of the HA firewalls
         - Each FW has its own floating IP
         - Different Endpoints have different gateway IPs, for example half of endpoints have FW1 floating IP as gateway, over half have FW2 floating IP as gateway
+- **Floating IP Address Bound to Active-Primary Firewall**
+        - 
+- **ARP Load-Sharing**
+
+
+#### Route based redundancy**
+
+<img width="602" alt="image" src="https://user-images.githubusercontent.com/116812447/215494580-eeaed00c-52a0-479c-b8db-909f8cce27fc.png">
+
+**Concepts**
 
 - Advanced design concepts
 - Complex troubleshooting
@@ -2345,22 +2356,14 @@ show log system direction equal backward subtype equal ha eventid equal state-ch
 - If the session owner fails, the peer firewall becomes the session owner
 - Palo Alto Networks recommends setting the Session Owner to First Packet and the Session Setup to IP Modulo
 - Setting the Session Owner to First Packet reduces traffic across the HA3 link and helps distribute the dataplane load across peers
+- Does not support the DHCP client. Furthermore, only the active-primary firewall can function as a DHCP Relay. If the active-secondary firewall receives DHCP broadcast packets, it drops them
 
-Supported deployments:
+**Supported deployments**
 
 - L3
 - Virtual Wire
 
-Does not support the DHCP client. Furthermore, only the active-primary firewall can function as a DHCP Relay. If the active-secondary firewall receives DHCP broadcast packets, it drops them
-
-4 types of design:
-
-- Floating IP Address and Virtual MAC Address
-- Floating IP Address Bound to Active-Primary Firewall
-- Route-Based Redundancy
-- ARP Load-Sharing
-
-Configuration workflow
+**Configuration workflow**
 
 - Enable HA
 - Choose Active/Active
@@ -2379,16 +2382,6 @@ Configuration workflow
 - Each firewall in the HA pair creates a virtual MAC address for each of its interfaces that has a floating IP address or ARP Load-Sharing IP address
 - After the failed firewall recovers, by default the floating IP address and virtual MAC address move back to firewall with the Device ID [0 or 1] to which the floating IP address is bound
 - When a new active firewall takes over, it sends gratuitous ARPs from each of its connected interfaces to inform the connected Layer 2 switches of the new location of the virtual MAC address. 
-
-**Route based redundancy**
-
-- Firewalls are connected  to routers, not switches
-- Each firewall has separate IP addresses, sessions are synced
-- If firewall fails, then based on routing protocol traffic is not sent to it
-- No need to configure virtual MAC address/floating IP address, arp load sharing, failover conditions
-  
-
-<img width="602" alt="image" src="https://user-images.githubusercontent.com/116812447/215494580-eeaed00c-52a0-479c-b8db-909f8cce27fc.png">
 
 **ARP load sharing**
 
