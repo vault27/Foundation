@@ -2343,7 +2343,7 @@ You need to distribute traffic somehow between them
     - Different Endpoints have different gateway IPs, for example half of endpoints have FW1 floating IP as gateway, over half have FW2 floating IP as gateway
     - Each firewall in the HA pair creates a virtual MAC address for each of its interfaces that has a floating IP address or ARP Load-Sharing IP address
     - After the failed firewall recovers, by default the floating IP address and virtual MAC address move back to firewall with the Device ID [0 or 1] to which the floating IP address is bound
-    - When a new active firewall takes over, it sends gratuitous ARPs from each of its connected interfaces to inform the connected Layer 2 switches of the new location of the virtual MAC address. 
+    - When a new active firewall takes over, it sends gratuitous ARPs from each of its connected interfaces to inform the connected Layer 2 switches of the new location of the virtual MAC address
 - **Floating IP Address Bound to Active-Primary Firewall**
     - 
 - **ARP Load-Sharing**
@@ -2351,10 +2351,21 @@ You need to distribute traffic somehow between them
     - Everytime different firewall replies on ARP request with its own virtual MAC, IP is the same for both firewalls
     - ARP load sharing on LAN side and floating IP on the other
 
-
 #### Route based redundancy**
 
 <img width="602" alt="image" src="https://user-images.githubusercontent.com/116812447/215494580-eeaed00c-52a0-479c-b8db-909f8cce27fc.png">
+
+### Floating IP Addresses with Virtual MAC address
+
+<img width="635" alt="image" src="https://github.com/phph9/Foundation/assets/116812447/903778c0-559d-4256-b0ef-f0f401508628">
+
+### Floating IP Address Bound to Active-Primary Firewall
+
+<img width="835" alt="image" src="https://github.com/phph9/Foundation/assets/116812447/8ad77c29-5bd2-4e59-80f5-f0308894126a">
+
+### ARP Load-Sharing
+
+<img width="686" alt="image" src="https://github.com/phph9/Foundation/assets/116812447/8c2aea0d-e773-4418-844c-a00f2853a921">
 
 **Concepts**
 
