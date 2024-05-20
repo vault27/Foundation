@@ -4022,6 +4022,7 @@ admin@PA>
 
 **SSL/TLS service profile**
 
+- Used for: TLS services provided by PA: mgmt TLS server, GP TLS server...
 - Used by Captive portal, GlobalProtect portals and gateways, inbound traffic on the management (MGT) interface, the URL Admin Override feature, and the User-ID™ syslog listening service
 - Device > Certificate Management > SSL/TLS Service Profile
 - Certificate
@@ -4029,11 +4030,14 @@ admin@PA>
 
 **Certificate profile**
 
-- User and device authentication for Captive Portal, multi-factor authentication (MFA), GlobalProtect, site-to-site IPSec VPN, external dynamic list (EDL) validation, Dynamic DNS (DDNS), User-ID agent and TS agent access, and web interface access to Palo Alto Networks firewalls or Panorama
-- Specify which certificates to use, how to verify certificate revocation status, and how that status constrains access
-- Username field
-- User domain
-- CA certs
+- Used for: **verification of certs**, sent by remote peers: GP users, EDL servers...All options connected with cert checking...
+- Used in: User and device authentication for Captive Portal, multi-factor authentication (MFA), GlobalProtect - verify user's cert, site-to-site IPSec VPN, external dynamic list (EDL) - validation of server's cert, Dynamic DNS (DDNS), User-ID agent and TS agent access, and web interface access to Palo Alto Networks firewalls or Panorama
+- Username field - when only cert auth is used for GP users, so user does not enter his name and PA can take it only from cert, where in cert to search for user's name:
+        - Subject - Common Name
+        - Subject Alt - Email or Principal name
+        - None - Global protect device auth or pre-logon
+- User domain - Enter the NetBIOS domain so the PAN-OS software can map users through User-ID
+- CA certs - the only required field - these certs will be used to check who signed peer's cert
 - CRL - use or not
 - OCSP - takes precedence over CRL - use or not
 - Block session if cert is unknown, if cert is expired
