@@ -170,6 +170,7 @@ Detection, investigation, automation, and response capabilities.
 - BFD
 - Tunnel Content Inspection
 - FQDNs
+- Quarantine
 
 ## Configuration hierarchy
 
@@ -256,6 +257,8 @@ Bootstrap allows you to automatically config, upgrade, update signatures, licens
     - /software folder: This folder contains the software images that are required to upgrade a newly provisioned VM-Series firewall to the desired PAN-OS version for the network
     - /content folder: This folder contains the Applications and Threats updates and WildFire updates for the valid subscriptions on the VM-Series firewall. You must include the minimum content versions that are required for the desired PAN-OS version
     - /plugins folder: This optional folder contains a single VM-Series plugin image
+
+## Device ID
 
 ## Master key
 
@@ -1185,6 +1188,15 @@ From Peer side:
 
 **Options**
 
+
+```mermaid
+graph LR
+A[Hard edge] -->B(Round edge)
+    B --> C{Decision}
+    C -->|One| D[Result one]
+    C -->|Two| E[Result two]
+```
+
 - Source
   - Zone
   - Address
@@ -2105,6 +2117,36 @@ A session created locally on the firewall will have the False value and one crea
  - unknown-p2p - generic P2P heuristics
  - Not-applicable - port is blocked
 
+## Quarantine
+
+- **Device > Device Quarantine**
+- Valid GlobalProtect subscription license is required
+- Addin to Quaratine does not block anything
+- After you quarantine the device, you can block users from logging into the network from that device using GlobalProtect
+- You can also restrict traffic to a compromised device, from a compromised device, or both
+- To block users from logging in to GlobalProtect from a quarantined device, configure GlobalProtect gateway authentication (**Network > GlobalProtect > Gateways > gateway-configuration > Authentication**) and select **Block login for quarantined devices**
+- To block access from a quarantined device using a security policy rule, specify Quarantine for either source or destination traffic; then, specify an action that blocks the quarantined device
+- **Host-ID** can be found in HIP: **Monitor > Logs > HIP Match**
+- Host-ID is better than IP, because it is not changed
+- The host ID value varies by endpoint type:
+    - Windows—Machine GUID stored in the Windows registry (HKEY_Local_Machine\Software\Microsoft\Cryptography\MachineGuid)
+    - macOS—MAC address of the first built-in physical network interface
+    - Android—Android ID
+    - iOS—UDID
+    - Chrome—GlobalProtect assigned unique alphanumeric string with length of 32 characters
+- For GlobalProtect to automatically add Host ID information to the Traffic, Threat, or Unified logs, you must add a policy rule that has **Quarantine** selected for source traffic in Source Device Section
+- To make sure that you are adding the Host ID for all devices you want to quarantine (either manually or automatically), create a security policy that allows all traffic and specify Quarantine as the Source Device. It does not matter what order you place this policy in the list of policies for it to work
+- You may call this rule "Quarantine-get-host-ID"
+- When a user connects to the network with the GlobalProtect app, GlobalProtect automatically adds Host ID information for the connected endpoint to the **GlobalProtect log**
+- How to add device to Quarantine:
+    - The system administrator added the device to this list manually: **Host ID** + **Serial Number** (optional)
+    - The system administrator selected the Host ID column from the Traffic, GlobalProtect, Threat log, or Unified logs, selected a device from that column, and then selected **Block Device**
+    - The device was added to the quarantine list automatically:
+        - Using a log forwarding profile with a security policy rule whose match list had a built-in action set to Quarantine
+        - Using HIP match log settings with built-in action set to Quarantine
+        - The device was added to the quarantine list using an API
+        - The firewall received the quarantine list as a part of redistributed entry (the quarantine list was redistributed from another Panorama appliance or firewall)
+
 ## Tags
 
 - Tags can be attached to the following objects: address objects, address groups, user groups, zones, service groups, and policy rules
@@ -2345,7 +2387,6 @@ You need to distribute traffic somehow between them
     - After the failed firewall recovers, by default the floating IP address and virtual MAC address move back to firewall with the Device ID [0 or 1] to which the floating IP address is bound
     - When a new active firewall takes over, it sends gratuitous ARPs from each of its connected interfaces to inform the connected Layer 2 switches of the new location of the virtual MAC address
 - **Floating IP Address Bound to Active-Primary Firewall**
-    - 
 - **ARP Load-Sharing**
     - Use only when firewall is default gateway for end hosts
     - The end hosts are configured with the same gateway, which is the shared IP address of the HA firewalls
