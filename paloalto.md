@@ -1190,11 +1190,15 @@ From Peer side:
 
 
 ```mermaid
-graph LR
-A[Hard edge] -->B(Round edge)
-    B --> C{Decision}
-    C -->|One| D[Result one]
-    C -->|Two| E[Result two]
+graph TB
+A[Hard edge] -->B(Source)
+A[Hard edge] -->F(Destination)
+    B --> C(Zone)
+    B --> D(Address)
+    B --> E(Device)
+    B --> K(User)
+    F --> I(Zone)
+    
 ```
 
 - Source
