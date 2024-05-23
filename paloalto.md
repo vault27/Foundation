@@ -2230,15 +2230,17 @@ HA Lite:
 - After commit changes are automatically sent to Passive
 - You can make changes on Passive, press Commit and it will go to Active
 - ICMP sessions are not synced
+- HSCI—The HSCI port is a Layer 1 SFP+ interface that connects two PA-1400 Series firewalls in an HA configuration. Use this port for an HA2 connection, HA3 connection, or both.
+- The traffic carried on the HSCI port is raw Layer 1 traffic, which is not routable or switchable. Therefore, you must connect the HSCI ports directly to each other (from the HSCI port on the first firewall to the HSCI port on the second firewall)
 
-Failover reasons
+**Failover reasons**
 
 - Link monitoring: If an interface goes down, the member fails - you just create Link Group - add there many interfaces - Any of them or All should fail to trigger failover
 - Path monitoring: If an IP becomes unavailable, the member fails - you create a path group with a list of IP addresses - separate for VLAN, Virtual Wire, Virtual router - all or any should fail
 - Heartbeat monitoring: The peers periodically send heartbeat packages and hello messages to verify they are up and running
 - Hardware monitoring: The member continually performs packet path health monitoring on its own hardware and fails if a malfunction is detected
 
-What is not synced?
+**What is not synced?**
 
 - Mgmt interface settings
 - Panorama settings
@@ -2334,7 +2336,8 @@ Configuration workflow
 - Sync config
 - Manually suspend node: Device > High Availability > Operational Commands > Suspend local device
 
-Out of sync state  
+**Out of sync state**
+
 Possible when person makes change to active host, does not commit. Then someone from Panorama commits amd push configs to both devices. But panorama does not touch what we did locally. As a result new configuration only on Active device and we have out of sync state. Now we can sync from both devices, we need to choose which one is better for us.
 
 **Firewall states**
@@ -4335,6 +4338,7 @@ to the specified Hostname - if result is positive, internal gateway is used. Int
 
 - By default, the GlobalProtect app attempts to use the same login credentials for the gateway that it used for portal login. In the simplest case, where the gateway and the portal use the same authentication profile or certificate profile, the app connects to the gateway transparently
 - We can configure authentication cookie for both portal and gateway, each with its own timeout, for example 1 day for gateway and 5 days for portal
+- When only cert used for auth, username is taken from cert, domain fron cert profile: server checks that client has secret key, checks who signed client's cert, checks revocation status, uses name in cert for user-ID
 
 **MFA**
 
