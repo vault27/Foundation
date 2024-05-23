@@ -2393,7 +2393,9 @@ You need to distribute traffic somehow between them
 - **Floating IP Address Bound to Active-Primary Firewall**
     - Works like Active/Passive
     - Single floating IP
-    - 
+    - You can have an active/active HA configuration for path monitoring out of both firewalls
+    - You have control over which firewall owns the floating IP address so that you keep all flows of new and existing sessions on the active-primary firewall, thereby minimizing traffic on the HA3 link
+    - You cannot configure NAT for a floating IP address that is bound to an active-primary firewall
 - **ARP Load-Sharing**
     - Use only when firewall is default gateway for end hosts
     - The end hosts are configured with the same gateway, which is the shared IP address of the HA firewalls
@@ -2435,6 +2437,14 @@ You need to distribute traffic somehow between them
 - Palo Alto Networks recommends setting the Session Owner to First Packet and the Session Setup to IP Modulo
 - Setting the Session Owner to First Packet reduces traffic across the HA3 link and helps distribute the dataplane load across peers
 - Does not support the DHCP client. Furthermore, only the active-primary firewall can function as a DHCP Relay. If the active-secondary firewall receives DHCP broadcast packets, it drops them
+- For data ports configured as an HA3 interface, you must enable jumbo frames as HA3 messages exceed 1,500 bytes
+- Jumbo frame support does not explicitly need to be enabled on the Palo Alto Networks firewall, as the HA3 interface supports jumbo frames independently of the system configuration
+- HA3 uses L2 between the firewalls. The firewall will add 18 bytes to the frame. Without support for jumbo frames, network traffic with frame size over 1514 may get dropped by the switch and the traffic will fail
+- The 18 bytes that make up the total extra overhead consist of:
+    - 6 bytes for the dest mac of the peer HA3 port
+    - 6 bytes for the src mac of HA3 port
+    - 2 bytes for the protocol number
+    - 4 bytes for an essential private field
 
 **Supported deployments**
 
