@@ -2386,18 +2386,21 @@ You need to distribute traffic somehow between them
     - Direct connection to endpoints via switches
     - The end hosts are each configured with a gateway, which is the floating IP address of one of the HA firewalls
     - Each FW has its own floating IP
-    - Different Endpoints have different gateway IPs, for example half of endpoints have FW1 floating IP as gateway, over half have FW2 floating IP as gateway
+    - Different Endpoints have different gateway IPs, for example half of endpoints have FW1 floating IP as gateway, other half have FW2 floating IP as gateway
     - Each firewall in the HA pair creates a virtual MAC address for each of its interfaces that has a floating IP address or ARP Load-Sharing IP address
     - After the failed firewall recovers, by default the floating IP address and virtual MAC address move back to firewall with the Device ID [0 or 1] to which the floating IP address is bound
     - When a new active firewall takes over, it sends gratuitous ARPs from each of its connected interfaces to inform the connected Layer 2 switches of the new location of the virtual MAC address
 - **Floating IP Address Bound to Active-Primary Firewall**
+    - Works like Active/Passive
+    - Single floating IP
+    - 
 - **ARP Load-Sharing**
     - Use only when firewall is default gateway for end hosts
     - The end hosts are configured with the same gateway, which is the shared IP address of the HA firewalls
     - Everytime different firewall replies on ARP request with its own virtual MAC, IP is the same for both firewalls
     - Which FW will reply? 2 options exist:
         - IP Modulo—The firewall that will respond to ARP requests is based on the parity of the ARP requester's IP address.
-        - IP Hash—The firewall that will respond to ARP requests is based on a hash of the ARP requester's IP address.
+        - IP Hash—The firewall that will respond to ARP requests is based on a hash of the ARP requester's IP address
     - ARP load sharing on LAN side and floating IP on the other
 
 #### Route based redundancy
