@@ -66,7 +66,7 @@ show interfaces status | i connected
 show power inline
 show inventory
 show module
-show switch - shows members of a stak + who is Master
+show switch - shows members of a stack + who is Master
 show redundancy
 ```
 
@@ -92,11 +92,15 @@ show cdp nei
 General
 
 ```
+show vrf
+show ip protocols
 show ip arp
 show ip route
+show ip arp vrf VRF_NAME - for VRFs with Interfaces
+show ip route vrf VRF_NAME - for VRFs with Interfaces
 ```
 
-OSPF
+OSPF - if applicable
 
 ```
 show ip ospf neighbor
@@ -104,22 +108,16 @@ show ip ospf database
 show ip ospf interface
 ```
 
-BGP
+BGP - if applicable
 
 ```
-show ip bgp vpnv4 all summary
+show ip bgp all summary
 ```
 
-VRF
-
-```
-show ip route vrf 1
-show ip route vrf 2
-```
 
 **Upgrade**
 
-If show boot shows bin file, then it is old catalyst
+If **show boot** shows bin file, then it is old catalyst
 
 For new Catalyst
 ```
