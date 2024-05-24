@@ -2230,15 +2230,17 @@ HA Lite:
 - After commit changes are automatically sent to Passive
 - You can make changes on Passive, press Commit and it will go to Active
 - ICMP sessions are not synced
+- HSCI—The HSCI port is a Layer 1 SFP+ interface that connects two PA-1400 Series firewalls in an HA configuration. Use this port for an HA2 connection, HA3 connection, or both.
+- The traffic carried on the HSCI port is raw Layer 1 traffic, which is not routable or switchable. Therefore, you must connect the HSCI ports directly to each other (from the HSCI port on the first firewall to the HSCI port on the second firewall)
 
-Failover reasons
+**Failover reasons**
 
 - Link monitoring: If an interface goes down, the member fails - you just create Link Group - add there many interfaces - Any of them or All should fail to trigger failover
 - Path monitoring: If an IP becomes unavailable, the member fails - you create a path group with a list of IP addresses - separate for VLAN, Virtual Wire, Virtual router - all or any should fail
 - Heartbeat monitoring: The peers periodically send heartbeat packages and hello messages to verify they are up and running
 - Hardware monitoring: The member continually performs packet path health monitoring on its own hardware and fails if a malfunction is detected
 
-What is not synced?
+**What is not synced?**
 
 - Mgmt interface settings
 - Panorama settings
@@ -2334,7 +2336,8 @@ Configuration workflow
 - Sync config
 - Manually suspend node: Device > High Availability > Operational Commands > Suspend local device
 
-Out of sync state  
+**Out of sync state**
+
 Possible when person makes change to active host, does not commit. Then someone from Panorama commits amd push configs to both devices. But panorama does not touch what we did locally. As a result new configuration only on Active device and we have out of sync state. Now we can sync from both devices, we need to choose which one is better for us.
 
 **Firewall states**
@@ -2386,18 +2389,23 @@ You need to distribute traffic somehow between them
     - Direct connection to endpoints via switches
     - The end hosts are each configured with a gateway, which is the floating IP address of one of the HA firewalls
     - Each FW has its own floating IP
-    - Different Endpoints have different gateway IPs, for example half of endpoints have FW1 floating IP as gateway, over half have FW2 floating IP as gateway
+    - Different Endpoints have different gateway IPs, for example half of endpoints have FW1 floating IP as gateway, other half have FW2 floating IP as gateway
     - Each firewall in the HA pair creates a virtual MAC address for each of its interfaces that has a floating IP address or ARP Load-Sharing IP address
     - After the failed firewall recovers, by default the floating IP address and virtual MAC address move back to firewall with the Device ID [0 or 1] to which the floating IP address is bound
     - When a new active firewall takes over, it sends gratuitous ARPs from each of its connected interfaces to inform the connected Layer 2 switches of the new location of the virtual MAC address
 - **Floating IP Address Bound to Active-Primary Firewall**
+    - Works like Active/Passive
+    - Single floating IP
+    - You can have an active/active HA configuration for path monitoring out of both firewalls
+    - You have control over which firewall owns the floating IP address so that you keep all flows of new and existing sessions on the active-primary firewall, thereby minimizing traffic on the HA3 link
+    - You cannot configure NAT for a floating IP address that is bound to an active-primary firewall
 - **ARP Load-Sharing**
     - Use only when firewall is default gateway for end hosts
     - The end hosts are configured with the same gateway, which is the shared IP address of the HA firewalls
     - Everytime different firewall replies on ARP request with its own virtual MAC, IP is the same for both firewalls
     - Which FW will reply? 2 options exist:
         - IP Modulo—The firewall that will respond to ARP requests is based on the parity of the ARP requester's IP address.
-        - IP Hash—The firewall that will respond to ARP requests is based on a hash of the ARP requester's IP address.
+        - IP Hash—The firewall that will respond to ARP requests is based on a hash of the ARP requester's IP address
     - ARP load sharing on LAN side and floating IP on the other
 
 #### Route based redundancy
@@ -2432,6 +2440,14 @@ You need to distribute traffic somehow between them
 - Palo Alto Networks recommends setting the Session Owner to First Packet and the Session Setup to IP Modulo
 - Setting the Session Owner to First Packet reduces traffic across the HA3 link and helps distribute the dataplane load across peers
 - Does not support the DHCP client. Furthermore, only the active-primary firewall can function as a DHCP Relay. If the active-secondary firewall receives DHCP broadcast packets, it drops them
+- For data ports configured as an HA3 interface, you must enable jumbo frames as HA3 messages exceed 1,500 bytes
+- Jumbo frame support does not explicitly need to be enabled on the Palo Alto Networks firewall, as the HA3 interface supports jumbo frames independently of the system configuration
+- HA3 uses L2 between the firewalls. The firewall will add 18 bytes to the frame. Without support for jumbo frames, network traffic with frame size over 1514 may get dropped by the switch and the traffic will fail
+- The 18 bytes that make up the total extra overhead consist of:
+    - 6 bytes for the dest mac of the peer HA3 port
+    - 6 bytes for the src mac of HA3 port
+    - 2 bytes for the protocol number
+    - 4 bytes for an essential private field
 
 **Supported deployments**
 
@@ -4322,6 +4338,7 @@ to the specified Hostname - if result is positive, internal gateway is used. Int
 
 - By default, the GlobalProtect app attempts to use the same login credentials for the gateway that it used for portal login. In the simplest case, where the gateway and the portal use the same authentication profile or certificate profile, the app connects to the gateway transparently
 - We can configure authentication cookie for both portal and gateway, each with its own timeout, for example 1 day for gateway and 5 days for portal
+- When only cert used for auth, username is taken from cert, domain fron cert profile: server checks that client has secret key, checks who signed client's cert, checks revocation status, uses name in cert for user-ID
 
 **MFA**
 
