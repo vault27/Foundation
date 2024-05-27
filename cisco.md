@@ -26,6 +26,169 @@
     - Catalyst SD-WAN
  
 
+## Routers and switches upgrade
+
+**Preparation**
+
+- On-site person + console cable + wired keyboard with Break key
+- Notify on-site people
+- Notify servers people, if servers are connected
+- Local password
+- vPC and STP peculiarities
+- Disable monitoring system
+- Verify that image is on both nodes of the stack.
+    - "flash:" means the flash directory of the MASTER switch.
+    - "flash1:" means the flash directory of switch 1 of the stack.
+    - "flash1:" does NOT necessarily mean it's the flash memory of the master switch.
+
+```
+Show flash1:
+Show flash2:
+```
+
+- Upload image
+
+```
+copy /verify ftp://ftpuser:pass@1.1.1.1/IOS/c3560cx-universalk9-mz.152-7.E9.bin flash:
+```
+
+- Veriify MD5 hash
+
+```
+verify /md5 flash:c3750e-universalk9-mz.152-4.E10.bin
+```
+
+- Enable SSH log to file
+
+**Backup**
+
+```
+copy run start
+ter len 0
+sh run
+```
+
+**Hardware Pre-checks**
+
+```
+show environment all
+show interfaces status err-disabled
+show interfaces status | i connected
+show power inline
+show inventory
+show module
+show switch - shows members of a stack + who is Master
+show redundancy
+show cdp nei
+```
+
+**Software Pre-checks**
+
+```
+show logging
+show ver - verify version on all switches in the stack
+```
+
+**L2 Pre-checks - for switches only**
+
+```
+show mac add dynamic
+show int trunk
+show spanning-tree summary
+show spanning-tree root
+```
+
+**L3 Pre-checks**
+
+General
+
+```
+show vrf
+show ip protocols
+show ip arp
+show ip route
+show ip route summary
+
+#For VRFs with Interfaces
+show ip arp vrf VRF_NAME
+show ip route vrf VRF_NAME
+show ip route vrf VRF_NAME summary
+```
+
+OSPF 
+
+```
+show ip ospf neighbor
+show ip ospf database
+show ip ospf interface
+```
+
+BGP
+
+```
+show ip bgp all summary
+```
+
+**Nexus Pre-checks**
+
+```
+show install all impact nxos bootflash:nxos64-cs.10.2.6.M.bin
+show feature
+show install all status
+```
+
+**Upgrade**
+
+If **show boot** shows bin file, then it is old catalyst
+
+For new Catalyst
+```
+install add file flash:cat9k_iosxe.17.09.04a.SPA.bin activate commit prompt-level none
+```
+
+For old ones - we keep old one, new one on top, just in case new one will not boot
+
+```
+boot system flash:c2900-universalk9-mz.SPA.157-3.M8.bin
+no boot system boot system flash:c2900-universalk9-mz.SPA.157-3.M4a.bin
+exit
+copy run start
+reload
+```
+
+For old one Stack - update all switches in a stack
+
+```
+boot system switch all flash:c3750e-universalk9-mz.152-4.E10.bin
+```
+
+If switch does not boot with new image, we need to connect with console and load switch with previous image:
+
+```
+Enter ROMMODE - CTRl+Break
+boot flash:IMAGE_NAME
+if flash is not detected, then you can try flash_init
+you can do "dir" to see if flash is detected
+if it doesn't boot on the new code, it'll automatically go to rommon
+```
+
+For Nexus
+
+```
+Install all nxos bootflash:nxos64-cs.10.2.6.M.bin
+```
+
+**Post-upgrade**
+
+- Pre-checks
+- If Stack: check that member switches are upgraded as well
+- Access-points
+- Cameras
+- Security locks
+- Servers connections
+- Unmute monitoring system
+- Add change to monitoring system
+
 ## Catalyst
 
 - Brand for a variety of network switches, wireless controllers, and wireless access points
