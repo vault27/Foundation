@@ -28,14 +28,42 @@
 
 ## Routers and switches upgrade
 
-**Preparation**
+### Part 1 - Reconnaissance
 
-- On-site person + console cable + wired keyboard with Break key
+- What is connected to a device: clients, cameras, servers, APs, transit: CDP, port description, diagrams
+- Who support connected devices?
+- Maitenance window
+- Validators
+- Impact allowed: can we do interruption or not
+- Person on site availability - console cable + wired keyboard with Break key
+
+### Part 2 - Change creation
+
 - Notify on-site people
-- Notify servers people, if servers are connected
+- Notify servers people
+- Notify validators: application teams, security guards
+- Create MOP
+- Pass TAB
+- Pass SCRUM
+
+### Part 3 - Prepare for change
+
 - Local password
 - vPC and STP peculiarities
+- Routing protocols
+- Upload images
+
+### Part 4 - Change
+
 - Disable monitoring system
+- Notify about start
+- Notify about end
+- Close change
+- Enable monitoring system
+- Add up dates to monitoring system
+
+### Appendix-A - Images
+
 - Verify that image is on both nodes of the stack.
     - "flash:" means the flash directory of the MASTER switch.
     - "flash1:" means the flash directory of switch 1 of the stack.
@@ -57,6 +85,8 @@ copy /verify ftp://ftpuser:pass@1.1.1.1/IOS/c3560cx-universalk9-mz.152-7.E9.bin 
 ```
 verify /md5 flash:c3750e-universalk9-mz.152-4.E10.bin
 ```
+
+### Appendix-B - MOP
 
 - Enable SSH log to file
 
@@ -202,7 +232,6 @@ Install all nxos bootflash:nxos64-cs.10.2.6.M.bin
 - StackWise and Stackwise Virtual are technologies offered by Cisco Systems that allows some models of Catalyst switches to operate as though they were one switch
 - One switch is master, if master fails - another is a master
 - Stackwise physically connects the switch stack using special stack interconnect cables
-
 
 
 ## Documentation
