@@ -57,10 +57,22 @@
 
 - Disable monitoring system
 - Notify about start
+- Install + Verify
+
+### Part5 - Post Upgrade
+
+- Pre-checks
+- If Stack: check that member switches are upgraded as well
+- Access-points
+- Cameras
+- Security locks
+- Servers connections
+- Servers validators
+- App validators
 - Notify about end
 - Close change
-- Enable monitoring system
-- Add up dates to monitoring system
+- Unmute monitoring system
+- Add change to monitoring system
 
 ### Appendix-A - Images
 
@@ -169,6 +181,8 @@ show install all status
 
 **Upgrade**
 
+Check version one more time
+
 If **show boot** shows bin file, then it is old catalyst
 
 For new Catalyst
@@ -179,8 +193,9 @@ install add file flash:cat9k_iosxe.17.09.04a.SPA.bin activate commit prompt-leve
 For old ones - we keep old one, new one on top, just in case new one will not boot
 
 ```
-boot system flash:c2900-universalk9-mz.SPA.157-3.M8.bin
 no boot system boot system flash:c2900-universalk9-mz.SPA.157-3.M4a.bin
+boot system flash:c2900-universalk9-mz.SPA.157-3.M8.bin
+boot system boot system flash:c2900-universalk9-mz.SPA.157-3.M4a.bin
 exit
 copy run start
 reload
@@ -207,17 +222,6 @@ For Nexus
 ```
 Install all nxos bootflash:nxos64-cs.10.2.6.M.bin
 ```
-
-**Post-upgrade**
-
-- Pre-checks
-- If Stack: check that member switches are upgraded as well
-- Access-points
-- Cameras
-- Security locks
-- Servers connections
-- Unmute monitoring system
-- Add change to monitoring system
 
 ## Catalyst
 
