@@ -34,6 +34,7 @@
 - Who support connected devices?
 - Maitenance window
 - Validators
+- Will there be service interraption or not?
 - Impact allowed: can we do interruption or not
 - Person on site availability - console cable + wired keyboard with Break key
 
