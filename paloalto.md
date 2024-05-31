@@ -171,6 +171,10 @@ Detection, investigation, automation, and response capabilities.
 - Tunnel Content Inspection
 - FQDNs
 - Quarantine
+- Remote Browser Isolation - apply Isolation profile to Security Policy - select Isolate in URL profile
+    - Panorama > Cloud Services > Status > Remote Browser Isolation > Configure - create Profile
+    - All content is rendered and executed in Prisma - user gets only images...
+- Prisma Access Browser - just browser with granular centralized control, user can access prisma only with it
 
 ## Configuration hierarchy
 

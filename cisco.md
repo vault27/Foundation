@@ -42,7 +42,7 @@
 
 - Notify on-site people
 - Notify servers people
-- Notify validators: application teams, security guards
+- Notify validators: application teams, security guards - send them Bridge link
 - Create MOP
 - Pass TAB
 - Pass SCRUM
@@ -58,6 +58,7 @@
 
 - Disable monitoring system
 - Notify about start
+- Validators validate before start
 - Install + Verify
 
 ### Part5 - Post Upgrade
