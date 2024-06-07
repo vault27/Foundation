@@ -33,10 +33,12 @@
 - What is connected to a device: clients, cameras, servers, APs, transit: CDP, port description, diagrams
 - Who support connected devices?
 - Maitenance window
-- Validators
+- Validators - they have to approve before and after
 - Will there be service interraption or not?
 - Impact allowed: can we do interruption or not
-- Person on site availability - console cable + wired keyboard with Break key
+- Find out the rack number
+- Find person on site availability - console cable + wired keyboard with Break key
+- Person on site requested access
 
 ### Part 2 - Change creation
 
