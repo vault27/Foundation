@@ -379,17 +379,17 @@ https://knowledgebase.paloaltonetworks.com/KCSArticleDetail?id=kA10g000000ClVHCA
 ## DoS Protection
 
 ```mermaid
-  graph TB
-A[DoS Protection] -->B(Zone Protection Profile)
-A[DoS Protection] -->F[Packet Buffer Protection]
-A[DoS Protection] -->X(Classified DoS Protection)
-A[DoS Protection] -->V(Aggregate DoS Protection)
-    B --> C(Flood protection)
-    B --> D(Reconnaissance protection)
-    B --> E(Packet based attack protection)
-    B --> K(Protocol protection)
-    B --> I(Ethernet SGT protection)
-    B --> L(L3 & L4 Header Inspection)
+  graph TD
+    A[DoS Protection] --> B(Zone Protection Profile);
+    A[DoS Protection] --> F[Packet Buffer Protection];
+    A[DoS Protection] -->X(Classified DoS Protection);
+    A[DoS Protection] -->V(Aggregate DoS Protection);
+    B --> C(Flood protection);
+    B --> D(Reconnaissance protection);
+    B --> E(Packet based attack protection);
+    B --> K(Protocol protection);
+    B --> I(Ethernet SGT protection);
+    B --> L(L3 & L4 Header Inspection);
 ```
 
 - Position firewalls as **close as possible to the resources** they protect: Firewalls don’t scale to millions of CPS because they are session-based. The closer you place firewalls to resources you’re protecting, the fewer sessions and firewall resources the traffic consumes
