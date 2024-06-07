@@ -380,7 +380,7 @@ https://knowledgebase.paloaltonetworks.com/KCSArticleDetail?id=kA10g000000ClVHCA
 
 ```mermaid
   graph TD;
-      A-->B;
+      Dos Protection-->Zone Protection Profile;
       A-->C;
       B-->D;
       C-->D;
