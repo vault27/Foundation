@@ -383,6 +383,8 @@ All DoS protection is about Connections per second:
 - After which threshold to ALarm
 - After which threshold to Block
 - How long to Block
+- + DoS protection system monitors all specified traffic and increases counters
+- + After counters reach certain thresholds system sends alerts or block specified traffic
 
 Different types of DoS protection can be configured in different places
 
@@ -455,6 +457,15 @@ Best practises
 - Resource protection: Detects and prevents session exhaustion attacks. In this type of attack, many hosts (bots) are used to establish as many fully established sessions as possible for consuming all of a system’s resources
 - You can enable both types of protection mechanisms in a single DoS Protection profile
 - Threshold settings for the synchronize (SYN), UDP, and Internet Control Message Protocol (ICMP) floods; enables resource protection; and defines the maximum number of concurrent connections. After configuring the DoS Protection profile, you attach it to a DoS policy rule
+
+**Aggregated VS Classified**
+
+- When traffic matches a rule in DoS Policy, there is **only one counter for Aggregated** profile and each time traffic matches criteria in a rule counter is incremented, when counter reaches particular value there is an alert or block
+- If Classified profile there are several counters: each counter for IP source, Destination IP or Both depending what we have chosen in DoS Policy rule
+- **So the main difference is in amount of counters and how they are incremented and how FW reacts on threshold**
+- In an Aggregated profile, when the traffic in a rule reaches the threshold, all traffic that matches the rule will be blocked. This means that any traffic that meets the criteria specified in the rule will be affected by the block action.
+- On the other hand, in a Classified profile, the block action will only be applied to traffic from a particular source (or other specified criteria) that has reached its threshold. **So only for particular counter**. This allows for more granular control over which specific sources or destinations are affected by the block action.
+- So, in summary, while **Aggregated profiles block all traffic matching the rule**, Classified profiles allow you to **selectively block traffic based on specific criteria within the rul**
 
 ### Zone protection profile
 
