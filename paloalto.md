@@ -376,6 +376,23 @@ https://knowledgebase.paloaltonetworks.com/KCSArticleDetail?id=kA10g000000ClVHCA
 - IP fragmentation according to MTU, if needed
 - IPSec encryption
   
+## DoS Protection
+
+
+
+- Position firewalls as **close as possible to the resources** they protect: Firewalls don’t scale to millions of CPS because they are session-based. The closer you place firewalls to resources you’re protecting, the fewer sessions and firewall resources the traffic consumes
+- Position perimeter firewalls **behind dedicated**, high-capacity perimeter DDoS devices or perimeter routers or switches that use ACLs to drop DoS traffic
+- Examine your **network zone segmentation**. If it isn’t granular enough, consider creating smaller zones
+- Apply **Zone Protection profiles** as a layer of broad, aggregate protection to protect individual zones from flood attacks and to augment the dedicated DDoS device at the perimeter
+- Apply **Packet Buffer Protection** to prevent DoS attacks from consuming firewall packet buffer resources
+- Apply **classified DoS Protection** profiles and policies to protect individual or small groups of high-value targets
+- Protect critical internet-facing servers by **limiting the CPS to each server**
+- **Monitor a particular source** (internally-facing zones only) and alert you if the CPS from that source reaches a certain threshold, which may indicate a compromised or misconfigured host
+- Use the **hardware block table**
+- **Aggregate DoS Protection profiles** and policies provide another extra layer of broad protection for groups of critical servers, if needed - **not needed in most cases**
+- **Aggregate DoS Protection** differs from **Zone Protection** in that Zone Protection defends an entire zone from attacks while aggregate DoS Protection protects a small group of critical devices inside a zone
+- **Aggregate DoS Protection** differs from **classified DoS Protection** in that classified DoS Protection sets a CPS threshold for each individual device while aggregate DoS Protection sets a CPS threshold for a group of devices
+
 ## Subscriptions
 
 **15 in Total**
@@ -1164,12 +1181,12 @@ From Peer side:
 
 ### Monitor profiles
 
-- Network > Network Profiles > Monitor
+- `Network > Network Profiles > Monitor`
 - Monitor IPSec tunnels and to monitor a next-hop device for policy-based forwarding (PBF)
 - Monitor profiles are optional
 - Action
-    - wait-recover—Wait for the tunnel to recover; do not take additional action. Packets will continue to be sent according to the PBF rule
-    - fail-over—Traffic will fail over to a backup path, if one is available. The firewall uses routing table lookup to determine routing for the duration of this session
+    - wait-recover — Wait for the tunnel to recover; do not take additional action. Packets will continue to be sent according to the PBF rule
+    - fail-over — Traffic will fail over to a backup path, if one is available. The firewall uses routing table lookup to determine routing for the duration of this session
 - Interval - time between heartbeats
 - Threshold - number of heartbeats to be lost
 
@@ -1528,6 +1545,12 @@ You can also force some of these sites to be decrypted
 - SSL Decryption Exclusion List -  from Palo Alto - Automatically Updated
 - Local Decryption Exclusion Cache - automatically adds the servers that local users encounter that break decryption for technical reasons and excludes them from decryption - when Decryption Profile allows unsupported modes
 - Custom Report Templates for Decryption
+- Show decrypted sessions - `show session all filter ssl-decrypt yes count yes`
+- How to View SSL Decryption Information from the CLI - KB article
+- `show system setting ssl-decrypt certificate` - ?
+- 
+
+
 
 ### Tunnel Inspection
 
@@ -1632,6 +1655,9 @@ The Allow and Deny actions enable you to make exceptions within larger groups
 **DoS profile Objects > Security Profiles > DoS Protection**
 
 - Two types: Aggregate or Classified
+
+If your platform supports a hardware block table, plan to use classified DoS Protection as much as possible to protect critical individual servers  
+Classified DoS Protection leverages the hardware block table to store blocked IP addresses, which saves system software resources and improves performance
 
 
 ### SD-WAN
@@ -4145,9 +4171,10 @@ show device-certificate status
 
 ## Zero touch provisioning
 
-- Panorama > Plugins to Download
+- `Panorama > Plugins` to Download
 - Install the most recent version of the ZTP plugin
-- Panorama > Zero Touch Provisioning
+- `Panorama > Zero Touch Provisioning`
+- Disable ZTP - performing a local firewall commit
 
 ## Administrators, types, roles
 
