@@ -378,7 +378,13 @@ https://knowledgebase.paloaltonetworks.com/KCSArticleDetail?id=kA10g000000ClVHCA
   
 ## DoS Protection
 
-
+```mermaid
+  graph TD;
+      A-->B;
+      A-->C;
+      B-->D;
+      C-->D;
+```
 
 - Position firewalls as **close as possible to the resources** they protect: Firewalls don’t scale to millions of CPS because they are session-based. The closer you place firewalls to resources you’re protecting, the fewer sessions and firewall resources the traffic consumes
 - Position perimeter firewalls **behind dedicated**, high-capacity perimeter DDoS devices or perimeter routers or switches that use ACLs to drop DoS traffic
