@@ -379,13 +379,18 @@ https://knowledgebase.paloaltonetworks.com/KCSArticleDetail?id=kA10g000000ClVHCA
 ## DoS Protection
 
 ```mermaid
-  graph TD;
-      Dos Protection-->Zone Protection Profile;
-      A-->C;
-      B-->D;
-      C-->D;
+  graph TB
+A[DoS Protection] -->B(Zone Protection Profile)
+A[DoS Protection] -->F(Packet Buffer Protection)
+A[DoS Protection] -->F(Classified DoS Protection)
+A[DoS Protection] -->F(Aggregate DoS Protection)
+    B --> C(Flood protection)
+    B --> D(Reconnaissance protection)
+    B --> E(Packet based attack protection)
+    B --> K(Protocol protection)
+    B --> I(Ethernet SGT protection)
+    B --> L(L3 & L4 Header Inspection)
 ```
-
 - Position firewalls as **close as possible to the resources** they protect: Firewalls don’t scale to millions of CPS because they are session-based. The closer you place firewalls to resources you’re protecting, the fewer sessions and firewall resources the traffic consumes
 - Position perimeter firewalls **behind dedicated**, high-capacity perimeter DDoS devices or perimeter routers or switches that use ACLs to drop DoS traffic
 - Examine your **network zone segmentation**. If it isn’t granular enough, consider creating smaller zones
@@ -398,6 +403,92 @@ https://knowledgebase.paloaltonetworks.com/KCSArticleDetail?id=kA10g000000ClVHCA
 - **Aggregate DoS Protection profiles** and policies provide another extra layer of broad protection for groups of critical servers, if needed - **not needed in most cases**
 - **Aggregate DoS Protection** differs from **Zone Protection** in that Zone Protection defends an entire zone from attacks while aggregate DoS Protection protects a small group of critical devices inside a zone
 - **Aggregate DoS Protection** differs from **classified DoS Protection** in that classified DoS Protection sets a CPS threshold for each individual device while aggregate DoS Protection sets a CPS threshold for a group of devices
+
+
+Describes to which traffic apply DOS protection profile - aggregate or classified or both + Logging + Schedule+  
+DoS profiles are the same as for Security Profile  
+
+- Control the systems to which the firewall applies DoS protection
+- What action to take when traffic matches the criteria
+- How to log DoS traffic
+- Use Zone Protection profiles to protect entire zones against floods and other attacks. DoS Protection policy rules provide granular matching criteria so that you have the flexibility to define exactly what you want to protect
+- Specifying services limits DoS protection to those services, but doesn’t block other services
+- You can Schedule when a DoS Protection policy rule is active
+- One use case for scheduling is to apply different flood thresholds at different times of the day or week
+
+Actions:
+
+- Deny — The firewall denies access and doesn’t apply a DoS Protection profile. Traffic that matches the rule is blocked.
+- Allow - The firewall permits access and doesn’t apply a DoS Protection profile. Traffic that matches the rule is allowed.
+- Protect — The firewall protects the devices defined in the DoS Protection policy rule by applying the specified DoS Protection profile or profiles thresholds to traffic that matches the rule. A rule can have one aggregate DoS Protection profile and one classified DoS Protection profile, and for classified profiles, you can use the source IP, destination IP, or both to increment the flood threshold counters, as described in Classified Versus Aggregate DoS Protection. Incoming packets count against both DoS Protection profile thresholds if the they match the rule. 
+
+The Allow and Deny actions enable you to make exceptions within larger groups  
+
+**DoS profile Objects > Security Profiles > DoS Protection**
+
+- Two types: Aggregate or Classified
+
+If your platform supports a hardware block table, plan to use classified DoS Protection as much as possible to protect critical individual servers  
+Classified DoS Protection leverages the hardware block table to store blocked IP addresses, which saves system software resources and improves performance
+
+
+
+**Zone protection profile**
+
+Features:
+
+- Enablement of zone protection should be very cautious, it main ruin your network
+- If zone protection drops traffic, it is in Threat logs, it is in special counters without specifics about IPs because it drops traffic on very early stages
+- Check drop counters:
+
+```
+show zone-protection zone trust
+```
+
+- Show amount of land attacks
+
+```
+show interface ethernet1/1 
+```
+
+- Outputs for packets dropped by DOS protection and zone protection
+
+```
+show counter global 
+```
+
+There are 5 sections in a profile:
+
+- Flood protection
+- Reconnaissance protection - port scans
+- Packet based attack protection - check packet headers and drop undesirable
+- Protocol protection - non-IP protocol-based attacks - block or allow non-IP protocols between security zones on a Layer 2 VLAN or on a virtual wire, or between interfaces within a single zone on a Layer 2 VLAN (Layer 3 interfaces and zones drop non-IP protocols so non-IP Protocol Protection doesn’t apply) - block is based on Ethertype field in Ethernet frame
+- Ethernet SGT protection - drop traffic based on Security Group Tag (SGT) in Ethernet frame, when your firewall is part of a Cisco TrustSec network - you configure which tags to drop
+- L3 & L4 Header Inspection - only when enabled globally - write custom threat (vulnerability) signatures based on Layer 3 and Layer 4 header fields (such as IP flags, acknowledgment numbers, etc)
+    - Device > Setup > Session - enable globally
+    - Configure L3 & L4 Header Inspection in Zone Protection Profile
+    - You configure several rules, for example: destination port, source IP, some field in the header
+    - Add profile to Zone + in Zone enable Enable Net Inspection
+
+Floods:
+
+- The firewall measures the aggregate amount of each flood type entering the zone in new connections per second (CPS) and compares the totals to the thresholds you configure in the Zone Protection profile
+- For each flood type, you set three thresholds for new CPS entering the zone
+- You can set a drop Action for SYN floods: Random Early Drop (RED) - simple Drop basically or SYN cookies
+- 5 Flood types configurable: SYN, ICMP, ICMPv6, UDP, and other IP flood attacks
+- Configure thresholds in CPS:
+    - Alarm Rate - 15-20 % above normal CPS
+    - Activate - start dropping
+    - Maximum - 80-90 % load
+- Random Early Drop (RED, also known as Random Early Detection) used for all floods 
+- For SYN - SYN Cookies can be used besides RED
+- SYN Cookies — Causes the firewall to act like a proxy, intercept the SYN, generate a cookie on behalf of the server to which the SYN was directed, and send a SYN-ACK with the cookie to the original source. Only when the source returns an ACK with the cookie to the firewall does the firewall consider the source valid and forward the SYN to the server. This is the preferred Action
+- Random Early Drop drops traffic randomly, so RED may affect legitimate traffic
+- SYN Cookies is more resource-intensive
+- Monitor the firewall, and if SYN Cookies consumes too many resources, switch to RED
+- Port Scan Protection is available only in zone protection profile, not in DoS profile
+
+
 
 ## Subscriptions
 
@@ -932,60 +1023,6 @@ Concepts
 - Policy check relies on pre-NAT IP addresses
 - Zone protection profile, usually for outside zone
 
-**Zone protection profile**
-
-Features:
-
-- Enablement of zone protection should be very cautious, it main ruin your network
-- If zone protection drops traffic, it is in Threat logs, it is in special counters without specifics about IPs because it drops traffic on very early stages
-- Check drop counters:
-
-```
-show zone-protection zone trust
-```
-
-- Show amount of land attacks
-
-```
-show interface ethernet1/1 
-```
-
-- Outputs for packets dropped by DOS protection and zone protection
-
-```
-show counter global 
-```
-
-There are 5 sections in a profile:
-
-- Flood protection
-- Reconnaissance protection - port scans
-- Packet based attack protection - check packet headers and drop undesirable
-- Protocol protection - non-IP protocol-based attacks - block or allow non-IP protocols between security zones on a Layer 2 VLAN or on a virtual wire, or between interfaces within a single zone on a Layer 2 VLAN (Layer 3 interfaces and zones drop non-IP protocols so non-IP Protocol Protection doesn’t apply) - block is based on Ethertype field in Ethernet frame
-- Ethernet SGT protection - drop traffic based on Security Group Tag (SGT) in Ethernet frame, when your firewall is part of a Cisco TrustSec network - you configure which tags to drop
-- L3 & L4 Header Inspection - only when enabled globally - write custom threat (vulnerability) signatures based on Layer 3 and Layer 4 header fields (such as IP flags, acknowledgment numbers, etc)
-    - Device > Setup > Session - enable globally
-    - Configure L3 & L4 Header Inspection in Zone Protection Profile
-    - You configure several rules, for example: destination port, source IP, some field in the header
-    - Add profile to Zone + in Zone enable Enable Net Inspection
-
-Floods:
-
-- The firewall measures the aggregate amount of each flood type entering the zone in new connections per second (CPS) and compares the totals to the thresholds you configure in the Zone Protection profile
-- For each flood type, you set three thresholds for new CPS entering the zone
-- You can set a drop Action for SYN floods: Random Early Drop (RED) - simple Drop basically or SYN cookies
-- 5 Flood types configurable: SYN, ICMP, ICMPv6, UDP, and other IP flood attacks
-- Configure thresholds in CPS:
-    - Alarm Rate - 15-20 % above normal CPS
-    - Activate - start dropping
-    - Maximum - 80-90 % load
-- Random Early Drop (RED, also known as Random Early Detection) used for all floods 
-- For SYN - SYN Cookies can be used besides RED
-- SYN Cookies — Causes the firewall to act like a proxy, intercept the SYN, generate a cookie on behalf of the server to which the SYN was directed, and send a SYN-ACK with the cookie to the original source. Only when the source returns an ACK with the cookie to the firewall does the firewall consider the source valid and forward the SYN to the server. This is the preferred Action
-- Random Early Drop drops traffic randomly, so RED may affect legitimate traffic
-- SYN Cookies is more resource-intensive
-- Monitor the firewall, and if SYN Cookies consumes too many resources, switch to RED
-- Port Scan Protection is available only in zone protection profile, not in DoS profile
 
 ### Interfaces
 
@@ -1636,34 +1673,6 @@ Types:
     - Redirect - intranet hostname (a hostname with no period in its name) that resolves to the IP address of the Layer 3 interface on the firewall to which web requests are redirected. The firewall intercepts unknown HTTP or HTTPS sessions and redirects them to a Layer 3 interface on the firewall using an HTTP 302 redirect to perform authentication. This is the preferred mode because it provides a better end-user experience (no certificate errors). If you use Kerberos SSO or NTLM authentication, you must use Redirect mode because the browser will provide credentials only to trusted sites. Redirect mode is also required if you use Multi-Factor Authentication to authenticate Captive Portal users
 - Certificate authentication profile - for authenticating users via certificate
 
-
-### DoS Protection
-
-Describes to which traffic apply DOS protection profile - aggregate or classified or both + Logging + Schedule+  
-DoS profiles are the same as for Security Profile  
-
-- Control the systems to which the firewall applies DoS protection
-- What action to take when traffic matches the criteria
-- How to log DoS traffic
-- Use Zone Protection profiles to protect entire zones against floods and other attacks. DoS Protection policy rules provide granular matching criteria so that you have the flexibility to define exactly what you want to protect
-- Specifying services limits DoS protection to those services, but doesn’t block other services
-- You can Schedule when a DoS Protection policy rule is active
-- One use case for scheduling is to apply different flood thresholds at different times of the day or week
-
-Actions:
-
-- Deny — The firewall denies access and doesn’t apply a DoS Protection profile. Traffic that matches the rule is blocked.
-- Allow - The firewall permits access and doesn’t apply a DoS Protection profile. Traffic that matches the rule is allowed.
-- Protect — The firewall protects the devices defined in the DoS Protection policy rule by applying the specified DoS Protection profile or profiles thresholds to traffic that matches the rule. A rule can have one aggregate DoS Protection profile and one classified DoS Protection profile, and for classified profiles, you can use the source IP, destination IP, or both to increment the flood threshold counters, as described in Classified Versus Aggregate DoS Protection. Incoming packets count against both DoS Protection profile thresholds if the they match the rule. 
-
-The Allow and Deny actions enable you to make exceptions within larger groups  
-
-**DoS profile Objects > Security Profiles > DoS Protection**
-
-- Two types: Aggregate or Classified
-
-If your platform supports a hardware block table, plan to use classified DoS Protection as much as possible to protect critical individual servers  
-Classified DoS Protection leverages the hardware block table to store blocked IP addresses, which saves system software resources and improves performance
 
 
 ### SD-WAN
