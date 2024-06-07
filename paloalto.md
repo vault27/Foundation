@@ -382,8 +382,8 @@ https://knowledgebase.paloaltonetworks.com/KCSArticleDetail?id=kA10g000000ClVHCA
   graph TB
 A[DoS Protection] -->B(Zone Protection Profile)
 A[DoS Protection] -->F(Packet Buffer Protection)
-A[DoS Protection] -->F(Classified DoS Protection)
-A[DoS Protection] -->F(Aggregate DoS Protection)
+A[DoS Protection] -->X(Classified DoS Protection)
+A[DoS Protection] -->V(Aggregate DoS Protection)
     B --> C(Flood protection)
     B --> D(Reconnaissance protection)
     B --> E(Packet based attack protection)
