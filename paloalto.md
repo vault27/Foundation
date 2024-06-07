@@ -378,13 +378,12 @@ https://knowledgebase.paloaltonetworks.com/KCSArticleDetail?id=kA10g000000ClVHCA
   
 ## DoS Protection
 
-All DoS protection is about Connections per second:
-
-- After which threshold to ALarm
-- After which threshold to Block
-- How long to Block
-- + DoS protection system monitors all specified traffic and increases counters
-- + After counters reach certain thresholds system sends alerts or block specified traffic
+- Firewall monitors traffic described in DoS Protection Policy rules or in specified zones
+- It watches on Connections per second in this traffic
+- It increments counters
+- After certain configured threshold is reached by counters,  FW alarms ALarm
+- After certain threshold is reached by counters, FW Blocks traffic
+- It Block for a specified amount of time
 
 Different types of DoS protection can be configured in different places
 
