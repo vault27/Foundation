@@ -382,8 +382,8 @@ https://knowledgebase.paloaltonetworks.com/KCSArticleDetail?id=kA10g000000ClVHCA
   graph TD
     A[DoS Protection] --> B(Zone Protection Profile);
     A[DoS Protection] --> F[Packet Buffer Protection];
-    A[DoS Protection] -->X(Classified DoS Protection);
-    A[DoS Protection] -->V(Aggregate DoS Protection);
+    A[DoS Protection] --> X(Classified DoS Protection);
+    A[DoS Protection] --> V(Aggregate DoS Protection);
     B --> C(Flood protection);
     B --> D(Reconnaissance protection);
     B --> E(Packet based attack protection);
@@ -400,15 +400,15 @@ https://knowledgebase.paloaltonetworks.com/KCSArticleDetail?id=kA10g000000ClVHCA
 - Apply **classified DoS Protection** profiles and policies to protect individual or small groups of high-value targets
 - Protect critical internet-facing servers by **limiting the CPS to each server**
 - **Monitor a particular source** (internally-facing zones only) and alert you if the CPS from that source reaches a certain threshold, which may indicate a compromised or misconfigured host
-- Use the **hardware block table**
+- Use the **hardware block table**. If your platform supports a hardware block table, plan to use classified DoS Protection as much as possible to protect critical individual servers. Classified DoS Protection leverages the hardware block table to store blocked IP addresses, which saves system software resources and improves performance
 - **Aggregate DoS Protection profiles** and policies provide another extra layer of broad protection for groups of critical servers, if needed - **not needed in most cases**
 - **Aggregate DoS Protection** differs from **Zone Protection** in that Zone Protection defends an entire zone from attacks while aggregate DoS Protection protects a small group of critical devices inside a zone
 - **Aggregate DoS Protection** differs from **classified DoS Protection** in that classified DoS Protection sets a CPS threshold for each individual device while aggregate DoS Protection sets a CPS threshold for a group of devices
 
+### DoS Policy + Profile
 
-Describes to which traffic apply DOS protection profile - aggregate or classified or both + Logging + Schedule+  
-DoS profiles are the same as for Security Profile  
-
+- Describes to which traffic apply DOS protection profile - aggregate or classified or both + Logging + Schedule 
+- DoS profiles are the same as for Security Profile  
 - Control the systems to which the firewall applies DoS protection
 - What action to take when traffic matches the criteria
 - How to log DoS traffic
@@ -417,24 +417,19 @@ DoS profiles are the same as for Security Profile
 - You can Schedule when a DoS Protection policy rule is active
 - One use case for scheduling is to apply different flood thresholds at different times of the day or week
 
-Actions:
+**Actions**
 
 - Deny — The firewall denies access and doesn’t apply a DoS Protection profile. Traffic that matches the rule is blocked.
 - Allow - The firewall permits access and doesn’t apply a DoS Protection profile. Traffic that matches the rule is allowed.
-- Protect — The firewall protects the devices defined in the DoS Protection policy rule by applying the specified DoS Protection profile or profiles thresholds to traffic that matches the rule. A rule can have one aggregate DoS Protection profile and one classified DoS Protection profile, and for classified profiles, you can use the source IP, destination IP, or both to increment the flood threshold counters, as described in Classified Versus Aggregate DoS Protection. Incoming packets count against both DoS Protection profile thresholds if the they match the rule. 
-
-The Allow and Deny actions enable you to make exceptions within larger groups  
-
-**DoS profile Objects > Security Profiles > DoS Protection**
+- Protect — The firewall protects the devices defined in the DoS Protection policy rule by applying the specified DoS Protection profile or profiles thresholds to traffic that matches the rule. A rule can have one **aggregate DoS Protection profile** and one **classified DoS Protection profile**, and for classified profiles, you can use the source IP, destination IP, or both to increment the flood threshold counters, as described in Classified Versus Aggregate DoS Protection. Incoming packets count against both DoS Protection profile thresholds if the they match the rule. 
+- The Allow and Deny actions enable you to make **exceptions** within larger groups 
+- **DoS profile Objects > Security Profiles > DoS Protection**
 
 - Two types: Aggregate or Classified
 
-If your platform supports a hardware block table, plan to use classified DoS Protection as much as possible to protect critical individual servers  
-Classified DoS Protection leverages the hardware block table to store blocked IP addresses, which saves system software resources and improves performance
 
 
-
-**Zone protection profile**
+### Zone protection profile
 
 Features:
 
@@ -471,7 +466,7 @@ There are 5 sections in a profile:
     - You configure several rules, for example: destination port, source IP, some field in the header
     - Add profile to Zone + in Zone enable Enable Net Inspection
 
-Floods:
+**Floods:**
 
 - The firewall measures the aggregate amount of each flood type entering the zone in new connections per second (CPS) and compares the totals to the thresholds you configure in the Zone Protection profile
 - For each flood type, you set three thresholds for new CPS entering the zone
@@ -487,8 +482,41 @@ Floods:
 - Random Early Drop drops traffic randomly, so RED may affect legitimate traffic
 - SYN Cookies is more resource-intensive
 - Monitor the firewall, and if SYN Cookies consumes too many resources, switch to RED
-- Port Scan Protection is available only in zone protection profile, not in DoS profile
+- **Port Scan Protection** is available only in zone protection profile, not in DoS profile
 
+## Profile
+
+- In a profile you configure: Type, Flood protection, Resources protection
+- Profile is not applied in security policy, it is applied in separate DoS policy
+- Types:
+    - Aggregated - you want to apply extra constraints on specific subnets, users, or services
+    - Classified - Sets flood thresholds that apply to each individual device specified in a DoS Protection policy rule. For example, if you set a Max Rate of 5,000 CPS, each device specified in the rule can accept up to 5,000 CPS before it drops new connections
+- 5 Flood protections, as in zone protection profile:
+    - SYN
+    - UDP
+    - ICMP
+    - ICMPv6
+    - Other IP
+- For every flood you configure 4 parametres:
+    - Alarm Rate
+    - Activate Rate
+    - Max Rate
+- For SYN flood you also configure Action: RED or SYN-cookies
+- For resources protection you configure only Max Concurent Sessions
+- Control the number of sessions between interfaces, zones, addresses, and countries based on aggregate sessions or source and/or destination IP addresses
+- Flood protection: Detects and prevents attacks in which the network is flooded with packets, which results in too many half-open sessions or services being unable to respond to each request. In this case, the source address of the attack is usually spoofed
+- Resource protection: Detects and prevents session exhaustion attacks. In this type of attack, many hosts (bots) are used to establish as many fully established sessions as possible for consuming all of a system’s resources
+- You can enable both types of protection mechanisms in a single DoS Protection profile
+- Threshold settings for the synchronize (SYN), UDP, and Internet Control Message Protocol (ICMP) floods; enables resource protection; and defines the maximum number of concurrent connections. After configuring the DoS Protection profile, you attach it to a DoS policy rule
+
+### Global Packet Buffer Protection
+ 
+ — The firewall monitors sessions from all of the zones (regardless of whether Packet Buffer Protection is enabled in a zone) and how those sessions utilize the packet buffer
+ - You must configure Packet Buffer Protection globally (`Device > Setup > Session Settings`) to protect the firewall and to enable it on individual zones - When packet buffer consumption reaches the configured Activate percentage, the firewall uses Random Early Drop (RED) to drop packets from the offending sessions (the firewall doesn’t drop complete sessions at the global level)  
+
+### Per-Zone Packet Buffer Protection 
+
+— Enable Packet Buffer Protection on each zone (Network > Zones) to layer in a second level of protection. When packet buffer consumption crosses the Activate threshold and global protection begins to apply RED to session traffic, the Block Hold Time timer starts. The Block Hold Time is the amount of time in seconds that the offending session can continue before the firewall blocks the entire session. The offending session remains blocked until the Block Duration time expires
 
 
 ## Subscriptions
@@ -1980,35 +2008,6 @@ File sizes
 - Advanced WildFire subscription
     - Advanced cloud-based detector
 - Standalone subscription that provides API-only access
-
-**DoS Protection**
-
-- In a profile you configure: Type, Flood protection, Resources protection
-- Profile is not applied in security policy, it is applied in separate DoS policy
-- Types:
-    - Aggregated - you want to apply extra constraints on specific subnets, users, or services
-    - Classified - Sets flood thresholds that apply to each individual device specified in a DoS Protection policy rule. For example, if you set a Max Rate of 5,000 CPS, each device specified in the rule can accept up to 5,000 CPS before it drops new connections.
-- 5 Flood protections, as in zone protection profile:
-    - SYN
-    - UDP
-    - ICMP
-    - ICMPv6
-    - Other IP
-- For every flood you configure 4 parametres:
-    - Alarm Rate
-    - Activate Rate
-    - Max Rate
-- For SYN flood you also configure Action: RED or SYN-cookies
-- For resources protection you configure only Max Concurent Sessions
-- Control the number of sessions between interfaces, zones, addresses, and countries based on aggregate sessions or source and/or destination IP addresses
-- Flood protection: Detects and prevents attacks in which the network is flooded with packets, which results in too many half-open sessions or services being unable to respond to each request. In this case, the source address of the attack is usually spoofed
-- Resource protection: Detects and prevents session exhaustion attacks. In this type of attack, many hosts (bots) are used to establish as many fully established sessions as possible for consuming all of a system’s resources
-- You can enable both types of protection mechanisms in a single DoS Protection profile
-- Threshold settings for the synchronize (SYN), UDP, and Internet Control Message Protocol (ICMP) floods; enables resource protection; and defines the maximum number of concurrent connections. After configuring the DoS Protection profile, you attach it to a DoS policy rule
-
-Global Packet Buffer Protection — The firewall monitors sessions from all of the zones (regardless of whether Packet Buffer Protection is enabled in a zone) and how those sessions utilize the packet buffer. You must configure Packet Buffer Protection globally (Device > Setup > Session Settings) to protect the firewall and to enable it on individual zones. When packet buffer consumption reaches the configured Activate percentage, the firewall uses Random Early Drop (RED) to drop packets from the offending sessions (the firewall doesn’t drop complete sessions at the global level)  
-
-Per-Zone Packet Buffer Protection — Enable Packet Buffer Protection on each zone (Network > Zones) to layer in a second level of protection. When packet buffer consumption crosses the Activate threshold and global protection begins to apply RED to session traffic, the Block Hold Time timer starts. The Block Hold Time is the amount of time in seconds that the offending session can continue before the firewall blocks the entire session. The offending session remains blocked until the Block Duration time expires
 
 ## Sessions
 
