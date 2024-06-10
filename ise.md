@@ -8,7 +8,15 @@
 - Command sets
 - Allowed protocols
 
+## Maitenance
 
+Restart services
+
+```
+application stop ise
+application start ise
+show application status ise
+```
 
 ## RADIUS
 
