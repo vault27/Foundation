@@ -3158,14 +3158,15 @@ Commit options when you commit to Panorama:
 - Change Summary
 - Validate Commit
 
-**Locks**
+### Locks
 
 - Config — Blocks other administrators from changing the candidate configuration
 - Commit — Blocks other administrators from changing the running configuration
 - Shared—Restricts changes to the entire Panorama configuration, including all device groups and templates.
 - Template—Restricts changes to the firewalls included in the selected template. (You can’t take a lock for a template stack, only for individual templates within the stack.)
 - Device group—Restricts changes to the selected device group but not its descendant device groups
-  
+- Show locks: `show commit locks`
+- Remove lock for particular admin: `request commit-lock remove admin phil`
 
 **Pushing to firewalls**
 
