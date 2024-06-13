@@ -1,6 +1,7 @@
 # Windows
 
 ## CLI
+
 **Add static route**
 
 ```

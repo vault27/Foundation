@@ -2593,6 +2593,10 @@ Can be used in:
 - Special User-ID log
 - Source NAT destroys User-ID
 
+**Add user/group to policy**
+
+- 
+
 **Agentless (PAN-OS)**
 
 - If you have a small-to-medium deployment with few users and 10 or fewer domain controllers or exchange servers
@@ -4582,6 +4586,14 @@ Verify slots
     - IPSec tunnel
     - Static Routes or BGP
 - Push and commit to the cloud
+
+**User and Group Names in Security Policy Rules**
+
+- Before using groups and users in a policy, we need to populate them
+- 3 options to populate:
+    - Using a Master Device
+    - Using the Cloud Identity Engine
+    - Use Long-Form DN Entries - Just enter Full DN in the rule
 
 ## RMA
 
