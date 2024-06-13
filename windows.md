@@ -57,3 +57,6 @@ whoami /all
 ```
 net user joe.doe /domain | findstr /i "juniper"
 ```
+
+Open network adapapter settings
+`ncpa.cpl`
