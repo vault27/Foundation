@@ -197,7 +197,7 @@ Check version one more time
 
 If **show boot** shows bin file, then it is old catalyst
 
-For new Catalyst
+For new Catalyst - the same for Stack
 ```
 install add file flash:cat9k_iosxe.17.09.04a.SPA.bin activate commit prompt-level none
 ```
@@ -234,6 +234,9 @@ For Nexus
 ```
 Install all nxos bootflash:nxos64-cs.10.2.6.M.bin
 ```
+
+**Validation**
+
 
 ## Catalyst
 

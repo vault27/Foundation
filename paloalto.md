@@ -966,12 +966,6 @@ SMART monitoring
 debug system disk-smart-info disk-1 | match Media_Wearout_Indicator
 ```
 
-## Performance
-
-**CPU**
-
-- Resource widget: both datalane and management CPU
-- show running resource-monitor - data plane, per core, per group of resources
 
 ## Best Practice Assessment (BPA) tool
 
@@ -2873,7 +2867,7 @@ debug software restart process user-id
 
 ## Panorama
 
-**Features**
+### Features
 
 - Dashboard: configurable widgets, configurable device groups, configurable devices
 - Centralized view on all activities via **ACC**:
@@ -2912,6 +2906,7 @@ debug software restart process user-id
 - **Panorama > Log Ingestion Profile** - receive logs from external sources, attach the log ingestion profile to a Log Collector group
 - **Panorama > Policy Recomendation > IoT + SaaS** - ?
 
+###  General
 **Types**
 
 - Management Only
@@ -3075,6 +3070,14 @@ It is **impossible** to configure with templates:
     - Default rules
 - When we import firewall config to Panorama, its rules go to Pre rules section of Device Group
 
+### Logs
+
+Search for failed push to device in system logs  
+`( device_name eq 'PANORAMA_HOSTNAME' )  and ( eventid eq 'general' ) and ( receive_time geq '2024/06/04 12:00:00') and (receive_time leq '2024/06/04 22:00:00') and ( description contains 'DEVICE_HOST_NAME' )`
+
+Or, you can try on device itself:  
+`( admin eq Panorama-username' )`
+
 **Gear Icon Color**
 
 - Solid green gear icon indicates that Force Template Values option was used on Panorama during template push operation
@@ -3225,7 +3228,7 @@ debug software restart process management-server
 - Templates > Deselect All > Uncheck Filter Selected > Choose devices
 - Push 
 
-**Log collectors**
+### Log collectors
 
 - You can use Panorama as management server + send all logs to it, or you can send logs to log collectors (Panorama) and from them management Panorama will request all required data, you can also send logs to Cortex Data Lake
 - Log collectors can be combined into groups - up to 16 in one
@@ -3331,7 +3334,26 @@ Used Mem= (used)-(Buffers +Cached)
 
 ```
 show system resources
+show running resource-monitor - data plane, per core, per group of resources
 ```
+
+
+**Power supplies, thermal, fans...**
+```
+paloalto(active-secondary)> show system environmentals 
+> fan-tray       Show system fan state
+> fans           Show system fan state
+> power          Show system power rail state
+> power-supply   Show system power supply state
+> slot           Show slot status information
+> thermal        Show system thermal state
+```
+
+**Hard disk SMART health**  
+`debug system disk smart-info disk-1`
+
+
+
 
 ## CLI
 
@@ -4200,10 +4222,32 @@ show device-certificate status
 
 ## Zero touch provisioning
 
+- It allows network administrators to ship managed firewalls directly to their branches and automatically add the firewall to the Panorama
+- You cable the Eth1/1 interface with an outbound internet connection before the ZTP firewall is powered on. This is required to successfully onboard the ZTP firewall to Panorama management, register your ZTP firewall with the CSP, and push the policy and network configurations from Panorama
+- Only Panorama administrators with Superuser privileges can access the ZTP settings required to set up ZTP
 - `Panorama > Plugins` to Download
 - Install the most recent version of the ZTP plugin
 - `Panorama > Zero Touch Provisioning`
 - Disable ZTP - performing a local firewall commit
+
+Configuration elements:
+
+- ZTP Plugin — The ZTP plugin allows Panorama to connect to the ZTP service and claim a ZTP firewall for simplified on-boarding
+- Customer Support Portal (CSP) — register your Panorama to connect to the CSP to automatically register newly added ZTP firewalls
+- One-time Password (OTP) — A one-time password provided by Palo Alto Networks used to retrieve and install a certificate on Panorama for it to communicate with the CSP and ZTP service
+- Installer — An administrator user created using the installeradmin admin role for ZTP firewall on-boarding. This admin user has limited access to the Panorama web interface, only allowing access to enter the ZTP firewall serial number and claim key to register firewalls on the CSP and Panorama. The installer admin can be created on Panorama or created using remote authentication such as RADIUS, SAML, or TACACS+
+- Claim Key — Eight digit numeric key physically attached to the ZTP firewall used to register the ZTP firewall with the CSP
+- To-SW-Version — Designate the PAN-OS software version of the ZTP firewall (PanoramaManaged DevicesSummary). Select the target PAN-OS release, and if the firewall is running an earlier release than the indicated version, the firewall begins an upgrade loop until the target release is successfully installed
+
+Configuration steps:
+
+- Install the ZTP plugin on Panorama
+- Register Panorama with the ZTP service
+- Installer or IT administrator registers ZTP firewalls by adding them to Panorama using the firewall serial number and claim key
+- Panorama registers the firewalls with the CSP
+- When the firewall connects to the Internet, the ZTP firewall requests a device certificate from the CSP in order to connect to the ZTP service
+- The ZTP service pushes the Panorama IP or FQDN to the ZTP firewalls
+- The ZTP firewalls connect to Panorama and the device group and template configurations are pushed from Panorama to the ZTP firewalls
 
 ## Administrators, types, roles
 
@@ -4293,6 +4337,7 @@ needed
     - Domains are included
     - Excluded or included based on the access route
 - All interaction between the GlobalProtect components occurs over an SSL/TLS connection
+- ADEM agent - collects metrics from local machine - it is inside GP client - enabled in App section of config which is sent from Portal - Graphs are available via Hub
 
 ### Workflow
 
