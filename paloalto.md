@@ -4359,6 +4359,7 @@ needed
 - Protocol used: IPSec - if IPSec is selected in Agent config in Gateway
 - Routes are added to client without gateway, just using interface
 - Interface mask is 255.255.255.255
+- Everytime a client sends a packet it sends an ARP request for the IP, even if this IP is not in client's subnet, and gateway always replies with it's MAC. This happens because GP interface does not have default gateway IP and static routes do not have as well, so OS does not know the IP of gateway and consequently it does not know the MAC where to send the packet
 - If IPSec is used, All encrypted Data is sent via UDP port 4501: IPSec + NAT-T
 - If IPSec is not used, Everything goes via 443 and TLS
 - GlobalProtect is slower on SSL VPN because SSL requires more overhead than IPSec. Also, Transmission Control Protocol (TCP) is more prone to latency than User Datagram Protocol (UDP), which is used in IPsec GlobalProtect
