@@ -4534,6 +4534,10 @@ sudo /Applications/GlobalProtect.app/Contents/Resources/uninstall_gp.sh
 - Specify whether to mirror decrypted traffic before or after policy enforcement
 - **Policies > Decryption** > Specify decryption Decryption Profile in Rule
 
+## Decryption Broker
+
+- Layer 3 interface is used
+
 ## Autofocus
 
 - It is a web portal
