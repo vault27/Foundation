@@ -381,16 +381,16 @@ https://knowledgebase.paloaltonetworks.com/KCSArticleDetail?id=kA10g000000ClVHCA
 - Firewall monitors traffic described in DoS Protection Policy rules or in specified zones
 - It watches on Connections per second in this traffic
 - It increments counters
-- After certain configured threshold is reached by counters,  FW alarms ALarm
+- After certain configured threshold is reached by counters,  FW alarms
 - After certain threshold is reached by counters, FW Blocks traffic
-- It Block for a specified amount of time
+- It Blocks for a specified amount of time
 
 Different types of DoS protection can be configured in different places
 
 - **Zone protection profiles** - protect whole zones + port scan protection only there - applied to a Zone - Network > Network Profiles > Zone Protection
-- **Separate DoS policy** - Policy > DoS Protection - protection for exact servers and groups
+- **Separate DoS policy** - `Policy > DoS Protection` - protection for exact servers and groups
     - Rule in a policy can use both profiles simultaneously: Aggregated and Classified 
-- **DoS Protection Profile** - Objects > Security Profiles > DoS protection - Can be 2 types
+- **DoS Protection Profile** - `Objects > Security Profiles > DoS protection` - Can be 2 types
     - Aggregated
     - Classfied
     - Applied to a **DoS Protection rule**
@@ -2564,7 +2564,7 @@ Can be used in:
 
 **User mapping methods**
 
-- Server monitoring - User-ID agent, PAN-OS built-in, AD, Exchange, Novell eDirectory, Sun ONE Directory Server
+- Server monitoring - User-ID agent, PAN-OS built-in, **AD, Exchange, Novell eDirectory**, Sun ONE Directory Server - ?
 - Port mapping - Microsoft Terminal Services - Citrix Environments - Palo Alto Networks Terminal Services agent - the source port of each client connection to map each user to a session. Linux terminal servers do not support the Terminal Services agent and must use the XML API to send user mapping information from login or logout events to User-ID
 - Syslog- The Windows-based User-ID agent and the PAN-OS integrated User-ID agent both use Syslog Parse Profiles to interpret login and logout event messages that are sent to syslog servers from the devices that authenticate users. Such devices include wireless controllers, 802.1x devices, Apple Open Directory servers, proxy servers, and other network access control devices
 - XFF headers - IP address of client in additional header
