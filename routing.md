@@ -641,3 +641,33 @@ switch(config-router-neighbor)# bfd
 - Many ISP come to IX
 - To work they need a full mesh BGP peering between each other
 - To avoid it they all peer with route server
+
+## Nonstop Forwarding with Stateful Switchover
+
+- The protocol commonly used in conjunction with NSF is the Hot Standby Router Protocol (HSRP)
+- NSF ensures that during a failover event, the forwarding plane remains operational, allowing packet forwarding to continue uninterrupted
+- Without NSF a couple of packets maybe lost
+- Here's an example of a configuration for redundancy and NSF on an active router using the Hot Standby Router Protocol (HSRP) as the redundancy protocol:
+
+```
+interface GigabitEthernet0/0
+ ip address 192.168.1.1 255.255.255.0
+ standby 1 ip 192.168.1.254
+ standby 1 priority 120
+ standby 1 preempt
+
+interface GigabitEthernet0/1
+ ip address 10.0.0.1 255.255.255.0
+ standby 2 ip 10.0.0.254
+ standby 2 priority 110
+ standby 2 preempt
+
+router ospf 1
+ network 192.168.1.0 0.0.0.255 area 0
+ network 10.0.0.0 0.0.0.255 area 0
+
+ip route 0.0.0.0 0.0.0.0 GigabitEthernet0/0
+ip route 0.0.0.0 0.0.0.0 GigabitEthernet0/1
+
+ip routing nsf
+```

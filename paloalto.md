@@ -32,6 +32,7 @@ All you need to know about Palo Alto firewalls and for PCNSE exam in short and s
 - All release notes - https://docs.paloaltonetworks.com/release-notes
 - Support PAN-OS Software Release Guidance - https://live.paloaltonetworks.com/t5/customer-resources/support-pan-os-software-release-guidance/ta-p/258304
 - Everything about hardware - https://docs.paloaltonetworks.com/hardware
+- IoT Security Administrator’s Guide
 
 ## Portfolio
 
@@ -264,6 +265,36 @@ Bootstrap allows you to automatically config, upgrade, update signatures, licens
 
 ## Device ID
 
+- You can use Device-ID in Security, Decryption, Quality of Service (QoS) and Authentication policies
+- Made for IoT security
+- Device name is used as a source criteria
+- Devices are identified via metadata in network protocols and sessions
+- Metadata is sent to the cloud in session and Enhanced Application logs (EALs)
+- The EALs include a record of the DNS queries, the HTTP header User Agent field that specifies the web browser or tool used to access a URL, and information about DHCP IP address assignment
+- 3 classification levels:
+    - Level 1 - industry - X-Ray - healthcare
+    - Level 2 - type or function
+    - Level 3 - vendor and model
+- An IP address-to-MAC address mapping is required by the IoT Security application before any device classification or analysis can happen
+- Firewall needs access to DHCP unicast and broadcast traffic
+- Firewall generates an EAL for all packets in the initial DHCP exchang
+- EALs are forwarded to Cortex Data Lake for analysis
+- The firewall automatically detects new devices as soon as they send DHCP traffic
+- IoT Security requires active Cortex Data Lake instance and then configure your firewalls to forward logs to it
+- Enable Device-ID to collect metadata from your network for at least 14 days
+- Use the IoT application in the Palo Alto Networks hub to monitor the device identification process
+- The IoT Security app on the Palo Alto Networks apps hub - generate the latest policy rule recommendations for your devices
+- You never should enable Device-ID for a zone that contains the internet
+- By default, all subnetworks in the source zone are mapped. You can add or modify custom subnets using Include List or Exclude List
+
+Configuration steps
+
+1. Activate Cortes Data Lake Instance
+2. Connect firewall to Cortex Data Lake
+3. Enable EALs `Device > Setup > Management > Cortex Data Lake`
+4. Enable Device-ID per zone
+5. Activate IoT application
+
 ## Master key
 
 - Is it enabled by default? - Yes default one is used everywhere
@@ -431,40 +462,37 @@ Best practises
 - Protect — The firewall protects the devices defined in the DoS Protection policy rule by applying the specified DoS Protection profile or profiles thresholds to traffic that matches the rule. A rule can have one **aggregate DoS Protection profile** and one **classified DoS Protection profile**, and for classified profiles, you can use the source IP, destination IP, or both to increment the flood threshold counters. Incoming packets count against both DoS Protection profile thresholds if the they match the rule. 
 - The Allow and Deny actions enable you to make **exceptions** within larger groups 
 
-## Profile
+## DoS Profile
 
-- In a profile you configure: Type, Flood protection, Resources protection
-- Profile is applied in security  or is applied in separate DoS policy
-- Types:
-    - Aggregated - thresholds for a group of devices, for exanple you have 5 devices,  a Max Rate of 20,000 CPS means the total CPS for the group is 20,000, and an individual device can receive up to 20,000 CPS if other devices don’t have connections
+![alt text](images/image.png)
+
+- **Type**: Aggregated or Classified?
+    - Aggregated - thresholds for a group of devices, for example you have 5 devices, a Max Rate of 20,000 CPS means the total CPS for the group is 20,000, and an individual device can receive up to 20,000 CPS if other devices don’t have connections
     - Classified - Sets flood thresholds that apply to each individual device specified in a DoS Protection policy rule. For example, if you set a Max Rate of 5,000 CPS, each device specified in the rule can accept up to 5,000 CPS before it drops new connections
-- Aggregate and Classified have **identical options**
-- 5 Flood protections, as in zone protection profile:
+    - Aggregate and Classified have **identical options**
+- **Flood protection** is about **new connections per second** - 5 types. Detects and prevents attacks in which the network is flooded with packets, which results in too many half-open sessions or services being unable to respond to each request. In this case, the source address of the attack is usually spoofed
     - SYN
+        - For SYN flood you also configure Action: RED or SYN-cookies
     - UDP
     - ICMP
     - ICMPv6
     - Other IP
-- For every flood you configure 4 parametres:
-    - Alarm Rate
-    - Activate Rate
-    - Max Rate
-- For SYN flood you also configure Action: RED or SYN-cookies
-- For resources protection you configure only Max Concurent Sessions
-- Control the number of sessions between interfaces, zones, addresses, and countries based on aggregate sessions or source and/or destination IP addresses
-- Flood protection: Detects and prevents attacks in which the network is flooded with packets, which results in too many half-open sessions or services being unable to respond to each request. In this case, the source address of the attack is usually spoofed
-- Resource protection: Detects and prevents session exhaustion attacks. In this type of attack, many hosts (bots) are used to establish as many fully established sessions as possible for consuming all of a system’s resources
+    - For every flood you configure 4 parametres:
+        - Alarm Rate
+        - Activate Rate
+        - Max Rate
+- **Resource protection** is about **concurent connections**  - one parametre only - **Max Concurent Sessions**. Detects and prevents **session exhaustion attacks**. In this type of attack, many hosts (bots) are used to establish as many fully established sessions as possible for consuming all of a system’s resources
+- Profile is applied in security  or is applied in separate DoS policy
 - You can enable both types of protection mechanisms in a single DoS Protection profile
-- Threshold settings for the synchronize (SYN), UDP, and Internet Control Message Protocol (ICMP) floods; enables resource protection; and defines the maximum number of concurrent connections. After configuring the DoS Protection profile, you attach it to a DoS policy rule
 
 **Aggregated VS Classified**
 
 - When traffic matches a rule in DoS Policy, there is **only one counter for Aggregated** profile and each time traffic matches criteria in a rule counter is incremented, when counter reaches particular value there is an alert or block
 - If Classified profile there are several counters: each counter for IP source, Destination IP or Both depending what we have chosen in DoS Policy rule
 - **So the main difference is in amount of counters and how they are incremented and how FW reacts on threshold**
-- In an Aggregated profile, when the traffic in a rule reaches the threshold, all traffic that matches the rule will be blocked. This means that any traffic that meets the criteria specified in the rule will be affected by the block action.
-- On the other hand, in a Classified profile, the block action will only be applied to traffic from a particular source (or other specified criteria) that has reached its threshold. **So only for particular counter**. This allows for more granular control over which specific sources or destinations are affected by the block action.
-- So, in summary, while **Aggregated profiles block all traffic matching the rule**, Classified profiles allow you to **selectively block traffic based on specific criteria within the rul**
+- In an Aggregated profile, when the traffic in a rule reaches the threshold, all traffic that matches the rule will be blocked. This means that any traffic that meets the criteria specified in the rule will be affected by the block action
+- On the other hand, in a Classified profile, the block action will only be applied to traffic from a particular source (or other specified criteria) that has reached its threshold. **So only for particular counter**. This allows for more granular control over which specific sources or destinations are affected by the block action
+- So, in summary, while **Aggregated profiles block all traffic matching the rule**, Classified profiles allow you to **selectively block traffic based on specific criteria within the rule**
 
 ### Zone protection profile
 
