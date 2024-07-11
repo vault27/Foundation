@@ -267,7 +267,7 @@ Bootstrap allows you to automatically config, upgrade, update signatures, licens
 
 - You can use Device-ID in Security, Decryption, Quality of Service (QoS) and Authentication policies
 - Made for IoT security
-- Device name is used as a source criteria
+- Device name is used as a source criteria and destination
 - Devices are identified via metadata in network protocols and sessions
 - Metadata is sent to the cloud in session and Enhanced Application logs (EALs)
 - The EALs include a record of the DNS queries, the HTTP header User Agent field that specifies the web browser or tool used to access a URL, and information about DHCP IP address assignment
@@ -289,11 +289,29 @@ Bootstrap allows you to automatically config, upgrade, update signatures, licens
 
 Configuration steps
 
-1. Activate Cortes Data Lake Instance
+1. Activate Cortex Data Lake Instance
 2. Connect firewall to Cortex Data Lake
 3. Enable EALs `Device > Setup > Management > Cortex Data Lake`
+4. Configure Log Forwarding Profile
 4. Enable Device-ID per zone
 5. Activate IoT application
+
+Next create a Device Object ( `Objects > Devices`) (all fields values are from Palo Alto):
+
+- Name
+- Category
+- Profile
+- Vendor
+- Model
+- OS version
+- OS family
+
+Policy recomendations
+
+- `Device > Policy Recommendation`, the firewall communicates with the IoT Security app to obtain the latest policy recommendations. Policy recommendations are not cached locally on the firewall
+- Import Policy to import the policy rule recommendations to use in your Security policy rules
+- If you no longer need the policy rule recommendation for a device, you can select Remove Policy Mapping
+- Sync Policy Rules to restore the policy rule recommendation mappings
 
 ## Master key
 
@@ -2673,6 +2691,7 @@ Configure User-ID Agent
     - HIP
     - Quarantine list
 - You can include/exclude networks for IP-Tag and IP-user in Device > Data Redistribution > Include/Exlcude networks, as I understand it is both for collector and client
+- Passive and Active-Secondary devices are not connected to agents
 
 Display the status of the User-ID service - Collector - Redistributor:
 
