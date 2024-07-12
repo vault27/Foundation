@@ -25,8 +25,7 @@
 - SD-WAN - Viptella
     - Catalyst SD-WAN
  
-
-## Routers and switches upgrade
+ ## Routers and switches upgrade
 
 ### Part 1 - Reconnaissance
 
@@ -251,15 +250,13 @@ Install all nxos bootflash:nxos64-cs.10.2.6.M.bin
 - StackWise and Stackwise Virtual are technologies offered by Cisco Systems that allows some models of Catalyst switches to operate as though they were one switch
 - One switch is master, if master fails - another is a master
 - Stackwise physically connects the switch stack using special stack interconnect cables
+- Many dofferent commands to install image
 
 
 ## Documentation
 
 - Configuration guides in Support >  Cisco IOS and NX-OS Software > Version
 - Technology support page Support > Technology: https://www.cisco.com/c/en/us/tech/index.html
-
-
-## Portfolio
 
 ## IOS
 
