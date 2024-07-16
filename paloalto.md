@@ -3645,14 +3645,59 @@ scp export mgmt-pcap from mgmt.pcap to < username@host:path>
 
 ## Logs
 
+- `Monitor > Logs`
+- `Device > Log Settings` - configure alarms + forwarding for the following log types:
+    - System
+    - Configuration
+    - User-ID
+    - IP-Tag
+    - HIP-Match
+    - Global Protect
+    - Correlation - ?
+- `Objects > Log Forwarding` - forwarding profiles, many rules for each profile, used for the following logs:
+    - Auth
+    - Data
+    - Decryption
+    - Threat
+    - Traffic
+    - Tunnel
+    - URL
+    - Wildfire
+- A SNMP trap can be sent for all of the sys logs
 - By default, the logs that the firewall generates reside only in its local storage  
-- Everything is in a Log Forwarding profile: **Objects > Log Forwarding**
-- Logging Profile is attached to Security, Authentication, DoS Protection, and Tunnel Inspection policy rules  
+- Sys logs are sent to a SNMP trap destination according to severity level and not by individual sys log type
+- All types (other than Panorama) support customization of the message format  
+- It is configured in Server Profile  
+- You can control which fields are sent + design + arbitrary text: A threat was detected from $src  
+- Logs can be forwarded to
+    - Panorama
+    - Syslog
+    - SNMP Traps
+    - Email
+    - HTTP
 
-**Logging profile**
+**15 Log Types**
+
+- Traffic
+- Threat
+- URL Filtering
+- Wildfire
+- Data filtering
+- HIP match - ?
+- Global Protect
+- IP tag
+- User-ID
+- Decryption
+- Tunnel Inspection
+- Configuration - ?
+- System
+- Authentication
+- Unified - ?
+
+## Logging profile
 
 - Several rules in one profile
-- We configure all in one profile and then apply it to all rules, for example we can negate DNS and ICMP int it: ICMP and DNS are logged only locally to NGFW to lesses load on Panorama
+- We configure all in one profile and then apply it to all rules, for example we can negate DNS and ICMP in it: ICMP and DNS are logged only locally to NGFW to lesses load on Panorama
 - Also in this profile we configure to send logs simulteniusly to Syslog and Panorama
 - Separate rule for logging blocks
 - Log Forwarding Profile is configured for every rule:
@@ -3665,9 +3710,8 @@ scp export mgmt-pcap from mgmt.pcap to < username@host:path>
                 - Syslog (profile)
                 - HTTP (profile)
         - Add/del tag for src/dst address or User
-- All other logs forwarding: Device > Log Settings - System, Configuration, User-ID....
 
-**Logs in CLI**
+### Logs in CLI
 
 Verify that firewall sends logs
 
@@ -3723,7 +3767,7 @@ phiph@pa(active-secondary)> show log system | match Drive
 phiph@pa(active-secondary)>
 ```
 
-**Log files**
+### Log files
 
 Every log section has many files.
 
@@ -3752,27 +3796,9 @@ tail follow yes mp-log paninstaller_content.log
 - only use arrow keys to scroll up or down
   
 
-**Log forwarding**
-
-Is done to filter and forward logs to external storage and also assign tags.  
-Can be done via profile for certain logs and via system settings 
-Cortex Data Lake is also available   
-
-Can be configured for the following logs in Log Forwarding Profiles - Objects > Log Forwarding:
-
-- Authentication
-- Data Filtering
-- Decryption
-- Traffic
-- Threat
-- Tunnel
-- URL Filtering
-- WildFire Submissions
 
 You create a profile - and many rules in it - every rule for particular log type (traffic) - in filter you configure which logs will be sent, for example only allow  
-All types (other than Panorama) support customization of the message format  
-It is configured in Server Profile  
-You can control which fields are sent + design + arbitrary text: A threat was detected from $src  
+
 
 **Storage and quota**
 
@@ -3782,7 +3808,7 @@ You can control which fields are sent + design + arbitrary text: A threat was de
 - Predefined reports
 - Log collector status
 
-### Log filtering**
+### Log filtering
 
 **Logical operators**
 
