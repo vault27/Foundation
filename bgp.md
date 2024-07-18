@@ -931,6 +931,9 @@ est2
 *>l1.1.1.1/32         0.0.0.0                           100      32768 i
 ```
 
+**Show routes advertised to particular neighbor in particular VRF**  
+`show ip bgp vpnv4 vrf user neighbor 10.90.0.1 advertised-routes`
+
 **Debug BGP updates on Nexus**
 
 ```
