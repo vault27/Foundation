@@ -124,12 +124,12 @@ sh run
 **Hardware Pre-checks**
 
 ```
-show environment all
+show environment all - fans, ps, alerts, sensors
 show interfaces status err-disabled
 show interfaces status | i connected
-show power inline
-show inventory
-show module
+show power inline - power over ethernet ports
+show inventory - slots, sfps, power supplies, fans
+show module - OS versions on all slots, MAC addresses 
 show switch - shows members of a stack + who is Master
 show redundancy
 show cdp nei
@@ -490,6 +490,10 @@ Protocol  Address          Age (min)  Hardware Addr   Type   Interface
 Internet  10.0.3.1              211   6c41.0ead.2bc4  ARPA   Vlan19
 Internet  10.0.3.165              -   4ce1.75e8.31c4  ARPA   Vlan19
 ```
+
+**Show all interfaces in a VLAN**
+`sh vlan id 901`
+
 ## Interfaces
 
 Show all ports status
