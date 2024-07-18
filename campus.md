@@ -37,3 +37,10 @@
 - 2 Core switches Catalyst 9500
 - Every access switch is connected to 2 Core switches with port channels: total 4 physical links from each Access switch to Core switches, links to core switches are L3 with BGP
 - 2 Nexus switches for servers
+- Campus is devided into VRFs
+- All VRFs are connected to firewall via Core switch
+- Firewall sends default route to all VRFs
+- All VRFs send to FW all their networks via BGP
+- Core switch is connected to each FW with 2 LAG links
+- Both LAGs are in the same VLAN, ip address is assigned to VLAN
+- Each VRF on core switch has its own VLAN inside LAGs to firewalls
