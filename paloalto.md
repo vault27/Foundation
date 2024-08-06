@@ -1240,6 +1240,9 @@ From Peer side:
 > test routing bgp virtual-router default refresh peer <BGP peer>  (for refreshing BGP connections)
 ```
 
+Show advertised routes for all peers in virtual router
+`show routing protocol bgp rib-out virtual-router VR_CORPIPSEC | match 10.105.4`
+
 ### Dual ISP design
 
 - One default gateway to ISP-1 with metric 10 - primary one
@@ -1432,6 +1435,8 @@ Rule types:
 - ipv4
 - nat64
 - nptv6 - IPv6-to-IPv6 Network Prefix Translation
+
+Show all source NAT sessions: `show session all filter nat source`
 
 ### QoS
 
@@ -3862,8 +3867,6 @@ Show system logs
 show log system
 ```
 
-
-
 Show service routes
 
 ```
@@ -3880,7 +3883,7 @@ test nat-policy-match + traffic logs and session browser
 Security Policy troubleshooting:  
 test security-policy match + traffic logs and the session browser
 
-**Packet capture**
+## Packet capture
 
 Packet capture types:
 
@@ -4691,7 +4694,7 @@ Verify slots
   ![image](https://github.com/phph9/Foundation/assets/116812447/2f28b800-1cf6-433a-b850-bbad3e3f5a16)
 
 
-**Configuration**
+### Configuration
 
 - **Cloud Services > Configuration > Service Setup > Settings**:
     - First we configure service infrastructure subnet - not routable - not used in other places = /23 is recommened
@@ -4709,6 +4712,10 @@ Verify slots
     - IPSec tunnel
     - Static Routes or BGP
 - Push and commit to the cloud
+
+### Troubleshooting
+
+- Show routes: `Panorama > Cloud Services > Configuration > Service Setup > Troubleshooting Commands`
 
 **User and Group Names in Security Policy Rules**
 

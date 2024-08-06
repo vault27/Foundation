@@ -852,7 +852,7 @@ router bgp 64701
         disable-peer-as-check - allow forward updates between two routers in the same AS
 ```
 
-## Verification
+## Troubleshooting
 
 **Show all BGP neighbors in one VRF**
 
@@ -953,7 +953,12 @@ clear debug logfile <FILE_NAME>
 **Debug BGP updates on Cisco IOS**
 
 ```
-R3#debug bgp ipv4 unicast 
-R3#clear bgp ipv4 unicast * soft
-R3#show debug
+debug ip bgp updates
+debug ip bgp events
+debug ip bgp filters
+debug ip bgp dampening
+debug ip bgp neighbor 10.125.5.20
+debug ip bgp network 10.105.4.128
+
+show debug
 ```
