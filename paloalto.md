@@ -1673,7 +1673,7 @@ You can also force some of these sites to be decrypted
 - Custom Report Templates for Decryption
 - Show decrypted sessions - `show session all filter ssl-decrypt yes count yes`
 - How to View SSL Decryption Information from the CLI - KB article
-- `show system setting ssl-decrypt certificate` - ?
+- `show system setting ssl-decrypt certificate` - trust forward cert, untrust forward cert, inbound cert
 - 
 
 
