@@ -5,33 +5,37 @@ All you need to know about Palo Alto firewalls and for PCNSE exam in short and s
 ## Data Sources
 
 - Technical documentation - https://docs.paloaltonetworks.com
-- [Knowledge Base](https://knowledgebase.paloaltonetworks.com)
+- Knowledge Base - https://knowledgebase.paloaltonetworks.com)
 - Application Database - https://applipedia.paloaltonetworks.com
 - Learning center Beacon - https://beacon.paloaltonetworks.com
 - Live community - https://live.paloaltonetworks.com
 - Security Advisories - https://security.paloaltonetworks.com
 - Education services - https://www.paloaltonetworks.com/services/education
 - Reference architechtures - https://www.paloaltonetworks.com/resources/reference-architectures
+- Certification Management - https://cp.certmetrics.com/paloaltonetworks/en/login
+- Pearson Vue Palo Alto - https://home.pearsonvue.com/paloaltonetworks
+- Best Practises: https://docs.paloaltonetworks.com/best-practices
+- Release notes - https://docs.paloaltonetworks.com/release-notes
+- Compatibility Matrix - https://docs.paloaltonetworks.com/compatibility-matrix
+- Everything about hardware - https://docs.paloaltonetworks.com/hardware
+
+Knowledgabase
+
 - Panorama Sizing and Design Guide - https://knowledgebase.paloaltonetworks.com/KCSArticleDetail?id=kA10g000000Clc8CAC
 - How to Design and Size Panorama Log Collector Environments - https://knowledgebase.paloaltonetworks.com/KCSArticleDetail?id=kA14u000000HBw7CAG
+- General Log files- https://live.paloaltonetworks.com/t5/general-topics/knowledge-sharing-palo-alto-general-logs-and-log-files-that-are/td-p/410110
+- Support PAN-OS Software Release Guidance - https://live.paloaltonetworks.com/t5/customer-resources/support-pan-os-software-release-guidance/ta-p/258304
+
+Guides
+
 - PAN-OS CLI Quick Start Guide
 - PAN-OS Upgrade Guide
 - PAN-OS New Features Guide
 - SD-WAN Administrator’s Guide
-- Certification Management - https://cp.certmetrics.com/paloaltonetworks/en/login
-- Pearson Vue Palo Alto - https://home.pearsonvue.com/paloaltonetworks
-- Book "Mastering Palo Alto Networks: Build, configure, and deploy network solutions for your infrastructure using features of PAN-OS", 2nd Edition
-- GlobalProtect Administrator's Guide - 670 pages - whole world
-- PAN-OS® Administrator’s Guide - 1542 pages
+- GlobalProtect Administrator's Guide
+- PAN-OS Administrator’s Guide
 - PAN-OS Web Interface References
 - Panorama Admin Guide
-- Compatibility Matrix - https://docs.paloaltonetworks.com/compatibility-matrix
-- Palo Alto General Logs and Log files that are in the managment, data and control planes overview/review - https://live.paloaltonetworks.com/t5/general-topics/knowledge-sharing-palo-alto-general-logs-and-log-files-that-are/td-p/410110
-- Best Practises: https://docs.paloaltonetworks.com/best-practices
-- Palo Alto Networks LIVEcommunity Youtube channel
-- All release notes - https://docs.paloaltonetworks.com/release-notes
-- Support PAN-OS Software Release Guidance - https://live.paloaltonetworks.com/t5/customer-resources/support-pan-os-software-release-guidance/ta-p/258304
-- Everything about hardware - https://docs.paloaltonetworks.com/hardware
 - IoT Security Administrator’s Guide
 
 ## Portfolio
