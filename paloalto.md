@@ -1,6 +1,6 @@
 # Palo Alto
 
-All you need to know about Palo Alto firewalls and for PCNSE exam in short and structured form
+Philipp's ultimate guide to PCNSE
 
 ## Data Sources
 
@@ -260,8 +260,9 @@ Bootstrap allows you to automatically config, upgrade, update signatures, licens
 - If you have included a Panorama server IP address in the file, the firewall connects with Panorama. If the firewall has Internet connectivity, it contacts the licensing server to update the universally unique identifier (UUID) and obtain the license keys and subscriptions
 - If the firewall does not have internet connectivity, it either uses the license keys that you included in the bootstrap package or connects to Panorama, which retrieves the appropriate licenses and deploys them to the managed firewalls
 - If you intend to pre-register the VM-Series firewalls with Panorama with bootstrapping, you must generate a VM authorization key on Panorama and include the generated key in the init-cfg file
+- Supported filesytems: File Allocation Table 32 (FAT32), Third Extended File System (ext3)
 - The bootstrap package that you create must include the /config, /license, /software, and /content folders, even if empty, as follows:
-    - /config folder: This folder contains the configuration files. The folder can hold two files, init-cfg.txt and bootstrap.xml
+    - /config folder: This folder contains the configuration files. The folder can hold two files, init-cfg.txt and bootstrap.xml. init-cfg.txt file, a mandatory file that provides bootstrap parameters. bootstrap.xml - optional, complete firewall configuration that you can export from an existing production firewall
     - /license folder: This folder contains the license keys or authorization codes for the licenses and subscriptions that you intend to activate on the firewalls. If the firewall does not have internet connectivity, you must either manually obtain the license keys from the Palo Alto Networks Support Portal or use the Licensing API to obtain the keys and then save each key in this folder
     - /software folder: This folder contains the software images that are required to upgrade a newly provisioned VM-Series firewall to the desired PAN-OS version for the network
     - /content folder: This folder contains the Applications and Threats updates and WildFire updates for the valid subscriptions on the VM-Series firewall. You must include the minimum content versions that are required for the desired PAN-OS version
@@ -1678,9 +1679,6 @@ You can also force some of these sites to be decrypted
 - Show decrypted sessions - `show session all filter ssl-decrypt yes count yes`
 - How to View SSL Decryption Information from the CLI - KB article
 - `show system setting ssl-decrypt certificate` - trust forward cert, untrust forward cert, inbound cert
-- 
-
-
 
 ### Tunnel Inspection
 
@@ -1698,8 +1696,9 @@ Basicly it defines whom to show captive portal.
 - Authentication enforcement object
 - Logging
 
-The following logical objects are used to support Authentication Policy:  
-**MFA profile > Authentication profile > Authentication enforcement object > Authentication Policy + Captive Portal settings in paralell + Authentication sequence in parallel**
+The following logical objects are used to support Authentication Policy:
+
+`MFA profile > Authentication profile > Authentication enforcement object > Authentication Policy + Captive Portal settings in paralell + Authentication sequence in parallel`
 
 **Multi-Factor authentication**
 
@@ -2033,11 +2032,11 @@ Platform in general:
 
 **Configuration workflow**
 
-- Create profile, add rules
-- Every rule has application, file types, direction and anaylysis type: public cloud or private cloud
+- Separate profile in `Objects > Security Profiles > Wildfire`
+- Many rules in profile
+- Every rule has application, file types, direction and anaylysis type: public cloud or private cloud hosted with a WF-500 appliance
+- Profile is applied to a security rule
 - Forward unknown files or email links for WildFire analysis
-- Specify files to be forwarded for analysis based on application, file type, and transmission direction (upload or download)
-- WildFire public cloud or the WildFire private cloud (hosted with a WF-500 appliance)
 - WildFire hybrid cloud deployment: WildFire appliance to analyze sensitive files (such as PDFs) locally, less-sensitive file types (such as PE files) or file types that are not supported for WildFire appliance analysis (such as APKs) to be analyzed by the WildFire public cloud
 
 **Verdicts**
@@ -2798,69 +2797,6 @@ AD has to generate logs for Audit Logon, Audit Kerberos Authentication Service, 
 - Service Ticket Granted (4769)
 - Ticket Granted Renewed (4770)
 
-**Authentication portal**
-
-MFA profile > Authentication profile > Authentication enforcement object > Authentication Policy + Captive Portal settings in paralell + Authentication sequence in parallel 
-
-**Multi-Factor authentication**
-
-- Device > Server Profiles > Muli Factor Authentication
-- Create a profile
-- Configure Certificate profile, choose vendor (DUO for example) and configure options for vendor
-- The MFA factors that the firewall supports include push, Short Message Service (SMS), voice, and one-time password (OTP) authentication
-- These profiles are connected as Factors to Authentication profile, several Factors can be addded
-
-**Authentication profile**
-
-Types:
-
-- Cloud - ?
-- Local Database
-- Radius
-- LDAP
-- TACAS+
-- SAML
-- Kerberos - single sign on + keytab
-
-**Device > Authentication Profile** > What to configure:
-
-- Type
-- MFA profiles, several can be added
-- Allow list
-- Failed attempts
-- User domain
-
-**Authentication sequence**
-
-- **Device > Authentication Sequence**
-- We can create several
-- We add different authentication profiles to a sequence
-- Order of profiles matter
-
-**Authentication enforcement object**
-
-- Objects > Authentication
-- Is assigned to Authentication policy rules
-- We configure here method, authentication profile, and text messgae for user
-- Methods:
-    - browser-challenge — The firewall transparently obtains user authentication credentials. If you select this action, the Authentication Profile you select must have Kerberos SSO enabled or else you must have configured NTLM in the Captive Portal settings . If Kerberos SSO authentication fails, the firewall falls back to NTLM authentication. If you did not configure NTLM, or NTLM authentication fails, the firewall falls back to web-form authentication
-    - web-form — To authenticate users, the firewall uses the certificate profile you specified when configuring Captive Portal or the Authentication Profile you select in the authentication enforcement object. If you select an Authentication Profile , the firewall ignores any Kerberos SSO settings in the profile and presents a Captive Portal page for the user to enter authentication credentials
-    - no-captive-portal — The firewall evaluates Security policy without authenticating users
-- Authetication profile my be none, then one in Captive portal settings is used
-
-**Captive Portal - Authentication Portal**
-
-Device > User Identification > Authentication Portal Settings  
-
-- Timers - Idle + How log to store User-IP mapping
-- GlobalProtect Network Port for Inbound Authentication Prompts (UDP) - To facilitate MFA notifications for non-HTTP applications (such as Perforce) on Windows or macOS endpoints, a GlobalProtect app is required. When a session matches an Authentication policy rule, the firewall sends a UDP notification to the GlobalProtect app with an embedded URL link to the Authentication Portal page. The GlobalProtect app then displays this message as a pop up notification to the user
-- SSL/TLS service profile - redirect requests over TLS
-- Authentication profile - global setting, can be overrided by Authentication policy
-- Mode
-    - Transparent - impersonates the original destination URL, issuing an HTTP 401 to invoke authentication. However, because the firewall does not have the real certificate for the destination URL, the browser displays a certificate error to users attempting to access a secure site. Therefore, use this mode only when absolutely necessary, such as in Layer 2 or virtual wire deployments
-    - Redirect - intranet hostname (a hostname with no period in its name) that resolves to the IP address of the Layer 3 interface on the firewall to which web requests are redirected. The firewall intercepts unknown HTTP or HTTPS sessions and redirects them to a Layer 3 interface on the firewall using an HTTP 302 redirect to perform authentication. This is the preferred mode because it provides a better end-user experience (no certificate errors). If you use Kerberos SSO or NTLM authentication, you must use Redirect mode because the browser will provide credentials only to trusted sites. Redirect mode is also required if you use Multi-Factor Authentication to authenticate Captive Portal users
-- Certificate authentication profile - for authenticating users via certificate
-
 **Selecting Users and Groups for Security Policy**
 
 - Any
@@ -2920,6 +2856,74 @@ show user group name "cn=internet,cn=users,dc=skynet,dc=ru"
 ```
 debug software restart process user-id
 ```
+
+## Authentication
+
+- Authentication policy: `Policies > Authentication`
+- Authentication enforcement object: `Objects > Authentication`
+- Authentication sequence: `Device > Authentication Sequence`
+- Authentication profile: `Device > Autehtication Profile`
+- MFA Profile: `Device > Server Profiles > Multi Factor Authentication`
+- Captive portal: `Device > User Identification > Authentication Portal Settings` 
+
+`MFA profile > Authentication profile > Authentication enforcement object > Authentication Policy + Captive Portal settings in paralell + Authentication sequence in parallel`
+
+**Multi-Factor authentication**
+
+- `Device > Server Profiles > Muli Factor Authentication`
+- Create a profile
+- Configure Certificate profile, choose vendor (DUO for example) and configure options for vendor
+- The MFA factors that the firewall supports include push, Short Message Service (SMS), voice, and one-time password (OTP) authentication
+- These profiles are connected as Factors to Authentication profile, several Factors can be addded
+
+**Authentication profile**
+
+Types:
+
+- Cloud - ?
+- Local Database
+- Radius
+- LDAP
+- TACAS+
+- SAML
+- Kerberos - single sign on + keytab
+
+**Device > Authentication Profile** > What to configure:
+
+- Type
+- MFA profiles, several can be added
+- Allow list
+- Failed attempts
+- User domain
+
+**Authentication sequence**
+
+- **Device > Authentication Sequence**
+- We can create several
+- We add different authentication profiles to a sequence
+- Order of profiles matter
+
+**Authentication enforcement object**
+
+- Objects > Authentication
+- Is assigned to Authentication policy rules
+- We configure here method, authentication profile, and text messgae for user
+- Methods:
+    - browser-challenge — The firewall transparently obtains user authentication credentials. If you select this action, the Authentication Profile you select must have Kerberos SSO enabled or else you must have configured NTLM in the Captive Portal settings . If Kerberos SSO authentication fails, the firewall falls back to NTLM authentication. If you did not configure NTLM, or NTLM authentication fails, the firewall falls back to web-form authentication
+    - web-form — To authenticate users, the firewall uses the certificate profile you specified when configuring Captive Portal or the Authentication Profile you select in the authentication enforcement object. If you select an Authentication Profile , the firewall ignores any Kerberos SSO settings in the profile and presents a Captive Portal page for the user to enter authentication credentials
+    - no-captive-portal — The firewall evaluates Security policy without authenticating users
+- Authetication profile my be none, then one in Captive portal settings is used
+
+**Captive Portal**
+
+- Timers - Idle + How log to store User-IP mapping
+- GlobalProtect Network Port for Inbound Authentication Prompts (UDP) - To facilitate MFA notifications for non-HTTP applications (such as Perforce) on Windows or macOS endpoints, a GlobalProtect app is required. When a session matches an Authentication policy rule, the firewall sends a UDP notification to the GlobalProtect app with an embedded URL link to the Authentication Portal page. The GlobalProtect app then displays this message as a pop up notification to the user
+- SSL/TLS service profile - redirect requests over TLS
+- Authentication profile - global setting, can be overrided by Authentication policy
+- Mode
+    - Transparent - impersonates the original destination URL, issuing an HTTP 401 to invoke authentication. However, because the firewall does not have the real certificate for the destination URL, the browser displays a certificate error to users attempting to access a secure site. Therefore, use this mode only when absolutely necessary, such as in Layer 2 or virtual wire deployments
+    - Redirect - intranet hostname (a hostname with no period in its name) that resolves to the IP address of the Layer 3 interface on the firewall to which web requests are redirected. The firewall intercepts unknown HTTP or HTTPS sessions and redirects them to a Layer 3 interface on the firewall using an HTTP 302 redirect to perform authentication. This is the preferred mode because it provides a better end-user experience (no certificate errors). If you use Kerberos SSO or NTLM authentication, you must use Redirect mode because the browser will provide credentials only to trusted sites. Redirect mode is also required if you use Multi-Factor Authentication to authenticate Captive Portal users
+- Certificate authentication profile - for authenticating users via certificate
 
 ## Panorama
 
