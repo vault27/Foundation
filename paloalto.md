@@ -2863,6 +2863,7 @@ Types:
 
 ### Features
 
+- Types:- Management Only, Log Collector, Panorama: both
 - Dashboard: configurable widgets, configurable device groups, configurable devices
 - Centralized view on all activities via **ACC**:
     - Network
@@ -2900,14 +2901,7 @@ Types:
 - **Panorama > Log Ingestion Profile** - receive logs from external sources, attach the log ingestion profile to a Log Collector group
 - **Panorama > Policy Recomendation > IoT + SaaS** - ?
 
-###  General
-**Types**
-
-- Management Only
-- Log Collector
-- Panorama: both
-
-**Administrators**
+### Administrators
 
 3 types:
 
@@ -2925,7 +2919,7 @@ Profiles for Custom Panorama admin type
 
 Access domains for Device Group and Template Admin administrator type
 
-**Shared objects**
+### Shared objects
 
 - In Device Groups: Shared Object is avalable for all Device Groups
 - What if we change its name and it is used in a Policy?
