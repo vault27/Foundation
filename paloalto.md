@@ -2986,7 +2986,6 @@ It is **impossible** to configure with templates:
 - Revert to a previous version of the running configuration that is stored on Panorama: **PanoramaSetupOperations, Load Panorama configuration version**
 - You can select Templates and Device Groups
   
-
 **Overrides**
 
 - Any option on firewall received from stack can be changed locally
