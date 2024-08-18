@@ -227,7 +227,7 @@ Management plane:
 
 Data plane:
 
-- Signature match processor - exploits (IPS), antivirus, spyware, CC#
+- Signature match processor - exploits (IPS), antivirus, spyware
 - All Content-ID and App-ID services
 - Security processors
 - Session management
