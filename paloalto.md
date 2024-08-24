@@ -3622,17 +3622,17 @@ scp export mgmt-pcap from mgmt.pcap to < username@host:path>
 - Threat
 - URL Filtering
 - Wildfire
-- Data filtering
-- HIP match - ?
+- Data filtering: File blocks profile + Data Filtering Profile
+- HIP match - display traffic flows that match a HIP Object or HIP Profile that you configured for the rules. HIP match does not require a security policy match in order to be logged. Match happens during HIP check.
 - Global Protect
 - IP tag
 - User-ID
 - Decryption
 - Tunnel Inspection
-- Configuration - ?
+- Configuration
 - System
 - Authentication
-- Unified - ?
+- Unified - entries from the Traffic, Threat, URL Filtering, WildFire Submissions, and Data Filtering logs displayed in a single view
 
 ## Logging profile
 
@@ -4522,9 +4522,17 @@ sudo /Applications/GlobalProtect.app/Contents/Resources/uninstall_gp.sh
 
 ## HIP
 
+- Host information profile
 - HIP checks are performed when the app connects to the gateway
 - Subsequent checks are performed hourly
 - Only the latest HIP report is retained on the gateway per endpoint
+- HIP object - The matching criteria used to filter out the host information you are interested in. Example: HIP object - particular Antivirus app. Keep it simple. It is created on a Gateway. `Objects > Global Protect > HIP Objects`
+- HIP Profile - A collection of HIP objects that are evaluated together. It is attached to a Policy. Created on a Gateway. `Objects > GlobalProtect > HIP Profiles`. Just a list of HIP objects and/or Profiles with Boolean logic. Complex expressions are possible.
+- HIP collection is enabled in Portal, agent Configuration
+- HIP match does not require a security policy match in order to be logged
+- User-ID enabled is required on a zone where Global Protect users connect
+- HIP profile is a part of of Source Section in a Security Rule
+- We can Define the notification messages end-users see when a security rule with a HIP profile is enforced. On a Gateway: `Network > GlobalProtect > Gateway`; `Agent > HIP Notification`
 
 ## Web proxy
 
