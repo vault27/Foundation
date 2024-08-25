@@ -249,6 +249,11 @@ Data plane:
 - The higher the maintenance release version number is, the more mature the version is
 - Major version and minor version numbers are to distinguish the amount of features : PAN-OS 10.0 will have more features than PAN-OS 8.1, there is no relation to the software stability
   
+## Layer 2 mode
+
+
+
+
 ## Bootstraping
 
 Bootstrap allows you to automatically config, upgrade, update signatures, license a device during initial boot.
@@ -3173,30 +3178,22 @@ Commit options when you commit to Panorama:
 - Validate Device Group Push
 - Validate Template Push
 
-**Import firewall configs to Panorama**
+### Import firewall to Panorama
 
-- You cannot manage the setting through both Panorama and the firewall. If you want to exclude certain firewall settings from Panorama management, you can either:
-    - Migrate the entire firewall configuration and then, on Panorama, delete the settings that you will manage locally on firewalls. You can override a template or template stack value that Panorama pushes to a firewall instead of deleting the setting on Panorama
+- You cannot manage the setting through both Panorama and the firewall
+- If you want to exclude certain firewall settings from Panorama management, you have 2 options
+- Migrate the entire firewall configuration and then, on Panorama, delete the settings that you will manage locally on firewalls
+- You can override a template or template stack value that Panorama pushes to a firewall instead of deleting the setting on Panorama
 - Load a partial firewall configuration, including only the settings that you will use Panorama to manage
-- Firewalls do not lose logs during the transition to Panorama management
+- Firewalls do not loose logs during the transition to Panorama management
 - Prepare according to official plan
-- Panorama > Setup > Operations, click Import device configuration to Panorama, and select the Device
-- Migrate HA pair: Disable configuration synchronization between the HA peers,
-
-- **Migrate Firewall to Panorama**
-
-- Add new device
-- Import configuration
+- `Panorama > Setup > Operations`, click Import device configuration to Panorama, and select the Device
+- Migrate HA pair: Disable configuration synchronization between the HA peers, Add both firewalls to Panorama
 - Fine-tune the configuration
 - Commit to Panorama
 - Push the device state
 - Commit the device groups and templates
 - A CLI command will forward the pre-existing logs to Panorama
-
-If you migrate HA pair:
-
-- Disable automatic sync between peers
-- Add both firewalls to Panorama
 
 **Firewall is disconnected in Panorama**
 
@@ -3210,7 +3207,7 @@ debug software restart process management-server
 **Push config to Firewall without changes**
 
 - Can be used during RMA
-- COmmit > Push to Devices > Edit Selections
+- Commit > Push to Devices > Edit Selections
 - Device Groups > Decelect All > Uncheck Filter Selected > Choose devices
 - Templates > Deselect All > Uncheck Filter Selected > Choose devices
 - Push 
@@ -4109,7 +4106,7 @@ Check the GRE session
 - Filter by using session filter protocol 47
 - Find the session ID and filter for session ID
 
-**LSVPN**
+## LSVPN and GlobalProtect Satellite
 
 - The LSVPN does not require a GlobalProtect subscription
 - Enable SSL Between GlobalProtect LSVPN Components
@@ -4117,14 +4114,13 @@ Check the GRE session
 - Configure GlobalProtect Gateways for LSVPN
 - Configure the GlobalProtect Portal for LSVPN
 - Prepare the Satellite to Join the LSVPN
-
-**GlobalProtect Satellite** 
-
+- Minimum amount of configuration required on the remote satellites
 - Simplifies the deployment of traditional hub and spoke VPNs, enabling you to quickly deploy enterprise networks with several branch offices with a minimum amount of configuration required on the remote satellite devices. This solution uses certificates for device authentication and IPSec to secure data
+- Like a GlobalProtect app, a satellite receives its initial configuration from the portal, which includes the certificates and VPN configuration routing information and enable the satellite to connect to all configured gateways to establish VPN connectivity
 - The setup includes configuring the portal, gateway, and satellite
 - Generate a Root CA Certificate on the Portal (Self signed) and a Server Certificate used for Portal and Gateway certificate signed by the above Root CA
 - Export the Root CA (CACert) in PEM format, without the private key, and import it to the satellite device (Device > Certificate Management > Certificates > Import). This certificate on the Satellite is used to validate the Portal/ Gateway Certifcate against the CACert
-- Configure a portal (Network -> GlobalProtect -> Portals -> Add) and add the interface that will act as Portal/Gateway
+- Configure a portal (`Network -> GlobalProtect -> Portals -> Add`) and add the interface that will act as Portal/Gateway
 - Add satelite in Portal configuration in special Satelite Section: Name + Serial or User/pass + Gateways
 - Configure Gateway + configure Satellite there as well
 - Configure Satelite itself: Create a new IPSec tunnel config and select the type as GlobalProtect Satellite. Add the tunnel interface, portal config, and the interface that can reach the portal address
@@ -4248,7 +4244,7 @@ Configuration elements:
 - One-time Password (OTP) — A one-time password provided by Palo Alto Networks used to retrieve and install a certificate on Panorama for it to communicate with the CSP and ZTP service
 - Installer — An administrator user created using the installeradmin admin role for ZTP firewall on-boarding. This admin user has limited access to the Panorama web interface, only allowing access to enter the ZTP firewall serial number and claim key to register firewalls on the CSP and Panorama. The installer admin can be created on Panorama or created using remote authentication such as RADIUS, SAML, or TACACS+
 - Claim Key — Eight digit numeric key physically attached to the ZTP firewall used to register the ZTP firewall with the CSP
-- To-SW-Version — Designate the PAN-OS software version of the ZTP firewall (PanoramaManaged DevicesSummary). Select the target PAN-OS release, and if the firewall is running an earlier release than the indicated version, the firewall begins an upgrade loop until the target release is successfully installed
+- To-SW-Version — Designate the PAN-OS software version of the ZTP firewall (Panorama > Managed Devices > Summary). Select the target PAN-OS release, and if the firewall is running an earlier release than the indicated version, the firewall begins an upgrade loop until the target release is successfully installed
 
 Configuration steps:
 
