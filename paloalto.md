@@ -251,7 +251,10 @@ Data plane:
   
 ## Layer 2 mode
 
-
+- Layer 2 interfaces with no VLAN - connect all hosts to firewall like to switch
+- Layer 2 interfaces with VLANs - Logical subinterfaces on Layer 2 interface
+- Firewall does not participate in spanning tree
+- Per-VLAN Spanning Tree (PVST+) BPDU Rewrite
 
 
 ## Bootstraping
@@ -1143,11 +1146,12 @@ Concepts
 
 **VLANs**
 
-- Each Layer 2 interface defined on the firewall can be associated with a VLAN
-- The same VLAN can be assigned to multiple Layer 2 interfaces but each interface can belong to only one VLAN
+- Each Layer 2 interface defined on the firewall can be associated with a VLAN object
+- The same VLAN can be assigned to multiple Layer 2 interfaces or subinterfaces but each interface can belong to only one VLAN
 - In VLAN configuration we add L2 interfaces
 - We also add static MAC configuration: which MAC on which interface
-- And we assign VLAN interface - this is like on Cisco, so VLAN has an IP address
+- And we assign VLAN Interface - this is like on Cisco, so VLAN has an IP address
+- Sub-interfaces which use different 802.1Q tags can use the same VLAN virtual-bridge effectively performing VLAN tag rewriting
 
 **MAC addresses + speed/duplex**
 
@@ -1192,6 +1196,7 @@ tx-multicast: 0,
 tx-unicast: 0,
 }
 ```
+
 ### Routing
 
 - All forwarding is based on FIB, FIB is generated based on RIB
