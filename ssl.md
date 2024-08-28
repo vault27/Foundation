@@ -341,3 +341,8 @@ If F5 does not know this certificate, there will be a error:
 verify error:num=20:unable to get local issuer certificate
 verify error:num=21:unable to verify the first certificate
 ```
+## Nmap
+
+Show SSL cert
+
+`nmap -p 443 --script ssl-cert example.com`
