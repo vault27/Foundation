@@ -4485,7 +4485,7 @@ to the specified Hostname - if result is positive, internal gateway is used. Int
 - Multi-Factor Authentication for Non-Browser-Based Applications
 - Single Sign-On
 
-**Configuration: High level**
+### Configuration: High level
 
 - Configure certs for portal and gateway
 - Configure SSL service profile for portal and gateway
@@ -4499,7 +4499,7 @@ to the specified Hostname - if result is positive, internal gateway is used. Int
 - Next, gateway
 - Next connect
 
-**GlobalProtect Connect Methods**
+### GlobalProtect Connect Methods
 
 - On-demand: Requires manually connecting when access to the VPN is required
 - User-logon: VPN is established as soon as the user logs into the machine. When SSO is enabled, user credentials are automatically pulled from the Windows logon information and used to authenticate the GlobalProtect client user
@@ -4513,7 +4513,7 @@ to the specified Hostname - if result is positive, internal gateway is used. Int
 
 Where is it configured? 
 
-**Client**
+### Client
 
 - Complete uninstall client on MAC with reseting passcode counter
 
