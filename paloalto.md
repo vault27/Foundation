@@ -525,68 +525,6 @@ Best practises
 - On the other hand, in a Classified profile, the block action will only be applied to traffic from a particular source (or other specified criteria) that has reached its threshold. **So only for particular counter**. This allows for more granular control over which specific sources or destinations are affected by the block action
 - So, in summary, while **Aggregated profiles block all traffic matching the rule**, Classified profiles allow you to **selectively block traffic based on specific criteria within the rule**
 
-### Zone protection profile
-
-Features:
-
-- Enablement of zone protection should be very cautious, it main ruin your network
-- If zone protection drops traffic, it is in Threat logs, it is in special counters without specifics about IPs because it drops traffic on very early stages
-- Check drop counters:
-
-```
-show zone-protection zone trust
-```
-
-- Show amount of land attacks
-
-```
-show interface ethernet1/1 
-```
-
-- Outputs for packets dropped by DOS protection and zone protection
-
-```
-show counter global 
-```
-
-There are 5 sections in a profile:
-
-- Flood protection
-- Reconnaissance protection - port scans
-- Packet based attack protection - check packet headers and drop undesirable
-- Protocol protection - non-IP protocol-based attacks - block or allow non-IP protocols between security zones on a Layer 2 VLAN or on a virtual wire, or between interfaces within a single zone on a Layer 2 VLAN (Layer 3 interfaces and zones drop non-IP protocols so non-IP Protocol Protection doesn’t apply) - block is based on Ethertype field in Ethernet frame
-- Ethernet SGT protection - drop traffic based on Security Group Tag (SGT) in Ethernet frame, when your firewall is part of a Cisco TrustSec network - you configure which tags to drop
-- L3 & L4 Header Inspection - only when enabled globally - write custom threat (vulnerability) signatures based on Layer 3 and Layer 4 header fields (such as IP flags, acknowledgment numbers, etc)
-    - Device > Setup > Session - enable globally
-    - Configure L3 & L4 Header Inspection in Zone Protection Profile
-    - You configure several rules, for example: destination port, source IP, some field in the header
-    - Add profile to Zone + in Zone enable Enable Net Inspection
-
-**Floods:**
-
-- The firewall measures the aggregate amount of each flood type entering the zone in new connections per second (CPS) and compares the totals to the thresholds you configure in the Zone Protection profile
-- For each flood type, you set three thresholds for new CPS entering the zone
-- You can set a drop Action for SYN floods: Random Early Drop (RED) - simple Drop basically or SYN cookies
-- 5 Flood types configurable: SYN, ICMP, ICMPv6, UDP, and other IP flood attacks
-- Configure thresholds in CPS:
-    - Alarm Rate - 15-20 % above normal CPS
-    - Activate - start dropping
-    - Maximum - 80-90 % load
-- Random Early Drop (RED, also known as Random Early Detection) used for all floods 
-- For SYN - SYN Cookies can be used besides RED
-- SYN Cookies — Causes the firewall to act like a proxy, intercept the SYN, generate a cookie on behalf of the server to which the SYN was directed, and send a SYN-ACK with the cookie to the original source. Only when the source returns an ACK with the cookie to the firewall does the firewall consider the source valid and forward the SYN to the server. This is the preferred Action
-- Random Early Drop drops traffic randomly, so RED may affect legitimate traffic
-- SYN Cookies is more resource-intensive
-- Monitor the firewall, and if SYN Cookies consumes too many resources, switch to RED
-- **Port Scan Protection** is available only in zone protection profile, not in DoS profile
-
-### Packet Buffer Protection
- 
- - **Global**:`Device > Setup > Session > Session Settings > Packet Buffer Protection`
- - **Global**: The firewall monitors sessions from all of the zones (regardless of whether Packet Buffer Protection is enabled in a zone) and how those sessions utilize the packet buffer
- - When packet buffer consumption reaches the configured Activate percentage, the firewall uses Random Early Drop (RED) to drop packets from the offending sessions (the firewall doesn’t drop complete sessions at the global level)  
-- **Per-Zone Packet Buffer Protection**: Enable Packet Buffer Protection on each zone (Network > Zones) to layer in a second level of protection. When packet buffer consumption crosses the Activate threshold and global protection begins to apply RED to session traffic, the Block Hold Time timer starts. The Block Hold Time is the amount of time in seconds that the offending session can continue before the firewall blocks the entire session. The offending session remains blocked until the Block Duration time expires
-
 ## Subscriptions
 
 **15 in Total**
@@ -1071,9 +1009,7 @@ The Heatmap measures the adoption rate of the following Palo Alto Networks firew
 - Application and User control adoption
 - Logging and zone protection adoption
 
-## Network
-
-### Zones
+## Zones
 
 Firewall types
 
@@ -1114,8 +1050,69 @@ Concepts
 - Policy check relies on pre-NAT IP addresses
 - Zone protection profile, usually for outside zone
 
+### Zone protection profile
 
-### Interfaces
+Features:
+
+- Enablement of zone protection should be very cautious, it main ruin your network
+- If zone protection drops traffic, it is in Threat logs, it is in special counters without specifics about IPs because it drops traffic on very early stages
+- Check drop counters:
+
+```
+show zone-protection zone trust
+```
+
+- Show amount of land attacks
+
+```
+show interface ethernet1/1 
+```
+
+- Outputs for packets dropped by DOS protection and zone protection
+
+```
+show counter global 
+```
+
+There are 5 sections in a profile:
+
+- Flood protection
+- Reconnaissance protection - port scans
+- Packet based attack protection - check packet headers and drop undesirable
+- Protocol protection - non-IP protocol-based attacks - block or allow non-IP protocols between security zones on a Layer 2 VLAN or on a virtual wire, or between interfaces within a single zone on a Layer 2 VLAN (Layer 3 interfaces and zones drop non-IP protocols so non-IP Protocol Protection doesn’t apply) - block is based on Ethertype field in Ethernet frame
+- Ethernet SGT protection - drop traffic based on Security Group Tag (SGT) in Ethernet frame, when your firewall is part of a Cisco TrustSec network - you configure which tags to drop
+- L3 & L4 Header Inspection - only when enabled globally - write custom threat (vulnerability) signatures based on Layer 3 and Layer 4 header fields (such as IP flags, acknowledgment numbers, etc)
+    - Device > Setup > Session - enable globally
+    - Configure L3 & L4 Header Inspection in Zone Protection Profile
+    - You configure several rules, for example: destination port, source IP, some field in the header
+    - Add profile to Zone + in Zone enable Enable Net Inspection
+
+**Floods:**
+
+- The firewall measures the aggregate amount of each flood type entering the zone in new connections per second (CPS) and compares the totals to the thresholds you configure in the Zone Protection profile
+- For each flood type, you set three thresholds for new CPS entering the zone
+- You can set a drop Action for SYN floods: Random Early Drop (RED) - simple Drop basically or SYN cookies
+- 5 Flood types configurable: SYN, ICMP, ICMPv6, UDP, and other IP flood attacks
+- Configure thresholds in CPS:
+    - Alarm Rate - 15-20 % above normal CPS
+    - Activate - start dropping
+    - Maximum - 80-90 % load
+- Random Early Drop (RED, also known as Random Early Detection) used for all floods 
+- For SYN - SYN Cookies can be used besides RED
+- SYN Cookies — Causes the firewall to act like a proxy, intercept the SYN, generate a cookie on behalf of the server to which the SYN was directed, and send a SYN-ACK with the cookie to the original source. Only when the source returns an ACK with the cookie to the firewall does the firewall consider the source valid and forward the SYN to the server. This is the preferred Action
+- Random Early Drop drops traffic randomly, so RED may affect legitimate traffic
+- SYN Cookies is more resource-intensive
+- Monitor the firewall, and if SYN Cookies consumes too many resources, switch to RED
+- **Port Scan Protection** is available only in zone protection profile, not in DoS profile
+
+### Packet Buffer Protection
+ 
+ - **Global**:`Device > Setup > Session > Session Settings > Packet Buffer Protection`
+ - **Global**: The firewall monitors sessions from all of the zones (regardless of whether Packet Buffer Protection is enabled in a zone) and how those sessions utilize the packet buffer
+ - When packet buffer consumption reaches the configured Activate percentage, the firewall uses Random Early Drop (RED) to drop packets from the offending sessions (the firewall doesn’t drop complete sessions at the global level)  
+- **Per-Zone Packet Buffer Protection**: Enable Packet Buffer Protection on each zone (`Network > Zones`) to layer in a second level of protection. When packet buffer consumption crosses the Activate threshold and global protection begins to apply RED to session traffic, the Block Hold Time timer starts. The Block Hold Time is the amount of time in seconds that the offending session can continue before the firewall blocks the entire session. The offending session remains blocked until the Block Duration time expires
+
+## Interfaces
 
 **Physical interfaces types**
 
@@ -1197,7 +1194,7 @@ tx-unicast: 0,
 }
 ```
 
-### Routing
+## Routing
 
 - All forwarding is based on FIB, FIB is generated based on RIB
 - Another Virtual Router can be used as next hop, then packet will be forwarded according to that VR FIB
@@ -1258,13 +1255,13 @@ From Peer side:
 Show advertised routes for all peers in virtual router
 `show routing protocol bgp rib-out virtual-router VR_CORPIPSEC | match 10.105.4`
 
-### Dual ISP design
+## Dual ISP design
 
 - One default gateway to ISP-1 with metric 10 - primary one
 - Second default gateway to ISP-2 metric 50 - backup one
 - Add a rule to Policy Based Forwarding Policy: non-crytical applications send to ISP2, attach a monitoring profile, then if ISP2 is down, PBF rule will be disabled
 
-### IPv6
+## IPv6
 
 - To enable IPv6 on firewall:
     - Enable IPv6 on the interface
@@ -1292,7 +1289,7 @@ Show advertised routes for all peers in virtual router
 - You enable RA-Router Advertisment
 - You enable DNS support - include DNS information in Router Advertisment: Recursive DNS servers and lifetime, suffixes and lifetime, lifetime - the maximum length of time the client can use the specific RDNS Server to resolve domain names
 
-### Service routes
+## Service routes
 
 - Device > Setup > Services > Global > Service Route Configuration
 - Can be customized for VSYS
@@ -1309,7 +1306,7 @@ Show advertised routes for all peers in virtual router
 - You can use a destination service route to add a customized redirection of a service that is not supported on the customized list of services
 - A destination service route is a way to set up routing to override the FIB route table. Any settings in the destination service routes override the route table entries. They could be related or unrelated to any service
 
-### DHCP Relay
+## DHCP Relay
 
 - Network > DHCP > DHCP Relay
 - Maximum of eight external IPv4 DHCP servers and eight external IPv6 DHCP servers
@@ -1318,7 +1315,7 @@ Show advertised routes for all peers in virtual router
 - You can add many DHCP relays
 - You configure interface where it will listen for requests + IPv4 Server addresses + IPv6 Server Addresses
 
-### Monitor profiles
+## Monitor profiles
 
 - `Network > Network Profiles > Monitor`
 - Monitor IPSec tunnels and to monitor a next-hop device for policy-based forwarding (PBF)
@@ -3878,7 +3875,7 @@ Palo Alto Supports 3 VPN deployments:
 
 All tunnels are configured in Network section  
 
-**IPSec tunnels**
+### IPSec tunnels
 
 How traffic is routed:
 
@@ -3904,7 +3901,7 @@ Concepts
 - For every site you need IKE Gateway and tunnel.x interface
 - Remote Peer IP in IKE Gateway can be dynamic, but in this case we need to configure ID for remote peer, for example domain name
 
-**Policy-based VPN and Proxy-ID**
+### Policy-based VPN and Proxy-ID
 
 - Palo Alto to Palo Alto policy based VPN is not supported
 - Policy-based VPN only for connection with third party devices, old ones, you must configure a local and remote Proxy ID for them
@@ -3924,7 +3921,7 @@ Concepts
     - With IKEv1, Palo Alto Networks devices support only proxy-ID exact match. In the event where the Peer's Proxy ID's do not match, then there will be problems with the VPN working correctly.
     - With IKEv2, there is support traffic selector narrowing when the proxy ID setting is different on the two VPN gateways
 
-**Configuration**
+### Configuration
 
 Configuration overview
 
@@ -3981,7 +3978,7 @@ If we need another site, we:
 - Enable dynamic routing on this tunnel
 - Add required rules
 
-**Redundancy**
+### Redundancy
 
 - Two different ISPs - 2 different tunnels
 - Tunnel.1 is configured for Primary VPN tunnel
@@ -3998,7 +3995,7 @@ There are three methods to do VPN tunnel traffic automatic failover. Any one of 
 - Failover using Static Route Path monitoring
 - Dynamic routing protocol
 
-**Verify**
+### Troubleshooting
 
 **Test gateway**
 
@@ -4082,20 +4079,20 @@ debug ike global on debug
 > debug ike pcap off
 ```
 
-**GRE tunnels**
+### GRE tunnels
 
 - The firewall encapsulates the tunneled packet in a GRE packet, and so the additional 24 bytes of GRE header automatically result in a smaller MSS in the MTU. If you don’t change the IPv4 MSS adjustment size for the interface, the firewall reduces the MTU by 64 bytes by default (40 bytes of IP header + 24 bytes of GRE header)
 - GRE tunneling does not support NAT between the GRE tunnel endpoints
 - A GRE tunnel does not support QoS
 - Networks | GRE Tunnels
 - All you need to configure
-    Name
-    Source interface
-    Source IP
-    Destination IP
-    Tunnel interface
-    TTL (default 64)
-    Keepalive
+    - Name
+    - Source interface
+    - Source IP
+    - Destination IP
+    - Tunnel interface
+    - TTL (default 64)
+    - Keepalive
 - You don’t need a Security policy rule for the GRE traffic that the firewall encapsulates. However, when the firewall receives GRE traffic, it generates a session and applies all of the policies to the GRE IP header in addition to the encapsulated traffic. The firewall treats the received GRE packet like any other packet
 
 Show counters for GRE tunnels:
@@ -4111,7 +4108,7 @@ Check the GRE session
 - Filter by using session filter protocol 47
 - Find the session ID and filter for session ID
 
-## LSVPN and GlobalProtect Satellite
+### LSVPN and GlobalProtect Satellite
 
 - The LSVPN does not require a GlobalProtect subscription
 - Enable SSL Between GlobalProtect LSVPN Components
