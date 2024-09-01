@@ -1032,7 +1032,7 @@ Zone types:
 - L2: L2 interfaces
 - Tap: tap interfaces
 - Virtualwire: virtual wire interfaces
-- Tunnel: no interfaces, 
+- Tunnel: no interfaces
 
 Concepts
 
@@ -1344,19 +1344,6 @@ Show advertised routes for all peers in virtual router
 ### Security policy 
 
 **Options**
-
-
-```mermaid
-graph TB
-A[Hard edge] -->B(Source)
-A[Hard edge] -->F(Destination)
-    B --> C(Zone)
-    B --> D(Address)
-    B --> E(Device)
-    B --> K(User)
-    F --> I(Zone)
-    
-```
 
 - Source
   - Zone
@@ -4553,7 +4540,20 @@ sudo /Applications/GlobalProtect.app/Contents/Resources/uninstall_gp.sh
 
 ## Decryption Broker
 
-- Layer 3 interface is used
+- Mark Interfaces > Create Forwarding Profile > Attach it to Decryption Policy Rule
+- A firewall interface cannot be both a decryption broker and a GRE tunnel endpoint
+- Layer 3 security chains and Transparent Bridge security chains
+- A pair of interfaces is required, in a separate virtual router
+- On every interface On the Advanced tab, select Decrypt Forward
+- `Objects > Decryption > Forwarding Profile`
+    - Security Chain Type
+    - Flow Direction: Unidirectional or Bidirectional
+    - Primary Interface and Secondary Interface 
+    - Select the Security Chains tab and Add a security chain
+    - Select the IPv4 address of the first device in the security chain
+- Attach the Forwarding Profile to a decryption policy rule
+- In the Decryption Policy Set the Action to Decrypt and Forward
+- `Monitor > Logs > Traffic` and use the following filter: (flags has decrypt-forwarded)
 
 ## Autofocus
 
@@ -4715,10 +4715,7 @@ debug device-server dump idmgr high-availability state
 ## Assymetric routing
 
 - Abnormal and asymmetric packets are dropped by default and are not logged in traffic or threat logs
-- Show counters
-```
-admin@PA-1-1(active-primary)> show counter global
-```
+- Show counters: `show counter global`
 
 Signs of assymetric routing, counters to increment:
 
