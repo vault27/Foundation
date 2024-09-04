@@ -1565,6 +1565,12 @@ vsys1                                          93.184.216.34[80]/ISP2  (93.184.2
 
 ### Decryption Policy
 
+Decryption Policy is used for
+
+- Decryption
+- Decryption Mirror
+- Decryption Broker
+
 Three types of decryption policies
 
 - SSL Forward Proxy to control outbound SSL traffic
@@ -2105,7 +2111,7 @@ A session created locally on the firewall will have the False value and one crea
 - Use App-ID instead of service and protocols and port based
 - App-ID without decryption identifies application based on server certificate: CN field, if it is exact, then it will be google-base for example, if there is a wildcard, it will be SSL app
 - Application override - only for trusted traffic - create custom application based on zones, ips, ports... - used to decrease load on NGFW - it does not analyze App for certain traffic
-- To configure App override configure the following:
+- To configure App override configure the following
 - Create a custom app configuring its characteristics:
     - Charachteristics
     - Category and subcategory
@@ -2195,7 +2201,7 @@ A session created locally on the firewall will have the False value and one crea
 
 ## IP Tags and Dynamic Address Group (DAG)
 
-Sberbank case: script sends via XML API Tag + IP, based on this Tag IP is added to DAG, DAG is used in a policy as destination, or source  
+Bank case: script sends via XML API Tag + IP, based on this Tag IP is added to DAG, DAG is used in a policy as destination, or source  
 
 - IP-Tag can be assigned to IP address via:
   - XML API
@@ -2204,10 +2210,9 @@ Sberbank case: script sends via XML API Tag + IP, based on this Tag IP is added 
   - User-ID agent for Windows - monitor up to 100 VMware ESXi servers, vCenter Servers, or a combination of the two
   - Panorama Plugin - Azure or AWS public cloud 
   - VMware Service Manager - Integrated NSX solutions only
-- IP Tags can be seen via Monitor > IP tag
+- IP Tags can be seen via `Monitor > IP tag`
 - You can configure the firewall to dynamically unregister a tag after a configured amount of time using a timeout  
-
-- Tags can be used in Dynamic Address Groups: Objects > Address Groups > Create Dynamic
+- Tags can be used in Dynamic Address Groups: `Objects > Address Groups > Create Dynamic`
 - Tags are used as match criteria for groups
 - Dynamic address groups are very useful if you have an extensive virtual infrastructure where changes in virtual machine location/IP address are frequent
 - Dynamic address groups can also include statically defined address objects, we configure tag for static object
@@ -2217,16 +2222,13 @@ Sberbank case: script sends via XML API Tag + IP, based on this Tag IP is added 
 - This implies that a commit is not required to update dynamic tags
 - Each registered IP address can have up to 32 tags
 - We can view a list of addresses in DAG by pointing on DAG in Security Policy > Pressing Inspect > Pressing more OR going to Address Groups in Objects and pressing More
-- If you want to delete all registered IP addresses, use the CLI command
+- If you want to delete all registered IP addresses, use the CLI command `debug object registered-ip clear all`
+- Then reboot the firewall after clearing the tags
 
-```
-debug object registered-ip clear all
-then reboot the firewall after clearing the tags
-```
 ## External Dynamic List
 
 - Text file that is hosted on an external web server so that the firewall can import objects—IP addresses, URLs, domains—included in the list and enforce policy
-- Objects > External Dynamic Lists
+- `Objects > External Dynamic Lists`
 - Used in Policy: Source/Destination Address, URL category
 - Configure DNS Sinkholing for a List of Custom Domains
 - Use an External Dynamic List in a URL Filtering Profile
@@ -2668,7 +2670,7 @@ show log system direction equal backward subtype equal userid
 
 **Dynamic User Groups**
 
-- Objects > Dynamic User Groups
+- `Objects > Dynamic User Groups`
 - For every group you create match criteria
 - Match criteria: AND OR statements + Tags
 - You click More and add users, for example from AD, connected to firewall
@@ -2680,11 +2682,10 @@ show log system direction equal backward subtype equal userid
 - PAN-OS XML API commands to tag or untag usernames
 - Event in a log > log forwarding action assignes a tag to a user > User added to a DUG > User is blocked according to a policy
 - Auto-remediation in response to user behavior and activity
-- We can add tieme exiring tags, so in some time user left DUG
+- We can add time expiring tags, so in some time user left DUG
 - To dynamically register a tag with a username, you can use Panorama, the XML API, a remote User-ID agent, or the web interface (Objects > Dynamic User Groups and click more)
 - A firewall can forward the username and tag registration information to Panorama, and Panorama can distribute this information to the other firewalls
 - Another example: user goes to URL from anonymous-proxy category, URL filtering logs it and user added to Anonymous group
-
 
 **Map users to groups via LDAP**
 
@@ -2705,11 +2706,8 @@ show log system direction equal backward subtype equal userid
 show user user-attributes user all
 ```
 
-Show all received groups
+Show all received groups: `show user group list`
 
-```
-show user group list
-```
 
 **Configure managed service account on Windows AD**
 
@@ -4528,7 +4526,7 @@ sudo /Applications/GlobalProtect.app/Contents/Resources/uninstall_gp.sh
 - Transparent proxy requires a loopback interface, User-ID configuration in the proxy zone, and specific Destination NAT (DNAT) rules. Transparent proxy does not support X-Authenticated-User (XAU)
 - For the explicit proxy method, the request contains the destination IP address of the configured proxy and the client browser sends requests to the proxy directly
 
-## SSL mirror
+## Decryption mirror
 
 - Free license
 - Connect the traffic collection tool directly to an Ethernet interface on the firewall and set the **Interface Type to Decrypt Mirror**
@@ -4536,7 +4534,7 @@ sudo /Applications/GlobalProtect.app/Contents/Resources/uninstall_gp.sh
 - **Device > Setup> Content - ID** > Allow forwarding of decrypted content
 - **Objects > Decryption Profile**
 - Specify whether to mirror decrypted traffic before or after policy enforcement
-- **Policies > Decryption** > Specify decryption Decryption Profile in Rule
+- **Policies > Decryption** > Specify Decryption Profile in Rule
 
 ## Decryption Broker
 
@@ -4559,8 +4557,12 @@ sudo /Applications/GlobalProtect.app/Contents/Resources/uninstall_gp.sh
 
 - It is a web portal
 - AutoFocus lets you know if adversaries and campaigns discovered by Unit 42 have targeted your network, or networks like yours
-- It is Enabled in Setup > Management Section: https://autofocus.paloaltonetworks.com:10443
+- It is Enabled in `Setup > Management` Section: https://autofocus.paloaltonetworks.com:10443
 - It should be licensed
+- Correlates threat data from your network, industry, and global intelligence feeds, and surfaces what’s most important
+- You can use it to find artifacts in FW logs
+- You can use Panorama to remotely search for artifacts in firewalls that are not connected to AutoFocus and/or are running PAN-OS 7.0 and earlier
+- You can export Artifacts list from Autofocus to create a Block list
 
 ## IoT Security
 
