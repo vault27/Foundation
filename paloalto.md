@@ -37,6 +37,7 @@ Guides
 - PAN-OS Web Interface References
 - Panorama Admin Guide
 - IoT Security Administrator’s Guide
+- AutoFocus Administrator’s Guide
 
 ## Portfolio
 
@@ -290,7 +291,7 @@ Bootstrap allows you to automatically config, upgrade, update signatures, licens
     - Level 3 - vendor and model
 - An IP address-to-MAC address mapping is required by the IoT Security application before any device classification or analysis can happen
 - Firewall needs access to DHCP unicast and broadcast traffic
-- Firewall generates an EAL for all packets in the initial DHCP exchang
+- Firewall generates an EAL for all packets in the initial DHCP exchange
 - EALs are forwarded to Cortex Data Lake for analysis
 - The firewall automatically detects new devices as soon as they send DHCP traffic
 - IoT Security requires active Cortex Data Lake instance and then configure your firewalls to forward logs to it
@@ -332,7 +333,7 @@ Policy recomendations
 - Palo Alto Networks recommends you configure a new master key instead of using the default key, store the key in a safe location, and periodically change it
 - After you enter a new key you will need it only during changing it
 - On physical and virtual Palo Alto Networks devices, you can configure the master key to use the AES-256-CBC or the AES-256-GCM (introduced in PAN-OS 10.0) encryption algorithm to encrypt data such as keys and passwords. AES-256-GCM provides stronger encryption than AES-256-CBC and improves your security posture
-- Master Key - Every firewall and Panorama management server has a **default master key** that encrypts all the private keys and passwords in the configuration to secure them (such as the private key used for SSL Forward Proxy Decryption
+- Master Key - Every firewall and Panorama management server has a **default master key** that encrypts all the private keys and passwords in the configuration to secure them (such as the private key used for SSL Forward Proxy Decryption)
 - In HA and in Panorama everywhere should be the same Masterkey and algorithm
 - The only way to restore the default master key is to perform a factory reset
 - **Device > Master Key and Diagnostics** - create a new Master Key + Lifetime
@@ -438,7 +439,7 @@ https://knowledgebase.paloaltonetworks.com/KCSArticleDetail?id=kA10g000000ClVHCA
 - IP fragmentation according to MTU, if needed
 - IPSec encryption
   
-## DoS Protection
+## DoS
 
 - Firewall monitors traffic described in DoS Protection Policy rules or in specified zones
 - It watches on Connections per second in this traffic
@@ -459,7 +460,7 @@ Different types of DoS protection can be configured in different places
 - DoS Protection Profile applied to **Security rule** as a Security Profile in Action section - we can attach either Classified Profile or Aggregate
 - **Packet Buffer Protection** - is enbaled Globally and/or Per Zone
 
-Best practises
+### Best practises
 
 - Position firewalls as **close as possible to the resources** they protect: Firewalls don’t scale to millions of CPS because they are session-based. The closer you place firewalls to resources you’re protecting, the fewer sessions and firewall resources the traffic consumes
 - Position perimeter firewalls **behind dedicated**, high-capacity perimeter DDoS devices or perimeter routers or switches that use ACLs to drop DoS traffic
@@ -493,11 +494,11 @@ Best practises
 - Protect — The firewall protects the devices defined in the DoS Protection policy rule by applying the specified DoS Protection profile or profiles thresholds to traffic that matches the rule. A rule can have one **aggregate DoS Protection profile** and one **classified DoS Protection profile**, and for classified profiles, you can use the source IP, destination IP, or both to increment the flood threshold counters. Incoming packets count against both DoS Protection profile thresholds if the they match the rule. 
 - The Allow and Deny actions enable you to make **exceptions** within larger groups 
 
-## DoS Profile
+### DoS Profile
 
 ![alt text](images/image.png)
 
-- **Type**: Aggregated or Classified?
+- **Type**: Aggregated or Classified
     - Aggregated - thresholds for a group of devices, for example you have 5 devices, a Max Rate of 20,000 CPS means the total CPS for the group is 20,000, and an individual device can receive up to 20,000 CPS if other devices don’t have connections
     - Classified - Sets flood thresholds that apply to each individual device specified in a DoS Protection policy rule. For example, if you set a Max Rate of 5,000 CPS, each device specified in the rule can accept up to 5,000 CPS before it drops new connections
     - Aggregate and Classified have **identical options**
@@ -1565,6 +1566,12 @@ vsys1                                          93.184.216.34[80]/ISP2  (93.184.2
 
 ### Decryption Policy
 
+Decryption Policy is used for
+
+- Decryption
+- Decryption Mirror
+- Decryption Broker
+
 Three types of decryption policies
 
 - SSL Forward Proxy to control outbound SSL traffic
@@ -1744,7 +1751,7 @@ connection.
 - reset-both: For TCP, this action resets the connection on both client and server ends. For
 UDP, it drops the connection
 
-**Antivirus**
+### Antivirus
 
 - Protect against viruses, worms, trojans, spyware downloads
 - Enable protocol decoders: ftp, http, imap, pop3, smb, smtp
@@ -1762,7 +1769,7 @@ UDP, it drops the connection
 - WildFire-based signatures are used in addition to Antivirus
 - WildFire inline ML, you must possess an active WildFire subscription
 
-**Anti-Spyware**
+### Anti-Spyware
 
 - Several policies in one Profile
 - Signatures are added to Policy by severity and by name and by category
@@ -1778,7 +1785,7 @@ UDP, it drops the connection
 - In this profile DNS Security is also configured - Palo Alto Networks DNS Security service, a cloud-based analytics platform providing your firewall with access to DNS signatures generated using advanced predictive analysis and machine learning, with malicious domain data from a growing threat intelligence sharing community
 - Active DNS Security and Threat Prevention (or Advanced Threat Prevention) subscription is required
 
-**Advanced Threat Prevention**
+### Advanced Threat Prevention
 
 - Advanced Threat Prevention is a cloud-delivered security service that works in conjunction with the existing Threat Prevention license to deliver protections for advanced and evasive C2 threats
 - No update packages required
@@ -1788,7 +1795,7 @@ UDP, it drops the connection
 - Advanced Threat Prevention is enabled and configured under inline cloud analysis in the Anti-Spyware Profile
 - In addition to signatre based, inline detection system to prevent unknown and evasive C2 threats
 
-**Vulnerability Protection**
+### Vulnerability Protection
 
 - Create profile, Add rules and exceptions too profile
 - Signatures are added to rule, based on CVE, Vendor ID, Severity, Category
@@ -2105,7 +2112,7 @@ A session created locally on the firewall will have the False value and one crea
 - Use App-ID instead of service and protocols and port based
 - App-ID without decryption identifies application based on server certificate: CN field, if it is exact, then it will be google-base for example, if there is a wildcard, it will be SSL app
 - Application override - only for trusted traffic - create custom application based on zones, ips, ports... - used to decrease load on NGFW - it does not analyze App for certain traffic
-- To configure App override configure the following:
+- To configure App override configure the following
 - Create a custom app configuring its characteristics:
     - Charachteristics
     - Category and subcategory
@@ -2195,7 +2202,7 @@ A session created locally on the firewall will have the False value and one crea
 
 ## IP Tags and Dynamic Address Group (DAG)
 
-Sberbank case: script sends via XML API Tag + IP, based on this Tag IP is added to DAG, DAG is used in a policy as destination, or source  
+Bank case: script sends via XML API Tag + IP, based on this Tag IP is added to DAG, DAG is used in a policy as destination, or source  
 
 - IP-Tag can be assigned to IP address via:
   - XML API
@@ -2204,10 +2211,9 @@ Sberbank case: script sends via XML API Tag + IP, based on this Tag IP is added 
   - User-ID agent for Windows - monitor up to 100 VMware ESXi servers, vCenter Servers, or a combination of the two
   - Panorama Plugin - Azure or AWS public cloud 
   - VMware Service Manager - Integrated NSX solutions only
-- IP Tags can be seen via Monitor > IP tag
+- IP Tags can be seen via `Monitor > IP tag`
 - You can configure the firewall to dynamically unregister a tag after a configured amount of time using a timeout  
-
-- Tags can be used in Dynamic Address Groups: Objects > Address Groups > Create Dynamic
+- Tags can be used in Dynamic Address Groups: `Objects > Address Groups > Create Dynamic`
 - Tags are used as match criteria for groups
 - Dynamic address groups are very useful if you have an extensive virtual infrastructure where changes in virtual machine location/IP address are frequent
 - Dynamic address groups can also include statically defined address objects, we configure tag for static object
@@ -2217,16 +2223,13 @@ Sberbank case: script sends via XML API Tag + IP, based on this Tag IP is added 
 - This implies that a commit is not required to update dynamic tags
 - Each registered IP address can have up to 32 tags
 - We can view a list of addresses in DAG by pointing on DAG in Security Policy > Pressing Inspect > Pressing more OR going to Address Groups in Objects and pressing More
-- If you want to delete all registered IP addresses, use the CLI command
+- If you want to delete all registered IP addresses, use the CLI command `debug object registered-ip clear all`
+- Then reboot the firewall after clearing the tags
 
-```
-debug object registered-ip clear all
-then reboot the firewall after clearing the tags
-```
 ## External Dynamic List
 
 - Text file that is hosted on an external web server so that the firewall can import objects—IP addresses, URLs, domains—included in the list and enforce policy
-- Objects > External Dynamic Lists
+- `Objects > External Dynamic Lists`
 - Used in Policy: Source/Destination Address, URL category
 - Configure DNS Sinkholing for a List of Custom Domains
 - Use an External Dynamic List in a URL Filtering Profile
@@ -2668,7 +2671,7 @@ show log system direction equal backward subtype equal userid
 
 **Dynamic User Groups**
 
-- Objects > Dynamic User Groups
+- `Objects > Dynamic User Groups`
 - For every group you create match criteria
 - Match criteria: AND OR statements + Tags
 - You click More and add users, for example from AD, connected to firewall
@@ -2680,11 +2683,10 @@ show log system direction equal backward subtype equal userid
 - PAN-OS XML API commands to tag or untag usernames
 - Event in a log > log forwarding action assignes a tag to a user > User added to a DUG > User is blocked according to a policy
 - Auto-remediation in response to user behavior and activity
-- We can add tieme exiring tags, so in some time user left DUG
+- We can add time expiring tags, so in some time user left DUG
 - To dynamically register a tag with a username, you can use Panorama, the XML API, a remote User-ID agent, or the web interface (Objects > Dynamic User Groups and click more)
 - A firewall can forward the username and tag registration information to Panorama, and Panorama can distribute this information to the other firewalls
 - Another example: user goes to URL from anonymous-proxy category, URL filtering logs it and user added to Anonymous group
-
 
 **Map users to groups via LDAP**
 
@@ -2705,11 +2707,8 @@ show log system direction equal backward subtype equal userid
 show user user-attributes user all
 ```
 
-Show all received groups
+Show all received groups: `show user group list`
 
-```
-show user group list
-```
 
 **Configure managed service account on Windows AD**
 
@@ -4546,7 +4545,7 @@ sudo /Applications/GlobalProtect.app/Contents/Resources/uninstall_gp.sh
 - Transparent proxy requires a loopback interface, User-ID configuration in the proxy zone, and specific Destination NAT (DNAT) rules. Transparent proxy does not support X-Authenticated-User (XAU)
 - For the explicit proxy method, the request contains the destination IP address of the configured proxy and the client browser sends requests to the proxy directly
 
-## SSL mirror
+## Decryption mirror
 
 - Free license
 - Connect the traffic collection tool directly to an Ethernet interface on the firewall and set the **Interface Type to Decrypt Mirror**
@@ -4554,7 +4553,7 @@ sudo /Applications/GlobalProtect.app/Contents/Resources/uninstall_gp.sh
 - **Device > Setup> Content - ID** > Allow forwarding of decrypted content
 - **Objects > Decryption Profile**
 - Specify whether to mirror decrypted traffic before or after policy enforcement
-- **Policies > Decryption** > Specify decryption Decryption Profile in Rule
+- **Policies > Decryption** > Specify Decryption Profile in Rule
 
 ## Decryption Broker
 
@@ -4577,8 +4576,12 @@ sudo /Applications/GlobalProtect.app/Contents/Resources/uninstall_gp.sh
 
 - It is a web portal
 - AutoFocus lets you know if adversaries and campaigns discovered by Unit 42 have targeted your network, or networks like yours
-- It is Enabled in Setup > Management Section: https://autofocus.paloaltonetworks.com:10443
+- It is Enabled in `Setup > Management` Section: https://autofocus.paloaltonetworks.com:10443
 - It should be licensed
+- Correlates threat data from your network, industry, and global intelligence feeds, and surfaces what’s most important
+- You can use it to find artifacts in FW logs
+- You can use Panorama to remotely search for artifacts in firewalls that are not connected to AutoFocus and/or are running PAN-OS 7.0 and earlier
+- You can export Artifacts list from Autofocus to create a Block list
 
 ## IoT Security
 
