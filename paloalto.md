@@ -37,6 +37,7 @@ Guides
 - PAN-OS Web Interface References
 - Panorama Admin Guide
 - IoT Security Administrator’s Guide
+- AutoFocus Administrator’s Guide
 
 ## Portfolio
 
@@ -290,7 +291,7 @@ Bootstrap allows you to automatically config, upgrade, update signatures, licens
     - Level 3 - vendor and model
 - An IP address-to-MAC address mapping is required by the IoT Security application before any device classification or analysis can happen
 - Firewall needs access to DHCP unicast and broadcast traffic
-- Firewall generates an EAL for all packets in the initial DHCP exchang
+- Firewall generates an EAL for all packets in the initial DHCP exchange
 - EALs are forwarded to Cortex Data Lake for analysis
 - The firewall automatically detects new devices as soon as they send DHCP traffic
 - IoT Security requires active Cortex Data Lake instance and then configure your firewalls to forward logs to it
@@ -332,7 +333,7 @@ Policy recomendations
 - Palo Alto Networks recommends you configure a new master key instead of using the default key, store the key in a safe location, and periodically change it
 - After you enter a new key you will need it only during changing it
 - On physical and virtual Palo Alto Networks devices, you can configure the master key to use the AES-256-CBC or the AES-256-GCM (introduced in PAN-OS 10.0) encryption algorithm to encrypt data such as keys and passwords. AES-256-GCM provides stronger encryption than AES-256-CBC and improves your security posture
-- Master Key - Every firewall and Panorama management server has a **default master key** that encrypts all the private keys and passwords in the configuration to secure them (such as the private key used for SSL Forward Proxy Decryption
+- Master Key - Every firewall and Panorama management server has a **default master key** that encrypts all the private keys and passwords in the configuration to secure them (such as the private key used for SSL Forward Proxy Decryption)
 - In HA and in Panorama everywhere should be the same Masterkey and algorithm
 - The only way to restore the default master key is to perform a factory reset
 - **Device > Master Key and Diagnostics** - create a new Master Key + Lifetime
@@ -438,7 +439,7 @@ https://knowledgebase.paloaltonetworks.com/KCSArticleDetail?id=kA10g000000ClVHCA
 - IP fragmentation according to MTU, if needed
 - IPSec encryption
   
-## DoS Protection
+## DoS
 
 - Firewall monitors traffic described in DoS Protection Policy rules or in specified zones
 - It watches on Connections per second in this traffic
@@ -459,7 +460,7 @@ Different types of DoS protection can be configured in different places
 - DoS Protection Profile applied to **Security rule** as a Security Profile in Action section - we can attach either Classified Profile or Aggregate
 - **Packet Buffer Protection** - is enbaled Globally and/or Per Zone
 
-Best practises
+### Best practises
 
 - Position firewalls as **close as possible to the resources** they protect: Firewalls don’t scale to millions of CPS because they are session-based. The closer you place firewalls to resources you’re protecting, the fewer sessions and firewall resources the traffic consumes
 - Position perimeter firewalls **behind dedicated**, high-capacity perimeter DDoS devices or perimeter routers or switches that use ACLs to drop DoS traffic
@@ -493,11 +494,11 @@ Best practises
 - Protect — The firewall protects the devices defined in the DoS Protection policy rule by applying the specified DoS Protection profile or profiles thresholds to traffic that matches the rule. A rule can have one **aggregate DoS Protection profile** and one **classified DoS Protection profile**, and for classified profiles, you can use the source IP, destination IP, or both to increment the flood threshold counters. Incoming packets count against both DoS Protection profile thresholds if the they match the rule. 
 - The Allow and Deny actions enable you to make **exceptions** within larger groups 
 
-## DoS Profile
+### DoS Profile
 
 ![alt text](images/image.png)
 
-- **Type**: Aggregated or Classified?
+- **Type**: Aggregated or Classified
     - Aggregated - thresholds for a group of devices, for example you have 5 devices, a Max Rate of 20,000 CPS means the total CPS for the group is 20,000, and an individual device can receive up to 20,000 CPS if other devices don’t have connections
     - Classified - Sets flood thresholds that apply to each individual device specified in a DoS Protection policy rule. For example, if you set a Max Rate of 5,000 CPS, each device specified in the rule can accept up to 5,000 CPS before it drops new connections
     - Aggregate and Classified have **identical options**
@@ -1750,7 +1751,7 @@ connection.
 - reset-both: For TCP, this action resets the connection on both client and server ends. For
 UDP, it drops the connection
 
-**Antivirus**
+### Antivirus
 
 - Protect against viruses, worms, trojans, spyware downloads
 - Enable protocol decoders: ftp, http, imap, pop3, smb, smtp
@@ -1768,7 +1769,7 @@ UDP, it drops the connection
 - WildFire-based signatures are used in addition to Antivirus
 - WildFire inline ML, you must possess an active WildFire subscription
 
-**Anti-Spyware**
+### Anti-Spyware
 
 - Several policies in one Profile
 - Signatures are added to Policy by severity and by name and by category
@@ -1784,7 +1785,7 @@ UDP, it drops the connection
 - In this profile DNS Security is also configured - Palo Alto Networks DNS Security service, a cloud-based analytics platform providing your firewall with access to DNS signatures generated using advanced predictive analysis and machine learning, with malicious domain data from a growing threat intelligence sharing community
 - Active DNS Security and Threat Prevention (or Advanced Threat Prevention) subscription is required
 
-**Advanced Threat Prevention**
+### Advanced Threat Prevention
 
 - Advanced Threat Prevention is a cloud-delivered security service that works in conjunction with the existing Threat Prevention license to deliver protections for advanced and evasive C2 threats
 - No update packages required
@@ -1794,7 +1795,7 @@ UDP, it drops the connection
 - Advanced Threat Prevention is enabled and configured under inline cloud analysis in the Anti-Spyware Profile
 - In addition to signatre based, inline detection system to prevent unknown and evasive C2 threats
 
-**Vulnerability Protection**
+### Vulnerability Protection
 
 - Create profile, Add rules and exceptions too profile
 - Signatures are added to rule, based on CVE, Vendor ID, Severity, Category
