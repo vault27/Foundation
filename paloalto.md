@@ -3965,6 +3965,24 @@ If we need another site, we:
 - Enable dynamic routing on this tunnel
 - Add required rules
 
+### Decomission tunnels
+
+1. Determine affected networks using Proxy-ID
+2. Make sure that networks are unique for particular tunnel and not used in other tunnels
+3. Find all network objects in scope of affected networks
+4. Delete all identified objects from all rules in all Device Groups: Security Policies, NAT… everything
+5. Doublecheck that all objects are not used in any rules anymore
+6. Delete all affected objects
+7. Delete tunnel itself
+8. Delete tunnel interface
+9. Delete IKE Gateway
+10. Delete IKE crypto profile if is not used anywhere else
+11. Delete IPSec Crypto Profile - if it is not used anywhere else
+12. Delete associated zone - if it is not used anywhere else - BE CAREFUL! It MAY be used in RULES and NAT!
+13. Delete affected routes: delete tunnel interface from redistribution profile or static routes
+14. Commit and push to devices
+
+
 ### Redundancy
 
 - Two different ISPs - 2 different tunnels
