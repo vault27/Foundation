@@ -2161,6 +2161,7 @@ A session created locally on the firewall will have the False value and one crea
 ## Quarantine
 
 - **Device > Device Quarantine**
+- Works only with Global Protect because it needs Host ID and only GP client provides it
 - Valid GlobalProtect subscription license is required
 - Addin to Quaratine does not block anything
 - After you quarantine the device, you can block users from logging into the network from that device using GlobalProtect
@@ -2170,11 +2171,11 @@ A session created locally on the firewall will have the False value and one crea
 - **Host-ID** can be found in HIP: **Monitor > Logs > HIP Match**
 - Host-ID is better than IP, because it is not changed
 - The host ID value varies by endpoint type:
-    - Windows—Machine GUID stored in the Windows registry (HKEY_Local_Machine\Software\Microsoft\Cryptography\MachineGuid)
-    - macOS—MAC address of the first built-in physical network interface
-    - Android—Android ID
-    - iOS—UDID
-    - Chrome—GlobalProtect assigned unique alphanumeric string with length of 32 characters
+    - Windows — Machine GUID stored in the Windows registry (HKEY_Local_Machine\Software\Microsoft\Cryptography\MachineGuid)
+    - macOS — MAC address of the first built-in physical network interface
+    - Android — Android ID
+    - iOS — UDID
+    - Chrome — GlobalProtect assigned unique alphanumeric string with length of 32 characters
 - For GlobalProtect to automatically add Host ID information to the Traffic, Threat, or Unified logs, you must add a policy rule that has **Quarantine** selected for source traffic in Source Device Section
 - To make sure that you are adding the Host ID for all devices you want to quarantine (either manually or automatically), create a security policy that allows all traffic and specify Quarantine as the Source Device. It does not matter what order you place this policy in the list of policies for it to work
 - You may call this rule "Quarantine-get-host-ID"
@@ -2190,8 +2191,15 @@ A session created locally on the firewall will have the False value and one crea
 
 ## Tags
 
-- Tags can be attached to the following objects: address objects, address groups, user groups, zones, service groups, and policy rules
-- If we attach a Tag to a policy rule + specify fo rule which Tag to use to group it by + enable "View rulebase as Groups" the we can use it to see policy grouped by tag
+- Tags can be attached to the following objects:
+    1. address objects
+    2. address groups
+    3. user groups
+    4. zones
+    5. service groups
+    6. policy rules
+- Tags are foundation for Dynamic Address Groups (DAG) and Dynamic User Groups (DUG)
+- If we attach a Tag to a policy rule + specify for rule which Tag to use to group it by + enable "View rulebase as Groups" the we can use it to see policy grouped by tag
 - Tags can be painted or not
 - In Panorama we can: Move rules in group to a different rulebase or device group
 - We also can:
@@ -2200,7 +2208,7 @@ A session created locally on the firewall will have the False value and one crea
     - Delete all rules in group
     - Clone all rules in group
 
-## IP Tags and Dynamic Address Group (DAG)
+### Dynamic Address Group (DAG)
 
 Bank case: script sends via XML API Tag + IP, based on this Tag IP is added to DAG, DAG is used in a policy as destination, or source  
 
@@ -2225,6 +2233,25 @@ Bank case: script sends via XML API Tag + IP, based on this Tag IP is added to D
 - We can view a list of addresses in DAG by pointing on DAG in Security Policy > Pressing Inspect > Pressing more OR going to Address Groups in Objects and pressing More
 - If you want to delete all registered IP addresses, use the CLI command `debug object registered-ip clear all`
 - Then reboot the firewall after clearing the tags
+
+### Dynamic User Groups
+
+- `Objects > Dynamic User Groups`
+- For every group you create match criteria
+- Match criteria: AND OR statements + Tags
+- You click More and add users, for example from AD, connected to firewall
+- Earlier you could use only static user groups
+- You must commit firewall configuration after creating a DUG and adding it to a policy rule
+- You do not have to perform a commit when users are added to or removed from a DUG
+- User membership in a DUG is dynamic and controlled through the tagging and untagging of usernames
+- Usernames can also be tagged and untagged by using the auto-tagging feature in a Log Forwarding Profile
+- PAN-OS XML API commands to tag or untag usernames
+- `Event in a log > log forwarding action assignes a tag to a user > User added to a DUG > User is blocked according to a policy`
+- Auto-remediation in response to user behavior and activity
+- We can add time expiring tags, so in some time user left DUG
+- To dynamically register a tag with a username, you can use Panorama, the XML API, a remote User-ID agent, or the web interface (Objects > Dynamic User Groups and click more)
+- A firewall can forward the username and tag registration information to Panorama, and Panorama can distribute this information to the other firewalls
+- Another example: user goes to URL from anonymous-proxy category, URL filtering logs it and user added to Anonymous group
 
 ## External Dynamic List
 
@@ -2668,25 +2695,6 @@ Search in System logs
 ```
 show log system direction equal backward subtype equal userid
 ```
-
-**Dynamic User Groups**
-
-- `Objects > Dynamic User Groups`
-- For every group you create match criteria
-- Match criteria: AND OR statements + Tags
-- You click More and add users, for example from AD, connected to firewall
-- Earlier you could use only static user groups
-- You must commit firewall configuration after creating a DUG and adding it to a policy rule
-- You do not have to perform a commit when users are added to or removed from a DUG
-- User membership in a DUG is dynamic and controlled through the tagging and untagging of usernames
-- Usernames can also be tagged and untagged by using the auto-tagging feature in a Log Forwarding Profile
-- PAN-OS XML API commands to tag or untag usernames
-- Event in a log > log forwarding action assignes a tag to a user > User added to a DUG > User is blocked according to a policy
-- Auto-remediation in response to user behavior and activity
-- We can add time expiring tags, so in some time user left DUG
-- To dynamically register a tag with a username, you can use Panorama, the XML API, a remote User-ID agent, or the web interface (Objects > Dynamic User Groups and click more)
-- A firewall can forward the username and tag registration information to Panorama, and Panorama can distribute this information to the other firewalls
-- Another example: user goes to URL from anonymous-proxy category, URL filtering logs it and user added to Anonymous group
 
 **Map users to groups via LDAP**
 
