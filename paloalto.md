@@ -281,7 +281,7 @@ Bootstrap allows you to automatically config, upgrade, update signatures, licens
 
 - You can use Device-ID in Security, Decryption, Quality of Service (QoS) and Authentication policies
 - Made for IoT security
-- Device name is used as a source criteria and destination
+- HIP profile is used as a source criteria and destination - works only with GP - this is basic functionality - it is called HIP-Based Policy Enforcement
 - Devices are identified via metadata in network protocols and sessions
 - Metadata is sent to the cloud in session and Enhanced Application logs (EALs)
 - The EALs include a record of the DNS queries, the HTTP header User Agent field that specifies the web browser or tool used to access a URL, and information about DHCP IP address assignment
@@ -2599,11 +2599,17 @@ Can be used in:
 - Special User-ID log
 - Source NAT destroys User-ID
 
-**Add user/group to policy**
+### Add user/group to policy
 
-- 
+- Group is added as a full DN in Panorama
+- User is added in Panorama  - corp\first.last
+- Any
+- Pre-logon - with Global-Protect
+- Known-user - any identified by User-ID
+- Unknown - user cannot be identified by User-ID
+- Select - specific user or group
 
-**Agentless (PAN-OS)**
+### Agentless (PAN-OS)
 
 - If you have a small-to-medium deployment with few users and 10 or fewer domain controllers or exchange servers
 - If you want to share the PAN-OS-sourced mappings from Microsoft Active Directory (AD), Captive Portal, or GlobalProtect with other PA devices (maximum 255 devices)
@@ -2619,7 +2625,7 @@ Configure
 - Verify that the usernames are correctly displayed in the Source User column under Monitor > Logs > Traffic
 - Verify that the users are mapped to the correct usernames in the User Provided by Source column under Monitor > Logs > User-ID.
 
-**User-ID Agent (Windows)**
+### User-ID Agent (Windows)**
 
 Use User-ID Agent (Windows)
 
@@ -2645,7 +2651,7 @@ Configure User-ID Agent
 - Enable User-ID in zone configuration
 - Device > Data Redistribution - Configure Agent host and port - verify that its status is connected
 
-**User-ID redistribution**
+### User-ID redistribution
 
 - If you configure an Authentication policy, you have to configure firewall to redistribute mappings + timestamps to other firewalls, time stamps are sent automatically, no additional configuration
 - In **Device > Data Redistribution > Agents** you can configure other Firewall, Panorama or Windows agent as agent
@@ -2696,29 +2702,25 @@ Search in System logs
 show log system direction equal backward subtype equal userid
 ```
 
-**Map users to groups via LDAP**
+### Map users to groups via LDAP
 
-- Add LDAP server profile Device > Server > Profiles > LDAP
+- Add LDAP server profile `Device > Server > Profiles > LDAP`
         - Port - 389
         - Base DN - DC=sber,DC=ru
         - Bind DN - Administrator@sber.ru
         - No SSL
 - 4 servers in one profile MAX
-- Enable Group Mapping: Device > User Identification > Group Mapping Settings
-        - Choose server profile
-- Verify that the user and group mapping has correctly identified users Device > User Identification > Group Mapping > Group Include List
+- Add Group Mapping rule: `Device > User Identification > Group Mapping Settings`
+- There are many rules here, **one rule for each domain**
+- Verify that the user and group mapping has correctly identified users `Device > User Identification > Group Mapping > Group Include List`
+- `Device > User Identification > Group Mapping > Group Include List` - in Panorama add here groups, or they will not work
 - If you have universal groups, create an LDAP server profile to connect to the root domain of the global catalog server on port 3268 or 3269 for SSL
 - If OU is changed for group, rules will stop working, we need to readd the group
-- To verify that all of the user attributes have been correctly captured, use the following CLI command:
-
-```text
-show user user-attributes user all
-```
-
-Show all received groups: `show user group list`
+- To verify that all of the user attributes have been correctly captured, use the following CLI command: `show user user-attributes user all`
+- Show all received groups: `show user group list`
 
 
-**Configure managed service account on Windows AD**
+## Managed service account on Windows AD**
 
 - Active Directory Users and Computers > Managed Service Accounts > New User
 - Allow the service account to read the security log events
@@ -2732,15 +2734,7 @@ AD has to generate logs for Audit Logon, Audit Kerberos Authentication Service, 
 - Service Ticket Granted (4769)
 - Ticket Granted Renewed (4770)
 
-**Selecting Users and Groups for Security Policy**
-
-- Any
-- Pre-logon - with Global-Protect
-- Known-user - any identified by User-ID
-- Unknown - user cannot be identified by User-ID
-- Select - specific user or group
-
-**Debug**
+### Debug
 
 **Show logged in users**
 
@@ -4543,6 +4537,12 @@ sudo /Applications/GlobalProtect.app/Contents/Resources/uninstall_gp.sh
 - User-ID enabled is required on a zone where Global Protect users connect
 - HIP profile is a part of of Source Section in a Security Rule
 - We can Define the notification messages end-users see when a security rule with a HIP profile is enforced. On a Gateway: `Network > GlobalProtect > Gateway`; `Agent > HIP Notification`
+- HIP profiles can be used as devices (Source and Destination) in Security Policy - HIP-Based Policy Enforcement
+- When choossing Device, options are:
+    - No HIP
+    - Select
+    - Any
+    - Quarantine
 
 ## Web proxy
 
