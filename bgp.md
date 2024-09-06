@@ -677,7 +677,7 @@ address-family ipv4 [unicast | multicast | vrf vrf-name ]
 bgp dampening [half-life reuse suppress max-suppress-time ] [route-map map-name ]
 ```
 
-## Configuration
+## Nexus
 
 ### Change default local preference
 
@@ -744,6 +744,7 @@ router bgp 777
 ```
 
 **Allow announcing only prefixes that are behind you, if you a transit AS and dual homed to 2 providers**
+
 ```
 Leaker-R7(config)#
 ip prefix-list PL-NO-TRANSIT seq 5 permit 30.30.30.0/24
@@ -752,7 +753,9 @@ Leaker-R7(config-router)#neighbor 10.0.1.1 prefix-list PL-NO-TRANSIT out
 Leaker-R7(config-router)#neighbor 20.0.1.2 prefix-list PL-NO-TRANSIT out
 Leaker-R7(config-router)#end
 ```
+
 **Origin code Incomplete**
+
 ```
 redistribute
 default-information originate
@@ -761,6 +764,7 @@ as-set is set and at least one subnet of summarized route use Incomplete (?)
 ```
 
 **Configure Origin code in Route map**
+
 ```
 dyn1(config-route-map)# set origin ?
  egp         remote EGP
@@ -769,10 +773,14 @@ dyn1(config-route-map)# set origin ?
 ```
 
 **Configure summarization**
+
 Traffic specified here will be available, while at least one network exists, which falls within this range, using LPM rule
 ```
 aggregate-address 10.99.0.0/31 summary-only
 ```
+
+### Basic configuration
+
 
 Minimum required configuration
 - Router process with AS number
@@ -793,6 +801,7 @@ Minimal configuration for EVPN adjacency:
 - Enable both types of community
 
 One large configuration file on Nexus with comments, based on my experience
+
 ```
 feature bgp
 
@@ -850,6 +859,49 @@ router bgp 64701
       address-family ipv4 unicast - mandatory command
         allowas-in 1 - Accept as-path with my AS present in it
         disable-peer-as-check - allow forward updates between two routers in the same AS
+```
+
+## IOS XE
+
+### IOS XE neighbor in VRF with replace AS, BFD, community, route-map, authentication
+
+```
+address-family ipv4 vrf IPSEC
+  bgp router-id 10.125.0.144
+  neighbor 10.125.5.20 remote-as 4294965186
+  neighbor 10.125.5.20 local-as 4294965187 no-prepend replace-as
+  neighbor 10.125.5.20 description Firewall
+  neighbor 10.125.5.20 ebgp-multihop 3
+  neighbor 10.125.5.20 password 7 06040033421C1B0C0B
+  neighbor 10.125.5.20 version 4
+  neighbor 10.125.5.20 fall-over bfd
+  neighbor 10.125.5.20 activate
+  neighbor 10.125.5.20 send-community
+  neighbor 10.125.5.20 soft-reconfiguration inbound
+  neighbor 10.125.5.20 route-map IPSec_ASRVPN_BGP_in in
+  neighbor 10.125.5.20 route-map IPSec_ASRVPN_BGP_out out
+```
+
+### Show commands
+
+Neighbors in VRF  
+`show ip bgp vpnv4 vrf CorpIPSEC summary`
+
+Received routes  
+`show ip bgp vpnv4 vrf IPSEC neighbors 10.125.5.20 received-routes | i 10.105.4`
+
+### Debug
+
+```
+debug ip bgp updates
+debug ip bgp events
+debug ip bgp filters
+debug ip bgp dampening
+debug ip bgp neighbor 10.125.5.20
+debug ip bgp network 10.105.4.128
+
+show debug
+undebug all
 ```
 
 ## Troubleshooting
@@ -948,17 +1000,4 @@ N7K-2# show debug logfile bgpdebug.log
 undebug all
 no debug-filter all
 clear debug logfile <FILE_NAME>
-```
-
-**Debug BGP updates on Cisco IOS**
-
-```
-debug ip bgp updates
-debug ip bgp events
-debug ip bgp filters
-debug ip bgp dampening
-debug ip bgp neighbor 10.125.5.20
-debug ip bgp network 10.105.4.128
-
-show debug
 ```
