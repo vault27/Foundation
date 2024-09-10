@@ -665,6 +665,12 @@ configure
 commit force
 ```
 
+**Review recent changes**
+
+- Before Commit click "Preview Changes"
+- `Device > Config Audit` - shows who did changes
+- show config diff
+
 ## Backup
 
 - Device > Setup > Operations
@@ -2414,10 +2420,14 @@ Configuration workflow
       - Priority - the less the better
       - Preemptive - higher-priority firewall to resume active (active/passive) or active-primary (active/active) operation after recovering from a failure. You must enable the preemption option on both firewalls for the higher-priority firewall to resume active or active-primary operation upon recovery after a failure. If this setting is disabled, then the lower-priority firewall remains active or active-primary even after the higher-priority firewall recovers from a failure
       - Heartbeat backup - This will use the management interface to send a simple heartbeat to the remote peer
-      - HA Timer settings - Use recomeneded - 7 timers in total:
-            - Promotion Hold Time (ms) - how long passive will wait
+      - HA Timer settings - Packages: Recommended, Aggressive and Advanced - 7 timers in total:
+            - Monitor Fail Hold Up Time - firewall will remain active following a path monitor or link monitor failure - to avoid flaps
+            - Additional Master Hold Up Time - is applied to the same event as Monitor Fail Hold Up Time - to avoid a failover when both firewalls experience the same link/path monitor failure simultaneously
+            - Preemption Hold Time - passive firewall will wait before taking over as the active during preemption
+            - Promotion Hold Time (ms) - how long passive will wait after communications with the HA peer have been lost
             - Hello Interval (ms) - hello packets sent to verify that the HA program on the other firewall is operational
             - Heartbeat Interval (ms) - heartbeat messages in the form of an ICMP ping 
+            - Flap Max - In the case of a failed preemption or non-functional loop, this value indicates the maximum number of flaps that are permitted before the firewall is suspended 
 - Configure HA communications
       - HA1 port - management, or dedicated, on port with HA type - if not management is used, then configure IP, mask, gateway, possible encryption and Monitor Hold Time (ms)
       - HA2 port - select transport type - Ethernet - and nothing more should be configured - Interface type - HA. Also HA2 Keep alive is recomended to enable to monitor health of HA2 link and log if something happens
@@ -2497,19 +2507,19 @@ You need to distribute traffic somehow between them
         - IP Hash—The firewall that will respond to ARP requests is based on a hash of the ARP requester's IP address
     - ARP load sharing on LAN side and floating IP on the other
 
-#### Route based redundancy
+**Route based redundancy**
 
 <img width="602" alt="image" src="https://user-images.githubusercontent.com/116812447/215494580-eeaed00c-52a0-479c-b8db-909f8cce27fc.png">
 
-### Floating IP Addresses with Virtual MAC address
+**Floating IP Addresses with Virtual MAC address**
 
 <img width="635" alt="image" src="https://github.com/phph9/Foundation/assets/116812447/903778c0-559d-4256-b0ef-f0f401508628">
 
-### Floating IP Address Bound to Active-Primary Firewall
+**Floating IP Address Bound to Active-Primary Firewall**
 
 <img width="835" alt="image" src="https://github.com/phph9/Foundation/assets/116812447/8ad77c29-5bd2-4e59-80f5-f0308894126a">
 
-### ARP Load-Sharing
+**ARP Load-Sharing**
 
 <img width="686" alt="image" src="https://github.com/phph9/Foundation/assets/116812447/8c2aea0d-e773-4418-844c-a00f2853a921">
 
@@ -2993,23 +3003,13 @@ It is **impossible** to configure with templates:
 - The Template at the top of the Stack has the highest priority in the presence of overlapping config
 - Commit to Panorama and devices
 
-**Certificate management**
+**Gear Icon Color**
 
-- Import cert for GUI manegement to Global Template
-- Configure TLS profile for GUI management with this cert in Global Template
-- Install all Stacks during the night
-- In MGMT cert put to SAN field all firewall hostnames and IPs
-- Everytime you add new firewall add new IP and hostname and regenerate cert and push it to firewalls and reconfigure TLS profile
+- Solid green gear icon indicates that Force Template Values option was used on Panorama during template push operation
+- Orange overlay green gear icon indicates panorama pushed configuration was overwritten on the local firewall or the Force Template Values was not selected during panorama commit push operation
+- Using Force Template Values on Panorama causes the Network and Object values on firewall to be overwritten by the Panorama pushed configuration. Please use caution while using this option
+- It is possible to clear local override and push locally
 
-**Backup/Restore**
-
-- Panorama automatically saves a new version of the running configuration whenever you commit changes and you can restore any of those versions
-- You can save named configuration snapshot manually choosing Templates and Device Groups
-- When you revert changes, you are replacing settings in the current candidate configuration with settings from another configuration
-- Reverting a Panorama management server configuration requires a full commit after revert and must be performed by a superuser
-- Revert to a previous version of the running configuration that is stored on Panorama: **PanoramaSetupOperations, Load Panorama configuration version**
-- You can select Templates and Device Groups
-  
 **Overrides**
 
 - Any option on firewall received from stack can be changed locally
@@ -3019,7 +3019,24 @@ It is **impossible** to configure with templates:
 - To cancel override we need to click on orange sign - it will become green and after this commit locally on firewall
 - Another way to cancel override is to push Stack from Panorama with Option Force Template Values
 
-**Variables**
+### Certificate management**
+
+- Import cert for GUI management to Global Template
+- Configure TLS profile for GUI management with this cert in Global Template
+- Install all Stacks during the night
+- In MGMT cert put to SAN field all firewall hostnames and IPs
+- Everytime you add new firewall add new IP and hostname and regenerate cert and push it to firewalls and reconfigure TLS profile
+
+### Backup/Restore**
+
+- Panorama automatically saves a new version of the running configuration whenever you commit changes and you can restore any of those versions
+- You can save named configuration snapshot manually choosing Templates and Device Groups
+- When you revert changes, you are replacing settings in the current candidate configuration with settings from another configuration
+- Reverting a Panorama management server configuration requires a full commit after revert and must be performed by a superuser
+- Revert to a previous version of the running configuration that is stored on Panorama: **PanoramaSetupOperations, Load Panorama configuration version**
+- You can select Templates and Device Groups
+  
+### Variables
 
 - They are created in order not to create 200 templates with different IPs inside
 - Used in: Static routes, interface IPs, Server profiles, DNS servers....
@@ -3069,7 +3086,7 @@ It is **impossible** to configure with templates:
 - If the same object is in Parent group, you cannot create it in Child group, override is required
 - All device groups are members of shared group
 - 1024 device groups is maximum
-- We can assign a reference template to a device group to see zones and interface when we create rules in policy
+- We can assign a reference template to a device group to see zones and interface when we create rules in policy - done During Device Group creation - used when FW does not have a Template assigned
 - When we create an object, we can make it Shared, it will be in Shared group and will be accessible for all device groups. We can also disable override for it, so lower hirerchy firewalls and groups will not be able to overrride it
 - Objects in Shared group never can be overrriden
 - Policy rules Hierarchy 
@@ -3089,14 +3106,8 @@ Search for failed push to device in system logs
 Or, you can try on device itself:  
 `( admin eq Panorama-username' )`
 
-**Gear Icon Color**
 
-- Solid green gear icon indicates that Force Template Values option was used on Panorama during template push operation
-- Orange overlay green gear icon indicates panorama pushed configuration was overwritten on the local firewall or the Force Template Values was not selected during panorama commit push operation
-- Using Force Template Values on Panorama causes the Network and Object values on firewall to be overwritten by the Panorama pushed configuration. Please use caution while using this option
-- It is possible to clear local override and push locally
-
-**Licensing + Software Upgrades + Dynamic Updates**
+### Licensing + Software Upgrades + Dynamic Updates**
 
 - Panorama > Device Deployment 
 - Automatically license a VM-Series firewall when it connects to Panorama
@@ -3108,7 +3119,7 @@ Or, you can try on device itself:
 - Panorama > Device Deployment > Software
 - Panorama > Device Deployment > Dynamic Updates
 
-**Automatic commit recovery**
+### Automatic commit recovery**
 
  - If the committed configuration breaks the connection with Panorama, then the firewall automatically fails the commit and the configuration reverts to the previous running configuration
  - The firewall also checks the connectivity to Panorama every hour to ensure consistent communication
@@ -3142,7 +3153,7 @@ Or, you can try on device itself:
 
 **Remove firewall from Panorama**
 
-- Device > Setup > Management > Panorama Settings
+- `Device > Setup > Management > Panorama Settings`
 - Disable Panorama Policy and Objects
 - Disable Panorama Device and Network Template
 - When you disable - everything what arrived from Panorama - will be deleted
@@ -3214,7 +3225,7 @@ Commit options when you commit to Panorama:
 - Commit the device groups and templates
 - A CLI command will forward the pre-existing logs to Panorama
 
-**Firewall is disconnected in Panorama**
+### Firewall is disconnected in Panorama**
 
 On Firewall we need to launch a command
 
@@ -3222,13 +3233,12 @@ On Firewall we need to launch a command
 request sc3 reset
 debug software restart process management-server
 ```
-
-**Push config to Firewall without changes**
+### Push config to Firewall without changes
 
 - Can be used during RMA
-- Commit > Push to Devices > Edit Selections
-- Device Groups > Decelect All > Uncheck Filter Selected > Choose devices
-- Templates > Deselect All > Uncheck Filter Selected > Choose devices
+- `Commit > Push to Devices > Edit Selections`
+- `Device Groups > Decelect All > Uncheck Filter Selected > Choose devices`
+- `Templates > Deselect All > Uncheck Filter Selected > Choose devices`
 - Push 
 
 ### Log collectors
