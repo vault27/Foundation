@@ -1700,8 +1700,8 @@ Basicly it defines whom to show captive portal.
 
 ## Security profiles
 
-All Security Profiles are in Objects > Security Profiles  
-10 profiles in total  
+All Security Profiles are in `Objects > Security Profiles`  
+**10** profiles in total  
 7 are applied in a security policy  
 Threat exceptions for antivirus, vulnerability, spyware, and DNS signatures (sub type of AntiSpyware signatures) can be added in a profile  
 For Spyware, Vulnerability signatures  you can change default Action: Drop, Reset....
@@ -1737,19 +1737,31 @@ Concepts
 - Threat prevention license - updates are once in 24 hours
 - We can create groups
 
-Possible actions:
+Possible actions
 
 - default: For each threat signature and antivirus signature that is defined by Palo Alto Networks, a default action is specified internally. Typically, the default action is an alert or a reset-both. The default action is displayed in parenthesis—for example, default (alert) in the threat or antivirus signature.
 - allow: This action permits the application traffic.
-- alert: This action generates an alert for each application traffic flow. The alert is saved in the
-Threat log.
+- alert: This action generates an alert for each application traffic flow. The alert is saved in the Threat log
 - drop: This action drops the application traffic
-- reset-client: For TCP, this action resets the client-side connection. For UDP, it drops the
-connection.
-- reset-server: For TCP, this action resets the server-side connection. For UDP, it drops the
-connection.
-- reset-both: For TCP, this action resets the connection on both client and server ends. For
-UDP, it drops the connection
+- reset-client: For TCP, this action resets the client-side connection. For UDP, it drops the connection.
+- reset-server: For TCP, this action resets the server-side connection. For UDP, it drops the connection.
+- reset-both: For TCP, this action resets the connection on both client and server ends. For UDP, it drops the connection
+
+### Inline Cloud Analysis
+
+Available in 
+
+- Anti-Spyware profile
+- Vulnerability Protection profile
+
+Protects from:
+
+- Advanced C2 (command-and-control) and spyware threats
+- Zero-day exploit threat
+- SQL injection vulnerabilities
+- Command injection
+
+Requires Advanced Threat Prevention subscription
 
 ### Antivirus
 
@@ -1797,13 +1809,30 @@ UDP, it drops the connection
 
 ### Vulnerability Protection
 
-- Create profile, Add rules and exceptions too profile
-- Signatures are added to rule, based on CVE, Vendor ID, Severity, Category
+- Create profile, Add rules and exceptions to profile
+- Protect against buffer overflows, illegal code execution, and other attempts to exploit client- and server-side vulnerabilities
+- You create a rule, for every rule you filter signatures: CVE, Threat Name, Severity, Host Type, and then you specify what to do with these signatures: Action and Packet Capture
 - Packet capture can be enabled
 - Action for all signatures in a rule or Default
 - Host type can be configured: client or server 
 - When the vulnerability protection action profile is set to reset-both, the associated threat log might display action as reset-server. As discussed earlier, this occurs when the firewall detects the threat at the beginning of a session and presents the client with a 503-block page. Since, the block place disallows the connection, only the server-side connection is reset
 - The default Vulnerability Protection Profile protects clients and servers from all known critical-, high-, and medium-severity threats
+
+Best practises
+
+- Business crytical apps - alert
+- Critical and high severity signatures - reset-both
+- Medium severity signatures - alert for beginning
+- Brute force signatures - first alert as well
+- Low and informational severity signatures - alert or allow or default
+- Enable extended packet capture for critical, high, and medium severity signatures on which you alert
+- Enable single packet capture for blocked signatures and for low
+- For informational signatures it is better to disable packet capture
+- Packet captures consume management plane resources
+- For East- West traffic blocking medium severity events might impact business applications - Action set to alert
+- The default number of packets that extended PCAP records and sends to the management plane is five packets
+- For Inline Cloud Analysis, set the Action to reset-both to block common hacking techniques
+
 
 ### URL Filtering
 
