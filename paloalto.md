@@ -4266,6 +4266,14 @@ Verify
 show device-certificate status
 ```
 
+**Renew cert**
+
+- Renew it in cert management system
+- Download cert + key
+- Import cert + key to Palo Alto - like new one, do not overwrite
+- Change it in SSL Profile 
+
+
 ## Management Profiles
 
 - Network > Network Profiles > Interface Mgmt
