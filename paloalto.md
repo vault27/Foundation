@@ -257,6 +257,37 @@ Data plane:
 - Firewall does not participate in spanning tree
 - Per-VLAN Spanning Tree (PVST+) BPDU Rewrite
 
+**Real World example**
+
+- One LACP Layer 2 interface
+- Many subinterfaces
+- LACP interface is not assigned to any VLAN or Security Zone
+- Every sub interface has Tag, VLAN, Security Zone, VSYS
+- Tag - VLAN tag assigned to the traffic that the port receives
+- VLAN - To enable switching between Layer 2 subinterfaces, assign the same VLAN object(not interface!) to the subinterfaces
+- Every VLAN object is used for 2 L2 subinterfaces
+- VLAN objects: `Network > VLANs`
+- VLAN interfaces: `Network > Interfaces > VLAN`
+- VLAN object combines L2 interfaces, VLAN interface if required
+
+**VLANs**
+
+- Each Layer 2 interface defined on the firewall can be associated with a VLAN **object**
+- The same VLAN can be assigned to multiple Layer 2 interfaces or subinterfaces but each interface can belong to only one VLAN
+- In VLAN configuration we add L2 interfaces
+- We also add static MAC configuration in VLAN object: which MAC on which interface
+- And we assign VLAN Interface in VLAN object - this is like on Cisco, so VLAN has an IP address
+- Sub-interfaces which use different 802.1Q tags can use the same VLAN object effectively performing VLAN tag rewriting
+
+**Architecture**
+
+- 2 routers are connected to one switch in one VLAN - so the can connect directly
+- Our goal is to put FW between them, so traffic leaves switch, goes to FW and then back to switch
+- So, we put second router in different VLAN
+- Connect trunk with both VLANs to FW
+- VLAN 1 comes to FW, FW forwards traffic back to switch via the same trunk but tagged as VLAN 2 already
+- Then traffic goes to switch 2 after FW
+- All devices are connected to one switch
 
 ## Bootstraping
 
@@ -1124,7 +1155,7 @@ There are 5 sections in a profile:
 **Physical interfaces types**
 
 - L2
-     - There are: **L2 interface, VLAN interface, VLAN, subinterface based on VLAN**
+     - There are: **L2 interface, VLAN interface, VLAN objext, subinterface based on VLAN**
 - L3: IP address, zone, virtual router
 - Virtual wire - no routing or switching, no MAC or IP addresses, blocking or allowing of traffic based on the virtual LAN (VLAN) tags. You assign 2 physical interfaces to one virtual wire.
     - It ignores any Layer 2 or Layer 3 addresses for switching or routing purposes
@@ -1147,15 +1178,6 @@ There are 5 sections in a profile:
 - Loopback interfaces - connect to the virtual routers in the firewall, DNS sinkholes, GlobalProtect service interfaces (such as portals and gateways)
 - VLAN interface - this is L3 interface, connected to a VLAN, like in Cisco
 - SD-WAN - ?
-
-**VLANs**
-
-- Each Layer 2 interface defined on the firewall can be associated with a VLAN object
-- The same VLAN can be assigned to multiple Layer 2 interfaces or subinterfaces but each interface can belong to only one VLAN
-- In VLAN configuration we add L2 interfaces
-- We also add static MAC configuration: which MAC on which interface
-- And we assign VLAN Interface - this is like on Cisco, so VLAN has an IP address
-- Sub-interfaces which use different 802.1Q tags can use the same VLAN virtual-bridge effectively performing VLAN tag rewriting
 
 **MAC addresses + speed/duplex**
 
