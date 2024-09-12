@@ -253,30 +253,26 @@ Data plane:
 ## Layer 2 mode
 
 - Layer 2 interfaces with no VLAN - connect all hosts to firewall like to switch
-- Layer 2 interfaces with VLANs - Logical subinterfaces on Layer 2 interface
+- Layer 2 interfaces with VLANs - Logical subinterfaces on Layer 2 interface - based on VLAN tag rewriting
 - Firewall does not participate in spanning tree
 - Per-VLAN Spanning Tree (PVST+) BPDU Rewrite
+
+In Total we have:
+
+- L2 physical interface
+- L2 LACP interface
+- L2 subinterface based on VLAN tag
+- VLAN object - `Network > VLANs` - combines interfaces/subinterfaces + VLAN interface + Static MACs - To enable switching between Layer 2 subinterfaces
+- VLAN interface - `Network > Interfaces > VLAN`- regular L3 interface, but only connected to VLAN object: IP, Zone, Router, VSYS
 
 **Real World example**
 
 - One LACP Layer 2 interface
 - Many subinterfaces
 - LACP interface is not assigned to any VLAN or Security Zone
-- Every sub interface has Tag, VLAN, Security Zone, VSYS
+- Every sub interface has Tag, VLAN object, Security Zone, VSYS
 - Tag - VLAN tag assigned to the traffic that the port receives
-- VLAN - To enable switching between Layer 2 subinterfaces, assign the same VLAN object(not interface!) to the subinterfaces
-- Every VLAN object is used for 2 L2 subinterfaces
-- VLAN objects: `Network > VLANs`
-- VLAN interfaces: `Network > Interfaces > VLAN`
-- VLAN object combines L2 interfaces, VLAN interface if required
-
-**VLANs**
-
-- Each Layer 2 interface defined on the firewall can be associated with a VLAN **object**
 - The same VLAN can be assigned to multiple Layer 2 interfaces or subinterfaces but each interface can belong to only one VLAN
-- In VLAN configuration we add L2 interfaces
-- We also add static MAC configuration in VLAN object: which MAC on which interface
-- And we assign VLAN Interface in VLAN object - this is like on Cisco, so VLAN has an IP address
 - Sub-interfaces which use different 802.1Q tags can use the same VLAN object effectively performing VLAN tag rewriting
 
 **Architecture**
@@ -285,6 +281,7 @@ Data plane:
 - Our goal is to put FW between them, so traffic leaves switch, goes to FW and then back to switch
 - So, we put second router in different VLAN
 - Connect trunk with both VLANs to FW
+- On FW - 2 L2 subinterfaces: for VLAN 1 and 2 - they both in one VLAN object
 - VLAN 1 comes to FW, FW forwards traffic back to switch via the same trunk but tagged as VLAN 2 already
 - Then traffic goes to switch 2 after FW
 - All devices are connected to one switch
