@@ -210,6 +210,11 @@ Detection, investigation, automation, and response capabilities.
     - SD-WAN
 - All other infrastructure: Device Secion: Users, User-ID, Certificates, HA...
 
+
+## Find a command
+
+`find command keyword smart`
+
 ## Management plane and Data Plane
 
 - On physical appliances separate CPU, RAM, SSD for management plane: mgmt interface + console
