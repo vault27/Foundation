@@ -1,5 +1,56 @@
 # Wireless
 
+## Basics
+
+- Wave - alternating current changes in time - sin wave
+- Wave length -
+- Frequency - number of cycles (oscilaltions)  per second - 1 hz is 1 Cycle per second
+- Amplitude - positive alteration and negative alteration
+- Amplitute - maximum magnitude or strength of the signal - measured in decibels referenced to one milliwatt (dBm).A positive dBm value indicates a signal with higher amplitude, while a negative dBm value indicates a weaker signal.
+- Two absolutely identical waves - they are in phase - together they will provide better amplitude and qulity of signal
+- We can add phase difference - and the will be out of phase
+- Phase difference is measured in degrees
+- 180 degrees phase difference: 2 waves will cancell each over
+- Power is measureed in Watts - The power level of an RF signal determines its range, coverage, and ability to penetrate obstacles. A higher wattage generally indicates a stronger signal that can travel over longer distances or through more obstacles.
+- Wifi signals are measured in Miliwatts
+- Measure in dBm is easier - dB ?
+- 0 dBm = 1 mW, 3 dBm = 2 mW - ???
+- Isotropic radiotar - radiates power equally in all directions - The Sun
+- Gain value is described in dBi
+- Inverse square law
+- Signal to nose ratio
+- QAM - ?
+- EVM - ?
+- MCS index table - ?
+- Dynamic Rate Shifting
+
+## Frequency bands
+
+- Band - range of frequencies, for example AM band
+- Bands are devided into channels
+- Channel has a particular frequency
+- 5 MHz between each channel - channel width
+- Signal occupies a little bit of frequencies above and below of central frequency
+- Actual frequency range required for signal transmit is called bandwidth
+- 22 MHz bandwidth means that signal will occupy 11 MHz below and 11 MHz above central frequency
+- Signal bandwidth should be less then channel width - but it is not always so
+- Upload and download is in turn, one after another, half duplex
+- Wi-Fi adapters use a technique called "frequency division duplexing" (FDD) to transmit and receive data on the same frequency. FDD allows the adapter to separate the incoming and outgoing signals by utilizing different time slots or subcarriers within the same frequency band.  
+- Only one device on a channel can send data at a time.
+- 2.4 HHz
+        - 2401 to 2484 MHz
+        - 14 channels
+        - Each of the WLAN / Wi-Fi Channels are spaced 5 MHz apart, except the last two channels which are spaced 12 MHz apart
+        - Most of these channels (Channel 1 to Channel 11) can be used across the globe, except channels 12, 13 and 14
+        - Channel 12 (2456 - 2478 MHz) and Channel 13 (2461 - 2483 MHz) are not allowed in North America, whereas Channel 14 (2473 - 2484 MHz) can only be used in Japan
+- 22 Mhz for each channel
+- 5 Ghz - less range - less crowded: 5150 - 5825 - 4 subbands
+- 6 Ghz
+- Adjecent channel Interference
+- Transmit Spectrum Mask - ?
+- Co channel conention - co channel interference vs  overlapping channels
+- OFDM Spectral Mask - ?
+
 ## Cisco WLC
 
 - Access Point has an IP address
@@ -163,29 +214,7 @@ IEEE creates standards > Wi-Fi Alliance certifies Products > IETF manages RFCs >
 ## Frequencies
 
 
-## RF basics
 
-- Wave - alternating current changes in time - sin wave
-- Wave length -
-- Frequency - number of cycles (oscilaltions)  per second - 1 hz is 1 Cycle per second
-- Amplitude - positive alteration and negative alteration
-- Amplitute - maximum magnitude or strength of the signal - measured in decibels referenced to one milliwatt (dBm).A positive dBm value indicates a signal with higher amplitude, while a negative dBm value indicates a weaker signal.
-- Two absolutely identical waves - they are in phase - together they will provide better amplitude and qulity of signal
-- We can add phase difference - and the will be out of phase
-- Phase difference is measured in degrees
-- 180 degrees phase difference: 2 waves will cancell each over
-- Power is measureed in Watts - The power level of an RF signal determines its range, coverage, and ability to penetrate obstacles. A higher wattage generally indicates a stronger signal that can travel over longer distances or through more obstacles.
-- Wifi signals are measured in Miliwatts
-- Measure in dBm is easier - dB ?
-- 0 dBm = 1 mW, 3 dBm = 2 mW - ???
-- Isotropic radiotar - radiates power equally in all directions - The Sun
-- Gain value is described in dBi
-- Inverse square law
-- Signal to nose ratio
-- QAM - ?
-- EVM - ?
-- MCS index table - ?
-- Dynamic Rate Shifting
 
 ## Antenna
 
@@ -218,23 +247,6 @@ Range of frequencies. Wi-Fi operates within specific frequency bands, which are 
 **Channel**
 
 Specific frequencies that are used for wireless communication. Each channel has width, for example 2401 - 2423. Each Channel has Center Frequency, for example 2412. Channel can be allowed in one country and prohibited in other.  Selecting appropriate channels within the spectrum helps minimize interference and optimize performance for Wi-Fi networks
-
-## Frequency bands
-
-Upload and download is in turn, one after another, half duplex
-
-Wi-Fi adapters use a technique called "frequency division duplexing" (FDD) to transmit and receive data on the same frequency. FDD allows the adapter to separate the incoming and outgoing signals by utilizing different time slots or subcarriers within the same frequency band.  
-Only one device on a channel can send data at a time.
-
-- 2.4
-2401 to 2484 MHz. This bandwidth is divided among 14 channels. Each of the WLAN / Wi-Fi Channels are spaced 5 MHz apart, except the last two channels which are spaced 12 MHz apart. Most of these channels (Channel 1 to Channel 11) can be used across the globe, except channels 12, 13 and 14. Channel 12 (2456 - 2478 MHz) and Channel 13 (2461 - 2483 MHz) are not allowed in North America, whereas Channel 14 (2473 - 2484 MHz) can only be used in Japan
-22 Mhz for each channel
-- 5 Ghz - less range - less crowded
-- 6 Ghz
-- Adjecent channel Interference
-- Transmit Spectrum Mask - ?
-- Co channel conention - co channel interference vs  overlapping channels
-- OFDM Spectral Mask - ?
 
 ## Layer 1
 

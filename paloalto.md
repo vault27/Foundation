@@ -47,9 +47,8 @@ Guides
 
 **Strata**
 
-- PA-220, PA-800, PA-3200, PA-5200, and PA-7000 Series
-- PA-7500 (1.5 Tbps), PA-5445, PA-45OR, PA-415-5G, PA-455
-- VM-Series: 50, 100, 300, 500, 700
+- Hardware NGFW
+- VM-Series
   - Amazon Web Services
   - Cisco ACI
   - Citrix NetScaler SDX
@@ -1233,7 +1232,7 @@ tx-unicast: 0,
 - Route tables for static routes: Unicast, Multicast, Both
 - All ingress traffic goes to firewall itself or virtual router object, vlan object or virtual wire object
 - Legacy virtual routers: RIP, OSPF, OSPFv3, BGP, multicast, static routes, redistribution, administrative distances
-- Advanced Route Engine of virtual routers supports the Border Gateway Protocol (BGP) dynamic routing protocol and static routes, can be only one - for large data centers, enterprises, ISPs, and cloud services
+- Advanced Routing Engine of virtual routers supports the Border Gateway Protocol (BGP) dynamic routing protocol and static routes, can be only one - for large data centers, enterprises, ISPs, and cloud services
 - IPsec tunnels are considered Layer 3 traffic segments for implementation purposes and are handled by virtual routers like any other network segments. Forwarding decisions are made by destination address, not by VPN policy
 - There are limitations for the number of entries in the forwarding tables (forwarding information bases [FIBs]) and the routing tables (routing information bases [RIBs]) in either routing engine
 - Lower administrative distanse is prefered
@@ -1255,6 +1254,11 @@ tx-unicast: 0,
 - There is a special static routes monitoring tab in routing stats
 - Policy rules do not influence these pings
 - Redistribution example: create redistribution profile, choose static, enter required destination prefix, choose redistribute, set priority: Profiles are matched in order (lowest number first), apply this path to OSPF and set metric that will be sent to OSPF
+- Administrative distance - inside virtual router:
+    - Static - 10
+    - OSPF Int - 30
+    - iBGP - 200
+    - eBGP - 20
 
 ### BGP
 
@@ -1285,6 +1289,13 @@ From Peer side:
 
 Show advertised routes for all peers in virtual router
 `show routing protocol bgp rib-out virtual-router VR_CORPIPSEC | match 10.105.4`
+
+### Advanced Routing Engine
+
+- Uses logical routers, rather than virtual routers
+- `Device > Setup > Management > Enable Advanced Routing`
+- `Network > Routing > Logical Routes`
+- `Network > Routing > Routing Profiles`
 
 ## Dual ISP design
 
@@ -2213,9 +2224,9 @@ A session created locally on the firewall will have the False value and one crea
 - Incomplete - three-way TCP handshake did not complete OR no enough data after the handshake - is not really an application
 - Insufficient data - not enough data to identify the application - for example one data packet after the handshake
 - unknown-tcp - firewall captured the three-way TCP handshake, but the application was not identified - custom app, no signatures
- - unknown-udp - custom app, no signatures
- - unknown-p2p - generic P2P heuristics
- - Not-applicable - port is blocked
+- unknown-udp - custom app, no signatures
+- unknown-p2p - generic P2P heuristics
+- Not-applicable - port is blocked
 
 ## Quarantine
 
@@ -3068,7 +3079,7 @@ It is **impossible** to configure with templates:
     - An IP address (includes IP Netmask, IP Range, and FQDN) in all areas of the configuration.
     - Interfaces in an IKE Gateway configuration (Interface) and in an HA configuration (Group ID).
     - Configuration elements in your SD-WAN configuration (AS Number, QoS Profile, Egress Max, Link Tag).
-- Panorama > Templates > Manage Variables > Create Variables
+- `Panorama > Templates > Manage Variables > Create Variables`
 - Variables need to begin with '$': $DNS=1.1.1.1/32
 - Use this variable in proper configurations
 - You can import CSV with values for variables into Stack, depending on a device
@@ -4114,7 +4125,7 @@ GwID/client IP  TnID   Peer-Address           Tunnel(Gateway)                   
 Show IPSec SA: Total 1 tunnels found. 1 ipsec sa found.
 ```
 
-**Show general info about all tunnels:total amount, IPs, interfaces**
+**Show general info about all tunnels: total amount, IPs, interfaces**
 
 ```
 show vpn flow
@@ -4300,11 +4311,27 @@ show device-certificate status
 
 ## Management Profiles
 
-- Network > Network Profiles > Interface Mgmt
-- Ping, Telnet, SSH, HTTP, HTTP OCSP, HTTPS, or SNMP
-- Response Pages (for Authentication Portal or URL Admin Override)
-- User-ID (to redistribute data and authentication timestamps)
-- User-ID Syslog Listener-SSL or User-ID Syslog Listener-UDP (to configure User-ID to monitor syslog senders for user mapping over SSL or User Datagram Protocol [UDP]traffic)
+- `Network > Network Profiles > Interface Mgmt`
+- Applied to non mgmt interfaces
+- The management (MGT) interface does not require an Interface Management profile
+- Enable Ping, Telnet, SSH, HTTP, HTTP OCSP, HTTPS, or SNMP
+- Enable Response Pages (for Authentication Portal or URL Admin Override) on interface
+- Enable User-ID (to redistribute data and authentication timestamps) on interface
+- Enable User-ID Syslog Listener-SSL or User-ID Syslog Listener-UDP (to configure User-ID to monitor syslog senders for user mapping over SSL or User Datagram Protocol [UDP]traffic)
+- Apply to interface `Network > Interfaces > Advanced > Other info`
+
+## SSH Service Profile
+
+- For management and HA
+- By default, SSH supports all ciphers, key exchange algorithms, and message authentication codes, which leaves your connection vulnerable to attack
+- Restrict the algorithms your SSH server supports
+- Secure SSH communications between appliances in an HA pair
+- Generate a new host key and specify data volume, time, and packet-based thresholds for SSH session key regeneration and exchange
+- `Device > Certification Management > SSH Service Profile`
+- Apply profile in `Device > Setup > Management` for management
+- Apply profile in `Device > High Availability > General > SSH HA Profile Setting`
+- `set ssh service-restart mgmt`
+- `set ssh service-restart ha`
 
 ## Zero touch provisioning
 
