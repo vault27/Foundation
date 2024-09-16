@@ -1297,6 +1297,58 @@ Show advertised routes for all peers in virtual router
 - `Network > Routing > Logical Routes`
 - `Network > Routing > Routing Profiles`
 
+### BFD
+
+- UDP 3784
+- Threeway handshake
+- UDP 4784 - for multihop support
+- Palo Alto Networks® implementation of BFD operates in asynchronous mode
+- Both endpoints send each other control packets (which function like Hello packets) at the negotiated interval
+- Detection time = negotiated transmit interval * Detection Time Multiplier
+- If a peer does not receive a control packet within the detection time - peer considers the session down
+- The firewall does not support demand mode, in which control packets are sent only if necessary rather than periodically
+- When you enable BFD for a static route and a BFD session between the firewall and the BFD peer fails, the firewall removes the failed route from the RIB and FIB tables and allows an alternate path with a lower priority to take over
+- When you enable BFD for a routing protocol, BFD notifies the routing protocol to switch to an alternate path to the peer
+- When an interface is running multiple protocols that use different BFD profiles, BFD uses the profile having the lowest Desired Minimum Tx Interval
+- Active/passive HA peers synchronize BFD configurations and sessions; active/active HA peers do not
+- PAN-OS does not support:
+    - Authentication
+    - Demand mode
+    - Sending or receiving Echo packets
+    - Poll sequences
+    - Congestion control
+    - BFD for LACP (micro-BFD with LAG interfaces)
+- BFD profile: `Network > Network Profiles > BFD Profile`
+- Mode: 
+    - Active—BFD initiates sending control packets to peer (default). At least one of the BFD peers must be Active; both can be Active
+    - Passive—BFD waits for peer to send control packets and responds as required
+- Desired Minimum Tx Interval (ms) - minimum interval to send control packets, minimum is different for different models, for example 5200 - 50 ms, Maximum is 2000, default - 1000
+- Too small intervall may cause flaps
+- If you have multiple routing protocols that use different BFD profiles on the same interface, configure the BFD profiles with the same Desired Minimum Tx Interval
+- Required Minimum Rx Interval (ms)
+- Detection Time Multiplier - from 2 to 50 - 3 is default
+- Hold Time (ms) - delay, in milliseconds, after a link comes up before BFD transmits BFD control packets.  BFD Active mode only. The default is 0, which means no transmit Hold Time is used; BFD sends and receives BFD control packets immediately after the link is established
+- Select Multihop to enable BFD over BGP multihop
+- Minimum Rx TTL - This is the minimum Time-to-Live value (number of hops) BFD will accept (receive) in a BFD control packet when BGP supports multihop BFD. (Range is 1-254; there is no default)
+- Apply profile to static route: `Network > Virtual Routers > Static routes > IPv4 > BFD profile`
+- Apply profile to all BGP interfaces: `Network > Virtual Routers > BGP`
+- Apply profile to single BGP peer interface (overriding the BFD setting for BGP): `Network > Virtual Routers > BGP > Peer Group > Peer > BGP Profile`
+- Apply to OSPF
+- Apply to RIP
+- `Network > Virtual Routers > Runtime stats > BFD Summary Information`
+
+```
+show routing bfd active-profile [<name>]
+show routing bfd details [interface<name>][local-ip<ip>][multihop][peer-ip <ip>][session-id][virtual-router<name>]
+show routing bfd drop-counters session-id <session-id>
+show counter global | match bfd
+
+clear routing bfd counters session-id all | <1-1024>
+
+clear routing bfd session-state session-id all | <1-1024>
+```
+
+
 ## Dual ISP design
 
 - One default gateway to ISP-1 with metric 10 - primary one
