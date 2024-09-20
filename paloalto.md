@@ -1790,6 +1790,11 @@ Basicly it defines whom to show captive portal.
 
 ### SD-WAN
 
+## Content-ID
+
+ - `Device > Setup > Content-ID > Content-ID Settings`
+ - Forward segments exceeding TCP content inspection queue - if we disable this part of applications may stop working - best security practice is to disable it
+
 ## Security profiles
 
 All Security Profiles are in `Objects > Security Profiles`  
