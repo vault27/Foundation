@@ -1504,32 +1504,29 @@ admin@Lab-2(active)> show running rule-use highlight vsys vsys1 rule-base securi
 
 ### NAT Policy
 
-Separate policy. Regulated by:
-- Zones
-- Interfaces
-- IP addresses
-- App services - ports
-
-First matched ruled is applied  
-The advantage of specifying the interface in the NAT rule is that the NAT rule is automatically updated to use any address subsequently acquired by the interface.  
-
-Supported  Source NAT types:
-
-- Static IP
-- Dynamic IP and port
-- Dynamic IP
-
-No NAT policy for exculsion  
-Use session browser to find NAT rule name  
-U-Turn NAT - user connects to Internal resource via external IP address and it is uturned on the firewall. Due to absence of internal DNS server for example. If we use regular Destination NAT for it, then traffic will be sent back to Internal network and web server will reply directly to client, causing assymetry. To avoid this Source NAT should be used as well, so the reply traffic will be sent to NGFW as well. Place the rule for it above all other
-
-Rule types:
-
-- ipv4
-- nat64
-- nptv6 - IPv6-to-IPv6 Network Prefix Translation
-
-Show all source NAT sessions: `show session all filter nat source`
+- Separate policy
+- Regulated by:
+    - Zones
+    - Interfaces
+    - IP addresses
+    - App services - ports
+- First matched ruled is applied  
+- The advantage of specifying the interface in the NAT rule is that the NAT rule is automatically updated to use any address subsequently acquired by the interface
+- Supported  Source NAT types
+    - Static IP
+    - Dynamic IP and port
+    - Dynamic IP
+- No NAT policy for exculsion  
+- Use session browser to find NAT rule name  
+- U-Turn NAT - user connects to Internal resource via external IP address and it is uturned on the firewall. Due to absence of internal DNS server for example. If we use regular Destination NAT for it, then traffic will be sent back to Internal network and web server will reply directly to client, causing assymetry. To avoid this Source NAT should be used as well, so the reply traffic will be sent to NGFW as well. Place the rule for it above all other
+- Rule types:
+    - ipv4
+    - nat64
+    - nptv6 - IPv6-to-IPv6 Network Prefix Translation
+- Show all source NAT sessions: `show session all filter nat source`
+- DNS rewrite: enabled in a NAT rule, reverse(default) or forward
+- Reverse: if the rule translates IP address 1.1.1.10 to 192.168.1.10, the firewall rewrites a DNS response of 192.168.1.10 to 1.1.1.10
+- Forward: if the rule translates IP address 1.1.1.10 to 192.168.1.10, the firewall rewrites a DNS response of 1.1.1.10 to 192.168.1.1
 
 ### QoS Policy
 
