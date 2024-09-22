@@ -4698,6 +4698,11 @@ sudo /Applications/GlobalProtect.app/Contents/Resources/uninstall_gp.sh
     - Any
     - Quarantine
 
+## DNS Proxy
+
+- Create DNS Proxy Object: `Network > DNS Proxy and Add a new object`
+
+
 ## Web proxy
 
 - Web proxy requires both a valid DNS Security license and the Prisma Access explicit proxy license
@@ -4706,6 +4711,8 @@ sudo /Applications/GlobalProtect.app/Contents/Resources/uninstall_gp.sh
 - For the transparent proxy method, the request contains the destination IP address of the web server and the client browser is redirected to the proxy
 - Transparent proxy requires a loopback interface, User-ID configuration in the proxy zone, and specific Destination NAT (DNAT) rules. Transparent proxy does not support X-Authenticated-User (XAU)
 - For the explicit proxy method, the request contains the destination IP address of the configured proxy and the client browser sends requests to the proxy directly
+- Setup Proxy: `Network > Proxy` - Interface, IP, Auth, DNS Proxy object
+- Kerberos or SAML authentication
 
 ## Decryption mirror
 
