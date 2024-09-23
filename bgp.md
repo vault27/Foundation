@@ -676,52 +676,44 @@ router bgp as-number
 address-family ipv4 [unicast | multicast | vrf vrf-name ]
 bgp dampening [half-life reuse suppress max-suppress-time ] [route-map map-name ]
 ```
+## Configuration
 
-## Nexus
-
-### Change default local preference
-
-It will be added to all routes to all neighbors
+### Nexus
 
 ```
-R3(config)# router bgp 1
-R3(config-router)# bgp default local-preference 200
-```
+router bgp 64703
+  router-id 10.10.2.7
+  bgp default local-preference 200 - It will be added to all routes to all neighbors
+  address-family ipv4 unicast
+    network 10.10.2.7/32
 
-### Change local preference per route
+vrf OTUS2
+neighbor 192.168.6.2
+remote-as 64800
 
-```
+local-as 64704 no-prepend replace-as 
+# Peering will be made using 64704 ASN instead of 64703. It is very usefull when we connect VRFs in Fabric via external  firewall.
+# no-prepend - By default, when the local-as command is configured, the router advertises routes to the neighbor with both the local-as and the real AS number. The router will not prepend its real AS number to the AS path when advertising routes to the neighbor. The BGP neighbor will only see the local-as as the originating AS, effectively hiding the real AS number
+# replace-as: The real AS is entirely replaced by the local-as, so the neighbor only sees the local-as - ?
+
+neighbor 192.0.2.1 allowas-in 3
+# router will accept routes from the neighbor that include up to 3 occurrences of the local AS
+
+address-family ipv4 unicast
+
+# Change local preference per route - done with a route map
+
 R3(config)# ip prefix-list net4 4.4.4.0/24
 R3(config)# route-map PREF permit 10
 R3(config-route-map)# match ip address prefix-list net4
 R3(config-route-map)# set local-preference 300
 R3(config)# router bgp 1
 R3(config)# neighbour 192.168.35.5 route-map PREF in
-```
 
-**Configure different AS number for particular neighbor on Nexus**  
-Peering will be made using 64704 ASN instead of 64703  
-It is very usefull when we connect VRFs in Fabric via external firewall
-```
-router bgp 64703
-  router-id 10.10.2.7
-  address-family ipv4 unicast
-    network 10.10.2.7/32
-
-vrf OTUS2
-    neighbor 192.168.6.2
-      remote-as 64800
-      local-as 64704 no-prepend replace-as
-      address-family ipv4 unicast
-```
-
-**Configure routes summarization/aggregation: all /32 routes to /24 route in address family section**
-
-```
+# Configure routes summarization/aggregation: all /32 routes to /24 route in address family section, only one /24 prefix will be sent
 border-leaf(config-router-vrf-af)# aggregate-address 192.168.1.0/24 as-set summary-only
-```
-Now only one /24 prefix will be sent
 
+```
 
 **Origin code IGP**
 
