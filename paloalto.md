@@ -1504,32 +1504,29 @@ admin@Lab-2(active)> show running rule-use highlight vsys vsys1 rule-base securi
 
 ### NAT Policy
 
-Separate policy. Regulated by:
-- Zones
-- Interfaces
-- IP addresses
-- App services - ports
-
-First matched ruled is applied  
-The advantage of specifying the interface in the NAT rule is that the NAT rule is automatically updated to use any address subsequently acquired by the interface.  
-
-Supported  Source NAT types:
-
-- Static IP
-- Dynamic IP and port
-- Dynamic IP
-
-No NAT policy for exculsion  
-Use session browser to find NAT rule name  
-U-Turn NAT - user connects to Internal resource via external IP address and it is uturned on the firewall. Due to absence of internal DNS server for example. If we use regular Destination NAT for it, then traffic will be sent back to Internal network and web server will reply directly to client, causing assymetry. To avoid this Source NAT should be used as well, so the reply traffic will be sent to NGFW as well. Place the rule for it above all other
-
-Rule types:
-
-- ipv4
-- nat64
-- nptv6 - IPv6-to-IPv6 Network Prefix Translation
-
-Show all source NAT sessions: `show session all filter nat source`
+- Separate policy
+- Regulated by:
+    - Zones
+    - Interfaces
+    - IP addresses
+    - App services - ports
+- First matched ruled is applied  
+- The advantage of specifying the interface in the NAT rule is that the NAT rule is automatically updated to use any address subsequently acquired by the interface
+- Supported  Source NAT types
+    - Static IP
+    - Dynamic IP and port
+    - Dynamic IP
+- No NAT policy for exculsion  
+- Use session browser to find NAT rule name  
+- U-Turn NAT - user connects to Internal resource via external IP address and it is uturned on the firewall. Due to absence of internal DNS server for example. If we use regular Destination NAT for it, then traffic will be sent back to Internal network and web server will reply directly to client, causing assymetry. To avoid this Source NAT should be used as well, so the reply traffic will be sent to NGFW as well. Place the rule for it above all other
+- Rule types:
+    - ipv4
+    - nat64
+    - nptv6 - IPv6-to-IPv6 Network Prefix Translation
+- Show all source NAT sessions: `show session all filter nat source`
+- DNS rewrite: enabled in a NAT rule, reverse(default) or forward
+- Reverse: if the rule translates IP address 1.1.1.10 to 192.168.1.10, the firewall rewrites a DNS response of 192.168.1.10 to 1.1.1.10
+- Forward: if the rule translates IP address 1.1.1.10 to 192.168.1.10, the firewall rewrites a DNS response of 1.1.1.10 to 192.168.1.1
 
 ### QoS Policy
 
@@ -1545,10 +1542,11 @@ Enables the firewall to mark traffic with the same DSCP value that was detected 
 - Ingress traffic cannot be managed
 - QoS profile - matching traffic is then shaped based on the QoS profile class settings as it exits the physical interface. Each QoS profile rule allows you to configure individual bandwidth and priority settings for up to eight QoS classes, as well as the total bandwidth allowed for the eight classes combined. In every profile you configure priorities for every class. Then you apply a profile to an interface.
 - QoS policy - define traffic you want to receive QoS treatment and assign that traffic a QoS class. QoS policy rule is applied to traffic after the firewall has enforced all other security policy rules, including Network Address Translation (NAT) rules.
-- QoS egress interface - this is where you apply QoS profile. If you limit Youtube then Egress interface is Internal interface of FW. You apply it in separate section Network > QoS
+- QoS egress interface - this is where you apply QoS profile. If you limit Youtube then Egress interface is Internal interface of FW. You apply it in separate section `Network > QoS`
 - DSCP classification allows you to both honor DSCP values for incoming traffic and mark a session with a DSCP value as session traffic exits the firewall
   
-**Policies > QoS**  
+**Policies > QoS** 
+
 Define a QoS policy rule to match to traffic based on:
 
 - Applications and application groups
@@ -1563,6 +1561,7 @@ Define a QoS policy rule to match to traffic based on:
     - IP Precedence (ToS): Can be used by legacy network devices to mark priority traffic (the IP precedence header field was used to indicate the priority for a packet before the introduction of the DSCP classification) - 8 possible values
     - Custom Codepoint: Can be used to match to traffic by entering a codepoint name and binary value
 - At the end you define a class for this traffic: 1 of 8 + schedule
+- Default Class - 4
   
 
 **QoS profile**
@@ -1790,6 +1789,11 @@ Basicly it defines whom to show captive portal.
 ### DoS protection policy
 
 ### SD-WAN
+
+## Content-ID
+
+ - `Device > Setup > Content-ID > Content-ID Settings`
+ - Forward segments exceeding TCP content inspection queue - if we disable this part of applications may stop working - best security practice is to disable it
 
 ## Security profiles
 
@@ -4694,6 +4698,11 @@ sudo /Applications/GlobalProtect.app/Contents/Resources/uninstall_gp.sh
     - Any
     - Quarantine
 
+## DNS Proxy
+
+- Create DNS Proxy Object: `Network > DNS Proxy and Add a new object`
+
+
 ## Web proxy
 
 - Web proxy requires both a valid DNS Security license and the Prisma Access explicit proxy license
@@ -4702,6 +4711,8 @@ sudo /Applications/GlobalProtect.app/Contents/Resources/uninstall_gp.sh
 - For the transparent proxy method, the request contains the destination IP address of the web server and the client browser is redirected to the proxy
 - Transparent proxy requires a loopback interface, User-ID configuration in the proxy zone, and specific Destination NAT (DNAT) rules. Transparent proxy does not support X-Authenticated-User (XAU)
 - For the explicit proxy method, the request contains the destination IP address of the configured proxy and the client browser sends requests to the proxy directly
+- Setup Proxy: `Network > Proxy` - Interface, IP, Auth, DNS Proxy object
+- Kerberos or SAML authentication
 
 ## Decryption mirror
 
@@ -4903,25 +4914,27 @@ Signs of assymetric routing, counters to increment:
 - flow_tcp_non_syn      Non-SYN TCP packets without session match
 - flow_tcp_non_syn_drop Packets dropped: non-SYN TCP without session match
 
-flow_tcp_non_syn_drop - Packets dropped: non-SYN TCP without session match 
-The Palo Alto Networks Next-Generation Firewall builds TCP sessions based on the three-way handshake. By default, the device drops TCP packets unless a TCP three-way handshake is first established. Good non-SYN TCP communication can occur on networks with asymmetric routing, where the device may see only some of the packets. Good non-SYN TCP communication can also occur when a device is first put on a live network.
+Details
 
-tcp_drop_out_of_wnd - out-of-window packets dropped 
+- flow_tcp_non_syn_drop - Packets dropped: non-SYN TCP without session match 
+The Palo Alto Networks Next-Generation Firewall builds TCP sessions based on the three-way handshake. By default, the device drops TCP packets unless a TCP three-way handshake is first established. Good non-SYN TCP communication can occur on networks with asymmetric routing, where the device may see only some of the packets. Good non-SYN TCP communication can also occur when a device is first put on a live network
+
+- tcp_drop_out_of_wnd - out-of-window packets dropped 
 The Palo Alto Networks Firewall creates a sliding sequence window starting with the original ACK (the window size is based on the type of traffic within the session). It is expected that the packet sequence numbers within the current session reside within this sliding window. This window adjusts with the type of traffic and whenever new ACK messages are received. The default behavior on the device is to drop packets when sequence numbers are outside this window.
 
-tcp_exceed_flow_oo_seg_limit - Out-of-window packets dropped due to the limitation on tcp out-of-order queue size 
+- tcp_exceed_flow_oo_seg_limit - Out-of-window packets dropped due to the limitation on tcp out-of-order queue size 
 The Palo Alto Networks Firewall tries to handle out-of-window conditions if the packets are out of order, collecting up to 32 out-of-order packets per session. This counter identifies that packets have exceeded the 32-packet limit. If the device reaches the 32-packet limit before identifying the correct sequence, the device will bypass L4-L7 scanning for the session, by default.
 
-tcp_out_of_sync - Can't continue tcp reassembly because it is out of sync 
+- tcp_out_of_sync - Can't continue tcp reassembly because it is out of sync 
 This counter increments when the firewall detects an ACK sequence number outside the sliding sequence window. The sliding sequence window is calculated based on the original ACK and the type of traffic within the session. By default, the device rejects these out-of-sync packets. To disable this feature, change the setting to ignore. Bypass can be used, but effectively bypasses the scanning of the session, once the session is identified as out-of-sync.
 
-View current Global settings
+**View current Global settings**
 
 ```
 admin@PA-1-1(active-primary)> show session info
 ```
 
-Disable TCP sanity checks
+**Disable TCP sanity checks**
 
 ```
 > configure 
@@ -4932,14 +4945,35 @@ Entering configuration mode
 # commit
 ```
 
-We may also configure these options only for one zone in Zone Protection Profile > Packet based attacks > TCP Drop.
+We may also configure these options only for one zone in `Zone Protection Profile > Packet based attacks > TCP Drop`.
 Zone Protection Profiles are applied to sessions that ingress on the zone where the protection profile is enabled
 
 Session setup requires one cluster member to see the complete TCP three-way handshake.
 For example it can be required on a member of cluster when assymetric routing is used. Request goes via one PA and reply via another, without these options long sessions with downloading a file will not work.
 More specifically for this case only asymmetric-path bypass is required
 Main reason why traffic will not work without it:
-tcp_drop_out_of_wnd - out-of-window packets dropped 
+**tcp_drop_out_of_wnd - out-of-window packets dropped**
 
-After either the systemwide settings are disabled, or the Zone Protection Profile is added to a zone, the only counter that should still increment is
-flow_tcp_non_syn
+After either the system wide settings are disabled, or the Zone Protection Profile is added to a zone, the only counter that should still increment is
+`flow_tcp_non_syn`
+
+
+## Application layer gateway
+
+- Some applications require dynamically open pinholes to establish the connection
+- These applications use the application-layer payload to communicate the dynamic TCP or UDP ports on which the application opens data connections
+- FW opens a pinhole for a limited time and for exclusively transferring data or control traffic. The firewall also performs a NAT rewrite of the payload when necessary
+- Protocols which need ALG:
+    - SIP
+    - SCCP
+    - MGCP
+    - FTP
+    - RTSP
+    - MySQL
+    - Oracle/SQLNet
+    - TNS
+    - RPC
+    - RSH
+    - UNIStim
+    - H.225
+    - H.248

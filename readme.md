@@ -1,50 +1,92 @@
 # Foundation
 
-My personal knowledge base on networks, security, protocols, cryptography, technologies, products, infrastructure, operating systems, virtualization.
+Network Engineer Library
+
+## Switching
+
+- [Switching](switching.md)
+- VLAN
+- [LAG](lag.md)
+    - MC-LAG
+    - LACP
+    - Etherchannel - port channel
+    - vCP
+- [STP](stp.md)
+    - RSTP
+    - MSTP
+- [Ethernet](ethernet.md)
+- ARP
+- VTP
+- DTP
+- CDP
+- LLDP
+- Power over Ethernet
+
+## Transport protocols
+
+- [IP](ip.md)
+- [MPLS](mpls.md)
+- [TCP](tcp.md)
+- [UDP](udp.md)
+- [ICMP](icmp.md)
+- [TLS/SSL](ssl.md)
+
+ ## Routing
+
+- [Routing](routing.md)
+- VRF
+- [OSPF](ospf.md)
+- [BGP](bgp.md)
+- [EIGRP](eigrp.md)
+- [IS-IS](isis.md)
+- [RIP](rip.md)
+
+## Wireless
+
+* [Wireless](wireless.md)
+
+## IP services
+
+* [DNS](dns.md)
+- DHCP
+
+## VPN
+
+- [IPSec](ipsec.md)
+- [DMVPN](dmvpn.md)
+- RA VPN
+
+## Load Balancers
+
+- [F5](f5.md)
+
+## NGFW
+
+* [Fortinet](fortinet.md)
+* [Palo Alto](paloalto.md)
 
 ## Network foundation
 
 * [OSI model](osi.md)
 * [Hardware architectures](hardware.md)
 * [Fiber](fiber.md)
-* [Wireless](wireless.md)
-* [Ethernet](ethernet.md)
-* [IP](ip.md)
-* [MPLS](mpls.md)
+
+
 * [VPLS](vpls.md)
 * [ATOM](atom.md)
+
+## QoS
+
 * [QoS](qos.md)
-* [IPSec](ipsec.md)
-* [DMVPN](dmvpn.md)
-* [TCP](tcp.md)
-* [UDP](udp.md)
-* [ICMP](icmp.md)
-* [TLS/SSL](ssl.md)
 
 ### L7
 
 * [HTTP](http.md)
 * [ICAP](icap.md)
 * [SNMP](snmp.md)
-* [DNS](dns.md)
 * [Websocket](websocket.md)
 
-### Switching
-
-* [Switching](switching.md)
-* [LAG](lag.md)
-* [STP](stp.md)
-
-### Routing
-
-* [Routing](routing.md)
-* [OSPF](ospf.md)
-* [BGP](bgp.md)
-* [EIGRP](eigrp.md)
-* [IS-IS](isis.md)
-* [RIP](rip.md)
-
-### Data center
+## Data center
 
 * [VxLAN](vxlan.md)
 * [EVPN](evpn.md)
@@ -68,28 +110,16 @@ My personal knowledge base on networks, security, protocols, cryptography, techn
 ## Vendors
 
 * [Cisco](cisco.md)
-* [Fortinet](fortinet.md)
-* [Palo Alto](paloalto.md)
-* [F5](f5.md)
 
 ## Operating systems
 
 * [Windows](Windows.md)
 * [Linux](linux.md)
 
-### Virtualization foundation
-
-* [Virtualization](virtualization.md)
-* [VMWare](vmware.md)
-* [Azure](./)
-* [Docker](docker.md)
-* [Kubernetes](Kubernetes.md)
-
 ## Automation
 
 * [Python](python.md)
 * [JSON](json.md)
-* [Ansible](ansible.md)
 * [Git](git.md)
 * [Bash](bash.md)
 

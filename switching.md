@@ -1,20 +1,5 @@
 # Switching
 
-## Technologies
-
-- VLANs
-- STP
-- RSTP
-- MSTP
-- VTP
-- DTP
-- CDP
-- LLDP
-- LAG
-- MC-LAG
-- LACP
-- Etherchannel - port channel
-- Power over Ethernet
 
 ## Hardware
 
