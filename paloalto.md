@@ -2680,11 +2680,11 @@ Use cases
 
 Session Synchronization States
 
-- Pending → Synchronization is not triggered yet
-- Unknown. → Device Serial Number and Peer IP is configured but session synchronization process has not started yet
-- In-Progress  → Full session synchronization is running 
-- Completed  → Full session synchronization is completed and new sessions will be synchronized in real time 
-- Disabled → Session synchronization is disabled to the member or for HA peer
+- Pending - Synchronization is not triggered yet
+- Unknown - Device Serial Number and Peer IP is configured but session synchronization process has not started yet
+- In-Progress - Full session synchronization is running 
+- Completed - Full session synchronization is completed and new sessions will be synchronized in real time 
+- Disabled - Session synchronization is disabled to the member or for HA peer
 
 Show logs about HA4 sessions sync
 
@@ -4266,13 +4266,34 @@ Check the GRE session
 ## VSYS
 
 - If several VSYSes are connected via extermal equipment then there is an issue - to many sessions!
+- A Superuser administrator can create virtual systems and add a Device administrator, vsysadmin, or vsysreader
+- A Device administrator can access all virtual systems, but cannot add administrators
+- A vsysadmin doesn’t have access to network interfaces, VLANs, virtual wires, virtual routers, IPSec tunnels, GRE tunnels, DHCP, DNS Proxy, QoS, LLDP, or network profiles
+- A vsysreader doesn’t have access to network interfaces, VLANs, virtual wires, virtual routers, IPSec tunnels, GRE tunnels, DHCP, DNS Proxy, QoS, LLDP, or network profiles
+- Shared objects are available for all VSYSs
+-  If you try to create a shared object with the same name and type as an existing object in a virtual system, the virtual system object is used
+- All Shared objects pushed from the Panorama management server are duplicated to each vsys and count toward the total maximum capacity for each object 
+- 
 
-**Inter-vsys routing**
+### Inter-vsys routing
 
-- Special external Zone is created on every VSYS
+- Special external Zone is created on every VSYS, External - is a type, name can be any
 - Interface is added to it
 - Routes are added, next hop is VR - and you choose wich one
-- Rules are created to allow communication between VSYS
+- Rules are created to allow communication between VSYS: one rule in each VSYS, for example we add rule in VSYS1 to allow traffic from Zone A to External Zone of VSYS 1 and then one rule in VSYS2 to allow traffic from External zone of VSYS2 to ZoneB of VSYS2
+- Communication between two virtual systems uses two sessions, unlike the one session used for a single virtual system
+- A host from vsys1 needs to access a server on vsys2. A host in the trust1 zone initiates traffic to the firewall, and the firewall creates the first session: source zone trust1 to destination zone untrust1. Traffic is routed to vsys2, either internally or externally. Then the firewall creates a second session: source zone untrust2 to destination zone trust2. Two sessions are needed for this inter-vsys traffic
+
+### Shared gateway
+
+- A shared gateway is an interface that multiple virtual systems share in order to communicate over the Internet
+- Each virtual system requires an External Zone, which acts as an intermediary, for configuring security policies that allow or deny traffic from the virtual system’s internal zone to the shared gateway
+- Security policy and App-ID evaluations are not performed between a virtual system and a shared gateway so it is better to use shared gateway instead of separate VSYS for Internet access
+- Shared gateway has public IP
+- All VSYSs have internal IPs
+- Shared gateway is always visible to all of the virtual systems on the firewall
+- A shared gateway ID number appears as sg<ID> on the web interface
+- A shared gateway is a limited version of a virtual system; it supports NAT and policy-based forwarding (PBF), but does not support Security, DoS policies, QoS, Decryption, Application Override, or Authentication policies
 
 **CLI**
 
