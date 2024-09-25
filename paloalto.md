@@ -4687,11 +4687,10 @@ Where is it configured?
 
 ### Client
 
-- Complete uninstall client on MAC with reseting passcode counter
-
-```
-sudo /Applications/GlobalProtect.app/Contents/Resources/uninstall_gp.sh
-```
+- Complete uninstall client on MAC with reseting passcode counter: `sudo /Applications/GlobalProtect.app/Contents/Resources/uninstall_gp.sh`
+- By default, the client will send IPsec keepalives every 10 seconds, if 5 keepalives are missed (50 seconds) then the connection is torn down and retried
+- The keepalives can be seen in PanGPS logs if it is set on dump level. Keepalives are sent only when there is no network activity
+- Keepalives are regular ICMP packets exchanged within the tunnel between clients private IP address and gateway public IP address
 
 ## HIP
 
