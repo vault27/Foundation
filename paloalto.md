@@ -419,35 +419,22 @@ https://knowledgebase.paloaltonetworks.com/KCSArticleDetail?id=kA10g000000ClVHCA
 **3. FW new session setup - slow path**
 
 - Zone protection checks
-
 - TCP state check
-
 - Determine  the  packet-forwarding path: TAP - Discard, VW - Exit interface, L2 - MAC table, L3 - next hop
-
 - NAT
-
 - User-ID, Group mapping
-
 - DoS protection Policy
-
 - Security Policy Lookup - checks 6 Tuples with App - Any - Pre-NAT
-
 - Session allocation - Session state changes from INIT (pre-allocation) to OPENING (post-allocation)
-
 - Session is added to the flow lookup table for both C2S and S2C flows and firewall changes the session’s state from  OPENING to ACTIVE
-
 - The firewall then sends the packet into Session Fast Path phase for security processing
 
 **4.FW Fastpath**
 
 - Session refresh
-
 - TCP reassembly
-
 - NAT
-
 - SSL Decryption
-
 - Captive Portal
 
 **5.App-ID**
@@ -1979,7 +1966,7 @@ Actions for site access:
     - Domain credential filter (using Windows-based agent): The User‐ID agent is installed on a Read-Only Domain Controller. The User‐ID agent collects password hashes that correspond to users for whom you want to enable credential detection, and it sends these mappings to the firewall. The firewall then checks if the source IP address of a session matches a username and if the password submitted to the web page belongs to that username. With this mode, the firewall only blocks or alerts on the submission when the submitted password matches a user password
 - Windows User-ID agent configured with the User-ID credential service add-on
 
-Actions for credential detections:
+**Actions for credential detection**
 
 - alert - log
 - allow
@@ -2037,6 +2024,13 @@ Use a URL Filtering profile in the following cases:
 - To record traffic to URL categories in URL filtering logs
 - To specify more granular actions, such as alert, on traffic for a specific category
 - To configure a response page that displays when users access a blocked or blocked-continue website.
+
+**Ways to block the URL**
+
+- Custom URL category - in Profile + in Sec Policy
+- External Dynamic List - in Profile + in Sec Policy
+- Custom URL cat in Sec Policy + in Profile
+- PAN-DB URL cat - in Profile + in Policy - the last one to check
 
 ### Data Filtering
 
@@ -2383,9 +2377,9 @@ Bank case: script sends via XML API Tag + IP, based on this Tag IP is added to D
 
 - Text file that is hosted on an external web server so that the firewall can import objects—IP addresses, URLs, domains—included in the list and enforce policy
 - `Objects > External Dynamic Lists`
-- Used in Policy: Source/Destination Address, URL category
+- Can be used in Policy: Source/Destination Address, URL category
 - Configure DNS Sinkholing for a List of Custom Domains
-- Use an External Dynamic List in a URL Filtering Profile
+- Can be used in a URL Filtering Profile
 
 ## HA
 
@@ -3746,7 +3740,7 @@ scp export mgmt-pcap from mgmt.pcap to < username@host:path>
 - User-ID
 - Decryption
 - Tunnel Inspection
-- Configuration
+- Configuration - all configuration changes including Panorama, when there is a commit from Panorama, Panorama user is specified
 - System
 - Authentication
 - Unified - entries from the Traffic, Threat, URL Filtering, WildFire Submissions, and Data Filtering logs displayed in a single view
@@ -4998,3 +4992,15 @@ After either the system wide settings are disabled, or the Zone Protection Profi
     - UNIStim
     - H.225
     - H.248
+
+## ACC
+
+- Timeline
+- Global filter
+- Network activity
+- Threat activity
+- Blocked activity
+- Tunnel Activity
+- Global Protect Activity
+- SSL Activity
+- Custom tabs
