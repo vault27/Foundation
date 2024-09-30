@@ -930,7 +930,8 @@ Some of the common causes of a filled partition:
 show system disk-space
 ```
 
-Has to be run manually to bring the disk usage to below 90%. It is designed for platforms when 95% automatic disk clean up is not sufficient to hold TSF generated. It includes cleanup by deleting backup logfiles.  If you need this command run periodically, an external periodic script may be invoked.
+Has to be run manually to bring the disk usage to below 90%. It is designed for platforms when 95% automatic disk clean up is not sufficient to hold TSF generated. It includes cleanup by deleting backup logfiles.  If you need this command run periodically, an external periodic script may be invoked.  
+The threshold value should be higher than the current disk usage. For example, threshold value 90 is not acceptable if disk usage is 94.
 
 ```
 debug software disk-usage cleanup deep threshold <90%-100%>
@@ -938,6 +939,7 @@ debug software disk-usage cleanup deep threshold <90%-100%>
 
 Automatically applied when 95% disk usage is detected and more aggressive cleaning is applied, including removing more backup log files.  
 This will automatically truncate all old log files (entries under all *var/log/pan directories matching *.1, ... *.4, *.log.old) if the 95% occupancy alarm is tripped
+
 
 ```
 debug software disk-usage aggressive-cleaning enable
@@ -3424,6 +3426,44 @@ status: failed
 
 request certificate fetch
 ```
+
+### Upgrade
+
+- Backup
+- Upgrade secondary
+- Suspend the Primary peer to force a failover
+- Upgrade Primary
+- Preemption is disabled by default, after reboot Primary will become Primary
+- Upgrade log collectors
+- Commit > Commit and Push and Commit and Push the Panorama managed configuration to all managed devices - ? - or 1 FW only
+
+Details
+
+- Export named Panorama configuration snapshot (Panorama > Setup > Operations)
+- Export Panorama and devices Config Bundle
+- Check which firewalls are connected
+- Install the latest content updates - ?
+- Check plugins - ?
+- Panorama > Software - download
+```
+> request system software check
+> request system software download version 10.2.9-h1
+```
+- Get current system stats
+```
+> show log-collector-group all - make sure config stats is in sync
+> show logging-status
+> show system info
+```
+- Install upgrade: `> request system software install version 10.2.9-h1`
+- Validate: `> debug swm history `
+- Reboot: `> request restart system`
+- Suspend active if HA: `> request high-availability state suspend`
+- Panorama > High Availability > Suspend local Panorama
+- Restore primary" `request high-availability state functional`
+- Do a test commits to USERFW to see if commits are successful + Prisma
+- On log collectors: `> show logging-status all`
+- Check that all firewalls are Connected
 
 ## Hardware
 
