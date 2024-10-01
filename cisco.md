@@ -570,3 +570,20 @@ Router1(config)# service tcp-keepalives-out
 ```
 
 This enables TCP keep-alives for inbound and outbound traffic. This helps to drop the session if one peer is rebooted for example.
+
+## Packet capture
+
+IOS
+
+```
+ip access-list extended BGP_FILTER
+              permit ip host 10.125.5.17 host 10.125.5.20
+              permit ip host 10.125.5.20 host 10.125.5.17
+      
+monitor capture bgp access-list BGP_FILTER buffer size 100 interface Port-channel2.1197 both
+monitor capture bgp start
+show monitor capture bgp
+monitor capture bgp stop
+monitor capture bgp export flash:bgp.pcap
+no monitor capture mycapture
+```

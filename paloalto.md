@@ -515,8 +515,6 @@ Different types of DoS protection can be configured in different places
 
 ### DoS Profile
 
-![alt text](images/image.png)
-
 - **Type**: Aggregated or Classified
     - Aggregated - thresholds for a group of devices, for example you have 5 devices, a Max Rate of 20,000 CPS means the total CPS for the group is 20,000, and an individual device can receive up to 20,000 CPS if other devices don’t have connections
     - Classified - Sets flood thresholds that apply to each individual device specified in a DoS Protection policy rule. For example, if you set a Max Rate of 5,000 CPS, each device specified in the rule can accept up to 5,000 CPS before it drops new connections
