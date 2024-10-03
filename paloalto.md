@@ -1149,6 +1149,7 @@ There are 5 sections in a profile:
     - It ignores any Layer 2 or Layer 3 addresses for switching or routing purposes
     - A virtual wire interface does not use an Interface Management Profile
     - All the firewalls that are shipped from the factory have two Ethernet ports (port 1 and port 2) preconfigured as virtual wire interfaces. These interfaces allow all of the untagged traffic
+    - You can create create VWire subinterfaces with different VLAN IDs  and assign each sub interface to unique zone. Thus you can insert NGFW between 2 switches via Trunk Link
 - TAP passively monitor traffic flows across a network by using a switch port analyzer (SPAN) or mirror port
 - HA
 - Aggregate interfaces - IEEE 802.1AX link aggregation - harwdware media can be mixed - interface type must be the same - 8 groups, some models - 16, 8 interfaces un each group - naming: ae.1-8
