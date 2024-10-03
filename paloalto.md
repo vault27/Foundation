@@ -1431,7 +1431,7 @@ clear routing bfd session-state session-id all | <1-1024>
   - Zone
   - Address
   - User
-  - Device
+  - Device: we can use here a device from Objects > Devices or HIP profile from Objects > Global Protect > HIP profiles
 - Destination
   - Zone
   - Address
