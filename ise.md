@@ -85,7 +85,7 @@ Device Administration / Policy Elements / Results / TACACS Profiles
 
 ### Logs
 
-Operations > TACACS > Live Logs
+`Operations > TACACS > Live Logs`
 
 - Each successfull login generates 2 logs: Authentication and Aithorization
 - All details are available:
