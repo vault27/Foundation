@@ -702,8 +702,8 @@ remote-as 64800
 
 local-as 64704 no-prepend replace-as 
 # Peering will be made using 64704 ASN instead of 64703. It is very usefull when we connect VRFs in Fabric via external  firewall.
-# no-prepend - By default, when the local-as command is configured, the router advertises routes to the neighbor with both the local-as and the real AS number. The router will not prepend its real AS number to the AS path when advertising routes to the neighbor. The BGP neighbor will only see the local-as as the originating AS, effectively hiding the real AS number
-# replace-as: The real AS is entirely replaced by the local-as, so the neighbor only sees the local-as - ?
+# It means that routes will be sent to this neighbor router with added AS number 64704 instead of 64703, but it does not influence receiving of routes, AS path in received routes will be still compared with general AS number 64703 - !!!
+# no-prepend replace-as - These 2 options work together. By default, when the local-as command is configured, the router advertises routes to the neighbor with both the local-as and the real AS number. The router will not prepend its real AS number to the AS path when advertising routes to the neighbor. The BGP neighbor will only see the local-as as the originating AS, effectively hiding the real AS number
 
 neighbor 192.0.2.1 allowas-in 3
 # router will accept routes from the neighbor that include up to 3 occurrences of the local AS
