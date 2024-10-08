@@ -3429,7 +3429,13 @@ request certificate fetch
 ### Upgrade
 
 - Backup
-- Upgrade secondary
+- Check that everything is commited
+- Check HA widjet
+- Suspend secondary
+- Export csv list of all devices
+- Upgrade Secondary
+- Reboot Secondary
+- Check HA widget and version
 - Suspend the Primary peer to force a failover
 - Upgrade Primary
 - Preemption is disabled by default, after reboot Primary will become Primary
