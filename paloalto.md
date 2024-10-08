@@ -58,7 +58,7 @@ Guides
   - OpenStack
   - VMware ESXi, VMware NSX, and VMware vCloud Air
 - Panorama
-- Strata Cloud Manager
+- Strata Cloud Manager - instead of Panorama, in the cloud
 - SD-WAN
 - PAN-OS
 - CN-Series - for Kubernetes - secure traffic between pods in different trust zones and namespaces, for protection against known and zero-day malware, and to block data exfiltration from your containerized environments
