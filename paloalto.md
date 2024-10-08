@@ -3438,9 +3438,22 @@ request certificate fetch
 - Check HA widget and version
 - Suspend the Primary peer to force a failover
 - Upgrade Primary
-- Preemption is disabled by default, after reboot Primary will become Primary
+- Check HA widget and version
+- Failover back to Primary
+- Export csv list of all devices and compare amount of disconnected devices
+- Commit > Commit and Push and Commit and Push the Panorama managed configuration to 1 FW only: Template and Policy
+- Check Sync Status in list of FWs
+- Check status of log collectors
 - Upgrade log collectors
-- Commit > Commit and Push and Commit and Push the Panorama managed configuration to all managed devices - ? - or 1 FW only
+    > request system software check
+    > request system software download version 10.2.9-h1
+    > request system software install version 10.2.9-h1
+    > debug swm history 
+    > request restart system
+- Check status of log collectors
+- Preemption is disabled by default, after reboot Primary will become Primary
+
+
 
 Details
 
