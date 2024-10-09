@@ -4,7 +4,7 @@
 
 ### Groups
 
-- Get group DN based on CN: `Get-ADGroup -Filter {Name -eq "Group123"} | Select-Object DistinguishedName`
+
 - Get group DN based on CN: `dsquery group -samid "L-MSK-KLTN-ACC-Internet-Audio"`
 
 **Add static route**
@@ -24,8 +24,6 @@ for /L %I in (1,1,254) DO ping -w 30 -n1 192.168.1.%I | find "Reply"
 ```
 dsquery user -name administrator
 ```
-
-
 
 **Show all users in a group**
 
@@ -61,3 +59,8 @@ net user joe.doe /domain | findstr /i "juniper"
 
 **Open network adapapter settings**  
 `ncpa.cpl`
+
+## Powershell
+
+- Get group DN based on CN: `Get-ADGroup -Filter {Name -eq "Group123"} | Select-Object DistinguishedName`
+- Get group DN based on CN: `Get-ADGroup ftp_users -Server corp.ad.com`
