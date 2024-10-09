@@ -2494,6 +2494,11 @@ Supported deployments
 - Layer 2
 - Layer 3 
 
+What is synced
+
+- IKE phase 1 SA information is NOT synchronized between the HA firewalls
+- test vpn ike-sa" to bring up phase 1 automatically in the event of a failover
+
 Configuration workflow
 
 - Enable Ping on management interface
