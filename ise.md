@@ -94,3 +94,11 @@ Device Administration / Policy Elements / Results / TACACS Profiles
   - Shell profile
   - Response attributes
  
+## Timeouts
+
+Work Centers -> Device Administration -> Settings -> Connection Settings.
+TACACS Protocol Session Timeout should be the default value of 5 minutes or less.
+TACACS Connection Timeout should be the default value of 10 minutes or less.
+
+Work Centers -> Device Administration -> Policy Elements -> Results -> TACACS Profiles.
+Any TACACS+ Shell Profile with "Shell" type should have "Idle Time" set to "10" minutes or less.
