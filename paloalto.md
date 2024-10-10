@@ -3399,7 +3399,7 @@ clear log log-type
 
 **Health monitoring**
 
-- Panorama > Managed devices > Health
+- `Panorama > Managed devices > Health`
 - Throughput, sessions, connections, packets, interfaces, logging rate, memory, CPU (management plane, data plane), packet buffers, HA, Cluster
 
 **Telemetry in Panorama**
