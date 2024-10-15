@@ -46,7 +46,7 @@ Administartion > Network Resources > Network Devices
 
 ### Device Admin Policy Sets
 
-Work Centers > Device Administration Policy Sets
+`Work Centers > Device Administration Policy Sets`
 
 - Policy Name
 - Conditions
@@ -87,13 +87,17 @@ Device Administration / Policy Elements / Results / TACACS Profiles
 
 `Operations > TACACS > Live Logs`
 
-- Each successfull login generates 2 logs: Authentication and Aithorization
+- Each successfull login generates 2 logs: Authentication and Authorization
 - All details are available:
   - Authentication Policy
   - Authorization Policy
   - Shell profile
-  - Response attributes
- 
+  - Response at
+
+### Monitor amount of requests
+
+`Operations > Reports > Reports > Device Administration`
+
 ## Timeouts
 
 Work Centers -> Device Administration -> Settings -> Connection Settings.
@@ -102,3 +106,23 @@ TACACS Connection Timeout should be the default value of 10 minutes or less.
 
 Work Centers -> Device Administration -> Policy Elements -> Results -> TACACS Profiles.
 Any TACACS+ Shell Profile with "Shell" type should have "Idle Time" set to "10" minutes or less.
+
+## Radius Policies
+
+- `Policy > Policy Sets`
+- One policy for all global protect connections
+- Policies are served based on devices from which request arrived, protocol: TACACS or Radius, Radius Service Type
+- Plus in a policy we specify allowed protocols: `Policy > Policy Elements > Results > Authentication > Allowed Protocols`
+- Here we specify which Auth protocols are allowed:
+  - PAP/ASCii
+  - CHAP
+  - MS-CHAPv1
+  - MS-CHAPv2
+  - EAP-MD5
+  - EAP-TLS
+- And EAP protocols
+  - LEAP
+  - PEAP
+  - EAP-FAST
+  - EAP-TTLS
+  - TEAP
