@@ -705,7 +705,7 @@ neighbor 1.1.1.1 local-as 2 no-prepend replace-as dual-as`
 - It is very usefull when we connect VRFs in Fabric via external  firewall
 - no-prepend - if we want to stop the alternate ASN from being prepended when receiving routes
 - replace-as - to stop the alternate ASN from being prepended when sending routes
-- local-as directive does not influence how receiving of routes is checked, AS path in received routes will be still compared with general AS number 65000 - !!!  
+- local-as directive does not influence how receiving of routes is checked, AS path in received routes will be still compared with general AS number 65000 - and you will see drops only on debug stage, you will not see it in a received route stage
 - If route passes the same router twice via different VRFs, we need to use local-as in all VRFs not in only one
 - dual-as - allows the remote peer to use either ASN for the BGP session
 
