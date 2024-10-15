@@ -685,7 +685,45 @@ router bgp as-number
 address-family ipv4 [unicast | multicast | vrf vrf-name ]
 bgp dampening [half-life reuse suppress max-suppress-time ] [route-map map-name ]
 ```
+
+## Initial configuration
+
+## BGP AS Path Manipulations
+
+### local-as
+
+```
+router bgp 65000
+neighbor 1.1.1.1 local-as 2 no-prepend replace-as dual-as`
+```
+
+- Can only be used with EBGP peers
+- By default, the **alternate** ASN is added to the AS_PATH for routes that are **sent** and **received** between the peers
+- 2 will be used on peer router to establish neigborship
+- Peer router will see in the PATH both AS numbers: 65000 and 2
+- Routes received from remote route will also be prepanded with 2
+- It is very usefull when we connect VRFs in Fabric via external  firewall
+- no-prepend - if we want to stop the alternate ASN from being prepended when receiving routes
+- replace-as - to stop the alternate ASN from being prepended when sending routes
+- local-as directive does not influence how receiving of routes is checked, AS path in received routes will be still compared with general AS number 65000 - !!!  
+- If route passes the same router twice via different VRFs, we need to use local-as in all VRFs not in only one
+- dual-as - allows the remote peer to use either ASN for the BGP session
+
+### allowas-in
+
+### remove-pravate-as
+
+### Prepend
+
+### Regexp + as-path access-lists
+
+### as-path replace
+
 ## Configuration
+
+### Peering
+
+
 
 ### Nexus
 
@@ -700,11 +738,7 @@ vrf OTUS2
 neighbor 192.168.6.2
 remote-as 64800
 
-local-as 64704 no-prepend replace-as 
-# Peering will be made using 64704 ASN instead of 64703. It is very usefull when we connect VRFs in Fabric via external  firewall.
-# It means that routes will be sent to this neighbor router with added AS number 64704 instead of 64703, but it does not influence receiving of routes, AS path in received routes will be still compared with general AS number 64703 - !!!
-# no-prepend replace-as - These 2 options work together. By default, when the local-as command is configured, the router advertises routes to the neighbor with both the local-as and the real AS number. The router will not prepend its real AS number to the AS path when advertising routes to the neighbor. The BGP neighbor will only see the local-as as the originating AS, effectively hiding the real AS number
-# If route passes the same router twice via different VRFs, we need to use local-as in all VRFs not in only one
+
 
 neighbor 192.0.2.1 allowas-in 3
 # router will accept routes from the neighbor that include up to 3 occurrences of the local AS
