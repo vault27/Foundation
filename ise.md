@@ -8,6 +8,10 @@
 - Command sets
 - Allowed protocols
 
+## Architecture
+
+- 2 interfaces on a node: one for management, one for requests
+
 ## Maitenance
 
 Restart services
@@ -17,6 +21,20 @@ application stop ise
 application start ise
 show application status ise
 ```
+
+## Devices
+
+`Administartion > Network Resources > Network Devices`
+
+- IP address - may be mask - wide range of IPs
+- Devices profile
+- Location
+- Device Type
+- Radius settings
+- Tacacs settings
+  - Shared secret
+- SNMP settings - ?
+- Trustsec settings
 
 ## RADIUS
 
