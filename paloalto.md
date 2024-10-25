@@ -1583,16 +1583,6 @@ You can also force some of these sites to be decrypted
 
 ### Authentication policy
 
-Basicly it defines whom to show captive portal.
-
-**Policies > Authentication**
-
-- Source in all forms
-- Destination in all forms
-- Service/URL category
-- **Authentication enforcement object**
-- Logging
-
 ### DoS protection policy
 
 ### SD-WAN
@@ -2668,8 +2658,7 @@ show log system direction equal backward subtype equal userid
 - To verify that all of the user attributes have been correctly captured, use the following CLI command: `show user user-attributes user all`
 - Show all received groups: `show user group list`
 
-
-## Managed service account on Windows AD**
+### Managed service account on Windows AD**
 
 - Active Directory Users and Computers > Managed Service Accounts > New User
 - Allow the service account to read the security log events
@@ -2745,6 +2734,18 @@ debug software restart process user-id
 - Captive portal: `Device > User Identification > Authentication Portal Settings` 
 
 `MFA profile > Authentication profile > Authentication Sequence > Authentication enforcement object > Authentication Policy + Captive Portal settings in paralell`
+
+Basicly it defines whom to show captive portal.
+
+### Authentication Policy
+
+**Policies > Authentication**
+
+- Source in all forms
+- Destination in all forms
+- Service/URL category
+- **Authentication enforcement object**
+- Logging
 
 ### Authentication enforcement object
 
