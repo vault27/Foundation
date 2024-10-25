@@ -31,12 +31,24 @@ show application status ise
 - Location
 - Device Type
 - Radius settings
+  - Shared secret
+  - CoA Port
 - Tacacs settings
   - Shared secret
 - SNMP settings - ?
 - Trustsec settings
 
 ## RADIUS
+
+### CoA
+
+- Change of Authorization (CoA) port is used to send dynamic policy updates to network devices after initial authentication
+- Part of the RADIUS protocol and is defined in the IETF RFC 5176
+- After an initial authentication, Cisco ISE can use CoA to dynamically update the authorization of a session (e.g., changing VLAN assignment or access control list (ACL) permissions)
+- The default CoA port for RADIUS is UDP port 1700.This is the port through which CoA messages are sent to network devices, such as switches or wireless controllers
+- CoA Types:
+  - Re-Auth (Reauthentication): Forces the endpoint to reauthenticate using the same credentials but applying new authorization policies.
+  - Port-Bounce: Disconnects the client (causing a reauthentication) by momentarily shutting down the port (used in wired scenarios).
 
 ## 802.1X
 
