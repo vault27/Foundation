@@ -30,10 +30,6 @@ Ultimate guide to PCNSE
     - SD-WAN
 - All other infrastructure: Device Section: Users, User-ID, Certificates, HA...
 
-## Find a command
-
-`find command keyword smart`
-
 ## Management plane and Data Plane
 
 - On physical appliances separate CPU, RAM, SSD for management plane: mgmt interface + console
@@ -2782,7 +2778,8 @@ Types:
 - MFA profiles, several can be added
 - Allow list - users, groups, including AD, allowed to login
 - Failed attempts
-- User domain
+- User domain - very important! It is sent with username to ISE, and it limits users only to one domain, if many domains are acceptable on ISE
+- Locked users - ?
 
 ### Multi-Factor authentication
 
@@ -3344,12 +3341,43 @@ paloalto(active-secondary)> show system environmentals
 **Hard disk SMART health**  
 `debug system disk smart-info disk-1`
 
-
-
-
 ## CLI
 
-Default username/pass - admin/admin  
+`find command keyword smart`
+
+Disable paging: `set cli pager on`
+
+`set cli config-output-format < default | json | xml | set`
+
+- Default username/pass - admin/admin
+- Operational and configure mode
+
+Operational commands
+
+- Network
+    - ssh to connect to other hosts
+    - scp, tftp, and ftp to import or export data
+- Monitoring and troubleshooting
+    - ping and traceroute for basic troubleshooting
+    - debug commands for multiple tools across more than 40 feature sets
+    - tcpdump for management-plane packet captures
+    - test for checking results produced by various processes
+- Display
+    - show to display configuration, log, and other system data
+    - tail to display or follow the most recent log entries
+    - less and grep to search log files
+- System
+    - request to use system-level commands, such as shutdown
+    - clear to reset run-time parameters
+
+Config copy paste 
+
+- 20 to 30 lines over SSH typically succeed.
+- For 30 to 200+ lines, use scripting mode:
+- `set cli scripting-mode on`
+- Scripting mode:
+- Increases the SSH buffer size
+- Suppresses special character
 
 **Show all system data**
 
@@ -3639,7 +3667,7 @@ scp export mgmt-pcap from mgmt.pcap to < username@host:path>
 - Authentication
 - Unified - entries from the Traffic, Threat, URL Filtering, WildFire Submissions, and Data Filtering logs displayed in a single view
 
-## Logging profile
+### Logging profile
 
 - Several rules in one profile
 - We configure all in one profile and then apply it to all rules, for example we can negate DNS and ICMP in it: ICMP and DNS are logged only locally to NGFW to lesses load on Panorama
@@ -3740,14 +3768,9 @@ tail follow yes mp-log paninstaller_content.log
 - /<keyword> to search , while in search use 'n' to go to the next or 'N' (shift+n) to go to the previous
 - only use arrow keys to scroll up or down
   
+### Storage and quota
 
-
-You create a profile - and many rules in it - every rule for particular log type (traffic) - in filter you configure which logs will be sent, for example only allow  
-
-
-**Storage and quota**
-
-- Device > Setup > Management
+- `Device > Setup > Management`
 - Quota in percentage
 - Max days
 - Predefined reports
@@ -4515,8 +4538,9 @@ to the specified Hostname - if result is positive, internal gateway is used. Int
 
 ### Logs
 
-- GlobalProtect authentication event logs in Monitor > Logs > System
-- Separate GlobalProtect log- 
+- GlobalProtect authentication event logs in `Monitor > Logs > System`
+- Separate GlobalProtect log
+- `less mp-log authd.log` - Radius auth errors, including cert issues, when PA cannot verify cert from ISE via PEAP-MSCHAPv2
 
 ### Authentication
 
@@ -4585,6 +4609,28 @@ Where is it configured?
 - By default, the client will send IPsec keepalives every 10 seconds, if 5 keepalives are missed (50 seconds) then the connection is torn down and retried
 - The keepalives can be seen in PanGPS logs if it is set on dump level. Keepalives are sent only when there is no network activity
 - Keepalives are regular ICMP packets exchanged within the tunnel between clients private IP address and gateway public IP address
+
+### Radius authentication
+
+```
+User@PA(active)> test authentication authentication-profile RADIUS_ACS username user password 
+Enter password : 
+
+Target vsys is not specified, user "user" is assumed to be configured with a shared auth profile.
+
+Do allow list check before sending out authentication request...
+name "user" is in group "all"
+
+Egress: No service source route is set, might use destination source route if configured
+Test authentication to RADIUS server 10.255.255.4:1812 for user: "user"  using protocol: PEAP with MSCHAPv2
+Failed EAPOL auth (-1).
+Response for user: "user" from RADIUS server: "unable to get issuer certificate; unknown CA"
+Authentication failed against RADIUS server at 10.255.255.4:1812 for user "user"
+
+
+Authentication failed for user "user"
+
+```
 
 ## HIP
 
