@@ -2216,7 +2216,7 @@ HA Lite:
 - After commit changes are automatically sent to Passive
 - You can make changes on Passive, press Commit and it will go to Active
 - ICMP sessions are not synced
-- HSCI—The HSCI port is a Layer 1 SFP+ interface that connects two PA-1400 Series firewalls in an HA configuration. Use this port for an HA2 connection, HA3 connection, or both.
+- HSCI — The HSCI port is a Layer 1 SFP+ interface that connects two PA-1400 Series firewalls in an HA configuration. Use this port for an HA2 connection, HA3 connection, or both.
 - The traffic carried on the HSCI port is raw Layer 1 traffic, which is not routable or switchable. Therefore, you must connect the HSCI ports directly to each other (from the HSCI port on the first firewall to the HSCI port on the second firewall)
 
 **Failover reasons**
@@ -2251,10 +2251,10 @@ HA Lite:
 - Slot configuration
 - For VMs: HYpervisor, number of CPU cores
 
-
 **Links**
 
 7 Links in total, all are configured in HA Communications section
+
 - HA-1 control link (Control Plane) - should be HA type or management
     - L3 link, requires IP, mask, gateway - can be spanned via subnets
     - Hello, heartbeats, HA state info, User-ID, config sync
@@ -2272,18 +2272,18 @@ HA Lite:
     - In-band ports can be used for backup links for both HA1 and HA2 connections when dedicated backup links are not available. 
     - The IP addresses of the primary and backup HA links must not overlap each other
     - HA backup links must be on a different subnet from the primary HA links
-    - HA1-backup and HA2-backup ports must be configured on separate physical ports, 
+    - HA1-backup and HA2-backup ports must be configured on separate physical ports 
     - The HA1-backup link uses port 28770 and 28260, PA-3200 Series firewalls don’t support an IPv6 address for the HA1-backup link; use an IPv4 address
-- HA-3 - Packet forwarding link - for active/active - HA type?
+- HA-3 - Packet forwarding link - for active/active - HA type
     - Layer 2 link that uses MAC-in-MAC encapsulation
     - The firewalls use this link for forwarding packets to the peer during session setup and asymmetric traffic flow 
     - It does not support Layer 3 addressing or encryption
     - You cannot configure backup links for the HA3 link, only LAG 
     - The firewall adds a proprietary packet header to packets traversing the HA3 link, so the MTU over this link must be greater than the maximum packet length forwarded
-- HA4
+- HA-4
     - Layer 3 type no gateway, no spaning over subnets, HA type
     - Session cache synchronization among all HA cluster members having the same cluster ID + keep-alives between Cluster members
-- HA4 Backup
+- HA-4 Backup
 
 **CLoud limitations**
 
@@ -2308,15 +2308,15 @@ Configuration workflow
 
 - Enable Ping on management interface
 - Configure HA type interface for HA2 link
-- Enable HA and general options: Group-ID, mode, config sync, peer HA1 IP and backup IP: Device > HA > General
-      - This ID needs to be identical on both members. The Group ID will also have an impact on the MAC addresses associated with each interface as they switch to a virtual MAC that both firewalls will be able to claim via gratuitous ARP in case one member fails
-- Configure Active/PAssive options: Passive Link State  + Monitor Fail Hold Down Time (min) - By default, the passive device will have its interfaces in a shutdown state, meaning any connected devices will also see the link as being down. Depending on your environment, this could prevent other clusters from functioning properly, in which case you will need to set these to Auto (up but not accepting packets). Monitor Fail Hold Down Time keeps the firewall in a failed statefor the specified amount of time after an error was detected before setting the member to the passive state: Device > HA > General
+- Enable HA and general options: Group-ID, mode, config sync, peer HA1 IP and backup IP: `Device > HA > General`
+      - This ID needs to be identical on both members. The Group ID will also have an impact on the MAC addresses associated with each interface as they switch to a    virtual MAC that both firewalls will be able to claim via gratuitous ARP in case one member fails
+- Configure Active/PAssive options: Passive Link State  + Monitor Fail Hold Down Time (min) - By default, the passive device will have its interfaces in a shutdown state, meaning any connected devices will also see the link as being down. Depending on your environment, this could prevent other clusters from functioning properly, in which case you will need to set these to Auto (up but not accepting packets). Monitor Fail Hold Down Time keeps the firewall in a failed statefor the specified amount of time after an error was detected before setting the member to the passive state: `Device > HA > General`
       - You can enable Link Layer Discovery Protocol (LLDP) and Link Aggregation Control Protocol (LACP) in passive mode by accessing the interface's advanced tab
 - Configure Election settings: 
       - Priority - the less the better
       - Preemptive - higher-priority firewall to resume active (active/passive) or active-primary (active/active) operation after recovering from a failure. You must enable the preemption option on both firewalls for the higher-priority firewall to resume active or active-primary operation upon recovery after a failure. If this setting is disabled, then the lower-priority firewall remains active or active-primary even after the higher-priority firewall recovers from a failure
       - Heartbeat backup - This will use the management interface to send a simple heartbeat to the remote peer
-      - HA Timer settings - Packages: Recommended, Aggressive and Advanced - 7 timers in total:
+      - HA Timer settings - Packages: Recommended, Aggressive and Advanced - **7 timers in total**:
             - Monitor Fail Hold Up Time - firewall will remain active following a path monitor or link monitor failure - to avoid flaps
             - Additional Master Hold Up Time - is applied to the same event as Monitor Fail Hold Up Time - to avoid a failover when both firewalls experience the same link/path monitor failure simultaneously
             - Preemption Hold Time - passive firewall will wait before taking over as the active during preemption
@@ -2329,7 +2329,7 @@ Configuration workflow
       - HA2 port - select transport type - Ethernet - and nothing more should be configured - Interface type - HA. Also HA2 Keep alive is recomended to enable to monitor health of HA2 link and log if something happens
 - Enable HA widget on a dashboard
 - Sync config
-- Manually suspend node: Device > High Availability > Operational Commands > Suspend local device
+- Manually suspend node: `Device > High Availability > Operational Commands > Suspend local device`
 
 **Out of sync state**
 
@@ -2350,20 +2350,13 @@ Possible when person makes change to active host, does not commit. Then someone 
 
 **Troubleshoot**
 
-Show HA logs in **Monitor > System**
+Show HA logs in **Monitor > System**: `( subtype eq ha ) and ( severity neq informational )`
 
-```
-( subtype eq ha ) and ( severity neq informational )
-```
-
-**Show logs in CLI about state change only**
-
-```
-show log system direction equal backward subtype equal ha eventid equal state-change
-```
+**Show logs in CLI about state change only** `show log system direction equal backward subtype equal ha eventid equal state-change`
 
 ### Active/Active
 
+2 devices Max  
 You need to distribute traffic somehow between them
 
 - Routing protocols
@@ -2399,8 +2392,8 @@ You need to distribute traffic somehow between them
     - The end hosts are configured with the same gateway, which is the shared IP address of the HA firewalls
     - Everytime different firewall replies on ARP request with its own virtual MAC, IP is the same for both firewalls
     - Which FW will reply? 2 options exist:
-        - IP Modulo—The firewall that will respond to ARP requests is based on the parity of the ARP requester's IP address.
-        - IP Hash—The firewall that will respond to ARP requests is based on a hash of the ARP requester's IP address
+        - IP Modulo — The firewall that will respond to ARP requests is based on the parity of the ARP requester's IP address
+        - IP Hash —  The firewall that will respond to ARP requests is based on a hash of the ARP requester's IP address
     - ARP load sharing on LAN side and floating IP on the other
 
 **Route based redundancy**
@@ -2453,14 +2446,14 @@ You need to distribute traffic somehow between them
 
 - Enable HA
 - Choose Active/Active
-- Choose device ID: 0 or 1 - ?
+- Choose device ID: 0 or 1 - just to distinguish between 2 firewalls, 0 - is Active Primary, firewall with the lower Device ID to automatically resume active-primary operation after either firewall recovers from a failure
 - Enable Configsync
 - Configure Peer HA1 IP
 - By default they both work, just syncing configs and sessions
 - If it is needed: Configure Floating IPs
     - Every IP will be floating or ARP load sharing
-    - Floating IP can be bound to Active Primary Device
-    - OR Device priority can be configured for devices 0 and 1 - ?
+    - Floating IP can be bound to Active Primary Device - this will mean that this will work as Active/Passive
+    - OR Device priority can be configured for devices 0 and 1 - The relative priorities determine which peer owns the floating IP address you just configured (range is 0-255). The firewall with the lowest priority value (highest priority) owns the floating IP address
 
 ### Cluster
 
@@ -2491,11 +2484,7 @@ Session Synchronization States
 - Completed - Full session synchronization is completed and new sessions will be synchronized in real time 
 - Disabled - Session synchronization is disabled to the member or for HA peer
 
-Show logs about HA4 sessions sync
-
-```
-show log system | match ha4
-```
+Show logs about HA4 sessions sync - `show log system | match ha4`
 
 ## User-ID
 
