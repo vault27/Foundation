@@ -51,9 +51,11 @@
 ### Part 3 - Prepare for change
 
 - Local password
+- Local access
 - vPC and STP peculiarities
 - Routing protocols
-- Upload images
+- Upload images + MD5
+- Wireless controllers - check before upgrade
 
 ### Part 4 - Change
 
