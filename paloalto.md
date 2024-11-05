@@ -2500,7 +2500,7 @@ Can be used in:
 
 **User mapping methods**
 
-- Server monitoring - User-ID agent, PAN-OS built-in, **AD, Exchange, Novell eDirectory**, Sun ONE Directory Server - ?
+- Server monitoring - User-ID agent, PAN-OS built-in, **AD, Exchange, Novell eDirectory**
 - Port mapping - Microsoft Terminal Services - Citrix Environments - Palo Alto Networks Terminal Services agent - the source port of each client connection to map each user to a session. Linux terminal servers do not support the Terminal Services agent and must use the XML API to send user mapping information from login or logout events to User-ID
 - Syslog- The Windows-based User-ID agent and the PAN-OS integrated User-ID agent both use Syslog Parse Profiles to interpret login and logout event messages that are sent to syslog servers from the devices that authenticate users. Such devices include wireless controllers, 802.1x devices, Apple Open Directory servers, proxy servers, and other network access control devices
 - XFF headers - IP address of client in additional header
@@ -2544,10 +2544,10 @@ Can be used in:
 
 Configure
 
+- Everything is here: `Device > User Identification`: add servers, exclude/include networks
 - Enable User-ID in a zone options
-
-- Verify that the usernames are correctly displayed in the Source User column under Monitor > Logs > Traffic
-- Verify that the users are mapped to the correct usernames in the User Provided by Source column under Monitor > Logs > User-ID.
+- Verify that the usernames are correctly displayed in the Source User column under `Monitor > Logs > Traffic`
+- Verify that the users are mapped to the correct usernames in the User Provided by Source column under `Monitor > Logs > User-ID`
 
 ### User-ID Agent (Windows)**
 
@@ -2573,7 +2573,7 @@ Configure User-ID Agent
 - Enter username with domain and password
 - Install User-ID agent on supported Windows version according to instructions, configure it and launch
 - Enable User-ID in zone configuration
-- Device > Data Redistribution - Configure Agent host and port - verify that its status is connected
+- `Device > Data Redistribution` - Configure Agent host and port - verify that its status is connected
 
 ### User-ID redistribution
 
@@ -2586,45 +2586,24 @@ Configure User-ID Agent
     - User tags
     - HIP
     - Quarantine list
-- You can include/exclude networks for IP-Tag and IP-user in Device > Data Redistribution > Include/Exlcude networks, as I understand it is both for collector and client
+- You can include/exclude networks for IP-Tag and IP-user in `Device > Data Redistribution > Include/Exlcude networks`, as I understand it is both for collector and client
 - Passive and Active-Secondary devices are not connected to agents
 
-Display the status of the User-ID service - Collector - Redistributor:
+### CLI commands
 
-```
-show user user-id-service status
-```
-
-Display the clients/firewalls that are connected to the collector
-
-```
-show user user-id-service client all
-```
-
-Show connections to agents - for new Pan versions
-
-```
-show redistribution agent state all
-```
-
-Log files for old and new verions
-
-```
-less mp-log useridd.log
-less mp-log distributord.log
-```
-
-Netstat
-
-```
-netstat -na | findstr 5007
-```
-
-Search in System logs
-
-```
-show log system direction equal backward subtype equal userid
-```
+- Display the status of the User-ID service - Collector - Redistributor:`show user user-id-service status`
+- Display the clients/firewalls that are connected to the collector - `show user user-id-service client all`
+- Show connections to agents - for new Pan versions - `show redistribution agent state all`
+- Log files for old and new verions: less mp-log useridd.log, less mp-log distributord.log
+- Netstat - `netstat -na | findstr 5007`
+- Search in System logs - `show log system direction equal backward subtype equal userid`
+- Show logged in users `debug dataplane show user all`
+- User-ID agents stats - `show user user-id-agent statistics`
+- Show User-IP mappings `show user ip-user-mapping all`
+- Server monitor situation - `show user server-monitor state all`
+- Show users and their LDAP groups - `show user user-ids all`
+- Show users in a group - `show user group name "cn=internet,cn=users,dc=skynet,dc=ru"`
+- Restart User-ID service - `debug software restart process user-id`
 
 ### Map users to groups via LDAP
 
@@ -2645,10 +2624,10 @@ show log system direction equal backward subtype equal userid
 
 ### Managed service account on Windows AD**
 
-- Active Directory Users and Computers > Managed Service Accounts > New User
+- `Active Directory Users and Computers > Managed Service Accounts > New User`
 - Allow the service account to read the security log events
-- Active Directory Users and Computers > Builtin > Event Log Readers > Add new managed service account
-- Allow WMI: Active Directory Users and Computers > Builtin > Distributed COM USers - add amanged service account
+- `Active Directory Users and Computers > Builtin > Event Log Readers > Add new managed service account`
+- Allow WMI: `Active Directory Users and Computers > Builtin > Distributed COM USers` - add amanged service account
 - Add user-id managed service account to Server Operators group
 
 AD has to generate logs for Audit Logon, Audit Kerberos Authentication Service, and Audit Kerberos Service Ticket Operations events. At a minimum, the source must generate logs for the following events:
@@ -2656,58 +2635,6 @@ AD has to generate logs for Audit Logon, Audit Kerberos Authentication Service, 
 - Authentication Ticket Granted (4768)
 - Service Ticket Granted (4769)
 - Ticket Granted Renewed (4770)
-
-### Debug
-
-**Show logged in users**
-
-```text
-debug dataplane show user all
-```
-
-**Show log for agentless connection to Active Directory**
-
-```
-less mp-log useridd.log
-```
-
-Go to the end of the file by pressing Shift+G
-
-**User-ID agents stats**
-
-```
-show user user-id-agent statistics  
-```
-
-**Show User-IP mappings**
-
-```
-show user ip-user-mapping all
-```
-
-**Server monitor situation**
-
-```
-show user server-monitor state all
-```
-
-**Show users and their LDAP groups**
-
-```
-show user user-ids all
-```
-
-**Show users in a group**
-
-```
-show user group name "cn=internet,cn=users,dc=skynet,dc=ru"
-```
-
-**Restart User-ID service**
-
-```
-debug software restart process user-id
-```
 
 ## Authentication
 
