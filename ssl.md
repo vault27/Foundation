@@ -285,6 +285,18 @@ In order to provide the server name, clients MAY include an extension of type "s
 - Also, reverse DNS lookup may help 
 - Correct application identification is only possible with decryption: gmail site is signed by Google cert and you will not be able to understand what it is exactly without decryption
 - SNI Routing can be uased on load balancers to forward traffic without SSL termination to particular pool
+- Browsers add SNI to every request
+- Example from traffic capture
+```
+Extension: server_name (len=12)
+Type: server_name (0)
+Length: 12
+Server Name Indication extension
+	Server Name list length: 10
+	Server Name Type: host_name (0)
+	Server Name length: 7
+	Server Name: mail.ru
+```
 
 ## HSTS
 
