@@ -1152,7 +1152,6 @@ clear routing bfd counters session-id all | <1-1024>
 clear routing bfd session-state session-id all | <1-1024>
 ```
 
-
 ## Dual ISP design
 
 - One default gateway to ISP-1 with metric 10 - primary one
@@ -1164,7 +1163,7 @@ clear routing bfd session-state session-id all | <1-1024>
 - To enable IPv6 on firewall:
     - Enable IPv6 on the interface
     - Add IPv6 address
-    - Device > Setup > Session > Enable IPv6 firewalling
+    - `Device > Setup > Session > Enable IPv6 firewalling`
 - Neighbor Discovery (ND) is enhanced
 - The firewall by default runs NDP, which uses ICMPv6 packets to **discover and track the link-layer addresses** and status of neighbors on connected links
 - Provision the IPv6 hosts with the Recursive DNS Server (RDNSS) option and DNS Search List (DNSSL) option, per RFC 6106, IPv6 Router Advertisement Options for DNS Configuration
@@ -1183,7 +1182,7 @@ clear routing bfd session-state session-id all | <1-1024>
 - You enable IPv6 on interface
 - You configure address
 - You enable Duplicate Address Detection
-- You enable  NDP Monitoring - you can view the IPv6 addresses of devices on the link local network, their MAC address, associated username from User-ID, eachability Status of the address, and Last Reported date and time the NDP monitor received a Router Advertisement from this IPv6 address
+- You enable  NDP Monitoring - you can view the IPv6 addresses of devices on the link local network, their MAC address, associated username from User-ID, reachability Status of the address, and Last Reported date and time the NDP monitor received a Router Advertisement from this IPv6 address
 - You enable RA-Router Advertisment
 - You enable DNS support - include DNS information in Router Advertisment: Recursive DNS servers and lifetime, suffixes and lifetime, lifetime - the maximum length of time the client can use the specific RDNS Server to resolve domain names
 
@@ -4059,9 +4058,9 @@ Check the GRE session
 - A vsysadmin doesn’t have access to network interfaces, VLANs, virtual wires, virtual routers, IPSec tunnels, GRE tunnels, DHCP, DNS Proxy, QoS, LLDP, or network profiles
 - A vsysreader doesn’t have access to network interfaces, VLANs, virtual wires, virtual routers, IPSec tunnels, GRE tunnels, DHCP, DNS Proxy, QoS, LLDP, or network profiles
 - Shared objects are available for all VSYSs
--  If you try to create a shared object with the same name and type as an existing object in a virtual system, the virtual system object is used
+- If you try to create a shared object with the same name and type as an existing object in a virtual system, the virtual system object is used
 - All Shared objects pushed from the Panorama management server are duplicated to each vsys and count toward the total maximum capacity for each object 
-- 
+- User-ID hub - configure the User-ID sources on a single virtual system - share to others - `Device > Virtual Systems > Resources Tab > Make this vsys a User-ID data hub` 
 
 ### Inter-vsys routing
 
@@ -4083,7 +4082,7 @@ Check the GRE session
 - A shared gateway ID number appears as sg<ID> on the web interface
 - A shared gateway is a limited version of a virtual system; it supports NAT and policy-based forwarding (PBF), but does not support Security, DoS policies, QoS, Decryption, Application Override, or Authentication policies
 
-**CLI**
+### CLI
 
 ```
 admin@PA> show system info | match vsys 
