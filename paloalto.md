@@ -2720,7 +2720,7 @@ Types:
 
 ### Features
 
-- Types:- Management Only, Log Collector, Panorama: both
+- Types: Management Only, Log Collector, Panorama: both
 - Dashboard: configurable widgets, configurable device groups, configurable devices
 - Centralized view on all activities via **ACC**:
     - Network
@@ -2741,7 +2741,7 @@ Types:
 - All Network Configurations + Device configurations via **Network, Device, Panorama > Templates**
 - Databases, licenses and software updates: **Panorama > Device Deployment**
 - Import device config to new Template and Device Group: **Panorama > Setup > Operations > Import device configuration to Panorama**
-- Super detailed Admin Profiles, what they can do: Web, CLI, API - **Panorama > Admin Roles** - 
+- Super detailed Admin Profiles, what they can do: Web, CLI, API - **Panorama > Admin Roles**
 - Access domains: devices, device groups, templates - what admins can access - **Panorama > Access Domain**
 - Data redistribution: other can connect to Panorama, Panorama can connect to agents: **Panorama > Data Redistribution**, Agents/Clients/Include,Exclude networks
 - Log collectors + Groups: **Panorama > Managed Collectors, Collector Groups**
@@ -2751,12 +2751,12 @@ Types:
 - A CLI command will forward the pre-existing logs to Panorama from firewalls
 - **Panorama > Device Quarantine** - list of all devices on quaratine, manual in Panorama via serial, manual via logs, automatic action based on logs
 - Share Unused Address and Service Objects with Devices + Ancestor are stronger then descendants: **Panorama > Setup > Management > Panorama Settings**
-- High Availability: passive one is passive and just synchronize with active: **Panorama > High Availability**, Same Model version and mode, Peer IP, Peer Serial, Priority
+- High Availability: passive one is passive and just synchronize with active: **Panorama > High Availability**, Same Model, version and mode, Peer IP, Peer Serial, Priority
 - Panorama Interconnect: manages up to 64 Panorama Nodes: Panorama Interconnect plugin. You must install the plugin on the Panorama Controller, and all Panorama Nodes
 - Wildfire Clusters + Appliances: **Panorama > Managed Wildfire Clusters, Appliances**
 - **Panorama > Scheduled Config Push** - Date/Time/One-time/Recurring/Device Groups/Templates
 - **Panorama > Log Ingestion Profile** - receive logs from external sources, attach the log ingestion profile to a Log Collector group
-- **Panorama > Policy Recomendation > IoT + SaaS** - ?
+- **Panorama > Policy Recomendation > IoT + SaaS**
 
 ### Administrators
 
@@ -2799,12 +2799,11 @@ Access domains for Device Group and Template Admin administrator type
 - A local administrator can also perform overrides directly on an individual device if necessary - we chose an object and there is a button in the bottom: Override
 - After you override locally, and new push from Panorama, this parameter will remain overrrided
 - There is no possibility to see on Panorama on which Firewalls what was overrided
-- Stack have a configurable priority order to ensure that Panorama pushes only one value for any duplicate setting. If there is the same object in 2 templates, object from the uppest template in the stack will be installed, for example interface management profile, no options for this profile from lower template will be installed
+- Stack has a configurable priority order to ensure that Panorama pushes only one value for any duplicate setting. If there is the same object in 2 templates, object from the uppest template in the stack will be installed, for example interface management profile, no options for this profile from lower template will be installed
 - Different firewall models - different stacks
 - Object created in template, is available only in this template
 - When we import firewall, template is automatically configured for it and template stack as well
 - To change only parameter we can configure firewall directly and do not use force during pushing on panorama
-- We can use variables, for example to configure different IP addresses in one template stack
 - 1024 template stacks max
 - When you commit and push you cannot choose template, you can choose Stack or device....
 
@@ -2867,7 +2866,7 @@ Renew cert
 - You can save named configuration snapshot manually choosing Templates and Device Groups
 - When you revert changes, you are replacing settings in the current candidate configuration with settings from another configuration
 - Reverting a Panorama management server configuration requires a full commit after revert and must be performed by a superuser
-- Revert to a previous version of the running configuration that is stored on Panorama: **PanoramaSetupOperations, Load Panorama configuration version**
+- Revert to a previous version of the running configuration that is stored on Panorama: **Panorama > Setup > Operations, Load Panorama configuration version**
 - You can select Templates and Device Groups
   
 ### Variables
@@ -2875,9 +2874,9 @@ Renew cert
 - They are created in order not to create 200 templates with different IPs inside
 - Used in: Static routes, interface IPs, Server profiles, DNS servers....
 - You can use variables to replace:
-    - An IP address (includes IP Netmask, IP Range, and FQDN) in all areas of the configuration.
-    - Interfaces in an IKE Gateway configuration (Interface) and in an HA configuration (Group ID).
-    - Configuration elements in your SD-WAN configuration (AS Number, QoS Profile, Egress Max, Link Tag).
+    - An IP address (includes IP Netmask, IP Range, and FQDN) in all areas of the configuration
+    - Interfaces in an IKE Gateway configuration (Interface) and in an HA configuration (Group ID)
+    - Configuration elements in your SD-WAN configuration (AS Number, QoS Profile, Egress Max, Link Tag)
 - `Panorama > Templates > Manage Variables > Create Variables`
 - Variables need to begin with '$': $DNS=1.1.1.1/32
 - Use this variable in proper configurations
@@ -2940,7 +2939,6 @@ Search for failed push to device in system logs
 Or, you can try on device itself:  
 `( admin eq Panorama-username' )`
 
-
 ### Licensing + Software Upgrades + Dynamic Updates**
 
 - Panorama > Device Deployment 
@@ -2961,7 +2959,7 @@ Or, you can try on device itself:
  - HA configuration syncs might occur only after each HA successfully tests the connectivity to Panorama and verifies its connection
  - Device > Setup > Panorama Settings > Enable Automatic commit recovery: Number of attempts to check for Panorama connectivity, Interval between retries (sec)
 
-**General Configuration Overview**
+### General Configuration Overview**
 
 - Add Panorama and Secondary Panorama IP on device
 - Insert auth key from Panorama: **Panorama > Device Registration Auth Key**
@@ -2974,7 +2972,7 @@ Or, you can try on device itself:
 - Panorama configurations are not synced between HA pair
 - Create a device group
 - Commit and push
-- Go to Policies, select device group and edit edit policy and push it
+- Go to Policies, select device group and edit policy and push it
 - Device group is configurable for every rule
 - Create templates - all configurations are there - **Panorama > Templates**
 - Combine them into stack - **Panorama > Templates** - add devices to Stack
@@ -2982,7 +2980,7 @@ Or, you can try on device itself:
 
 **Configuration management**
 
-- **Panorama > Setup > Operations >Configuration Management**
+- **Panorama > Setup > Operations > Configuration Management**
 - Revert to last saved Panorama configuration - 
 
 **Remove firewall from Panorama**
@@ -3067,6 +3065,7 @@ On Firewall we need to launch a command
 request sc3 reset
 debug software restart process management-server
 ```
+
 ### Push config to Firewall without changes
 
 - Can be used during RMA
@@ -3201,8 +3200,6 @@ request certificate fetch
 - Check status of log collectors
 - Preemption is disabled by default, after reboot Primary will become Primary
 
-
-
 Details
 
 - Export named Panorama configuration snapshot (Panorama > Setup > Operations)
@@ -3240,7 +3237,6 @@ Used Mem= (used)-(Buffers +Cached)
 show system resources
 show running resource-monitor - data plane, per core, per group of resources
 ```
-
 
 **Power supplies, thermal, fans...**
 ```
