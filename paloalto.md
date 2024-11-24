@@ -2939,7 +2939,7 @@ Search for failed push to device in system logs
 Or, you can try on device itself:  
 `( admin eq Panorama-username' )`
 
-### Licensing + Software Upgrades + Dynamic Updates**
+### Licensing + Software Upgrades + Dynamic Updates
 
 - Panorama > Device Deployment 
 - Automatically license a VM-Series firewall when it connects to Panorama
@@ -2951,7 +2951,7 @@ Or, you can try on device itself:
 - Panorama > Device Deployment > Software
 - Panorama > Device Deployment > Dynamic Updates
 
-### Automatic commit recovery**
+### Automatic commit recovery
 
  - If the committed configuration breaks the connection with Panorama, then the firewall automatically fails the commit and the configuration reverts to the previous running configuration
  - The firewall also checks the connectivity to Panorama every hour to ensure consistent communication
@@ -2959,7 +2959,7 @@ Or, you can try on device itself:
  - HA configuration syncs might occur only after each HA successfully tests the connectivity to Panorama and verifies its connection
  - Device > Setup > Panorama Settings > Enable Automatic commit recovery: Number of attempts to check for Panorama connectivity, Interval between retries (sec)
 
-### General Configuration Overview**
+### General Configuration Overview
 
 - Add Panorama and Secondary Panorama IP on device
 - Insert auth key from Panorama: **Panorama > Device Registration Auth Key**
@@ -3019,13 +3019,13 @@ Commit options when you commit to Panorama:
 - Change Summary
 - Validate Commit
 
-### Locks
+**Locks**
 
 - Config — Blocks other administrators from changing the candidate configuration
 - Commit — Blocks other administrators from changing the running configuration
-- Shared—Restricts changes to the entire Panorama configuration, including all device groups and templates.
-- Template—Restricts changes to the firewalls included in the selected template. (You can’t take a lock for a template stack, only for individual templates within the stack.)
-- Device group—Restricts changes to the selected device group but not its descendant device groups
+- Shared — Restricts changes to the entire Panorama configuration, including all device groups and templates.
+- Template — Restricts changes to the firewalls included in the selected template. (You can’t take a lock for a template stack, only for individual templates within the stack.)
+- Device group — Restricts changes to the selected device group but not its descendant device groups
 - Show locks: `show commit locks`
 - Remove lock for particular admin: `request commit-lock remove admin phil`
 
@@ -3033,10 +3033,10 @@ Commit options when you commit to Panorama:
 
 - Push all changes OR only incremental - made by me or other admin - it is not connected with scope
 - Configure Push Scope - Edit Selections
-- Merge with device candidate config - ?
-- Include Device and Network templates - ?
-- Force template values - ?
-- No Default Selections - ?
+- Merge with device candidate config
+- Include Device and Network templates
+- Force template values
+- No Default Selections
 - Validate Device Group Push
 - Validate Template Push
 
@@ -3139,12 +3139,12 @@ show log-collector-es-cluster health
 clear log log-type
 ```
 
-**Health monitoring**
+### Health monitoring
 
 - `Panorama > Managed devices > Health`
 - Throughput, sessions, connections, packets, interfaces, logging rate, memory, CPU (management plane, data plane), packet buffers, HA, Cluster
 
-**Telemetry in Panorama**
+### Telemetry in Panorama
 
 Show cert issues and fix it
 
