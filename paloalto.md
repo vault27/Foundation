@@ -1152,7 +1152,6 @@ clear routing bfd counters session-id all | <1-1024>
 clear routing bfd session-state session-id all | <1-1024>
 ```
 
-
 ## Dual ISP design
 
 - One default gateway to ISP-1 with metric 10 - primary one
@@ -1164,7 +1163,7 @@ clear routing bfd session-state session-id all | <1-1024>
 - To enable IPv6 on firewall:
     - Enable IPv6 on the interface
     - Add IPv6 address
-    - Device > Setup > Session > Enable IPv6 firewalling
+    - `Device > Setup > Session > Enable IPv6 firewalling`
 - Neighbor Discovery (ND) is enhanced
 - The firewall by default runs NDP, which uses ICMPv6 packets to **discover and track the link-layer addresses** and status of neighbors on connected links
 - Provision the IPv6 hosts with the Recursive DNS Server (RDNSS) option and DNS Search List (DNSSL) option, per RFC 6106, IPv6 Router Advertisement Options for DNS Configuration
@@ -1183,7 +1182,7 @@ clear routing bfd session-state session-id all | <1-1024>
 - You enable IPv6 on interface
 - You configure address
 - You enable Duplicate Address Detection
-- You enable  NDP Monitoring - you can view the IPv6 addresses of devices on the link local network, their MAC address, associated username from User-ID, eachability Status of the address, and Last Reported date and time the NDP monitor received a Router Advertisement from this IPv6 address
+- You enable  NDP Monitoring - you can view the IPv6 addresses of devices on the link local network, their MAC address, associated username from User-ID, reachability Status of the address, and Last Reported date and time the NDP monitor received a Router Advertisement from this IPv6 address
 - You enable RA-Router Advertisment
 - You enable DNS support - include DNS information in Router Advertisment: Recursive DNS servers and lifetime, suffixes and lifetime, lifetime - the maximum length of time the client can use the specific RDNS Server to resolve domain names
 
@@ -2721,7 +2720,7 @@ Types:
 
 ### Features
 
-- Types:- Management Only, Log Collector, Panorama: both
+- Types: Management Only, Log Collector, Panorama: both
 - Dashboard: configurable widgets, configurable device groups, configurable devices
 - Centralized view on all activities via **ACC**:
     - Network
@@ -2742,7 +2741,7 @@ Types:
 - All Network Configurations + Device configurations via **Network, Device, Panorama > Templates**
 - Databases, licenses and software updates: **Panorama > Device Deployment**
 - Import device config to new Template and Device Group: **Panorama > Setup > Operations > Import device configuration to Panorama**
-- Super detailed Admin Profiles, what they can do: Web, CLI, API - **Panorama > Admin Roles** - 
+- Super detailed Admin Profiles, what they can do: Web, CLI, API - **Panorama > Admin Roles**
 - Access domains: devices, device groups, templates - what admins can access - **Panorama > Access Domain**
 - Data redistribution: other can connect to Panorama, Panorama can connect to agents: **Panorama > Data Redistribution**, Agents/Clients/Include,Exclude networks
 - Log collectors + Groups: **Panorama > Managed Collectors, Collector Groups**
@@ -2752,12 +2751,12 @@ Types:
 - A CLI command will forward the pre-existing logs to Panorama from firewalls
 - **Panorama > Device Quarantine** - list of all devices on quaratine, manual in Panorama via serial, manual via logs, automatic action based on logs
 - Share Unused Address and Service Objects with Devices + Ancestor are stronger then descendants: **Panorama > Setup > Management > Panorama Settings**
-- High Availability: passive one is passive and just synchronize with active: **Panorama > High Availability**, Same Model version and mode, Peer IP, Peer Serial, Priority
+- High Availability: passive one is passive and just synchronize with active: **Panorama > High Availability**, Same Model, version and mode, Peer IP, Peer Serial, Priority
 - Panorama Interconnect: manages up to 64 Panorama Nodes: Panorama Interconnect plugin. You must install the plugin on the Panorama Controller, and all Panorama Nodes
 - Wildfire Clusters + Appliances: **Panorama > Managed Wildfire Clusters, Appliances**
 - **Panorama > Scheduled Config Push** - Date/Time/One-time/Recurring/Device Groups/Templates
 - **Panorama > Log Ingestion Profile** - receive logs from external sources, attach the log ingestion profile to a Log Collector group
-- **Panorama > Policy Recomendation > IoT + SaaS** - ?
+- **Panorama > Policy Recomendation > IoT + SaaS**
 
 ### Administrators
 
@@ -2800,12 +2799,11 @@ Access domains for Device Group and Template Admin administrator type
 - A local administrator can also perform overrides directly on an individual device if necessary - we chose an object and there is a button in the bottom: Override
 - After you override locally, and new push from Panorama, this parameter will remain overrrided
 - There is no possibility to see on Panorama on which Firewalls what was overrided
-- Stack have a configurable priority order to ensure that Panorama pushes only one value for any duplicate setting. If there is the same object in 2 templates, object from the uppest template in the stack will be installed, for example interface management profile, no options for this profile from lower template will be installed
+- Stack has a configurable priority order to ensure that Panorama pushes only one value for any duplicate setting. If there is the same object in 2 templates, object from the uppest template in the stack will be installed, for example interface management profile, no options for this profile from lower template will be installed
 - Different firewall models - different stacks
 - Object created in template, is available only in this template
 - When we import firewall, template is automatically configured for it and template stack as well
 - To change only parameter we can configure firewall directly and do not use force during pushing on panorama
-- We can use variables, for example to configure different IP addresses in one template stack
 - 1024 template stacks max
 - When you commit and push you cannot choose template, you can choose Stack or device....
 
@@ -2868,7 +2866,7 @@ Renew cert
 - You can save named configuration snapshot manually choosing Templates and Device Groups
 - When you revert changes, you are replacing settings in the current candidate configuration with settings from another configuration
 - Reverting a Panorama management server configuration requires a full commit after revert and must be performed by a superuser
-- Revert to a previous version of the running configuration that is stored on Panorama: **PanoramaSetupOperations, Load Panorama configuration version**
+- Revert to a previous version of the running configuration that is stored on Panorama: **Panorama > Setup > Operations, Load Panorama configuration version**
 - You can select Templates and Device Groups
   
 ### Variables
@@ -2876,9 +2874,9 @@ Renew cert
 - They are created in order not to create 200 templates with different IPs inside
 - Used in: Static routes, interface IPs, Server profiles, DNS servers....
 - You can use variables to replace:
-    - An IP address (includes IP Netmask, IP Range, and FQDN) in all areas of the configuration.
-    - Interfaces in an IKE Gateway configuration (Interface) and in an HA configuration (Group ID).
-    - Configuration elements in your SD-WAN configuration (AS Number, QoS Profile, Egress Max, Link Tag).
+    - An IP address (includes IP Netmask, IP Range, and FQDN) in all areas of the configuration
+    - Interfaces in an IKE Gateway configuration (Interface) and in an HA configuration (Group ID)
+    - Configuration elements in your SD-WAN configuration (AS Number, QoS Profile, Egress Max, Link Tag)
 - `Panorama > Templates > Manage Variables > Create Variables`
 - Variables need to begin with '$': $DNS=1.1.1.1/32
 - Use this variable in proper configurations
@@ -2941,8 +2939,7 @@ Search for failed push to device in system logs
 Or, you can try on device itself:  
 `( admin eq Panorama-username' )`
 
-
-### Licensing + Software Upgrades + Dynamic Updates**
+### Licensing + Software Upgrades + Dynamic Updates
 
 - Panorama > Device Deployment 
 - Automatically license a VM-Series firewall when it connects to Panorama
@@ -2954,7 +2951,7 @@ Or, you can try on device itself:
 - Panorama > Device Deployment > Software
 - Panorama > Device Deployment > Dynamic Updates
 
-### Automatic commit recovery**
+### Automatic commit recovery
 
  - If the committed configuration breaks the connection with Panorama, then the firewall automatically fails the commit and the configuration reverts to the previous running configuration
  - The firewall also checks the connectivity to Panorama every hour to ensure consistent communication
@@ -2962,7 +2959,7 @@ Or, you can try on device itself:
  - HA configuration syncs might occur only after each HA successfully tests the connectivity to Panorama and verifies its connection
  - Device > Setup > Panorama Settings > Enable Automatic commit recovery: Number of attempts to check for Panorama connectivity, Interval between retries (sec)
 
-**General Configuration Overview**
+### General Configuration Overview
 
 - Add Panorama and Secondary Panorama IP on device
 - Insert auth key from Panorama: **Panorama > Device Registration Auth Key**
@@ -2975,7 +2972,7 @@ Or, you can try on device itself:
 - Panorama configurations are not synced between HA pair
 - Create a device group
 - Commit and push
-- Go to Policies, select device group and edit edit policy and push it
+- Go to Policies, select device group and edit policy and push it
 - Device group is configurable for every rule
 - Create templates - all configurations are there - **Panorama > Templates**
 - Combine them into stack - **Panorama > Templates** - add devices to Stack
@@ -2983,7 +2980,7 @@ Or, you can try on device itself:
 
 **Configuration management**
 
-- **Panorama > Setup > Operations >Configuration Management**
+- **Panorama > Setup > Operations > Configuration Management**
 - Revert to last saved Panorama configuration - 
 
 **Remove firewall from Panorama**
@@ -3022,13 +3019,13 @@ Commit options when you commit to Panorama:
 - Change Summary
 - Validate Commit
 
-### Locks
+**Locks**
 
 - Config — Blocks other administrators from changing the candidate configuration
 - Commit — Blocks other administrators from changing the running configuration
-- Shared—Restricts changes to the entire Panorama configuration, including all device groups and templates.
-- Template—Restricts changes to the firewalls included in the selected template. (You can’t take a lock for a template stack, only for individual templates within the stack.)
-- Device group—Restricts changes to the selected device group but not its descendant device groups
+- Shared — Restricts changes to the entire Panorama configuration, including all device groups and templates.
+- Template — Restricts changes to the firewalls included in the selected template. (You can’t take a lock for a template stack, only for individual templates within the stack.)
+- Device group — Restricts changes to the selected device group but not its descendant device groups
 - Show locks: `show commit locks`
 - Remove lock for particular admin: `request commit-lock remove admin phil`
 
@@ -3036,10 +3033,10 @@ Commit options when you commit to Panorama:
 
 - Push all changes OR only incremental - made by me or other admin - it is not connected with scope
 - Configure Push Scope - Edit Selections
-- Merge with device candidate config - ?
-- Include Device and Network templates - ?
-- Force template values - ?
-- No Default Selections - ?
+- Merge with device candidate config
+- Include Device and Network templates
+- Force template values
+- No Default Selections
 - Validate Device Group Push
 - Validate Template Push
 
@@ -3068,6 +3065,7 @@ On Firewall we need to launch a command
 request sc3 reset
 debug software restart process management-server
 ```
+
 ### Push config to Firewall without changes
 
 - Can be used during RMA
@@ -3141,12 +3139,12 @@ show log-collector-es-cluster health
 clear log log-type
 ```
 
-**Health monitoring**
+### Health monitoring
 
 - `Panorama > Managed devices > Health`
 - Throughput, sessions, connections, packets, interfaces, logging rate, memory, CPU (management plane, data plane), packet buffers, HA, Cluster
 
-**Telemetry in Panorama**
+### Telemetry in Panorama
 
 Show cert issues and fix it
 
@@ -3202,8 +3200,6 @@ request certificate fetch
 - Check status of log collectors
 - Preemption is disabled by default, after reboot Primary will become Primary
 
-
-
 Details
 
 - Export named Panorama configuration snapshot (Panorama > Setup > Operations)
@@ -3241,7 +3237,6 @@ Used Mem= (used)-(Buffers +Cached)
 show system resources
 show running resource-monitor - data plane, per core, per group of resources
 ```
-
 
 **Power supplies, thermal, fans...**
 ```
@@ -4059,9 +4054,9 @@ Check the GRE session
 - A vsysadmin doesn’t have access to network interfaces, VLANs, virtual wires, virtual routers, IPSec tunnels, GRE tunnels, DHCP, DNS Proxy, QoS, LLDP, or network profiles
 - A vsysreader doesn’t have access to network interfaces, VLANs, virtual wires, virtual routers, IPSec tunnels, GRE tunnels, DHCP, DNS Proxy, QoS, LLDP, or network profiles
 - Shared objects are available for all VSYSs
--  If you try to create a shared object with the same name and type as an existing object in a virtual system, the virtual system object is used
+- If you try to create a shared object with the same name and type as an existing object in a virtual system, the virtual system object is used
 - All Shared objects pushed from the Panorama management server are duplicated to each vsys and count toward the total maximum capacity for each object 
-- 
+- User-ID hub - configure the User-ID sources on a single virtual system - share to others - `Device > Virtual Systems > Resources Tab > Make this vsys a User-ID data hub` 
 
 ### Inter-vsys routing
 
@@ -4083,7 +4078,7 @@ Check the GRE session
 - A shared gateway ID number appears as sg<ID> on the web interface
 - A shared gateway is a limited version of a virtual system; it supports NAT and policy-based forwarding (PBF), but does not support Security, DoS policies, QoS, Decryption, Application Override, or Authentication policies
 
-**CLI**
+### CLI
 
 ```
 admin@PA> show system info | match vsys 
