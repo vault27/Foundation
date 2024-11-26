@@ -190,6 +190,12 @@ Path attributes fall into four separate categories:
 - CLUSTER_LIST - is a new, optional, non-transitive BGP attribute of Type code 10.  It is a sequence of CLUSTER_ID values representing the reflection path that the route has passed. When an RR reflects a route, it MUST prepend the local CLUSTER_ID to the CLUSTER_LIST.  If the CLUSTER_LIST is empty, it MUST create a new one.  Using this attribute an RR can identify if the routing information has looped back to the same cluster due to misconfiguration.  If the local CLUSTER_ID is found in the CLUSTER_LIST, the advertisement received SHOULD be ignored - to put it simple - all RRs, via which route passed, should be on this list
 - Multi Exit Discriminator (MED) - suggestion to other directly connected networks on which path should be taken if multiple options are available, and the lowest value wins. Transfered from iBGP to eBGP. allow routers in one AS to tell routers in a neighboring AS how good a particular route is. We send a route with lower MED, and this route becomes preferable
 
+#### MED
+
+- With deterministic MED comparison, BGP routers always compare MED values in the same, fixed way, ensuring that: 
+    - Routes with lower MED values are always preferred
+    - If the MED values are the same, BGP will use other criteria like AS Path, Origin type, or Local Preference to make a consistent decision
+
 ### Weight
 
 - Only for Cisco
