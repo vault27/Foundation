@@ -1066,6 +1066,19 @@ tx-unicast: 0,
 
 ### BGP
 
+Configuration
+
+- `Network > Virtual Router > BGP`
+- Router ID
+- AS number
+- BFD profile
+- Install Route - Install BGP routes to global routing table
+- Compare MED
+- Aggregate MED - Select to enable route aggregation even when routes have different Multi-Exit Discriminator (MED) values
+- Peer Group EBGP/IBGP + members
+- Redistribution profile: connect interface 
+- Use this profile in BGP section, redist rules tab, for redistributed networks we can configure Origin, MED, Local Preference, Communities, Extended Comminities
+
 BGP states
 
 - IDLE
@@ -2088,7 +2101,7 @@ A session created locally on the firewall will have the False value and one crea
 - **Device > Device Quarantine**
 - Works only with Global Protect because it needs Host ID and only GP client provides it
 - Valid GlobalProtect subscription license is required
-- Addin to Quaratine does not block anything
+- Adding to Quaratine does not block anything
 - After you quarantine the device, you can block users from logging into the network from that device using GlobalProtect
 - You can also restrict traffic to a compromised device, from a compromised device, or both
 - To block users from logging in to GlobalProtect from a quarantined device, configure GlobalProtect gateway authentication (**Network > GlobalProtect > Gateways > gateway-configuration > Authentication**) and select **Block login for quarantined devices**
