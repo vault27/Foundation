@@ -343,3 +343,14 @@ Header
 ## Security
 
 WPA 3 - management frames encrypted
+
+## Design
+
+- Juniper MIST access point is connected to access switch
+- It propogates several WLANS
+- For every WLAN VLAN is configured
+- Every WLAN we can make tunneled or not
+- If not, all traffic goes to access switch via trunk 10 Gbit copper cable
+- If tunneled, it goes to MIST Edge
+- Default gateway is on a core switch, also DHCP relay is on it as well
+- Default gateway is on both core switches via VRRP
