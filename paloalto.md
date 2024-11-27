@@ -3819,7 +3819,7 @@ Concepts
 - Each proxy ID is counted as a VPN tunnel, and therefore counted towards the IPSec VPN tunnel capacity of the firewall
 - The advantage with the proxy IDs is the ability to get granular with protocol numbers or TCP/UDP port numbers if you have specific traffic you want to travel over the VPN tunnel only. Proxy IDs easily enable such granularity
 - Because there are 2 versions of IKE, the behavior with proxy IDs is different:
-    - With IKEv1, Palo Alto Networks devices support only proxy-ID exact match. In the event where the Peer's Proxy ID's do not match, then there will be problems with the VPN working correctly.
+    - With IKEv1, Palo Alto Networks devices support only proxy-ID exact match. In the event where the Peer's Proxy ID's do not match, then there will be problems with the VPN working correctly
     - With IKEv2, there is support traffic selector narrowing when the proxy ID setting is different on the two VPN gateways
 
 ### Configuration
@@ -3895,7 +3895,6 @@ If we need another site, we:
 12. Delete associated zone - if it is not used anywhere else - BE CAREFUL! It MAY be used in RULES and NAT!
 13. Delete affected routes: delete tunnel interface from redistribution profile or static routes
 14. Commit and push to devices
-
 
 ### Redundancy
 
