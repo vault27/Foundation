@@ -1685,19 +1685,18 @@ Requires Advanced Threat Prevention subscription
 
 ### Anti-Spyware
 
-- Several policies in one Profile
-- Signatures are added to Policy by severity and by name and by category
-- One action for all signatures in Policy, or default
-- Signature exceptions: enable or disable + change action
-- DNS exceptions
-- DNS white domains
-- Blocks connections to the external C2 servers
-- Default profile uses default action inside a signature
-- Block IP: This action blocks traffic from either a source or a source-destination pair. It is configurable for a specified period of time
-- You can also enable the DNS Sinkholing action in the Anti-Spyware Profiles to enable the firewall to forge a response to a DNS query for a known malicious domain, thus causing the malicious domain name to resolve to an IP address that you define
+- Signature policies Tab - Blocks connections to the external C2 servers
+    - Several policies in one Profile
+    - Signatures are added to Policy by severity and by name and by category
+    - One action for all signatures in Policy, or default
+- Signature exceptions Tab: enable or disable + change action
+- DNS policies Tab - Block or Sinkhole bad DNS domains + Logs of it + Traffic Capture
+- DNS exceptions Tab - FQDN allow list
+- You can also enable the DNS Sinkholing action in the Anti-Spyware Profiles to enable the firewall to forge a response to a DNS query for a known malicious domain, thus causing the malicious domain name to resolve to an IP address that you define or `sinkhole.paloaltonetworks.com`
 - This feature helps to identify infected hosts on the protected network by using DNS traffic. Infected hosts can then be easily identified in the Traffic and Threat logs because any host that attempts to connect to the sinkhole IP address is most likely infected with malware
 - In this profile DNS Security is also configured - Palo Alto Networks DNS Security service, a cloud-based analytics platform providing your firewall with access to DNS signatures generated using advanced predictive analysis and machine learning, with malicious domain data from a growing threat intelligence sharing community
 - Active DNS Security and Threat Prevention (or Advanced Threat Prevention) subscription is required
+- Inline cloud analysis Tab
 
 ### Advanced Threat Prevention
 
