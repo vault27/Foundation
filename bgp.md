@@ -42,6 +42,7 @@
 ## Concepts
 
 - Routing protocol that is used to exchange network layer reachability information (NLRI) between routing domains
+- NLRI consists of: network prefix, prefix length, path attributes
 - Path vector routing protocol
 - 2 BGP processes with different AS on one router - ?
 - BGP is not a routing protocol: BGP is an application used to exchange NLRI, IPv4, IPv6, l2vpn, VPnv4...All data in a packet is presented in the form of Path attributes, all these make it very flexible
@@ -169,7 +170,7 @@ Path attributes fall into four separate categories:
 
 - AS_PATH
 - NEXT_HOP
-- ORIGIN - 
+- ORIGIN
   - i - originate the prefix through BGP
   - e - is no longer used
   - ? - distribute a prefix into BGP from another routing protocol
@@ -348,17 +349,17 @@ Community based local preference:
 - RFC 2858 added Multi-Protocol BGP (MP-BGP) capability by adding an extension called the address family identifier (AFI)
 - Address family shows particular network protocol, for example IPv4, IPv6
 - Additional granularity is provided through a subsequent address-family identifier (SAFI) such as unicast or multicast
-- MBGP achieves this separation by using the BGP path attributes (PAs) MP_REACH_NLRI and MP_UNREACH_NLRI
+- MPBGP achieves this separation by using the BGP path attributes (PAs) MP_REACH_NLRI and MP_UNREACH_NLRI
 - These attributes are carried inside BGP update messages and are used to carry network reachability information for different address families
-- Every address family maintains a separate database and configuration for each protocol (address family + sub-address family) in BGP.
+- Every address family maintains a separate database and configuration for each protocol (address family + sub-address family) in BGP
 - BGP includes an AFI and SAFI with every route advertisement to differentiate between the AFI and SAFI databases
 
 ## Capabilities
 
-## ASN
+## Autonomous System Numbers
 
 - Can be 16 bit (2 bytes) and 32 bit (4 bytes)
-- 0 to 65535
+- 0 to 65535 - for 2 bytes
 - Reserved: 0, 23456, 65535 - ?
 - Public: 1 - 64495, 65552 - 4 199 999 999
 - Private: 64512 - 65534, 4 200 000 000 - 4 294 967 294
