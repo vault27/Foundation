@@ -44,6 +44,12 @@
 - Routing protocol that is used to exchange network layer reachability information (NLRI) between routing domains
 - NLRI consists of: network prefix, prefix length, path attributes (next hop is a path attribute as well)
 - Path vector routing protocol
+- Does not use hello packets to discover neighbors
+- TCP port 179
+- Neighbors may be several hops away
+- Multi hoop sessions require that the router uses underlying route installeed in the RIB static or from routing protocol
+- BGP routers do not have to be in a data path
+- 2 types of sessions: iBGP and eBGP
 - 2 BGP processes with different AS on one router - ?
 - BGP is not a routing protocol: BGP is an application used to exchange NLRI, IPv4, IPv6, l2vpn, VPnv4...All data in a packet is presented in the form of Path attributes, all these make it very flexible
 - For different addresses different AFI/SAFI numbers are used
@@ -497,6 +503,15 @@ Don't use or advertise the route/s learned via an iBGP neighbor to an eBG neighb
 
 ## iBGP
 
+- iBGP sessions: the same AS or the same confederation
+- AD - 200
+- Used for transit connectifity in one AS - used mostly in service providers
+- iBGP route cannot be forwarded to another iBGP router, to avoid loops
+- eBGP routes are never redistributed to IGPs inside AS, there are too many of such routes
+- AS 1 router > eBGP > AS 2 router > OSPF > AS 2 router > EIGRP > AS 2 router > eBGP > AS 3 router
+- Thay just build iBGP mesh between all routers in AS 2 and IGP inside AS as underlay is used
+- iBGP requires underlay IGP for full mesh or route reflectors or confederations
+- iBGP carries routes about external subnets and IGP carries routes about internal AS subnets
 - iBGP packets default to TTL 255
     - Implies neighbors do not have to be connected as long as IGP reachability exists
 - iBGP peers typically peer via Loopbacks
