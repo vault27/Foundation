@@ -42,16 +42,11 @@
 ## Concepts
 
 - Routing protocol that is used to exchange network layer reachability information (NLRI) between routing domains
-- NLRI consists of: network prefix, prefix length, path attributes
+- NLRI consists of: network prefix, prefix length, path attributes (next hop is a path attribute as well)
 - Path vector routing protocol
 - 2 BGP processes with different AS on one router - ?
 - BGP is not a routing protocol: BGP is an application used to exchange NLRI, IPv4, IPv6, l2vpn, VPnv4...All data in a packet is presented in the form of Path attributes, all these make it very flexible
 - For different addresses different AFI/SAFI numbers are used
-- IPV4 NLRI contains..
-    - Prefix/len
-    - Attributes
-      - Local-pref, AS-Path, MED, etc.
-  - Next-Hop
 - Internet de facto protocol, Routing protocol of Intenet, Port 179 TCP, EGP
 - BGP knows the next-hop but not the outgoing interface
 - IGP must be able to perform recursion otherwise the route cannot be used
