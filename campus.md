@@ -13,12 +13,13 @@
 
 ## STP + HSRP
 
-- Every access switch is connected to 2 Core cwitches
-- 2 Core switches are connected between each other with LAG
-- HSRP is configured on both Core switches
-- Primary Core switch is root
+- Every access switch is connected to 2 Core switches with LAG
+- 2 Core switches are connected between each other with LAG - Layer 2 link - if there is no such link, then if link between access switch and core-1 is broken, client will not be able to reach core-1 where virtual IP is located. Client will loose all connections to external networks. And if this links exists, client will be able to reach Core-1 via Core-2. Only Core-1 replies to arp for virtual HSRP IP until core-1 is alive
+- HSRP is configured on both Core switches for all Vlan interfaces
+- Primary Core switch is root, so link from access switch to Core switch 2 is blocked
 - STP saves from failure of any link between Access switches and Core Switches, and between 2 Core switches
 - HSRP saves from failure of Core Switch on layer 3
+- Core switches are independently connected with routing protocols to WAN routers.....
 
 ## Access layer
 

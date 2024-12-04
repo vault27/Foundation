@@ -1433,6 +1433,25 @@ Virtual Link OSPF_VL0 to router 2.2.2.2 is up
 
 ## Verification
 
+**Show route based on host**
+
+```
+Router#show ip route 172.22.152.182    
+Routing entry for 172.22.152.128/26
+  Known via "ospf 10", distance 110, metric 17200, type intra area
+  Last update from 172.19.47.109 on TwentyFiveGigE1/0/14, 2w3d ago
+  Routing Descriptor Blocks:
+  * 172.19.47.109, from 172.31.1.182, 2w3d ago, via TwentyFiveGigE1/0/14
+      Route metric is 17200, traffic share count is 1
+```
+
+- ospf 10 - process number
+- 110 - administrative distance
+- 17200 - total metric
+- 172.19.47.109 - router ID, who generated a route
+- 172.31.1.182 - neighbor
+- TwentyFiveGigE1/0/14 - incoming interface
+
 **Show OSPF configuration**
 
 ```

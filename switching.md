@@ -397,7 +397,66 @@ Id    Port          Status Consistency Reason                Active vlans
 
 ## STP
 
+- LAG ports are inpreted as whole, not separate
+- The bridge ID is used during the root bridge election and in other STP decisions. The switch with the lowest priority + MAC address combination is elected as the root bridge
+
 Port types:
 - Network - goes immediately to Blocking state - for connecting switches
 - Edge - goes immediately to Forwarding state - for connecting end hosts
 - Normal
+
+### Configuration
+
+```
+spanning-tree mode rapid-pvst
+spanning-tree extend system-id
+spanning-tree vlan 2-4094 priority 61440
+```
+
+Without spanning-tree extend system-id: Bridge ID = Priority + MAC Address  
+With spanning-tree extend system-id: Bridge ID = (Priority * 256) + MAC Address (lower 8 bits)  
+The spanning-tree extend system-id command is used to ensure that the bridge priority in STP is extended and more unique, making the root bridge election process more stable and avoiding conflicts between switches with the same priority. It is generally a good practice to enable this command in modern networks to avoid issues related to STP.
+
+**Show all Spanning Tree info for particular VLAN**  
+Root ID, current switch ID, ports, roles, statuses
+
+```
+Switch#show spanning-tree vlan 115
+
+VLAN0115
+  Spanning tree enabled protocol rstp
+  Root ID    Priority    16499
+             Address     4488.165b.e180
+             This bridge is the root
+             Hello Time   2 sec  Max Age 20 sec  Forward Delay 15 sec
+
+  Bridge ID  Priority    16499  (priority 16384 sys-id-ext 115)
+             Address     4488.165b.e180
+             Hello Time   2 sec  Max Age 20 sec  Forward Delay 15 sec
+             Aging Time  300 sec
+
+Interface           Role Sts Cost      Prio.Nbr Type
+------------------- ---- --- --------- -------- --------------------------------
+Twe1/0/6            Desg FWD 2000      128.6    P2p 
+Twe1/0/7            Desg FWD 2000      128.7    P2p 
+Po7                 Desg FWD 1000      128.2095 P2p 
+Po8                 Desg FWD 1000      128.2096 P2p 
+Po10                Desg FWD 1000      128.2098 P2p 
+Po13                Desg FWD 1000      128.2101 P2p 
+Po14                Desg FWD 1000      128.2102 P2p 
+Po19                Desg FWD 1000      128.2107 P2p 
+Po20                Desg FWD 1000      128.2108 P2p 
+```
+
+**Show blocked ports**
+
+```
+switch#show spanning-tree vlan 115 blockedports
+
+Name                 Blocked Interfaces List
+-------------------- ------------------------------------
+VLAN0115             Po16
+
+Number of blocked ports (segments) in vlan 115: 1
+
+```

@@ -329,6 +329,8 @@ First hop redundancy protocol (FHRP)
 
 **HSRP**
 
+Higher priority is better  
+
 Config example
 
 ```

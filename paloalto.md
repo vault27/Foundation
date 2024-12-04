@@ -1694,6 +1694,8 @@ Requires Advanced Threat Prevention subscription
 - DNS exceptions Tab - FQDN allow list
 - You can also enable the DNS Sinkholing action in the Anti-Spyware Profiles to enable the firewall to forge a response to a DNS query for a known malicious domain, thus causing the malicious domain name to resolve to an IP address that you define or `sinkhole.paloaltonetworks.com`
 - This feature helps to identify infected hosts on the protected network by using DNS traffic. Infected hosts can then be easily identified in the Traffic and Threat logs because any host that attempts to connect to the sinkhole IP address is most likely infected with malware
+- This helps, when all DNS requests via PA go from local DNS server, so we find infected hosts via their connection to sinkhole.paloalto.com
+- If we need to add a exclusion from sinkhole, we need to do it between Local DNS server and Internet
 - In this profile DNS Security is also configured - Palo Alto Networks DNS Security service, a cloud-based analytics platform providing your firewall with access to DNS signatures generated using advanced predictive analysis and machine learning, with malicious domain data from a growing threat intelligence sharing community
 - Active DNS Security and Threat Prevention (or Advanced Threat Prevention) subscription is required
 - Inline cloud analysis Tab
