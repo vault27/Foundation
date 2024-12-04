@@ -42,15 +42,17 @@
 ## Concepts
 
 - Routing protocol that is used to exchange network layer reachability information (NLRI) between routing domains
+- NLRI consists of: network prefix, prefix length, path attributes (next hop is a path attribute as well)
 - Path vector routing protocol
+- Does not use hello packets to discover neighbors
+- TCP port 179
+- Neighbors may be several hops away
+- Multi hoop sessions require that the router uses underlying route installeed in the RIB static or from routing protocol
+- BGP routers do not have to be in a data path
+- 2 types of sessions: iBGP and eBGP
 - 2 BGP processes with different AS on one router - ?
 - BGP is not a routing protocol: BGP is an application used to exchange NLRI, IPv4, IPv6, l2vpn, VPnv4...All data in a packet is presented in the form of Path attributes, all these make it very flexible
 - For different addresses different AFI/SAFI numbers are used
-- IPV4 NLRI contains..
-    - Prefix/len
-    - Attributes
-      - Local-pref, AS-Path, MED, etc.
-  - Next-Hop
 - Internet de facto protocol, Routing protocol of Intenet, Port 179 TCP, EGP
 - BGP knows the next-hop but not the outgoing interface
 - IGP must be able to perform recursion otherwise the route cannot be used
@@ -169,7 +171,7 @@ Path attributes fall into four separate categories:
 
 - AS_PATH
 - NEXT_HOP
-- ORIGIN - 
+- ORIGIN
   - i - originate the prefix through BGP
   - e - is no longer used
   - ? - distribute a prefix into BGP from another routing protocol
@@ -348,17 +350,17 @@ Community based local preference:
 - RFC 2858 added Multi-Protocol BGP (MP-BGP) capability by adding an extension called the address family identifier (AFI)
 - Address family shows particular network protocol, for example IPv4, IPv6
 - Additional granularity is provided through a subsequent address-family identifier (SAFI) such as unicast or multicast
-- MBGP achieves this separation by using the BGP path attributes (PAs) MP_REACH_NLRI and MP_UNREACH_NLRI
+- MPBGP achieves this separation by using the BGP path attributes (PAs) MP_REACH_NLRI and MP_UNREACH_NLRI
 - These attributes are carried inside BGP update messages and are used to carry network reachability information for different address families
-- Every address family maintains a separate database and configuration for each protocol (address family + sub-address family) in BGP.
+- Every address family maintains a separate database and configuration for each protocol (address family + sub-address family) in BGP
 - BGP includes an AFI and SAFI with every route advertisement to differentiate between the AFI and SAFI databases
 
 ## Capabilities
 
-## ASN
+## Autonomous System Numbers
 
 - Can be 16 bit (2 bytes) and 32 bit (4 bytes)
-- 0 to 65535
+- 0 to 65535 - for 2 bytes
 - Reserved: 0, 23456, 65535 - ?
 - Public: 1 - 64495, 65552 - 4 199 999 999
 - Private: 64512 - 65534, 4 200 000 000 - 4 294 967 294
@@ -501,6 +503,15 @@ Don't use or advertise the route/s learned via an iBGP neighbor to an eBG neighb
 
 ## iBGP
 
+- iBGP sessions: the same AS or the same confederation
+- AD - 200
+- Used for transit connectifity in one AS - used mostly in service providers
+- iBGP route cannot be forwarded to another iBGP router, to avoid loops
+- eBGP routes are never redistributed to IGPs inside AS, there are too many of such routes
+- AS 1 router > eBGP > AS 2 router > OSPF > AS 2 router > EIGRP > AS 2 router > eBGP > AS 3 router
+- Thay just build iBGP mesh between all routers in AS 2 and IGP inside AS as underlay is used
+- iBGP requires underlay IGP for full mesh or route reflectors or confederations
+- iBGP carries routes about external subnets and IGP carries routes about internal AS subnets
 - iBGP packets default to TTL 255
     - Implies neighbors do not have to be connected as long as IGP reachability exists
 - iBGP peers typically peer via Loopbacks
