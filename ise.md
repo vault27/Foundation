@@ -10,7 +10,31 @@
 
 ## Architecture
 
+- PAN - policy administration node
+- PSN - Policy service node
+- MNT - monitoring and troubleshooting node
+- IPN - Inline Posture Node
+- Several nodes combined into one deployment are called cube
+- All PSNs send their logs to the MnT as Syslog messages UDP/20514
 - 2 interfaces on a node: one for management, one for requests
+- If two MNT nodes exist in a deployment, all ISE nodes send their logs to both nodes.
+- Inline Posture Nodes send logs only to one target
+- However, the log database is not synchronized between the primary and secondary MnT nodes. Therefore, when the MnT node returns to service, a backup and restore of the monitoring node is required to keep the two MnT nodes in complete sync.
+- The best practice for logging is to also send logging data to a security information manager (SIM) tool for long-term data archiving and reporting.
+- PAN is responsible for admin GUI and synchronization of all ISE nodes
+- In the eventof the primary PAN going offline, no synchronizations will occur until the secondary PAN is promoted to primary. After it becomes the primary, it will take over all synchronization responsibility. Some might consider this a “warm spare” type of high availability (HA)
+- However, ISE does have a concept of a node group. Node groups are made up of Layer-2 adjacent (same VLAN) PSNs, where the nodes maintain a heartbeat with each other. In the event that a PSN goes down while a session is being authenticated, one of the other PSNs in the node group sends a CoA to the NAD so the endpoint can restart the session establishment with a new PSN. This is most commonly used when deploying the PSNs behind a load balancer. However, there is no requirement for node groups to be used solely with any Layer-2 adjacent PSNs
+- You can configure AD groups of interest and then use them as conditions, you may also use AD attributes
+- Certificate authentication profile - CAP tels ISE which value from certificate should be use for comparission during authorization
+- ISS - identity source sequence - we can check user not only against one source but several
+- We should use phasing deployment to do it safely: phase 1 - Monitor Mode, Phase 2 - Low Impact mode, Closed Mode
+
+Deployment scenarios:
+
+- Single node - all in 1
+- 2 node - one primary and 1 backup
+- 4 node - 2 appliances are PSN and 2 appliances are PAN MNT
+- Fully Distributed
 
 ## Maitenance
 
@@ -64,6 +88,14 @@ show application status ise
   - Port-Bounce: Disconnects the client (causing a reauthentication) by momentarily shutting down the port (used in wired scenarios).
 
 ## 802.1X
+
+Show all dot1x configured ports
+
+show dot1x all
+
+Show all dot1x authentications for particular port
+
+show authentication sessions int gig0/7
 
 ## TACACS
 

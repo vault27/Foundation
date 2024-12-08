@@ -1,8 +1,5 @@
 # IPSec
 
-## History
-## Parametres
-
 ### IKE
 
 - Peer IP
@@ -182,4 +179,11 @@ Router#show logging | inc changed
 20995087: Feb 13 2024 01:00:01.765 EST: %LINEPROTO-5-UPDOWN: Line protocol on Interface Tunnel12, changed state to down
 20995088: Feb 13 2024 01:00:02.035 EST: %LINEPROTO-5-UPDOWN: Line protocol on Interface Tunnel15, changed state to down
 20995111: Feb 13 2024 01:01:35.759 EST: %LINEPROTO-5-UPDOWN: Line protocol on Interface Tunnel102, changed state to up
+```
+## Debug
+
+```
+Debug crypto condition peer ipv4 140.238.149.242
+Debug crypto ikev2
+Debug crypto ipsec
 ```
