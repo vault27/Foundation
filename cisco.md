@@ -1,31 +1,6 @@
 # Cisco
 
-## Portfolio
-
-- Management platforms
-    - Meraki Dashboard
-    - DNA center
-- Switches
-    - Catalyst 9410 - big chassis for access
-    - Catalyst 9500 - Core switches
-    - Meraki MS switches
-    - Catalyst 1000 Series
-    - Catalyst PON Series
-- Routers
-    - Catalyst 8000 series
-    - Catalyst 8000V
-    - ISR
-    - ASR
-    - NCS
-    - 88 platform
-    - CSR 1000v
-    - Meraki MX
-- Umbrella
-- Webex
-- SD-WAN - Viptella
-    - Catalyst SD-WAN
- 
- ## Routers and switches upgrade
+## Routers and switches upgrade
 
 ### Part 1 - Reconnaissance
 
@@ -239,62 +214,7 @@ Install all nxos bootflash:nxos64-cs.10.2.6.M.bin
 **Validation**
 
 
-## Catalyst
-
-- Brand for a variety of network switches, wireless controllers, and wireless access points
-- Series: The 1700, 1900, 2800 -  Grand Junction Networks, 3000 -  Kalpana, 5000 and 6000 - Crescendo Communications, 9000
-- CatOS first,  layer 2 functions are configured using CatOS, and the layer 3 elements are configured using IOS, pure IOS
-- GUI via HTTP
-- Cisco Catalyst products run IOS or a Linux-derived version called Cisco IOS XE
-- The newer Catalyst 9000 family uses the Cisco IOS XE operating system
-- 9400, 9600 - chassis: field-replaceable supervisor, line cards, power supplies and fans
-- Chassis provides power and a high-speed backplane, the line cards provide interfaces to the network, and the supervisor engine moves packets, participates in routing protocols, etc
-- StackWise and Stackwise Virtual are technologies offered by Cisco Systems that allows some models of Catalyst switches to operate as though they were one switch
-- One switch is master, if master fails - another is a master
-- Stackwise physically connects the switch stack using special stack interconnect cables
-- Many dofferent commands to install image
-
-
-## Documentation
-
-- Configuration guides in Support >  Cisco IOS and NX-OS Software > Version
-- Technology support page Support > Technology: https://www.cisco.com/c/en/us/tech/index.html
-
-## IOS
-
-- Monolithic operating system running directly on the hardware
-- Replaced with Cisco IOS XE
-
-How to choose IOS
-
-- Hardware Support
-- Feature Support
-- Cisco IOS Software Release Version
-
-Image types:
-
-- Original IOS for hardware - used with Dynamips
-- IOL (IOS on Linux also known as IOU)
-- QEMU images
-- IOSv - used in VIRL - can be downloaded with Cisco account, there are also available:
-    - IOSXRv 9000
-    - IOSvL2
-    - CSR1000v
-    - ASAv
-    - NX-OSv
-    - IOS XRv
-    - IOSv
-- vIOS can be qcow2 image and vmdk image
-- qcow2 - is almost ready to be used in EVE
-- vmdk - need to be converted
-
-Image naming scheme:
-
-- Different platforms ultimately run different Cisco IOS versions
-- K9 - crypto support
-- Image: platform + services + IOS version
-
-IOS version naming
+## IOS version naming
 
 - Different platforms ultimately run different Cisco IOS versions 
 - There are three sets of numbers that give us information about any version of Cisco IOS
@@ -312,24 +232,6 @@ IOS version naming
 - M - mainline - recomended
 - T - technology line - new features, not very stable
 - 15X (special or early deployment), 15S (7600), 15Y (Sup-2T-10GE – Catalyst 6500), 15SG (Sup-CS-S2T – Catalyst 6500), and 15SE (2960, 3560, 3650, and 3750 platforms)
-
-
-## IOS XR
-
-- Focuses on the needs of service providers
-- Modular, Linux based, memory protection between processes
-- Has a completely different code base and whose developers implemented a different CLI command set
-- IOS XR is based on QNX (since version 5.0 it's also based on linux), where the IOSd application has been separated into many different applications
-
-## IOS XE
-
-- Supports next-generation platforms
-- Combination of a Linux kernel and a monolithic application (IOSd) that runs on top of this kernel
-- Separates the data plane and control plane
-- Introduced for ASR 1000 routers, also used in Catalyst 3850, Catalyst 9000, CSR1000v, ISR
-- Running Wireshark on a switch
-
-## NX-OS
 
 ## Nexus
 
@@ -358,32 +260,10 @@ TCAM in Nexus
 
 - To use a non-default feature for Nexus 9000 Series switches, one must manually carve out TCAM space for the features. By default, all TCAM space is allocated
 
-## CSR
-
-Cloud Services Router 1000V Series
-Contains features of Cisco IOS ® XE and IOS XE SD-WAN Software and can run on Cisco Unified Computing System ™ (Cisco UCS ®) servers or servers from leading vendors that support VMware ESXi, Citrix XenServer, Suse KVM, Red Hat KVM, or Microsoft Hyper-V. It is also available on Amazon Web Services and Microsoft Azure cloud marketplace. The CSR 1000V IOS XE Software is also available for Google Cloud Platform.
-- IPsec VPNs
-- Dynamic Multipoint VPN [DMVPN], Easy VPN, and FlexVPN
-- Cisco IOS Zone-Based Firewall (ZBFW)
-- Multiprotocol Label Switching (MPLS) endpoint
-- Network Address Translation (NAT), Locator/ID Separation Protocol (LISP), Overlay Transport Virtualization (OTV) and Virtual Private LAN Service (VPLS)
-- VxLAN
-
-## ASR
-
-## ISR
-
-## IOSv
-
-IOSv is an implementation of Cisco IOS that runs as a full virtual machine. The IOSv images are built from the Cisco IOS M/T train and support up to 16 GigabitEthernet interfaces. IOSv provides full layer-3 control-plane and data-plane functionality. Layer-2 switching is not supported, but layer-2 encapsulations, such as EoMPLS and L2TPv3, are supported.  
-IOSv is performance limited when forwarding traffic. Achieved throughputs are ~2.8 Mb/s when passing traffic through one IOSv router, and ~2.4 Mb/s when chained over two routers. Baseline throughput bypassing the router was ~720 Mb/s.
-
-## IOU
-
 ## Switch commands
 
 **Show all MAC addresses on the switch**
-
+CAM table (Content Addressable Memory table) - also known as the MAC address table
 ```
 switch#show mac address-table 
           Mac Address Table
@@ -548,16 +428,6 @@ show int description
 - access-list 1 permit 10.0.0.0 0.255.255.255 - match everything starting from 10
 - Convert subnet mask to WC: 255.255.255.255 - 255.255.252.0 = 0. 0. 3.255 - wildcard mask!
 
-## IPSec
-
-Debug
-
-```
-Debug crypto condition peer ipv4 140.238.149.242
-Debug crypto ikev2
-Debug crypto ipsec
-```
-
 ## Service commands
 
 ```
@@ -589,3 +459,6 @@ monitor capture bgp stop
 monitor capture bgp export flash:bgp.pcap
 no monitor capture mycapture
 ```
+
+##  Port security
+
