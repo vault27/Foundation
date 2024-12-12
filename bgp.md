@@ -122,12 +122,13 @@ What you need to think through, when you design BGP network
 - Then they send UPDATE messages with next hop as themselfs. One packet can contain several UPDATE messages and even KEEPALIVE inside. UPDATE message contains PATH ATTRIBUTES: ORIGIN, AS_PATH, MP_REACH_NLRI
 - Only the following routes are sent: network command, redistribute command via route map of local addresses, redistribute from other protocols, routes received via BGP, nothing is sent by default
 
-## Packet types
+## Messages
 
-- Open - negotiation parametres: BGP version, AS number, RID, Timers...
-- Notification - for errors
-- Update - routing information
-- Keep alive
+- Open - negotiation parametres: BGP version, AS number, RID, Hold Time, BGP ID, other capabilities
+    - Hold time - after receipt of an UPDATE or KEEPALIVE, hold time resets, if it reachs zero, router deletes all routes from this neighbor and UPDATE ROUTE WITHDRAW message is sent to other neighbors. Smaller hold time is used during negotiations. Cisco - 180 sec.
+- Notification - for errors: hold time expired, reset requested, capabilities changed...
+- Update - routing information: NLRI+attributes, new ones or withdraw, withdraw contains only prefix. Can act as KEEPALIVE.
+- Keep alive - sent every one third of hold time
 - Route refresh - request all routes for particular AFI/SAFI
 
 ### Update message
@@ -152,6 +153,13 @@ What you need to think through, when you design BGP network
  ```
 
 ## Neighbor states
+
+- Idle - tries to initiate a TCP connection and listens for connections
+- Connect - BGP initiates a TCP connection. If there is a TCP collision the router ID is compared and the device with the higher RID becomes the client
+- Active
+- OpenSent
+- OpenConfirm
+- Established
 
 ## Path Attributes
 
@@ -355,6 +363,44 @@ Community based local preference:
 - Every address family maintains a separate database and configuration for each protocol (address family + sub-address family) in BGP
 - BGP includes an AFI and SAFI with every route advertisement to differentiate between the AFI and SAFI databases
 
+**Families(15 in total):**
+
+1. IPv4 Unicast (AFI: 1, SAFI: 1) - The standard BGP address family for IPv4 unicast routing. It is used to exchange standard IPv4 routes 
+2. IPv4 Multicast (AFI: 1, SAFI: 2) - Used for IPv4 multicast routing. This address family deals with multicast routes and forwarding information
+IPv6 Unicast (AFI: 2, SAFI: 1)
+
+The BGP address family used to advertise IPv6 unicast routes.
+IPv6 Multicast (AFI: 2, SAFI: 2)
+
+This address family is used for IPv6 multicast routing.
+VPNv4 (AFI: 1, SAFI: 128)
+
+This is used in MPLS-based VPNs for advertising IPv4 routes along with their associated VRF (Virtual Routing and Forwarding) instances. Routes in the VPNv4 address family carry both the IPv4 prefix and additional attributes (such as Route Distinguishers and Route Targets).
+VPNv6 (AFI: 2, SAFI: 128)
+
+Similar to VPNv4 but for IPv6 addresses, used in MPLS-based VPNs to carry IPv6 routes within a VRF context.
+EVPN (Ethernet VPN) (AFI: 1 or 2, SAFI: 70)
+
+Used for Ethernet VPNs, which is a technology designed to extend Ethernet services over IP/MPLS networks. It supports multi-tenant environments by advertising MAC addresses and Ethernet segment information.
+IPv4 Labeled Unicast (AFI: 1, SAFI: 4)
+
+Used in MPLS networks for advertising IPv4 unicast routes with labels (i.e., routes that are subject to MPLS label swapping).
+IPv6 Labeled Unicast (AFI: 2, SAFI: 4)
+
+Similar to IPv4 Labeled Unicast, but used for IPv6 routes with MPLS labels.
+FlowSpec (AFI: 1, SAFI: 133)
+
+BGP FlowSpec is used for distributing traffic flow specifications (typically used for traffic filtering and rate-limiting). It allows BGP to carry flow rules to protect against DoS (Denial of Service) attacks.
+MPLS VPN (Multicast VPN) (AFI: 1, SAFI: 128)
+This address family deals with MPLS VPNs but specifically targets multicast traffic within those VPNs.
+L3VPN (Layer 3 VPN) (AFI: 1, SAFI: 128)
+Similar to VPNv4 and VPNv6, but typically refers to Layer 3 VPN services, such as MPLS VPNs.
+L2VPN (Layer 2 VPN) (AFI: 1, SAFI: 65)
+Used for Layer 2 VPN services, such as Virtual Private LAN Services (VPLS) or pseudowire services, typically to carry Ethernet frames or other Layer 2 traffic over an MPLS backbone.
+EVPN Type 5 (AFI: 1, SAFI: 70)
+EVPN type 5 is used to advertise IP prefix routes with associated Ethernet segments in an EVPN.
+SrTE (Segment Routing Traffic Engineering) (AFI: 1 or 2, SAFI: 132)
+
 ## Capabilities
 
 ## Autonomous System Numbers
@@ -377,14 +423,14 @@ Community based local preference:
 
 ## Summarization
 
-- In BGP world it is called aggegation - it is a whole world with attributes and rules
+- In BGP world it is called aggregation - it is a whole world with attributes and rules
 - Conserve router resources
 - Accelerated best path calculation
 - Stability: hiding route flaps from downstream routes
 - Most service providers do not except prefixes larger then /24
-- Dynamic route summarization is done vian address-family command 
+- Dynamic route summarization is done via address-family command 
     - aggregate-address network subnet-mask [summary-only] [as-set]
-- Example: 172.16.1.0/24, 172.16.2.0/24, 172.16.3.0/24 are aggregated with command: aggregate -address 172.16.0.0 255.255.240.0
+- Example: 172.16.1.0/24, 172.16.2.0/24, 172.16.3.0/24 are aggregated with command: aggregate-address 172.16.0.0 255.255.240.0
 - This command will add to BGP table prefix 172.16.0.0/20 - but it will not delete smaller route
 - summer-only option suppresses the component network prefixes
 - Suppression - when BGP process does not advertise routes (fo example connected) because of aggregation
@@ -503,10 +549,19 @@ Don't use or advertise the route/s learned via an iBGP neighbor to an eBG neighb
 
 ## iBGP
 
+iBGP vs eBGP
+
+- TTL in IP header, eBGP - 1, iBGP-255
+- eBGP router modifies next hop to its own addresssourcing BGP connection
+- eBGP router prepends its ASN to the existing AS_Path variable
+- Receiving eBGP router checks AS_Path, so it does not have its own AS already
+- iBGP route cannot be forwarded to another iBGP router, to avoid loops
+
+Concepts
+
 - iBGP sessions: the same AS or the same confederation
 - AD - 200
 - Used for transit connectifity in one AS - used mostly in service providers
-- iBGP route cannot be forwarded to another iBGP router, to avoid loops
 - eBGP routes are never redistributed to IGPs inside AS, there are too many of such routes
 - AS 1 router > eBGP > AS 2 router > OSPF > AS 2 router > EIGRP > AS 2 router > eBGP > AS 3 router
 - Thay just build iBGP mesh between all routers in AS 2 and IGP inside AS as underlay is used
@@ -970,10 +1025,13 @@ undebug all
 
 ## Troubleshooting
 
+### Neighbors
+
 **Show all BGP neighbors in one VRF**
 
 ```
-show bgp vrf user all summary 
+show bgp vrf user all summary
+show ip bgp vpnv4 vrf core  summary 
 ```
 
 **Show all BGP neighbors for all VRFs**
@@ -982,7 +1040,7 @@ show bgp vrf user all summary
 sh ip bgp all summary
 ```
 
-**Show BGP config**
+### BGP config
 
 ```
 show run | section bgp
@@ -991,22 +1049,14 @@ router bgp 4294963200
 ....
 ```
 
-**Show BGP table for global VRF or VRF**  
-It shows all BGP routes both best and secondary with all the options: Path,Weight, Local Pref, Next Hop, Status, Path type, Origin Code
+### BGP tables
 
-```
-leaf-1(config-router-vrf-af)# show ip bgp vrf GOOGLE
-BGP routing table information for VRF GOOGLE, address family IPv4 Unicast
-BGP table version is 4, Local Router ID is 192.168.1.1
-Status: s-suppressed, x-deleted, S-stale, d-dampened, h-history, *-valid, >-best
-Path type: i-internal, e-external, c-confed, l-local, a-aggregate, r-redist, I-i
-njected
-Origin codes: i - IGP, e - EGP, ? - incomplete, | - multipath, & - backup, 2 - b
-est2
 
-   Network            Next Hop            Metric     LocPrf     Weight Path
-*>l192.168.1.0/24     0.0.0.0                           100      32768 i
-```
+- **IPv4 table - empty, when VRFs are used**: `show ip bgp ipv4 unicast`  
+- **VPNv4 table - for VRFs**: `show ip bgp vpnv4 vrf core` - instead of VRF RD can be specified, all VRFs can be used - It shows all BGP routes both best and secondary with all the options: Path,Weight, Local Pref, Next Hop, Status, Path type, Origin Code
+- **All address families - big table, all VRFs**: `show ip bgp all`
+- **IPv6, l2vpn, vpnv6** - also exist  
+
 
 **Show brief list of BGP neighbors**  
 Here we can see amount of prefixes from neighbor, and if it is 0 - we have a problem
@@ -1029,26 +1079,11 @@ The same for all VRFs
 ```
 spine-1# show ip bgp summary vrf all
 ```
+### Advertised networks
 
-**Show routes advertised to particular neighbor**  
+`show ip bgp all neighbors 10.90.0.18 advertised-routes`
 
-```
-firewall(config-router)# show ip bgp neighbors 172.16.3.2 advertised-routes
 
-Peer 172.16.3.2 routes for address family IPv4 Unicast:
-BGP table version is 44, Local Router ID is 1.1.1.1
-Status: s-suppressed, x-deleted, S-stale, d-dampened, h-history, *-valid, >-best
-Path type: i-internal, e-external, c-confed, l-local, a-aggregate, r-redist, I-i
-njected
-Origin codes: i - IGP, e - EGP, ? - incomplete, | - multipath, & - backup, 2 - b
-est2
-
-   Network            Next Hop            Metric     LocPrf     Weight Path
-*>l1.1.1.1/32         0.0.0.0                           100      32768 i
-```
-
-**Show routes advertised to particular neighbor in particular VRF**  
-`show ip bgp vpnv4 vrf user neighbor 10.90.0.1 advertised-routes`
 
 **Debug BGP updates on Nexus**
 

@@ -2539,6 +2539,7 @@ Can be used in:
 ### Add user/group to policy
 
 - Group is added as a full DN in Panorama
+- To use a group we need to add it: `Device > User Identification > Grpup Mapping Settings > Include Groups`
 - User is added in Panorama  - corp\first.last
 - Any
 - Pre-logon - with Global-Protect
@@ -2615,6 +2616,7 @@ Configure User-ID Agent
 - Show User-IP mappings `show user ip-user-mapping all`
 - Server monitor situation - `show user server-monitor state all`
 - Show users and their LDAP groups - `show user user-ids all`
+- Show all groups - `show user group list`
 - Show users in a group - `show user group name "cn=internet,cn=users,dc=skynet,dc=ru"`
 - Restart User-ID service - `debug software restart process user-id`
 
