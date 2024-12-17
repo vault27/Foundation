@@ -64,7 +64,7 @@ Record protocol
 - Traffic protection between peers
 - Division of traffic into a series of records, each of which is independently protected using the traffic keys
 
-## Cipher suite
+## Cipher suite - parameters used during the communication
 
 https://ciphersuite.info  
 
@@ -105,7 +105,7 @@ TLS 1.3 Cipher Suites:
 
 TLS 1.3 cipher suites are defined differently, only specifying the symmetric ciphers, and cannot be used for TLS 1.2. Similarly, cipher suites for TLS 1.2 and lower cannot be used with TLS 1.3.
 
-## Auth
+### Auth
 
 - RSA - good to use    
 - ECDSA (Ecliptic curve digital signature algorithm) - slow  
@@ -115,7 +115,14 @@ TLS 1.3 cipher suites are defined differently, only specifying the symmetric cip
 - Auth is dependent on which key exchange algorithm is used
 - During the RSA key exchange, the client generates a random value as the premaster secret  and sends it encrypted with the server’s public key. The server, which is in possession of the corresponding private key, decrypts the message to obtain the premaster secret. The authentication is implicit: it is assumed that only the server in possession of the corresponding private key can retrieve the premaster secret, construct the correct session keys, and producethe correct Finished message
 - During the DHE and ECDHE exchanges, the server contributes to the key exchange with its parameters. The parameters are signed with its private key. The client, which is in possession of the corresponding public key (obtained from the validated certificate), can verify that the parameters genuinely arrived from the intended server
- 
+- The server uses its private RSA key to sign parts of the handshake process to prove its identity to the client. This ensures that the Diffie-Hellman key exchange parameters are authentic and have not been tampered with
+
+### Key exchange
+
+### Symmetric encryption
+
+### Hash function
+
 ## Handshake
 
 - Client sends Hello: cipher suite, protocol version
@@ -127,8 +134,6 @@ TLS 1.3 cipher suites are defined differently, only specifying the symmetric cip
 - Client and server generate symmetric key based on pre master key
 - Both send change cypher spec - changing to symmetric encryption
 - If Diffie-Hellman is used, than private key on the server side is used for Auth only, not for encryption
-
-
 
 ## TLS 1.2
 
@@ -227,7 +232,9 @@ Handshake Protocol: Client Hello
     [JA3 Fullstring: 771,4865-4866-4867-49196-49195-52393-49200-49199-52392-49162-49161-49172-49171-157-156-53-47-49160-49170-10,0-23-65281-10-11-16-5-13-18-51-45-43-27-21,29-23-24-25,0]
     [JA3: 773906b0efdefa24a7f2b8eb6985bf37]
 ```
+
 Cipher suites are particular important, every suite has its own code
+
 ```
 Cipher Suites (21 suites)
     Cipher Suite: Reserved (GREASE) (0xfafa)
@@ -253,7 +260,9 @@ Cipher Suites (21 suites)
     Cipher Suite: TLS_RSA_WITH_3DES_EDE_CBC_SHA (0x000a)
 
 ```
+
 Server Name Indication is very important as well
+
 ```
 Extension: server_name (len=13)
     Type: server_name (0)

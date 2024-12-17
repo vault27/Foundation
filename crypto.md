@@ -11,6 +11,52 @@ An example of encoding is: Base64
 
 Encryption is the process of securely encoding data in such a way that only authorized users with a key or password can decrypt the data to reveal the original.
 
+## Key Exchange
+
+- Diffie Hellman(more and more used today)
+  - Diffie Hellman
+  - DHE(ethemeral, short lived) - secret numbers generated on server and client are generated again for every session
+  - ECDH(ecliptic curve) - variant of the Diffie–Hellman protocol using elliptic-curve cryptography. The main advantage of ECDHE is that it is significantly faster than DHE
+  - ECDHE(becoming the primary)  - best
+- RSA(used from 1970s) - deprecated, large key size, no PFS, slow
+- PSK
+
+Ephemeral ECDH w/ RSA Certs - is used everywhere  
+Ecliptic Curve allows much smaller keys  
+DH provides forward secrecy and perfect(DHE) forward secrecy, which are required for TLS 1.3  
+ECDHE by itself is worthless against an active attacker -- there's no way to tie the received ECDH key to the site you're trying to visit, so an attacker could just send their own ECDH key. This is because ECDHE is ephemeral, meaning that the server's ECDH key isn't in its certificate. So, the server signs its ECDH key using RSA, with the RSA public key being the thing in the server's certificate
+ECDH is a variant of Diffie-Hellman where elliptic curve mathematics is used instead of the modular arithmetic used in traditional DH. This allows for smaller key sizes while still providing strong security.
+X25519 is a specific implementation of ECDH, where the elliptic curve Curve25519 is used to perform the key exchange.
+
+### DH algorithm
+
+- DH is based on group theory
+- Group: set of elements binary operation
+- DH works in a mulpiplicative group
+- Properties of group:
+  - Closure: a and b are elements of the group, a*b - element of the group as well, this should work for any a and b in the group
+  - Associativity - `a*(b*c)=(a*b)*c`
+  - Identity element - `a*1=a`
+  - Inverse element - `a*1/a=1`
+- Example of group: positive integers: 1,2,3,4...p-1 - p is prime number - 1: identity element
+- Prime number - can be devided by itself and 1
+- Also DH is based on modular multiplication
+
+### Modular arithmetic
+
+- why? - cryptography, cyclic structures, clock - 12 hours only, when it is 13 it "wrap up" starts from 1 again
+- Simplify working with large numbers, really big, for example 987654321987654321987654321
+- In cryptography we need to work a lot with big numbers
+- ∣x∣ — this is the absolute value (modulus), it just makes the number positive
+- x mod y — это операция по модулю ( modulo operation ), вычисляет остаток от деления числа 𝑥 на число y
+- Number after which numbers wrap around is called modulus, in clock modulus is 12
+- If modulus is 5, 6 is 1, 7 is 2....
+- 7=2mod5=5*1+2 - 2 is a remainder od deviding 7 by 5
+- 5mod3=2
+- 170=0mod17 - 170 device by 17 remainder will be 0
+
+
+
 ## Hash functions
 
 =fingerprints=message digests=digests  
@@ -169,17 +215,3 @@ MACs in TLS/SSL:
 - MD5  - not good
 - SHA1 and SHA256 are used everywhere
 
-### Key Exchange
-
-- Diffie Hellman(more and more used today)
-  - Diffie Hellman
-  - DHE(ethemeral, short lived) - secret numbers generated on server and client are generated again for every session
-  - ECDH(ecliptic curve) - variant of the Diffie–Hellman protocol using elliptic-curve cryptography. The main advantage of ECDHE is that it is significantly faster than DHE
-  - ECDHE(becoming the primary)  - best
-- RSA(used from 1970s) - deprecated, large key size, no PFS, slow
-- PSK
-
-Ephemeral ECDH w/ RSA Certs - is used everywhere  
-Ecliptic Curve allows much smaller keys  
-DH provides forward secrecy and perfect(DHE) forward secrecy, which are required for TLS 1.3  
-ECDHE by itself is worthless against an active attacker -- there's no way to tie the received ECDH key to the site you're trying to visit, so an attacker could just send their own ECDH key. This is because ECDHE is ephemeral, meaning that the server's ECDH key isn't in its certificate. So, the server signs its ECDH key using RSA, with the RSA public key being the thing in the server's certificate

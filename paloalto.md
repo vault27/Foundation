@@ -4423,6 +4423,14 @@ to the specified Hostname - if result is positive, internal gateway is used. Int
 
 <img width="977" alt="image" src="https://github.com/philipp-ov/foundation/assets/116812447/f3ec9794-9a39-4d33-8ebf-d4e12411c3e6">
 
+### Limit which users can connect
+
+- Authentication profile in Portal configuration - in advanced tab we can specify users
+- Agent configuration in Portal - can be for any group or for specific
+- Authentication profile in Gateway configuration
+- Agent configuration in Gateway
+- On ISE side
+
 ### Logs
 
 - GlobalProtect authentication event logs in `Monitor > Logs > System`

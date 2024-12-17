@@ -149,6 +149,102 @@ https://datatracker.ietf.org/doc/html/draft-beaulieu-ike-xauth-02
 
 ## AH
 
+## Configuration
+
+`Tunnel` (vrf, bandwidth, ip, mss, mtu, load interval, bfd, source, mode, path mtu discovery, destination, **ipsec profile**) > `ipsec profile` (idle, **transform-set**, pfs group, **ike-v2-profile**) > `ike-v2-profile` (identity, authentication, **keyring**, lifetime, dpd), `transform set`(encryption, hash, mode) > `keyring` (address, key)  
+  
+`ike-v2-policy` (vrf, **proposals**) > `proposal` (encryption, hash, pfs group)
+
+### Tunnel
+
+```
+interface Tunnel12
+ description Tunnel
+ bandwidth 2000000
+ bandwidth qos-reference 1000000
+ vrf forwarding IPSEC
+ ip address 10.16.6.37 255.255.255.252
+ no ip redirects
+ ip mtu 1400
+ ip tcp adjust-mss 1360
+ load-interval 30
+ shutdown
+ bfd interval 500 min_rx 500 multiplier 3
+ tunnel source Port-channel1.440
+ tunnel mode ipsec ipv4
+ tunnel destination 11.11.11.11
+ tunnel path-mtu-discovery
+ tunnel vrf corp
+ tunnel protection ipsec profile Corp-profile
+end
+```
+
+### IPSec Profile
+
+```
+crypto ipsec profile IPSEC-profile
+ set security-association idle-time 3600
+ set transform-set IPSEC 
+ set pfs group1
+ set ikev2-profile CorpIPSEC-Prisma-ikev2-profile
+```
+
+### Transform set
+
+Phase 2 options
+
+```
+crypto ipsec transform-set IPSEC esp-aes 256 esp-sha256-hmac 
+ mode tunnel
+```
+
+### IKE v2 Profile
+
+Phase 1 options
+
+```
+crypto ikev2 profile IPSEC-profile
+ match identity remote any
+ authentication remote pre-share
+ authentication local pre-share
+ keyring local CorpIPSEC-vpn-keyring
+ lifetime 28800
+ dpd 10 3 periodic
+```
+
+### Keyring
+
+```
+crypto ikev2 keyring CorpIPSEC-vpn-keyring
+ peer Corp_Tunnel12
+  address 34.11.11.11
+  pre-shared-key CY5R2TugteXEGBv6
+```
+
+### IKE-v2 Policy
+
+```
+crypto ikev2 policy remote-ikev2-policy 
+ match fvrf corpInternet
+ match fvrf wan_underlay
+ proposal remote-ikev2-proposal
+ proposal 3rdParty-ikev2-proposal
+ proposal 3rdParty-ikev2-Sha256-proposal
+ proposal CorpIPSEC-ikev2-proposal
+ proposal oci_ikev2-proposal
+```
+
+### IKE Proposal
+
+Phase 1 options
+
+```
+crypto ikev2 proposal CorpIPSEC-ikev2-proposal 
+ encryption aes-cbc-256 aes-cbc-128
+ integrity sha512 sha384 sha256
+ group 19 14 5 2
+```
+
 ## Troubleshooting
 
 **Show status of all Tunnel interfaces**
