@@ -793,9 +793,29 @@ neighbor 1.1.1.1 local-as 2 no-prepend replace-as dual-as`
 
 ## Configuration
 
-### Peering
+### Neighbors
 
+IOS-XE
 
+```
+router bgp 4294966004
+address-family ipv4 vrf TEST
+bgp router-id 10.16.0.144
+neighbor 192.168.111.12 activate
+neighbor 192.168.111.12 shutdown
+neighbor 192.168.111.12 remote-as 65532
+neighbor 192.168.111.12 local-as 396367 no-prepend replace-as
+neighbor 192.168.111.12 description lab_tunnel
+neighbor 192.168.111.12 shutdown
+neighbor 192.168.111.12 ebgp-multihop 255
+neighbor 192.168.111.12 password 7 121B0A051C591E1124
+neighbor 192.168.111.12 version 4
+neighbor 192.168.111.12 activate
+neighbor 192.168.111.12 send-community
+neighbor 192.168.111.12 soft-reconfiguration inbound
+neighbor 192.168.111.12 route-map map1_in in
+neighbor 192.168.111.12 route-map map1_out out
+```
 
 ### Nexus
 

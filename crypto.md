@@ -13,34 +13,72 @@ Encryption is the process of securely encoding data in such a way that only auth
 
 ## Key Exchange
 
-- Diffie Hellman(more and more used today)
-  - Diffie Hellman
-  - DHE(ethemeral, short lived) - secret numbers generated on server and client are generated again for every session
-  - ECDH(ecliptic curve) - variant of the Diffie–Hellman protocol using elliptic-curve cryptography. The main advantage of ECDHE is that it is significantly faster than DHE
-  - ECDHE(becoming the primary)  - best
+Key exchange algorithms:
+
+- Diffie Hellman
+  - Diffie Hellman - Modular arithmetic, original algorithm
+  - DHE(ethemeral, short lived) - secret numbers generated on server and client are generated again for every session - Modular arithmetic 
+  - ECDH(ecliptic curve) - variant of the Diffie–Hellman protocol using elliptic-curve cryptography. The main advantage of ECDHE is that it is significantly faster than DHE - Elliptic curve point multiplication
+  - ECDHE(becoming the primary)  - best - Elliptic curve point multiplication
 - RSA(used from 1970s) - deprecated, large key size, no PFS, slow
 - PSK
 
-Ephemeral ECDH w/ RSA Certs - is used everywhere  
-Ecliptic Curve allows much smaller keys  
-DH provides forward secrecy and perfect(DHE) forward secrecy, which are required for TLS 1.3  
-ECDHE by itself is worthless against an active attacker -- there's no way to tie the received ECDH key to the site you're trying to visit, so an attacker could just send their own ECDH key. This is because ECDHE is ephemeral, meaning that the server's ECDH key isn't in its certificate. So, the server signs its ECDH key using RSA, with the RSA public key being the thing in the server's certificate
-ECDH is a variant of Diffie-Hellman where elliptic curve mathematics is used instead of the modular arithmetic used in traditional DH. This allows for smaller key sizes while still providing strong security.
-X25519 is a specific implementation of ECDH, where the elliptic curve Curve25519 is used to perform the key exchange.
-
 ### DH algorithm
 
+- 1976 - first key exchange algorithm invented
+- RFC 3526: Predefined Groups (Modular Arithmetic) - old
+- Finite-Field Diffie-Hellman (FFDHE) is essentially a modular-based Diffie-Hellman method, but with a slight difference in terminology to emphasize that the arithmetic is performed within a finite field
+- DH provides forward secrecy and perfect(DHE) forward secrecy, which are required for TLS 1.3  
 - DH is based on group theory
-- Group: set of elements binary operation
 - DH works in a mulpiplicative group
+- DF uses the following group: positive integers: 1,2,3,4...p-1 - p is prime number - 1: identity element
+- Prime number - can be devided by itself and 1 - this is a group
+- Prime numbers used in cryptography are super puper large in real world
+- Also DH is based on modular multiplication
+- The security of DH relies on discrete logarithm problem - it is hard to solve
+
+Order of operations:
+
+- Both parties must have the same values for the prime number p and the base (generator) g
+- p and g are defined in a standard, RFC 7919, RFC 3526, which defines a set of known safe primes and corresponding generators that are recommended for use in TLS 1.3 (and earlier versions of TLS as well)
+- On network devices it is configured with groups for IPSec
+- The larger prime, the better, more secure, more load
+- Generate Private Keys - random numbers between 1 and p-2, each side keeps it secret
+- Compute Public Keys - A=g to the power of a mod p - where a is private key
+- Exchnage public keys
+- Compute shared secret
+- The same order for ECDH, but different math
+
+### Ecliptic Curve DH algorithm
+
+- ECDH is a variant of Diffie-Hellman where elliptic curve mathematics is used instead of the modular arithmetic used in traditional DH. This allows for smaller key sizes while still providing strong security
+- Instead of using modular arithmetic with prime numbers and exponents, ECDH uses elliptic curve cryptography (ECC), which relies on elliptic curve point multiplication
+- Instead of using a 2048-bit prime number as in traditional Diffie-Hellman (DH), Elliptic Curve Diffie-Hellman (ECDH) uses 256-bit keys for the same level of security
+- Ephemeral ECDH with RSA Certs - is used everywhere  
+- Ecliptic Curve allows much smaller keys
+- ECDHE by itself is worthless against an active attacker - there's no way to tie the received ECDH key to the site you're trying to visit, so an attacker could just send their own ECDH key
+- This is because ECDHE is ephemeral, meaning that the server's ECDH key isn't in its certificate. So, the server signs its ECDH key using RSA, with the RSA public key being the thing in the server's certificate
+- X25519 is a specific implementation of ECDH, where the elliptic curve Curve25519 is used to perform the key exchange
+- RFC 7919: Customizable Groups (FFDHE) - new
+
+### Diffie-Hellman Groups
+
+- Defines exact prime value and generator value for modular based DH
+- Elliptic Curve Diffie-Hellman (ECDH) groups define the mathematical properties of the elliptic curve, including the curve equation, base point (also called the generator point), and the field over which the elliptic curve is defined
+- Groups are builtin into TLS
+- Groups are advertised and selected during the handshake without needing explicit negotiation or custom parameters
+- In IPSec connections we specify them manually
+- Different groups for IPSec and TLS
+- Different groups for Elliptic Curve and Finite-Field Diffie-Hellman (FFDHE) - modular
+
+### Group theory
+
+- Group: set of elements binary operation
 - Properties of group:
   - Closure: a and b are elements of the group, a*b - element of the group as well, this should work for any a and b in the group
   - Associativity - `a*(b*c)=(a*b)*c`
   - Identity element - `a*1=a`
   - Inverse element - `a*1/a=1`
-- Example of group: positive integers: 1,2,3,4...p-1 - p is prime number - 1: identity element
-- Prime number - can be devided by itself and 1
-- Also DH is based on modular multiplication
 
 ### Modular arithmetic
 
@@ -51,11 +89,22 @@ X25519 is a specific implementation of ECDH, where the elliptic curve Curve25519
 - x mod y — это операция по модулю ( modulo operation ), вычисляет остаток от деления числа 𝑥 на число y
 - Number after which numbers wrap around is called modulus, in clock modulus is 12
 - If modulus is 5, 6 is 1, 7 is 2....
-- 7=2mod5=5*1+2 - 2 is a remainder od deviding 7 by 5
 - 5mod3=2
 - 170=0mod17 - 170 device by 17 remainder will be 0
+- Euclidean division (or the division algorithm) is a method used to divide two integers, resulting in a quotient and a remainder
+- a=bq+r, or a/b=q+r
+    - a- divident
+    - b - divisor
+    - q - quotient
+    - r - remainder
+- 7=2mod5=5*1+2 - 2 is a remainder of deviding 7 by 5 - 7 is congruent to 2 modulo 5
+- Sometimes, we are only interested in what the remainder is when we divide a by b
+- For these cases there is an operator called the modulo operator (abbreviated as mod)
+- a mod b = r
+- So, modulo operator shows the remainder of division a by b, b - is a modulus
 
 
+### Ecliptic curve arithmetic
 
 ## Hash functions
 

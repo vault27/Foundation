@@ -5,7 +5,7 @@
 - Peer IP
 - Proxy IDs Local and Remote if required by one of the sides
 - IKE version
-- DH group
+- DH group - defines form of DH: Ecliptic Curve or Classic Module based, and the size of prime numbers which will be used
 - Hash
 - Symmetric cipher
 - Lifetime
