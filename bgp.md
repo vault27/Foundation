@@ -797,14 +797,35 @@ neighbor 1.1.1.1 local-as 2 no-prepend replace-as dual-as`
 
 ## Configuration
 
-- Initialize BGP routing process - `router bgp 65100`
-- Optional - defibe RID - `bgp router-id 1.1.1.1`
-- Configure neighbors - `neighbor 10.1.1.1. remote-as 65200`
-- Initialize address families - `address family ipv4`
-- Add neighbor to address family `neighbor 10.1.1.1 activate` - so we configure neibors for each address family separately
-- Inject routes: connected, static, from other protocols
+### IOS
 
-If we hust enter `neighbor 1.1.1.1 remote-as 65200` - it will be nough, because ipv4 address family is enabled by default in IOS, no need to activate it under address family section
+- Initialize BGP routing process - `router bgp 65100`
+- Optional - define RID - `bgp router-id 1.1.1.1` - can be done for VRF
+- Configure neighbors - `neighbor 10.1.1.1. remote-as 65200`
+- Initialize address families - `address family afi safi vrf VRF_NAME`
+- `no bgp default ipv4-unicast` - prevents the router from automatically activating the IPv4 address family for new BGP neighbors
+- Add neighbor to address family `neighbor 10.1.1.1 activate` - so we configure neibors for each address family separately
+- Neighbor can be completely configured inside address family section - this is the only option when we work with VRF, in general section all neighbors are created for default vrf
+- If VRF is used, ipv4 family cannot be used, so all VRF routes are stored in VPNv4 table, even though it is configured in ipv4 address family
+- In BGP, the ipv4 address family is reserved for global (non-VRF) IPv4 routes
+- For VRFs, IPv4 routes are included in the vpnv4 table, so commands like `show bgp vrf CORE vpnv4` are used to inspect the routes
+- Inject routes: connected, static, from other protocols
+- If VRF is used it requires to enable address family for it and RD
+- If we hust enter `neighbor 1.1.1.1 remote-as 65200` - it will be enough, because ipv4 address family is enabled by default in IOS, no need to activate it under address family section  
+
+Example
+
+```
+router bgp 1
+ bgp log-neighbor-changes
+ no bgp default ipv4-unicast
+ !
+ address-family ipv4 vrf CORE
+  neighbor 192.168.1.2 remote-as 2
+  neighbor 192.168.1.2 activate
+ exit-address-family
+```
+
 
 
 ### Neighbors
@@ -1054,11 +1075,13 @@ undebug all
 
 ### Neighbors
 
-**Show all BGP neighbors in one VRF**
+**Summary**
 
-```
-show bgp vrf user all summary
-show ip bgp vpnv4 vrf core  summary 
+- `show bgp afi safi summary`
+- `show bgp all summary` - summary for all address families neighbors
+- `show bgp ipv4 unicast summary` - summary for 1 address family
+- `show bgp vrf CORE vpnv4 unicast summary` - summary for particular VRF and particular address family
+
 ```
 
 **Show all BGP neighbors for all VRFs**
@@ -1078,11 +1101,10 @@ router bgp 4294963200
 
 ### BGP tables
 
-
-- **IPv4 table - empty, when VRFs are used**: `show ip bgp ipv4 unicast`  
-- **VPNv4 table - for VRFs**: `show ip bgp vpnv4 vrf core` - instead of VRF RD can be specified, all VRFs can be used - It shows all BGP routes both best and secondary with all the options: Path,Weight, Local Pref, Next Hop, Status, Path type, Origin Code
-- **All address families - big table, all VRFs**: `show ip bgp all`
-- **IPv6, l2vpn, vpnv6** - also exist  
+- `show bgp vrf VRF afi safi`
+    - `show bgp ipv4 unicast`
+    - `show bgp vrf CORE vpnv4 unicast`
+    - `show bgp all`
 
 
 **Show brief list of BGP neighbors**  
