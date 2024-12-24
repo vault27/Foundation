@@ -421,7 +421,7 @@ SrTE (Segment Routing Traffic Engineering) (AFI: 1 or 2, SAFI: 132)
 - Network command: Look for a route in the router’s current IP routing table that **exactly** matches the parameters of the network command; if the IP route exists, put the equivalent NLRI into the local BGP table. With this logic, connected routes, static routes, or IGP routes could be taken from the IP routing table and placed into the BGP table for later advertisement. When the router removes that route from its IP routing table, BGP then removes the NLRI from the BGP table, and notifies neighbors that the route has been withdrawn. If auto-summary is enabled, then it matched all of its subnets
 - route-map can be used in network command to manipulate path attributes, including next hop
 
-## Summarization
+## Summarization/aggregation
 
 - In BGP world it is called aggregation - it is a whole world with attributes and rules
 - Conserve router resources
@@ -437,15 +437,37 @@ SrTE (Segment Routing Traffic Engineering) (AFI: 1 or 2, SAFI: 132)
 - When new summary route is advertised it is advertised without any previous attributes or AS Path. It is sent as if an aggregating router is an originator of route: AS Path contains only AS of aggregating router
 - Atomic-aggregate and Aggregator Path Attributes is added by the aggregator and all other routers see in BGP table: aggregated by 65200 192.168.2.2 
 - Aggregated route appears in BGP table only after at least one viable component route enters BGP table, for example 172.16.1.0/24
-- After enabling aggregation BGP installs aggrgated route to RIB of originating router with gateway Null0 - it is called summary discard route it is created to avoid loops
+- After enabling aggregation BGP installs aggregated route to RIB of originating router with gateway Null0 - it is called summary discard route it is created to avoid loops
 - Loops explanation: R1 aggregates 192.168.1.0/24 and 192.168.2.0/24 and sends to everyone 192.168.0.0/16. After this it gets a packet with destination 192.168.3.1 - it does not know about this network - and what it does? It sends it to default gateway! - Bad! And if summary discard route is installed this packaet will be silently dropped :)
 - To sum up agrregated route is in two tables: RIB and BGP, in BGP default route is 0.0.0.0 and in RIB NULL0
 - Component routes are still in BGP table but they have status - s -suppressed
 - If we configure summarization, for example two LANs connected to Leaf, and then if we disconnect one LAN, summerized route will continue propogating and everyone will consider this LAN available. Especially summarization is unacceptable on Spines. This is relevant only with "summer only" option
+- Static summarization: we add static route with Null0 as gateway,then advertise it with `network` command or `redistribute static`
+- The route with AD 254 ensures the prefix remains in the routing table only as a last resort when no other routes exist
+- The tag 50 in the static route can be used for route filtering or policy purposes, such as identifying and applying specific policies to this route in redistribution or routing decisions
+
+Example:
+
+```
+ip route vrf core 192.168.0.0 255.255.0.0 Null0 254 tag 50
+
+router bgp <ASN>
+ address-family ipv4
+   aggregate-address 10.99.0.0/31 summary-only
+   redistribute static route-map redistribute_static
+
+route-map redistribute_static permit 10 
+ match tag 50
+ set local-preference 50
+ set weight 0
+ set origin incomplete
+ set community 65534:10 additive
+```
 
  ## Redistribution
 
  - When we configure redistribution from OSPF weight is 32768, Path is ?, Local Pref is not set by default, origin code is Incomplete - ?
+ 
 
 ## Route maps
 
@@ -846,9 +868,6 @@ R3(config-route-map)# set local-preference 300
 R3(config)# router bgp 1
 R3(config)# neighbour 192.168.35.5 route-map PREF in
 
-# Configure routes summarization/aggregation: all /32 routes to /24 route in address family section, only one /24 prefix will be sent
-border-leaf(config-router-vrf-af)# aggregate-address 192.168.1.0/24 as-set summary-only
-
 ```
 
 **Origin code IGP**
@@ -898,13 +917,6 @@ dyn1(config-route-map)# set origin ?
  egp         remote EGP
  igp         local IGP
  incomplete  unknown heritage
-```
-
-**Configure summarization**
-
-Traffic specified here will be available, while at least one network exists, which falls within this range, using LPM rule
-```
-aggregate-address 10.99.0.0/31 summary-only
 ```
 
 ### Basic configuration

@@ -1078,18 +1078,8 @@ Configuration
 - Peer Group EBGP/IBGP + members
 - Redistribution profile: connect interface 
 - Use this profile in BGP section, redist rules tab, for redistributed networks we can configure Origin, MED, Local Preference, Communities, Extended Comminities
+- Import/export filters: allow/deny
 
-BGP states
-
-- IDLE
-- Connect - 3-way handshake only - if stuck here - the problem is with the TCP
-- Active- - if stuck here - the problem is with the TCP
-- Open-sent - BGP_OPEN message sent with all parametres
-- Open-confirm - reply from neighbor received
-- Established - keepalive message received after Open-confirm
-
-Restart/Refresh BGP Sessions  
-Restarting a BGP session will build the BGP routing table from scratch (intrusive). Refreshing the session will only fetch/ look out for new routes (non-intrusive)  
 
 For self initiation:
 
@@ -1099,13 +1089,13 @@ For self initiation:
 ```
 
 From Peer side:
+
 ```
 > test routing bgp virtual-router default restart peer <BGP peer>  (for restarting BGP connections)
 > test routing bgp virtual-router default refresh peer <BGP peer>  (for refreshing BGP connections)
 ```
 
-Show advertised routes for all peers in virtual router
-`show routing protocol bgp rib-out virtual-router VR_CORPIPSEC | match 10.105.4`
+Show advertised routes for all peers in virtual router: `show routing protocol bgp rib-out virtual-router VR_CORPIPSEC | match 10.105.4`
 
 ### Advanced Routing Engine
 
