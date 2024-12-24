@@ -156,10 +156,10 @@ What you need to think through, when you design BGP network
 
 - Idle - tries to initiate a TCP connection and listens for connections
 - Connect - BGP initiates a TCP connection. If there is a TCP collision the router ID is compared and the device with the higher RID becomes the client
-- Active
-- OpenSent
-- OpenConfirm
-- Established
+- Active - BGP starts a new TCP hand shake
+- OpenSent - Open message has been sent - wating for the open message from other Router
+- OpenConfirm - Open messages are checked for errors, if everything is OK, Keep alive is sent, it goes to OpenConfirm, if there are errors it goes to Idle
+- Established - after this Update messages and Keepalives are sent
 
 ## Path Attributes
 
@@ -362,44 +362,26 @@ Community based local preference:
 - These attributes are carried inside BGP update messages and are used to carry network reachability information for different address families
 - Every address family maintains a separate database and configuration for each protocol (address family + sub-address family) in BGP
 - BGP includes an AFI and SAFI with every route advertisement to differentiate between the AFI and SAFI databases
+- IOS activates IPv4 address family by default
+- On IOS and IOS XE default SAFI is Unicast
 
 **Families(15 in total):**
 
 1. IPv4 Unicast (AFI: 1, SAFI: 1) - The standard BGP address family for IPv4 unicast routing. It is used to exchange standard IPv4 routes 
 2. IPv4 Multicast (AFI: 1, SAFI: 2) - Used for IPv4 multicast routing. This address family deals with multicast routes and forwarding information
-IPv6 Unicast (AFI: 2, SAFI: 1)
-
-The BGP address family used to advertise IPv6 unicast routes.
-IPv6 Multicast (AFI: 2, SAFI: 2)
-
-This address family is used for IPv6 multicast routing.
-VPNv4 (AFI: 1, SAFI: 128)
-
-This is used in MPLS-based VPNs for advertising IPv4 routes along with their associated VRF (Virtual Routing and Forwarding) instances. Routes in the VPNv4 address family carry both the IPv4 prefix and additional attributes (such as Route Distinguishers and Route Targets).
-VPNv6 (AFI: 2, SAFI: 128)
-
-Similar to VPNv4 but for IPv6 addresses, used in MPLS-based VPNs to carry IPv6 routes within a VRF context.
-EVPN (Ethernet VPN) (AFI: 1 or 2, SAFI: 70)
-
-Used for Ethernet VPNs, which is a technology designed to extend Ethernet services over IP/MPLS networks. It supports multi-tenant environments by advertising MAC addresses and Ethernet segment information.
-IPv4 Labeled Unicast (AFI: 1, SAFI: 4)
-
-Used in MPLS networks for advertising IPv4 unicast routes with labels (i.e., routes that are subject to MPLS label swapping).
-IPv6 Labeled Unicast (AFI: 2, SAFI: 4)
-
-Similar to IPv4 Labeled Unicast, but used for IPv6 routes with MPLS labels.
-FlowSpec (AFI: 1, SAFI: 133)
-
-BGP FlowSpec is used for distributing traffic flow specifications (typically used for traffic filtering and rate-limiting). It allows BGP to carry flow rules to protect against DoS (Denial of Service) attacks.
-MPLS VPN (Multicast VPN) (AFI: 1, SAFI: 128)
-This address family deals with MPLS VPNs but specifically targets multicast traffic within those VPNs.
-L3VPN (Layer 3 VPN) (AFI: 1, SAFI: 128)
-Similar to VPNv4 and VPNv6, but typically refers to Layer 3 VPN services, such as MPLS VPNs.
-L2VPN (Layer 2 VPN) (AFI: 1, SAFI: 65)
-Used for Layer 2 VPN services, such as Virtual Private LAN Services (VPLS) or pseudowire services, typically to carry Ethernet frames or other Layer 2 traffic over an MPLS backbone.
-EVPN Type 5 (AFI: 1, SAFI: 70)
-EVPN type 5 is used to advertise IP prefix routes with associated Ethernet segments in an EVPN.
-SrTE (Segment Routing Traffic Engineering) (AFI: 1 or 2, SAFI: 132)
+3. IPv6 Unicast (AFI: 2, SAFI: 1) The BGP address family used to advertise IPv6 unicast routes
+4. IPv6 Multicast (AFI: 2, SAFI: 2) - This address family is used for IPv6 multicast routing
+5. VPNv4 (AFI: 1, SAFI: 128) - This is used in MPLS-based VPNs for advertising IPv4 routes along with their associated VRF (Virtual Routing and Forwarding) instances. Routes in the VPNv4 address family carry both the IPv4 prefix and additional attributes (such as Route Distinguishers and Route Targets).
+6. VPNv6 (AFI: 2, SAFI: 128) - Similar to VPNv4 but for IPv6 addresses, used in MPLS-based VPNs to carry IPv6 routes within a VRF context
+7. EVPN (Ethernet VPN) (AFI: 1 or 2, SAFI: 70) - Used for Ethernet VPNs, which is a technology designed to extend Ethernet services over IP/MPLS networks. It supports multi-tenant environments by advertising MAC addresses and Ethernet segment information
+8. IPv4 Labeled Unicast (AFI: 1, SAFI: 4) - Used in MPLS networks for advertising IPv4 unicast routes with labels (i.e., routes that are subject to MPLS label swapping)
+9. IPv6 Labeled Unicast (AFI: 2, SAFI: 4) - Similar to IPv4 Labeled Unicast, but used for IPv6 routes with MPLS labels
+10. FlowSpec (AFI: 1, SAFI: 133) - BGP FlowSpec is used for distributing traffic flow specifications (typically used for traffic filtering and rate-limiting). It allows BGP to carry flow rules to protect against DoS (Denial of Service) attacks
+11. MPLS VPN (Multicast VPN) (AFI: 1, SAFI: 128) - This address family deals with MPLS VPNs but specifically targets multicast traffic within those VPNs
+12. L3VPN (Layer 3 VPN) (AFI: 1, SAFI: 128) - Similar to VPNv4 and VPNv6, but typically refers to Layer 3 VPN services, such as MPLS VPNs
+13. L2VPN (Layer 2 VPN) (AFI: 1, SAFI: 65) - Used for Layer 2 VPN services, such as Virtual Private LAN Services (VPLS) or pseudowire services, typically to carry Ethernet frames or other Layer 2 traffic over an MPLS backbone
+14. EVPN Type 5 (AFI: 1, SAFI: 70) - EVPN type 5 is used to advertise IP prefix routes with associated Ethernet segments in an EVPN
+15. SrTE (Segment Routing Traffic Engineering) (AFI: 1 or 2, SAFI: 132)
 
 ## Capabilities
 
@@ -815,6 +797,16 @@ neighbor 1.1.1.1 local-as 2 no-prepend replace-as dual-as`
 
 ## Configuration
 
+- Initialize BGP routing process - `router bgp 65100`
+- Optional - defibe RID - `bgp router-id 1.1.1.1`
+- Configure neighbors - `neighbor 10.1.1.1. remote-as 65200`
+- Initialize address families - `address family ipv4`
+- Add neighbor to address family `neighbor 10.1.1.1 activate` - so we configure neibors for each address family separately
+- Inject routes: connected, static, from other protocols
+
+If we hust enter `neighbor 1.1.1.1 remote-as 65200` - it will be nough, because ipv4 address family is enabled by default in IOS, no need to activate it under address family section
+
+
 ### Neighbors
 
 IOS-XE
@@ -1056,6 +1048,9 @@ undebug all
 ```
 
 ## Troubleshooting
+
+- `show bgp` is a newer version than `show ip bgp`, because it takess into an account multiprotocol capabilities of MP-BGP
+- `show bgp` afi safi ....`
 
 ### Neighbors
 
