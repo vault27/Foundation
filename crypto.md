@@ -81,6 +81,22 @@ Order of operations:
 - Different groups for IPSec and TLS
 - Different groups for Elliptic Curve and Finite-Field Diffie-Hellman (FFDHE) - modular
 
+Elliptic Curve TLS groups
+
+- P-256
+- P-384
+- P-521
+- x25519
+- x448
+
+Elliptic Curve IPSec groups
+
+- Group 19 - P-256
+- Group 20 - P-384
+- Group 21 - P-521
+- Group 31 - x25519
+- Group 32 - x448
+
 ### Group theory
 
 - Group: set of elements binary operation
