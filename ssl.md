@@ -14,24 +14,19 @@
 - TLS 1.2 - is the best option for now - RFC 5246
 - TLS 1.3 - RFC 8446
 
-## Record types
+## SSL Records
+
+- Handshake - Content-Type Code 22
+- Application Data - Content-Type Code 23
+- Alerts - Content-Type Code 21
+- Change Cipher Spec - Content-Type Code 
+
+Concepts
 
 - TLS communicates via records, can be several records in one packet TCP packet (one or many IP packets) 
-- Every record has its own Handshake Type (number), we can use it to filter in Wireshark.    
-- Plus there is a Content type number - for handshake it is 22, Application data - 23, Alert - 21 - it is for whole TCP packet 
-- In a nutshell TLS is all about different records. Different records serve different purposes. Records have Content-Type field and Message fields (Some other fields too)
-- Depending upon the Content-Type field's value, you know what is the purpose of a particular record. For eg: Content-Type=21 means that this is an Alert protocol and Content-Type=22 means that this is a Handshake protocol
+- In a nutshell TLS is all about different records. Different records serve different purposes. Records have Content-Type field and Message fields
 - Message field will contain the actual message related to a particular Record Protocol type
 - The Alert protocol further has a field called Description. This field contains the actual error information
-- The 21 shown in the wireshark capture is not a code but it is value in the Content-Type field of the TLS record. In plain words, the wireshark is telling us that this is a TLS Alert protocol
-
-Record types
-
-- Handshake - code 22
-     - Client Hello
-     - Server Hello
-- Application Data - code 23
-- Alert - code 21
 
 ## Alerts
 
