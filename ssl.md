@@ -123,6 +123,22 @@ TLS 1.3 cipher suites are defined differently, only specifying the symmetric cip
 
 ### Hash function
 
+## Client Hello
+
+- Universal for all TLS versions
+- Content Tyle - Handshake - 22
+- Handshake Type - Client Hello - 1
+- Session ID
+- All possible cipher suites for all TLS versions
+- Extensions:
+        - TLS supported versions
+        - Key share extension: Group: x25519, Key Exchange - big number - client public key for Diffie-Helman exchange algorithm - TLS 1.3 only
+        - SNI - server name
+        - Supported Diffie-Hellman groups
+        - Signature alhorithms
+        - ALPN protocol
+
+
 ## Handshake
 
 - Client sends Hello: cipher suite, protocol version

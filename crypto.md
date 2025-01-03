@@ -65,7 +65,7 @@ Order of operations:
 
 - Defines exact prime value and generator value for modular based DH
 - Elliptic Curve Diffie-Hellman (ECDH) groups define the mathematical properties of the elliptic curve, including the curve equation, base point (also called the generator point), and the field over which the elliptic curve is defined
-- Groups are builtin into TLS
+- Possible Groups are builtin into TLS standards
 - Groups are advertised and selected during the handshake without needing explicit negotiation or custom parameters
 - In IPSec connections we specify them manually
 - Different groups for IPSec and TLS

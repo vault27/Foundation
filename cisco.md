@@ -379,6 +379,7 @@ Internet  10.0.3.165              -   4ce1.75e8.31c4  ARPA   Vlan19
 ## Interfaces
 
 Show all ports status
+
 ```
 cisco9300#show ip int br
 Interface              IP-Address      OK? Method Status                Protocol
@@ -387,6 +388,7 @@ GigabitEthernet0/0     unassigned      YES NVRAM  down                  down
 ```
 
 Show brief status of the interface
+
 ```
 cisco9300#show int gi1/0/22 status
 
