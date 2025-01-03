@@ -13,6 +13,16 @@ Encryption is the process of securely encoding data in such a way that only auth
 
 ## Key Exchange
 
+Concepts
+
+- Each side generates private and public keys
+- Public keys are sent to each other
+- Each side uses its private key and peeer's public key to generate shared secret
+- Passive MITM will not work, active one will
+- The key exchange is not authenticated by nature!
+- Authenticated key exchange - when users know servers public key - you have to install to all clients public keys of all services!
+- That is why digital signature helps here
+
 Key exchange algorithms:
 
 - Diffie Hellman
@@ -70,6 +80,22 @@ Order of operations:
 - In IPSec connections we specify them manually
 - Different groups for IPSec and TLS
 - Different groups for Elliptic Curve and Finite-Field Diffie-Hellman (FFDHE) - modular
+
+Elliptic Curve TLS groups
+
+- P-256
+- P-384
+- P-521
+- x25519
+- x448
+
+Elliptic Curve IPSec groups
+
+- Group 19 - P-256
+- Group 20 - P-384
+- Group 21 - P-521
+- Group 31 - x25519
+- Group 32 - x448
 
 ### Group theory
 
