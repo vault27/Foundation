@@ -395,13 +395,40 @@ Community based local preference:
 - Notation options: ASPLAIN 0 - 4 294 967 294, ASDOT 0 - 65535.65535
 - We can substitute AS number for particular neighbor. For example we can do it, when we connect VRFs in fabric via external Firewall and to avoid "allow as in" option we configure different ASNs for different VRFs to peer with firewall 
 
-## Injecting Routes/Prefixes
+## Prefix Advertisment
 
-- We configure summarization in address family section for Nexus and it works for all neighbors, we specify summarized prefix there wit as-set option and summer only, without summer only option it will advertise all prefixes plus summer
-- No auto-summary is the default
 - What networks are advertised by default? - none - only received via BGP
-- Network command: Look for a route in the router’s current IP routing table that **exactly** matches the parameters of the network command; if the IP route exists, put the equivalent NLRI into the local BGP table. With this logic, connected routes, static routes, or IGP routes could be taken from the IP routing table and placed into the BGP table for later advertisement. When the router removes that route from its IP routing table, BGP then removes the NLRI from the BGP table, and notifies neighbors that the route has been withdrawn. If auto-summary is enabled, then it matched all of its subnets
+- Network command: Look for a route in the router’s current IP routing table (global RIB) that **exactly** matches the parameters of the network command; if the IP route exists, put the equivalent NLRI into the local BGP table (Loc-RIB). With this logic, connected routes, static routes, or IGP routes could be taken from the IP routing table and placed into the BGP table for later advertisement. When the router removes that route from its IP routing table, BGP then removes the NLRI from the BGP table, and notifies neighbors that the route has been withdrawn. If auto-summary is enabled, then it matched all of its subnets
+- network command does not enable interfaces
 - route-map can be used in network command to manipulate path attributes, including next hop
+- BGP only advertises the best path to other BGP peers, regardless of the number of routes in Loc-RIB table
+- network command is used under address family section
+- `network network mask subnet-mask route-map route-map-name`
+- route map is used for setting specific PAs, when prefix is installed into Loc-RIB
+
+Attributes set for network command:
+
+- Connected network - next hop BGP attribute - 0.0.0.0, BGP origin - i (IGP), wight - 32768
+- Static route or routing protocol - next hop IP is taken from the RIB, BGP origin - i (IGP), wight - 32768, MED - IGP metric
+
+Checks before sending routes from Loc-RIB to peers:
+
+- Validity check - NLRI is valid, next hop is reachable
+- Outbound neighbor route policies
+- If next hop BGP PA is 0.0.0.0, it is changed to the IP address of BGP session
+
+Process flow: `Network statement > RIB check > Loc-RIB (BGP database) > Validity check > Outbound route policies > Adj-RIB-Out table > Routes to peer`  
+
+Example:
+
+```
+router bgp 3
+neighbor 1.1.1.1 remote-as 4
+
+address-family ipv4
+  network 2.2.2.0 mask 255.255.255.0
+  neighbor 1.1.1.1 activate
+```
 
 ## Summarization/aggregation
 
@@ -410,6 +437,8 @@ Community based local preference:
 - Accelerated best path calculation
 - Stability: hiding route flaps from downstream routes
 - Most service providers do not except prefixes larger then /24
+- We configure summarization in address family section for Nexus and it works for all neighbors, we specify summarized prefix there with as-set option and summer only, without summer only option it will advertise all prefixes plus summery
+- No auto-summary is the default
 - Dynamic route summarization is done via address-family command 
     - aggregate-address network subnet-mask [summary-only] [as-set]
 - Example: 172.16.1.0/24, 172.16.2.0/24, 172.16.3.0/24 are aggregated with command: aggregate-address 172.16.0.0 255.255.240.0
@@ -762,8 +791,6 @@ address-family ipv4 [unicast | multicast | vrf vrf-name ]
 bgp dampening [half-life reuse suppress max-suppress-time ] [route-map map-name ]
 ```
 
-## Initial configuration
-
 ## BGP AS Path Manipulations
 
 ### local-as
@@ -811,7 +838,7 @@ neighbor 1.1.1.1 local-as 2 no-prepend replace-as dual-as`
 - For VRFs, IPv4 routes are included in the vpnv4 table, so commands like `show bgp vrf CORE vpnv4` are used to inspect the routes
 - Inject routes: connected, static, from other protocols
 - If VRF is used it requires to enable address family for it and RD
-- If we hust enter `neighbor 1.1.1.1 remote-as 65200` - it will be enough, because ipv4 address family is enabled by default in IOS, no need to activate it under address family section  
+- If we enter `neighbor 1.1.1.1 remote-as 65200` - it will be enough, because ipv4 address family is enabled by default in IOS, no need to activate it under address family section  
 
 Example
 
@@ -825,8 +852,6 @@ router bgp 1
   neighbor 192.168.1.2 activate
  exit-address-family
 ```
-
-
 
 ### Neighbors
 
@@ -1035,14 +1060,6 @@ address-family ipv4 vrf IPSEC
   neighbor 10.125.5.20 route-map IPSec_ASRVPN_BGP_out out
 ```
 
-### Show commands
-
-Neighbors in VRF  
-`show ip bgp vpnv4 vrf CorpIPSEC summary`
-
-Received routes  
-`show ip bgp vpnv4 vrf IPSEC neighbors 10.125.5.20 received-routes | i 10.105.4`
-
 ### Debug
 
 ```
@@ -1070,34 +1087,15 @@ undebug all
 
 ## Troubleshooting
 
-- `show bgp` is a newer version than `show ip bgp`, because it takess into an account multiprotocol capabilities of MP-BGP
+- `show bgp` is a newer version than `show ip bgp`, because it takes into an account multiprotocol capabilities of MP-BGP
 - `show bgp` afi safi ....`
 
-### Neighbors
-
-**Summary**
+### Summary
 
 - `show bgp afi safi summary`
 - `show bgp all summary` - summary for all address families neighbors
 - `show bgp ipv4 unicast summary` - summary for 1 address family
 - `show bgp vrf CORE vpnv4 unicast summary` - summary for particular VRF and particular address family
-
-```
-
-**Show all BGP neighbors for all VRFs**
-
-```
-sh ip bgp all summary
-```
-
-### BGP config
-
-```
-show run | section bgp
-router bgp 4294963200
- bgp router-id 10.90.2.1
-....
-```
 
 ### BGP tables
 
@@ -1106,28 +1104,10 @@ router bgp 4294963200
     - `show bgp vrf CORE vpnv4 unicast`
     - `show bgp all`
 
+### Neighbors
 
-**Show brief list of BGP neighbors**  
-Here we can see amount of prefixes from neighbor, and if it is 0 - we have a problem
+- `show bgp afi safi neighbors ip-address`
 
-```
-spine-1# show ip bgp summary
-BGP summary information for VRF default, address family IPv4 Unicast
-BGP router identifier 10.10.1.1, local AS number 64600
-BGP table version is 37, IPv4 Unicast config peers 3, capable peers 2
-2 network entries and 2 paths using 440 bytes of memory
-BGP attribute entries [2/328], BGP AS path entries [2/12]
-BGP community entries [0/0], BGP clusterlist entries [0/0]
-
-Neighbor        V    AS MsgRcvd MsgSent   TblVer  InQ OutQ Up/Down  State/PfxRcd
-10.1.1.2        4 64701    9037    9088       37    0    0 03:00:25 1
-10.1.1.6        4 64702    8958    9027       37    0    0 00:13:28 1
-10.1.1.10       4 64703       0       0        0    0    0 08:13:08 Idle
-```
-The same for all VRFs
-```
-spine-1# show ip bgp summary vrf all
-```
 ### Advertised networks
 
 `show ip bgp all neighbors 10.90.0.18 advertised-routes`
