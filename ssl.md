@@ -14,6 +14,12 @@
 - TLS 1.2 - is the best option for now - RFC 5246
 - TLS 1.3 - RFC 8446
 
+## Concepts
+
+- TLS communicates via records, can be several records in one packet TCP packet (one or many IP packets) 
+- In a nutshell TLS is all about different records. Different records serve different purposes. Records have Content-Type field and Message fields
+- Message field will contain the actual message related to a particular Record Protocol type
+
 ## SSL Records
 
 - Handshake - Content-Type Code 22
@@ -21,21 +27,40 @@
 - Alerts - Content-Type Code 21
 - Change Cipher Spec - Content-Type Code 
 
-Concepts
+## Handshake
 
-- TLS communicates via records, can be several records in one packet TCP packet (one or many IP packets) 
-- In a nutshell TLS is all about different records. Different records serve different purposes. Records have Content-Type field and Message fields
-- Message field will contain the actual message related to a particular Record Protocol type
-- The Alert protocol further has a field called Description. This field contains the actual error information
+Four tasks:
+
+- Negotiation of ciphers and protocols: authenticated encryption algorithms
+- Key exchange - main goal actually: algorithm itself + groups
+- Authentication of key exchange - digital signature algorithm + hash algorithm - two, for different parts of the handshake - one signature algorithm is used for server certitifcate signature, the other one for signing key exchange parameters or messages exchanged between the client and server
+- Session resumption - to avoid redoing key exchange every time user connects again
+
+What should be negotiated - 9 parametres in total:
+
+- TLS version
+- Key Exchange Algorithm
+- Key exchange group
+- Signature algorithm for authenticated key exchange
+- Hash function to use with signature alorithm
+- Symmetric encryption algorithm
+- Symmetric encryption key size
+- Simmetric encryption mode
+- Hash function
+
+## Record protocol - Applicaion Data
+
+- Traffic protection between peers
+- Division of traffic into a series of records, each of which is independently protected using the traffic keys
 
 ## Alerts
 
-Alert example
+- The Alert protocol further has a field called Description. This field contains the actual error information
+- Alert example
 
 ![image](https://github.com/phph9/Foundation/assets/116812447/84324f16-9698-41df-a068-f0c4f2597b33)
 
-**Alerts**
-
+```
 close_notify(0)
 unexpected_message(10),
 bad_record_mac(20),
@@ -54,28 +79,7 @@ decompression_failure(30),
           access_denied(49),
           decode_error(50),
           decrypt_error(51)
-
-## Sub protocols
-
-Handshake protocol
-
-- Authentication
-- Cryptographic modes negotiation
-- Shared keying material establishement
-
-Record protocol
-
-- Traffic protection between peers
-- Division of traffic into a series of records, each of which is independently protected using the traffic keys
-
-## Handshake
-
-Four tasks:
-
-- Negotiation of ciphers and protocols: authenticated encryption algorithms
-- Key exchange - main goal actually: algorithm itself + groups
-- Authentication of key exchange - digital signature algorithm + hash algorithm - two, for different parts of the handshake - one signature algorithm is used for server certitifcate signature, the other one for signing key exchange parameters or messages exchanged between the client and server
-- Session resumption - to avoid redoing key exchange every time user connects again
+```
 
 ## Cipher suite - parameters used during the communication
 
@@ -152,7 +156,7 @@ TLS 1.3 cipher suites are defined differently, only specifying the symmetric cip
         - ALPN protocol
 
 
-## Handshake
+
 ## TLS 1.2 packet flow
 
 - Client sends Hello: cipher suite, protocol version
