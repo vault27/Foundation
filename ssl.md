@@ -1,8 +1,9 @@
 # TLS/SSL
 
+- Secure transport protocol
 - SSL v3 - 1996 - Netscape
 - Netscape handed it over to IETF
-- IETF renemaed it to TLS in 1999
+- IETF renamed it to TLS in 1999
 
 ## Versions
 
@@ -11,8 +12,8 @@
 - SSLv3(do not use)
 - TLS 1.0(deprecated, many attacks, PCI DSS prohibited) - RFC 2246
 - TLS 1.1 - RFC 4346
-- TLS 1.2 - is the best option for now - RFC 5246
-- TLS 1.3 - RFC 8446
+- TLS 1.2 - is the best option for now - RFC 5246 - secure
+- TLS 1.3 - RFC 8446 - secure
 
 ## Concepts
 
@@ -33,7 +34,7 @@ Four tasks:
 
 - Negotiation of ciphers and protocols: authenticated encryption algorithms
 - Key exchange - main goal actually: algorithm itself + groups
-- Authentication of key exchange - digital signature algorithm + hash algorithm - two, for different parts of the handshake - one signature algorithm is used for server certitifcate signature, the other one for signing key exchange parameters or messages exchanged between the client and server
+- Authentication of key exchange - digital signature algorithm + hash algorithm - two, for different parts of the handshake - one signature algorithm is used for server certificate signature, the other one for signing key exchange parameters or messages exchanged between the client and server
 - Session resumption - to avoid redoing key exchange every time user connects again
 
 What should be negotiated - 9 parametres in total:
@@ -47,6 +48,65 @@ What should be negotiated - 9 parametres in total:
 - Symmetric encryption key size
 - Simmetric encryption mode
 - Hash function
+
+3 Handshake Stages:
+
+- Key Exchange
+    - ClientHello
+    - ServerHello
+- Server Parametres
+    - The server sends a CertificateRequest message with details about the accepted certificate types, supported signature algorithms, and acceptable certificate authorities (CAs)
+    - A server's X.509 certificate chain is sent, including: The server's certificate, Intermediate certificates, if required, Root certificate (often omitted, as it's known to the client)
+    - The server provides a digital signature over previously exchanged handshake messages to prove it controls the private key corresponding to its certificate
+    - In TLS 1.3, much of the functionality traditionally handled in the Server Parameters stage (like key exchange) has been shifted earlier, into the ServerHello message, simplifying the handshake
+- Authetication
+- Post-Handshake
+
+### Client Hello
+
+- Universal for all TLS versions
+- Content Type - Handshake - 22
+- Handshake Type - Client Hello - 1
+- Session ID
+- All possible cipher suites for all TLS versions
+- Extensions:
+        - TLS supported versions
+        - Key share extension: Group: x25519, Key Exchange - big number - client public key for Diffie-Helman exchange algorithm - TLS 1.3 only
+        - SNI - server name
+        - Supported Diffie-Hellman groups
+        - Signature alhorithms
+        - ALPN protocol
+
+### Server Hello
+
+- Contains one cipher suite, which was chosen from Client Hello
+- If Server cannot find an algorithm it supports, it may drop a connection or it may ask a client for more information via Hello Retry Request, then client resends its Hello
+
+### Key exchange
+
+- In TLS 1.3 client sends in ClientHello list of supported ECDHE groups: X25519 and X448 plus it sends X25519 public key
+- If Server does not support X25519, but does support X448, it sends HelloRetryRequest, announcing that it only suoports X448
+- The Client sends the same ClientHello, but with X448 public key instead
+
+### Auth
+
+- Two digital signature algorithms + Hash algorithm
+- RSA PKCS#1 version 1.5, RSA-PSS, ECDSA, EdDSA
+- RSA - good to use    
+- ECDSA (Ecliptic curve digital signature algorithm) - slow  
+- DSA
+- Auth is checked by verifying  server certificate signature by CA + that server indeed has the private key: server sends something encrypted with private key, and client decrypts it with public key
+- Auth is always a public key cryptography. Most commonly RSA, but sometimes ECDSA
+- Auth is dependent on which key exchange algorithm is used
+- During the RSA key exchange, the client generates a random value as the premaster secret  and sends it encrypted with the server’s public key. The server, which is in possession of the corresponding private key, decrypts the message to obtain the premaster secret. The authentication is implicit: it is assumed that only the server in possession of the corresponding private key can retrieve the premaster secret, construct the correct session keys, and producethe correct Finished message
+- During the DHE and ECDHE exchanges, the server contributes to the key exchange with its parameters. The parameters are signed with its private key. The client, which is in possession of the corresponding public key (obtained from the validated certificate), can verify that the parameters genuinely arrived from the intended server
+- The server uses its private RSA key to sign parts of the handshake process to prove its identity to the client. This ensures that the Diffie-Hellman key exchange parameters are authentic and have not been tampered with
+
+### Hash function
+
+- Used with HMAC and HKDF
+- TLS 1.3 allows SHA-256 and SHA-384
+
 
 ## Record protocol - Applicaion Data
 
@@ -122,40 +182,9 @@ TLS 1.3 Cipher Suites:
 
 TLS 1.3 cipher suites are defined differently, only specifying the symmetric ciphers, and cannot be used for TLS 1.2. Similarly, cipher suites for TLS 1.2 and lower cannot be used with TLS 1.3.
 
-### Auth
-
-- RSA - good to use    
-- ECDSA (Ecliptic curve digital signature algorithm) - slow  
-- DSA
-- Auth is checked by verifying  server certificate signature by CA + that server indeed has the private key: server sends something encrypted with private key, and client decrypts it with public key
-- Auth is always a public key cryptography. Most commonly RSA, but sometimes ECDSA
-- Auth is dependent on which key exchange algorithm is used
-- During the RSA key exchange, the client generates a random value as the premaster secret  and sends it encrypted with the server’s public key. The server, which is in possession of the corresponding private key, decrypts the message to obtain the premaster secret. The authentication is implicit: it is assumed that only the server in possession of the corresponding private key can retrieve the premaster secret, construct the correct session keys, and producethe correct Finished message
-- During the DHE and ECDHE exchanges, the server contributes to the key exchange with its parameters. The parameters are signed with its private key. The client, which is in possession of the corresponding public key (obtained from the validated certificate), can verify that the parameters genuinely arrived from the intended server
-- The server uses its private RSA key to sign parts of the handshake process to prove its identity to the client. This ensures that the Diffie-Hellman key exchange parameters are authentic and have not been tampered with
-
-### Key exchange
-
 ### Symmetric encryption
 
 ### Hash function
-
-## Client Hello
-
-- Universal for all TLS versions
-- Content Tyle - Handshake - 22
-- Handshake Type - Client Hello - 1
-- Session ID
-- All possible cipher suites for all TLS versions
-- Extensions:
-        - TLS supported versions
-        - Key share extension: Group: x25519, Key Exchange - big number - client public key for Diffie-Helman exchange algorithm - TLS 1.3 only
-        - SNI - server name
-        - Supported Diffie-Hellman groups
-        - Signature alhorithms
-        - ALPN protocol
-
-
 
 ## TLS 1.2 packet flow
 

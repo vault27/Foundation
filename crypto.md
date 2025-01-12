@@ -244,8 +244,8 @@ Three types
 ### (Perfect) Forward Secrecy
 
 - Forward because it avoids: if attacker captures encrypted traffic and then later he gets private key and can decrypt everything
-- If SSL RSA is used for key exchange, however if you have server’s private key you can decrypt session keys and then decrypt all traffic.
-- Instead of RSA DiffieHelman can be used, then even if you have access to private key, you cannot get session keys - this feature is called forward secrecy
+- If SSL RSA is used for key exchange, however if you have server’s private key you can decrypt session keys and then decrypt all traffic
+- Instead of RSA Diffie Helman can be used, then even if you have access to private key, you cannot get session keys - this feature is called forward secrecy
 - And if you choose Ethemeral Diffie-Hellman then you achieve Perfect Forward Secrecy
 
 ### MAC
