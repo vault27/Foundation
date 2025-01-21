@@ -29,7 +29,13 @@ Network Engineer Library
 - [TCP](tcp.md)
 - [UDP](udp.md)
 - [ICMP](icmp.md)
+
+
+  ## Secure transport protocols
+
 - [TLS/SSL](ssl.md)
+- [IPSec](ipsec.md)
+- [SSH](ssh.md)
 
  ## Routing
 
@@ -52,7 +58,6 @@ Network Engineer Library
 
 ## VPN
 
-- [IPSec](ipsec.md)
 - [DMVPN](dmvpn.md)
 - RA VPN
 
