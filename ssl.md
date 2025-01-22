@@ -30,14 +30,14 @@
 
 ## Handshake
 
-Four tasks:
+### Tasks
 
 - Negotiation of ciphers and protocols: authenticated encryption algorithms
 - Key exchange - main goal actually: algorithm itself + groups
 - Authentication of key exchange - digital signature algorithm + hash algorithm - two, for different parts of the handshake - one signature algorithm is used for server certificate signature, the other one for signing key exchange parameters or messages exchanged between the client and server
 - Session resumption - to avoid redoing key exchange every time user connects again
 
-What should be negotiated - 9 parametres in total:
+### What should be negotiated - 9 parametres
 
 - TLS version
 - Key Exchange Algorithm
@@ -49,7 +49,7 @@ What should be negotiated - 9 parametres in total:
 - Simmetric encryption mode
 - Hash function
 
-3 Handshake Stages:
+### 3 Handshake Stages:
 
 - Key Exchange
     - ClientHello
@@ -57,7 +57,7 @@ What should be negotiated - 9 parametres in total:
 - Server Parametres
     - The server sends a CertificateRequest message with details about the accepted certificate types, supported signature algorithms, and acceptable certificate authorities (CAs)
     - A server's X.509 certificate chain is sent, including: The server's certificate, Intermediate certificates, if required, Root certificate (often omitted, as it's known to the client)
-    - The server provides a digital signature over previously exchanged handshake messages to prove it controls the private key corresponding to its certificate
+    - The server provides a digital signature over previously exchanged handshake messages to prove it controls the private key corresponding to its certificate. CertificateVerify message
     - In TLS 1.3, much of the functionality traditionally handled in the Server Parameters stage (like key exchange) has been shifted earlier, into the ServerHello message, simplifying the handshake
 - Authetication
 - Post-Handshake
@@ -90,8 +90,25 @@ What should be negotiated - 9 parametres in total:
 
 ### Auth
 
-- Two digital signature algorithms + Hash algorithm
-- RSA PKCS#1 version 1.5, RSA-PSS, ECDSA, EdDSA
+- Authentication of key exchange is done using assymetric cryptography and hash algorithms
+- Signature algorith is negotiated in Client/Server Hello
+- In TLS 1.3 signature algorithm is sent in Signature alhorithms extension
+- The ServerHello does not explicitly confirm the signature algorithm chosen for the handshake
+- The actual signature algorithm used by the server is implicitly confirmed later in the CertificateVerify message when the server signs the handshake transcript
+- Server chooses Signature Algorithm from Client's list based on a compatible signature algorithm that it supports and that matches its certificate's capabilities
+- For example, if the server's certificate uses an RSA key, it will choose an RSA-based signature algorithm (e.g., rsa_pss_rsae_sha256),if the server's certificate uses an ECDSA key, it will choose an ECDSA-based signature algorithm (e.g., ecdsa_secp256r1_sha256)
+- Different signature algorithms and hash algorithms may be used for the server's certificate signature and the CertificateVerify message. This distinction exists because these signatures serve different purposes and are governed by different rules
+- `Server hashes a handshake transcript > Server signs this hash > Server creates a CertificateVerify message`
+- Server sends CertificateVerify message
+- This message includes a digital signature over a handshake transcript
+- The CertificateVerify message has the following components:
+        - Signature Algorithm: Indicates the algorithm used for signing: RSA PKCS#1 version 1.5, RSA-PSS, ECDSA, EdDSA
+        - Hash Algorithm used to create a hash for handshake transcript: SHA-256...
+        - Signature: The digital signature itself, calculated over the handshake transcript hash
+- Handshake transcript includes: `ClientHello, ServerHello, EncryptedExtensions, Certificate (if applicable)` - so all the records sent before
+- Handshake transcript is different for TLS 1.3 and TLS 1.2
+- The client validates CertificateVerify message by Verifying the server's certificate chain (ensuring the certificate is valid and trusted and Using the public key in the server's certificate to verify the signature in the CertificateVerify message
+- After this client sends Finished message in TLS 1.3, in TLS 1.3 it sends ClientKeyExchange
 - RSA - good to use    
 - ECDSA (Ecliptic curve digital signature algorithm) - slow  
 - DSA
@@ -108,7 +125,7 @@ What should be negotiated - 9 parametres in total:
 - TLS 1.3 allows SHA-256 and SHA-384
 
 
-## Record protocol - Applicaion Data
+## Record protocol - Application Data
 
 - Traffic protection between peers
 - Division of traffic into a series of records, each of which is independently protected using the traffic keys
