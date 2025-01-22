@@ -4,7 +4,6 @@
 
 ### Groups
 
-
 - Get group DN based on CN: `dsquery group -samid "L-MSK-KLTN-ACC-Internet-Audio"`
 
 **Add static route**
