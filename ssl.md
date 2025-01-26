@@ -42,12 +42,12 @@
 - TLS version
 - Key Exchange Algorithm
 - Key exchange group
-- Signature algorithm for authenticated key exchange
-- Hash function to use with signature alorithm
+- 2 Signature algorithms for authenticated key exchange: one for certificate, one for transcript
+- Hash functions to use with signature alorithms: one for certificate, one for transcript
 - Symmetric encryption algorithm
 - Symmetric encryption key size
 - Simmetric encryption mode
-- Hash function
+- Hash function - message integrity and key derivation in the TLS handshake and record layer
 
 ### 3 Handshake Stages:
 
@@ -91,8 +91,29 @@
 ### Auth
 
 - Authentication of key exchange is done using assymetric cryptography and hash algorithms
-- Signature algorith is negotiated in Client/Server Hello
-- In TLS 1.3 signature algorithm is sent in Signature alhorithms extension
+- Signature and hash algorithms are negotiated in Client/Server Hello
+- Supported signature and hash algorithms are sent in `signature_alhorithms` extension in TLS 1.2, then Server may use these algorithms for transript signing, it also checks that client supports certificate signature algorithm used by CA, if client does not support it, handshake will not be established. Certificate signature algorithm and transcript signature algorithm maybe different. The most important that both of them are supported by client
+- TLS 1.3 introduces signature_algorithms_cert (a separate extension) to list signature algorithms specifically for certificate signatures. This separates the algorithms used for certificates from those used for the handshake - `This extension is optional` - You will not see it in a capture from browser
+- Unlike in TLS 1.2, signature algorithms in TLS 1.3 are not tightly coupled to hash algorithms
+
+Example of signature_algorithms in TLS 1.3:
+
+```
+Signature Hash Algorithms (11 algorithms)
+    Signature Algorithm: ecdsa_secp256r1_sha256 (0x0403)
+    Signature Algorithm: rsa_pss_rsae_sha256 (0x0804)
+    Signature Algorithm: rsa_pkcs1_sha256 (0x0401)
+    Signature Algorithm: ecdsa_secp384r1_sha384 (0x0503)
+    Signature Algorithm: ecdsa_sha1 (0x0203)
+    Signature Algorithm: rsa_pss_rsae_sha384 (0x0805)
+    Signature Algorithm: rsa_pss_rsae_sha384 (0x0805)
+    Signature Algorithm: rsa_pkcs1_sha384 (0x0501)
+    Signature Algorithm: rsa_pss_rsae_sha512 (0x0806)
+    Signature Algorithm: rsa_pkcs1_sha512 (0x0601)
+    Signature Algorithm: rsa_pkcs1_sha1 (0x0201)
+
+```
+
 - The ServerHello does not explicitly confirm the signature algorithm chosen for the handshake
 - The actual signature algorithm used by the server is implicitly confirmed later in the CertificateVerify message when the server signs the handshake transcript
 - Server chooses Signature Algorithm from Client's list based on a compatible signature algorithm that it supports and that matches its certificate's capabilities
@@ -122,6 +143,17 @@
 ### Hash function
 
 - Used with HMAC and HKDF
+- The hash function is used in conjunction with the HMAC (Hash-based Message Authentication Code) algorithm to ensure the integrity of encrypted messages in the record layer
+- It ensures that the messages exchanged between the client and server have not been tampered with
+- The plaintext data is first encrypted using the encryption algorithm (AES-128-CBC).
+- An HMAC is calculated over the encrypted data using the specified hash function (SHA-1).
+- The HMAC is appended to the encrypted data to allow the recipient to verify its integrity
+
+Key derivation
+
+- The hash function is also used during the key derivation process to generate session keys from shared secrets
+
+
 - TLS 1.3 allows SHA-256 and SHA-384
 
 
