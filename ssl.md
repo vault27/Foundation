@@ -92,9 +92,11 @@
 
 - Authentication of key exchange is done using assymetric cryptography and hash algorithms
 - Signature and hash algorithms are negotiated in Client/Server Hello
-- Supported signature and hash algorithms are sent in `signature_alhorithms` extension in TLS 1.2, then Server may use these algorithms for transript signing, it also checks that client supports certificate signature algorithm used by CA, if client does not support it, handshake will not be established. Certificate signature algorithm and transcript signature algorithm maybe different. The most important that both of them are supported by client
+- Supported signature and hash algorithms are sent in `signature_alhorithms` extension, then Server may use these algorithms for transript signing, it also checks that client supports certificate signature algorithm used by CA, if client does not support it, handshake will not be established. Certificate signature algorithm and transcript signature algorithm maybe different. The most important that both of them are supported by client
 - TLS 1.3 introduces signature_algorithms_cert (a separate extension) to list signature algorithms specifically for certificate signatures. This separates the algorithms used for certificates from those used for the handshake - `This extension is optional` - You will not see it in a capture from browser
-- Unlike in TLS 1.2, signature algorithms in TLS 1.3 are not tightly coupled to hash algorithms
+- In TLS 1.2 certificate type is also specified in Cipher Suite, this is not used in TLS 1.3
+- The certificate type (RSA or ECDSA) is automatically determined by the certificate itself when the server sends it to the client
+- Unlike in TLS 1.2, signature algorithms in TLS 1.3 are not tightly coupled to hash algorithms - ?
 
 Example of signature_algorithms in TLS 1.3:
 
