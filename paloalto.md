@@ -4517,6 +4517,12 @@ Authentication failed for user "user"
 
 ```
 
+### Brute Force Protection
+
+- Detecting Brute Force Attack on GlobalProtect Portal Page- https://knowledgebase.paloaltonetworks.com/KCSArticleDetail?id=kA10g000000ClJ2CAK
+- How to Protect GlobalProtect Portal on NGFW from Brute Force Attack - https://knowledgebase.paloaltonetworks.com/KCSArticleDetail?id=kA14u0000010zEJCAY
+- Brute Force Signature and Related Trigger Conditions - https://knowledgebase.paloaltonetworks.com/KCSArticleDetail?id=kA10g000000ClmpCAC
+
 ## HIP
 
 - Host information profile

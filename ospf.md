@@ -1452,6 +1452,16 @@ Routing entry for 172.22.152.128/26
 - 172.31.1.182 - neighbor
 - TwentyFiveGigE1/0/14 - incoming interface
 
+**Show all routes from one neighboor**
+
+```
+show ip route ospf | i 10.125.1.105
+
+#For Nexus
+show ip ospf ctc route | end 10.125.1.190
+```
+
+
 **Show OSPF configuration**
 
 ```
