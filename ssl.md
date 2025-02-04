@@ -1,5 +1,7 @@
 # TLS/SSL
 
+TLS/SSL for network engineer. All you need to know in 1 place. Short and clear.
+
 - Secure transport protocol
 - SSL v3 - 1996 - Netscape
 - Netscape handed it over to IETF
@@ -49,7 +51,7 @@
 - Simmetric encryption mode
 - Hash function - message integrity and key derivation in the TLS handshake and record layer
 
-### 3 Handshake Stages:
+### 3 Handshake Stages
 
 - Key Exchange
     - ClientHello
@@ -67,9 +69,10 @@
 - Universal for all TLS versions
 - Content Type - Handshake - 22
 - Handshake Type - Client Hello - 1
-- Session ID
+- Session ID - large number
+- Random - large number - randomly generated for every new session
 - All possible cipher suites for all TLS versions
-- Extensions:
+- Many Extensions, some of them:
         - TLS supported versions
         - Key share extension: Group: x25519, Key Exchange - big number - client public key for Diffie-Helman exchange algorithm - TLS 1.3 only
         - SNI - server name
@@ -77,12 +80,30 @@
         - Signature alhorithms
         - ALPN protocol
 
+Random
+
+- Critical role in ensuring session uniqueness, preventing replay attacks, and contributing to key generation
+-It consists of:
+    - First 4 bytes: A UNIX timestamp (seconds since 1970-01-01).
+    - Remaining 28 bytes: A cryptographically secure random value
+- The master secret is derived using the Client Random, Server Random, and the pre-master secret from key exchange (e.g., from an RSA-encrypted or DH-derived value)
+- The master secret is then used to generate session keys
+
 ### Server Hello
 
 - Contains one cipher suite, which was chosen from Client Hello
 - If Server cannot find an algorithm it supports, it may drop a connection or it may ask a client for more information via Hello Retry Request, then client resends its Hello
 
 ### Key exchange
+
+Key derivation
+
+- TLS1.2: `Premaster secret from ECDHE > Master secret from pre-master secret, client random and server random > session keys from master`
+- TLS 1.3: Directly deriving session keys from ECDHE-derived secrets using HKDF (HMAC-based Extract-and-Expand Key Derivation Function)
+- Premaster is not enough: This ensures that even if the same ECDHE pre-master secret is derived again in another session, the master secret will be different because of the unique random values
+
+Key types
+
 
 - In TLS 1.3 client sends in ClientHello list of supported ECDHE groups: X25519 and X448 plus it sends X25519 public key
 - If Server does not support X25519, but does support X448, it sends HelloRetryRequest, announcing that it only suoports X448
@@ -158,11 +179,27 @@ Key derivation
 
 - TLS 1.3 allows SHA-256 and SHA-384
 
+### Session resumption
+
 
 ## Record protocol - Application Data
 
 - Traffic protection between peers
 - Division of traffic into a series of records, each of which is independently protected using the traffic keys
+- TLS ensures that all messages cannot be replayed or reordered
+- Nonce is used, starts at fixed value, for incremented for each new message, if nonce is not correct, connection is dropped
+
+Example of application data - nothing interesting
+
+```
+Transport Layer Security
+    TLSv1.3 Record Layer: Application Data Protocol: Hypertext Transfer Protocol
+        Opaque Type: Application Data (23)
+        Version: TLS 1.2 (0x0303)
+        Length: 26
+        Encrypted Application Data: 1b226c63c851eea9897e0e6e4d3d265d96cac4f55564e66e81d4
+        [Application Data Protocol: Hypertext Transfer Protocol]
+```
 
 ## Alerts
 
@@ -453,6 +490,13 @@ Why decryption fails:
 - Client authentication
 - Unsupported ciphers
 - Custom app
+
+## PSK
+
+- PSK can be used instead of certificates
+- Client sends PSK identifiers in ClientHello
+- Authentication and key exchange phases are skipped
+- Used for session resumption
 
 ## OpenSSL
 
