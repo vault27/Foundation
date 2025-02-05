@@ -31,7 +31,7 @@ Network Engineer Library
 - [ICMP](icmp.md)
 
 
-  ## Secure transport protocols
+## Secure transport protocols
 
 - [TLS/SSL](ssl.md)
 - [IPSec](ipsec.md)
