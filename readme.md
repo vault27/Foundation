@@ -25,17 +25,20 @@ Network Engineer Library
 ## Transport protocols
 
 - [IP](ip.md)
+- [IPv6](ipv6.md)
 - [MPLS](mpls.md)
 - [TCP](tcp.md)
 - [UDP](udp.md)
-- [ICMP](icmp.md)
-
 
 ## Secure transport protocols
 
 - [TLS/SSL](ssl.md)
 - [IPSec](ipsec.md)
 - [SSH/SCP/SFTP](ssh.md)
+
+## Diagnostic protocols
+
+- [ICMP](icmp.md)
 
  ## Routing
 
@@ -48,12 +51,10 @@ Network Engineer Library
 - [RIP](rip.md)
 
 ## Wireless
-
-* [Wireless](wireless.md)
+- [Wireless](wireless.md)
 
 ## IP services
-
-* [DNS](dns.md)
+- [DNS](dns.md)
 - DHCP
 
 ## VPN
@@ -67,72 +68,73 @@ Network Engineer Library
 
 ## NGFW
 
-* [Fortinet](fortinet.md)
-* [Palo Alto](paloalto.md)
+- [Fortinet](fortinet.md)
+- [Palo Alto](paloalto.md)
 
 ## Network foundation
 
-* [OSI model](osi.md)
-* [Hardware architectures](hardware.md)
-* [Fiber](fiber.md)
+- [OSI model](osi.md)
+- [Hardware architectures](hardware.md)
+- [Fiber](fiber.md)
 
 
-* [VPLS](vpls.md)
-* [ATOM](atom.md)
+- [VPLS](vpls.md)
+- [ATOM](atom.md)
 
 ## QoS
 
-* [QoS](qos.md)
+- [QoS](qos.md)
 
 ### L7
 
-* [HTTP](http.md)
-* [ICAP](icap.md)
-* [SNMP](snmp.md)
-* [Websocket](websocket.md)
+- [HTTP](http.md)
+- [ICAP](icap.md)
+- [SNMP](snmp.md)
+- [Websocket](websocket.md)
 
 ## Data center
 
-* [VxLAN](vxlan.md)
-* [EVPN](evpn.md)
-* [Nexus](nexus.md)
+- [VxLAN](vxlan.md)
+- [EVPN](evpn.md)
+- [Nexus](nexus.md)
 
 ### AAA protocols
-
-* [Kerberos](kerberos.md)
-* [Radius](radius.md)
-* [Tacacs](tacacs.md)
-* [NTLM](ntlm.md)
-* [LDAP](ldap.md)
+- [Kerberos](kerberos.md)
+- [Radius](radius.md)
+- [Tacacs](tacacs.md)
+- [NTLM](ntlm.md)
+- [LDAP](ldap.md)
+- [SAML](saml.md)
+- [OAuth](oauth.md)
 
 ## Security foundation
 
-* [Cryptography](cryptography.md)
-* [PKI](pki.md)
-* [DoS](dos.md)
-* [Web security](websec.md)
+- [Cryptography](cryptography.md)
+- [PKI](pki.md)
+- [DoS](dos.md)
+- [Web security](websec.md)
 
 ## Vendors
 
-* [Cisco](cisco.md)
+- [Cisco](cisco.md)
 
 ## Operating systems
 
-* [Windows](Windows.md)
-* [Linux](linux.md)
+- [Windows](Windows.md)
+- [Linux](linux.md)
 
 ## Automation
 
-* [Python](python.md)
-* [JSON](json.md)
-* [Git](git.md)
-* [Bash](bash.md)
+- [Python](python.md)
+- [JSON](json.md)
+- [Git](git.md)
+- [Bash](bash.md)
 
 ## Tools
 
-* [tcpdump](tcpdump.md)
-* [Wireshark](wireshark.md)
-* [curl](curl.md)
-* [OpenSSL](openssl.md)
-* [nmap](nmap.md)
-* [hping](hping.md)
+- [tcpdump](tcpdump.md)
+- [Wireshark](wireshark.md)
+- [curl](curl.md)
+- [OpenSSL](openssl.md)
+- [nmap](nmap.md)
+- [hping](hping.md)
