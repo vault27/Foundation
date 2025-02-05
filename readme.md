@@ -35,7 +35,7 @@ Network Engineer Library
 
 - [TLS/SSL](ssl.md)
 - [IPSec](ipsec.md)
-- [SSH](ssh.md)
+- [SSH/SCP/SFTP](ssh.md)
 
  ## Routing
 
