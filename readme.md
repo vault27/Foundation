@@ -2,7 +2,7 @@
 
 Network Engineer Library
 
-## Switching
+## Layer 2 technologies
 
 - [Switching](switching.md)
 - VLAN
@@ -14,6 +14,8 @@ Network Engineer Library
 - [STP](stp.md)
     - RSTP
     - MSTP
+- L2 Security
+- L2 Design Models
 - [Ethernet](ethernet.md)
 - ARP
 - VTP
@@ -21,6 +23,10 @@ Network Engineer Library
 - CDP
 - LLDP
 - Power over Ethernet
+- FHRP
+      - HSRP
+      - VRRP
+      - GLBP
 
 ## Transport protocols
 
