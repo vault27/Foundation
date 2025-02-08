@@ -7,7 +7,7 @@ Network Engineer Library
 - [Switching](switching.md)
 - VLAN
 - [LAG](lag.md)
-    - MC-LAG
+    - [MC-LAG](switching.md#MC-LAG)
     - LACP
     - Etherchannel - port channel
     - vCP
