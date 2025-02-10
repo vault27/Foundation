@@ -38,4 +38,17 @@ Technical requirements
 
 Application requirements
 
+- End users: customers, internal users, business partners
+- Network should deliver the desired level of user expectation
+- Application requirements can generate functional requirements
+
+### Design use cases
+
+- Greenfield - from scratch
+- Brownfield - Production environment already exists
+- Add technology or application 
+- Replace technology
+- Merge or divest different networks - one of the most difficult
 -
+-
+
