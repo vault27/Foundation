@@ -19,3 +19,7 @@
 ## Disable folding completely
 
 `set nofoldenable`
+
+## Begin of file
+
+`gg`
