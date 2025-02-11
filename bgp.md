@@ -186,7 +186,7 @@ Path attributes fall into four separate categories:
 - AS_PATH
 - NEXT_HOP
 - ORIGIN
-  - i - originate the prefix through BGP
+  - i - originate the prefix through BGP, network statement
   - e - is no longer used
   - ? - distribute a prefix into BGP from another routing protocol
 
@@ -371,7 +371,7 @@ Four flowas are possible:
 
 ### Show Global RIB BGP routes
 
-`sh ip route bgp`
+`sh ip route bgpe`
 
 ## Best path selection
 
@@ -530,6 +530,26 @@ route-map redistribute_static permit 10
  ## Redistribution
 
  - When we configure redistribution from OSPF weight is 32768, Path is ?, Local Pref is not set by default, origin code is Incomplete - ?
+ - Metric of origin protocol is reflected in MED - one to one
+ - To control it  we need route map
+ - OSPF external (E1/E2) routes default to MED = 0 unless overridden
+
+ Redistribution from ospf
+
+ ```
+ #Option 1
+
+ router bgp 2
+ redistribute ospf 1
+
+#Option 2 - MED control
+
+ route-map OSPF-to-BGP permit 10
+  set metric 50  ! Manually set MED to 50
+
+router bgp 65000
+  redistribute ospf 1 route-map OSPF-to-BGP
+ ```
  
 
 ## Route maps
