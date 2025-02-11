@@ -152,7 +152,9 @@ What you need to think through, when you design BGP network
 
  ```
 
-## Neighbor states
+## Neighbors
+
+States:
 
 - Idle - tries to initiate a TCP connection and listens for connections
 - Connect - BGP initiates a TCP connection. If there is a TCP collision the router ID is compared and the device with the higher RID becomes the client
@@ -160,6 +162,10 @@ What you need to think through, when you design BGP network
 - OpenSent - Open message has been sent - wating for the open message from other Router
 - OpenConfirm - Open messages are checked for errors, if everything is OK, Keep alive is sent, it goes to OpenConfirm, if there are errors it goes to Idle
 - Established - after this Update messages and Keepalives are sent
+
+### Show neighbors
+
+- `show bgp afi safi neighbors ip-address`
 
 ## Path Attributes
 
@@ -320,6 +326,52 @@ GSHUT Community
 - Takes the restarting peer out of the data-path by modifying local preference
 - Similar to IS-IS Overload or OSPF Max Metric LSA
 - Introduce on Cisco IOS XE Release 3.6S
+
+## BGP tables
+
+- Adj-RIB-In - routes in original form, `before filters`, deleted after processed
+- Loc-RIB - all local routes and routes received from beighbors. Validity checked. Next hop reachibility checked. Best path is chosen is chosen from this table and presented to routing table
+- Adj-RIB-Out - routes `after` outbound filters. It is mainteined for every neighbor separately. Next hop in it is 0.0.0.0 - local router, will be changed after sending
+
+Four flowas are possible:
+
+- `Routes from peer > Adj-RIB-In > Inbound Policies > Loc-RIB (BGP database) > Next hop and validity check > Identify best Path > Global Rib`
+- `Routes from peer > Adj-RIB-In > Onbound Policies > Loc-RIB (BGP database) > Next hop and validity check > Identify best Path > Outbound policies > Adj-RIB-Out > Routes to peer`
+- `Network statement > RIB Check > Loc-RIB (BGP database) > Next hop and validity check > Identify best Path > Global Rib`
+- `Network statement > RIB Check > Loc-RIB (BGP database) > Next hop and validity check > Identify best Path > Outbound policies > Adj-RIB-Out > Routes to peer`
+
+- `show bgp` is a newer version than `show ip bgp`, because it takes into an account multiprotocol capabilities of MP-BGP
+- `show bgp` afi safi ....` - shows Loc-RIB table
+
+### Show summary
+
+- `show bgp afi safi summary`
+- `show bgp all summary` - summary for all address families neighbors
+- `show bgp ipv4 unicast summary` - summary for 1 address family
+- `show bgp vrf CORE vpnv4 unicast summary` - summary for particular VRF and particular address family
+
+### Show BGP table - Loc-RIB
+
+- `show bgp vrf VRF afi safi`
+    - `show bgp ipv4 unicast`
+    - `show bgp vrf CORE vpnv4 unicast`
+    - `show bgp all`
+
+### Show Advertised networks - Adj-RIB-Out table
+
+`show ip bgp all neighbors 10.90.0.18 advertised-route`
+
+### Show Detailed Loc-RIB table about particular NLRI
+
+`show bgp ipv4 unicast 10.12.10`
+
+### Show Detailed Loc-RIB about all routes
+
+`show bgp afi safi detail`
+
+### Show Global RIB BGP routes
+
+`sh ip route bgp`
 
 ## Best path selection
 
@@ -1086,31 +1138,6 @@ undebug all
 ```
 
 ## Troubleshooting
-
-- `show bgp` is a newer version than `show ip bgp`, because it takes into an account multiprotocol capabilities of MP-BGP
-- `show bgp` afi safi ....`
-
-### Summary
-
-- `show bgp afi safi summary`
-- `show bgp all summary` - summary for all address families neighbors
-- `show bgp ipv4 unicast summary` - summary for 1 address family
-- `show bgp vrf CORE vpnv4 unicast summary` - summary for particular VRF and particular address family
-
-### BGP tables
-
-- `show bgp vrf VRF afi safi`
-    - `show bgp ipv4 unicast`
-    - `show bgp vrf CORE vpnv4 unicast`
-    - `show bgp all`
-
-### Neighbors
-
-- `show bgp afi safi neighbors ip-address`
-
-### Advertised networks
-
-`show ip bgp all neighbors 10.90.0.18 advertised-routes`
 
 
 
