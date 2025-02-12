@@ -184,10 +184,21 @@ Key derivation
 
 ## Record protocol - Application Data
 
+`[TLS Record Header] + [Encrypted Data] + [Authentication Tag]`
+
 - Traffic protection between peers
 - Division of traffic into a series of records, each of which is independently protected using the traffic keys
 - TLS ensures that all messages cannot be replayed or reordered
 - Nonce is used, starts at fixed value, for incremented for each new message, if nonce is not correct, connection is dropped
+- In TLS 1.3, the nonce is generated independently by both the client and server based on shared keys and a sequence number
+- TLS record with application data includes:
+    - Content Type - 23
+    - Protoocol version TLS 1.2 or TLS 1.3
+    - Length of encrypted data
+    - Nonce
+    - Encrypted HTTP data
+    - Authentication Tag for integrity
+- Authentication Tag - verifying that the data was not tampered with during transmission. The authentication tag is produced using a Message Authentication Code (MAC), combined with encryption
 
 Example of application data - nothing interesting
 
@@ -320,7 +331,7 @@ https://blog.cloudflare.com/rfc-8446-aka-tls-1-3/
  - Short notation of cipher suite: authentication algotithm is sent as an extension, key exchange algorithm is always Ephemeral Diffie-Hellman, cipher suite became too long too complex, there were too many variants of suites, for every suite IANA created a code
  - Version negotiation removed
  - SNI is still opened, but there is new RFC where it is encrypted
- - 0-RTT Resumption: if the client has connected to the server before, TLS 1.3 permits a zero-round trip handshake. This is accomplished by storing secret information (typically, Session ID or Session Tickets) of previous sessions and using them when both parties connect with each other in future. But it leads to the absense of Forward Secrecy. The second security concern when it comes to TLS 1.3 0-RTT is that it doesn’t provide a guarantee of non-replay between connections. If an attacker somehow manages to get hold of your 0-RTT encrypted data, it can fool the server into believing that the request came from the client.
+ - 0-RTT Resumption (early data): if the client has connected to the server before, TLS 1.3 permits a zero-round trip handshake. This is accomplished by storing secret information (typically, Session ID or Session Tickets) of previous sessions and using them when both parties connect with each other in future. But it leads to the absense of Forward Secrecy. The second security concern when it comes to TLS 1.3 0-RTT is that it doesn’t provide a guarantee of non-replay between connections. If an attacker somehow manages to get hold of your 0-RTT encrypted data, it can fool the server into believing that the request came from the client. It is not very recomendeded to use it.
 
 ### Handshake
 
