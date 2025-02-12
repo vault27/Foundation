@@ -504,6 +504,10 @@ commit force
 - `Device > Config Audit` - shows who did changes
 - show config diff
 
+### Partial config load
+
+- Can be done both on Panorama and Palo ALto
+
 ## Backup
 
 - Device > Setup > Operations
@@ -4834,3 +4838,10 @@ After either the system wide settings are disabled, or the Zone Protection Profi
 - Global Protect Activity
 - SSL Activity
 - Custom tabs
+
+## SCP
+
+We can export many many things....
+
+- Export config: `cp export configuration from calgary.xml to sw.scp@10.2.53.13:calgary.xml`
+- Import config: `scp import configuration from sw.scp@10.2.53.13:calgary.xml`
