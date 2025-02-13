@@ -131,26 +131,97 @@ What you need to think through, when you design BGP network
 - Keep alive - sent every one third of hold time
 - Route refresh - request all routes for particular AFI/SAFI
 
+### Open message
+
+- List of optional parametres - Capabilities: multiprotocol (AFI/SAFI), route refresh capability, route refresh capability Cisco, enhanced route refresh capability, 4 octet AS number, graceful restart
+
+```
+Border Gateway Protocol - OPEN Message
+    Marker: ffffffffffffffffffffffffffffffff
+    Length: 57
+    Type: OPEN Message (1)
+    Version: 4
+    My AS: 23456 (AS_TRANS)
+    Hold Time: 60
+    BGP Identifier: 10.125.0.144
+    Optional Parameters Length: 28
+    Optional Parameters
+        Optional Parameter: Capability
+        Optional Parameter: Capability
+        Optional Parameter: Capability
+        Optional Parameter: Capability
+        Optional Parameter: Capability
+
+```
+
+```
+Optional Parameters
+    Optional Parameter: Capability
+        Parameter Type: Capability (2)
+        Parameter Length: 6
+        Capability: Multiprotocol extensions capability
+            Type: Multiprotocol extensions capability (1)
+            Length: 4
+            AFI: IPv4 (1)
+            Reserved: 00
+            SAFI: Unicast (1)
+    Optional Parameter: Capability
+    Optional Parameter: Capability
+    Optional Parameter: Capability
+    Optional Parameter: Capability
+
+```
+
+```
+Optional Parameter: Capability
+    Parameter Type: Capability (2)
+    Parameter Length: 6
+    Capability: Support for 4-octet AS number capability
+        Type: Support for 4-octet AS number capability (65)
+        Length: 4
+        AS Number: 4294965187
+
+```
+
 ### Update message
 
- NLRI + Path Attributes, both for BGP and MP-BGP  
+ - NLRI + Path Attributes pairs, both for BGP and MP-BGP 
+ - Many messages in one TCP packet
 
- ```
- Border Gateway Protocol - UPDATE Message
+```
+Transmission Control Protocol, Src Port: 179, Dst Port: 42209, Seq: 96, Ack: 75, Len: 539
+Border Gateway Protocol - UPDATE Message
+Border Gateway Protocol - UPDATE Message
+Border Gateway Protocol - UPDATE Message
+Border Gateway Protocol - UPDATE Message
+Border Gateway Protocol - UPDATE Message
+```
+
+- Many NLRIs in one message
+
+```
+Border Gateway Protocol - UPDATE Message
     Marker: ffffffffffffffffffffffffffffffff
-    Length: 61
+    Length: 102
     Type: UPDATE Message (2)
     Withdrawn Routes Length: 0
-    Total Path Attribute Length: 35
+    Total Path Attribute Length: 43
     Path attributes
-        Path Attribute - ORIGIN: IGP
-        Path Attribute - AS_PATH: 65100 
-        Path Attribute - NEXT_HOP: 192.168.51.2 
-        Path Attribute - MULTI_EXIT_DISC: 0
-        Path Attribute - COMMUNITIES: 321:654 
+        Path Attribute - ORIGIN: INCOMPLETE
+        Path Attribute - AS_PATH: 4294965187 65532 65532 65532 65532 
+        Path Attribute - NEXT_HOP: 10.125.5.17 
+        Path Attribute - COMMUNITIES: 65534:1304 
     Network Layer Reachability Information (NLRI)
-
- ```
+        10.11.46.0/24
+        10.11.47.0/24
+        10.11.64.0/24
+        10.11.79.0/24
+        10.11.83.0/24
+        10.11.88.0/24
+        10.11.145.0/24
+        10.11.148.0/24
+        10.11.150.0/24
+```
 
 ## Neighbors
 
