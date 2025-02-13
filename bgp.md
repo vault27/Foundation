@@ -522,6 +522,18 @@ Community based local preference:
 
 - What networks are advertised by default? - none - only received via BGP
 - Network command: Look for a route in the router’s current IP routing table (global RIB) that **exactly** matches the parameters of the network command; if the IP route exists, put the equivalent NLRI into the local BGP table (Loc-RIB). With this logic, connected routes, static routes, or IGP routes could be taken from the IP routing table and placed into the BGP table for later advertisement. When the router removes that route from its IP routing table, BGP then removes the NLRI from the BGP table, and notifies neighbors that the route has been withdrawn. If auto-summary is enabled, then it matched all of its subnets
+- network command limits may be overiden with route maps. If there is an explicit route-map specifying which routes can be advertised out, then even if there is NO route in routing table, but route is specified in network command + in route map, it will be advertised. Route map is applied to neighbor out. Example:
+
+```
+ip prefix-list INFRA-out seq 100 permit 42.153.2.0/24
+route-map INFRA_out permit 10
+ match ip address prefix-list INFRA-out
+router bgp 4294965111
+  network 42.153.2.0/24
+  neighbor 10.127.117.2 route-map INFRA_out out
+
+```
+
 - network command does not enable interfaces
 - route-map can be used in network command to manipulate path attributes, including next hop
 - BGP only advertises the best path to other BGP peers, regardless of the number of routes in Loc-RIB table
