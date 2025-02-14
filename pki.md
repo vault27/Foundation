@@ -48,3 +48,8 @@ In self-signed certificate all data in Subject Name is identical to all data in 
 - Subordinate CA signs server certificate.
 - Server sends to client its cert + subordinate CA or many subordinates
 - Enroll means to send public key and identity information to CA, so CA can issue an identity certificate
+
+## Certificate transparancy
+
+- CA should add each issued certificate to a giant log
+- Chrome rejects certs not in the log

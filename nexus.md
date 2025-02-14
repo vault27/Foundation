@@ -1,5 +1,12 @@
 # Nexus
 
+- show commands from any place
+- all interfaces are Ethernet
+- show module
+- show run different sections
+- mgmt0 - mgmt int
+- Every VDC has it
+
 ## Show commands
 
 ### Hardware

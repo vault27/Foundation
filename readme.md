@@ -41,6 +41,8 @@ Network Engineer Library
 - [TLS/SSL](ssl.md)
 - [IPSec](ipsec.md)
 - [SSH/SCP/SFTP](ssh.md)
+- [WPA - Wi-Fi Protected Access](wireless.md) - describes how to encrypt data in wireless networks
+
 
 ## Diagnostic protocols
 
