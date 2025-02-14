@@ -6,7 +6,7 @@
 
 ## Network Design Fundamentals
 
-These are foundational elements
+These are `foundational` elements
 
 - Mindset
 - Requirements
@@ -49,6 +49,17 @@ Application requirements
 - Add technology or application 
 - Replace technology
 - Merge or divest different networks - one of the most difficult
--
--
+- Scaling a network
+- Design failure - when you are asked to fix - example: STP root bridge and FHRP active device are different devices
+
+### The buisiness
+
+- We do design for business to make money
+
+### Constraints
+
+- Business constarints - budjet, staff...
+- Application constraints - mandatory L2, hard coded IPs....
+- Technology constraints - vendor
+
 
