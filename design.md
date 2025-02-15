@@ -72,3 +72,10 @@ Some of main constraints
 
 ## Network Design Principles
 
+- Security
+- Scalability
+- Availability
+- Cost
+- Manageability
+
+
