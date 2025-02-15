@@ -42,6 +42,8 @@ Application requirements
 - Network should deliver the desired level of user expectation
 - Application requirements can generate functional requirements
 
++Unstated requirements
+
 ### Design use cases
 
 - Greenfield - from scratch
@@ -78,4 +80,8 @@ Some of main constraints
 - Cost
 - Manageability
 
+### Security
 
+- Perimeter security - turtle shell - legacy - firewall on perimeter - east-west is not limited
+- Session and transaction based security - 100% authentication and 100% authorization  - ?
+- Zero Trust Architecture - AI - Every device, user, application, server, service is assigned a trust score
