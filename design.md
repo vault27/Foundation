@@ -62,4 +62,13 @@ Application requirements
 - Application constraints - mandatory L2, hard coded IPs....
 - Technology constraints - vendor
 
+Some of main constraints
+
+- Cost
+- Time
+- Location - no fiber on site
+- Infrastructure
+- Staff expertise
+
+## Network Design Principles
 
