@@ -11,6 +11,21 @@ An example of encoding is: Base64
 
 Encryption is the process of securely encoding data in such a way that only authorized users with a key or password can decrypt the data to reveal the original.
 
+## Hash functions
+
+- Digest, hash, cheksum
+- The same input - the same output
+- Regardless of input size, output is always fixed length
+- Create a hash with OpenSSL: `openssl dgst -sha256 file`
+- `echo -n "hello " | openssl dgst -sha256 file`
+- Provides integrity and authenticity
+- Security property: second preimage resistance - it is impossible to find different input to generate the same output
+- Written in hexademical notation - base16 - to take less space
+- Hexademical (base16)and base64 are mostly used
+- Wee need to trust web page which published digest, on other case hash is not enough for integrity
+- SHA256 - 256 bits - 32 bytes - 64 hexadecimal alphanumeric characters
+- It is one way
+
 ## Key Exchange
 
 Concepts
