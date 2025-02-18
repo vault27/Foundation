@@ -193,7 +193,7 @@ In Ideal World:
                               |                             |                                                 |
 +-----------------------------+-----------------------------+-------------------------------------------------+
 | IP Header                   | TCP Header                  |                                                 |
-| 20 Bytes - min - no options | 20 Bytes - min - no options |            Payload - 1460 bytes - max           |
+| 20 Bytes - min - no options | 20 Bytes - min - no options |            Payload - 1460 bytes - max MSS       |
 | 60 Bytes - max - options    | 60 Bytes - max - options    |                                                 |
 |-----------------------------+-----------------------------+-------------------------------------------------|
 |                                                                                                             |
@@ -203,6 +203,8 @@ In Ideal World:
 ```
 
 - MTU - maximum frame size ethernet card can send to the wire
+- `Ethernet MTU = IP header + TCP/UDP/ICMP header + Payload`
+- `MSS = TCP Payload = TCP Segment Size - TCP Header - TCP Otions` 
 - TCP stack gets stream of of data - for example 10K, then it needs to chop it to segements, accorsing to MTU
 - MSS - TCP payload - maximum it can be is 1460 because 1500 MTU limit
 - MSS is sent in SYN, never repeated again
