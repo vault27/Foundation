@@ -85,3 +85,34 @@ Some of main constraints
 - Perimeter security - turtle shell - legacy - firewall on perimeter - east-west is not limited
 - Session and transaction based security - 100% authentication and 100% authorization  - ?
 - Zero Trust Architecture - AI - Every device, user, application, server, service is assigned a trust score
+
+### Availability
+
+- Redundancy - multiple resources doing the same role
+- Resilience - the ability of network to automatically failover
+- Reliability - how much data passes network without loses
+- The more availability - the more complexity and cost
+- Main goal is app and service availability
+- Network is a plumbing
+- Availability requirements are unstated by the customer
+- You need to talk to app developers and understand what it is dependent on
+
+### Manageability
+
+- Keep it super simple
+- Do not create networks which require CCIE
+- Your design should be managed by staff who operates the networks
+
+### Scalability
+
+- Grow with business
+
+### Cost
+
+- Not only money - personel, time, technical cost
+
+## Network design techniques
+
+- Failure isolation - large l2 domain is dangerous - we may connect hub and generate 
+- Can be done in every network protocol
+- 
