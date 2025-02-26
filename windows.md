@@ -2,6 +2,9 @@
 
 ## CLI
 
+**Show MTU**  
+`netsh interface ipv4 show interfaces`  
+
 ### Groups
 
 - Get group DN based on CN: `dsquery group -samid "L-MSK-KLTN-ACC-Internet-Audio"`
