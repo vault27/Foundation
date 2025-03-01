@@ -31,7 +31,11 @@ Certificate ::= SEQUENCE {
 
 Convert pem to ASN.1: `openssl x509 -in google.pem -text`
 
-## Certificate signature process
+## Certificate generation
+
+## Certificate renewal
+
+- Private key is required
 
 ## Self-signed certificate
 In self-signed certificate all data in Subject Name is identical to all data in Issuer Name section.
