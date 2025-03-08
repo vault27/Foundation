@@ -2599,10 +2599,22 @@ Configure User-ID Agent
 
 ### CLI commands
 
+**Show all user mappings**  
+`show user ip-user-mapping all`  
+
+**Check if service is running**  
+`show system software status | match user`  
+
+
+
+
+
+
 - Display the status of the User-ID service - Collector - Redistributor:`show user user-id-service status`
+- Show status of all User-ID servers: `show user user-id-agent statistics`
 - Display the clients/firewalls that are connected to the collector - `show user user-id-service client all`
 - Show connections to agents - for new Pan versions - `show redistribution agent state all`
-- Log files for old and new verions: less mp-log useridd.log, less mp-log distributord.log
+- Log files for old and new verions: `less mp-log useridd.log, less mp-log distributord.log`
 - Netstat - `netstat -na | findstr 5007`
 - Search in System logs - `show log system direction equal backward subtype equal userid`
 - Show logged in users `debug dataplane show user all`
