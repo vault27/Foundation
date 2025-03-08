@@ -25,6 +25,12 @@ Encryption is the process of securely encoding data in such a way that only auth
 - Wee need to trust web page which published digest, on other case hash is not enough for integrity
 - SHA256 - 256 bits - 32 bytes - 64 hexadecimal alphanumeric characters
 - It is one way
+- Three security properties:
+  - Pre-image resitance
+  - Second pre-image resitance - it is very hard, but possible to find another input
+  - Collision resistances
+- The size of digest does matter: 256 bits minimum
+
 
 ## Key Exchange
 

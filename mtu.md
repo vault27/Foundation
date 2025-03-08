@@ -46,3 +46,17 @@ In Ideal World:
 - And client needds to react on it
 - Path MTU discovery is enabled by default in Windows
 - Router can change MSS in a SYN packets
+
+## MSS
+
+- The MSS is not negotiated
+- It’s a TCP option set in SYN segments
+- The MSS is derived from the IP MTU
+- It indicates how large segments you are willing to receive
+- It’s not bidirectional
+- It can be different in each direction
+- It can be modified by an intermediate device - MSS clamping 
+
+## Workflow
+
+1. 

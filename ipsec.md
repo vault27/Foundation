@@ -1,6 +1,6 @@
 # IPSec
 
-### IKE
+## IKE
 
 - Peer IP
 - Proxy IDs Local and Remote if required by one of the sides
@@ -11,8 +11,9 @@
 - Lifetime
 - Auth type: pre shared key or certificate
 - Preshared key
+- IKE Call Admission Control (CAC) - limit amount of connections and tries to establish IKE phase one tunnel
 
-### IPSec
+## IPSec
 
 - IPSec protocol: ESP or AH
 - ESP mode: tunnel or transport mode
@@ -64,6 +65,7 @@ IKE does the following:
 ### Phase 1 - ISAKMP protocol
 
 - During traffic capture you cannot see Phase 2 negotiation, only Phase 1 as ISAKMP protocol, everything else is encrypted
+- To build a tunnel 4 parametres are needed: Authentication, key exchange, encryption, MAC: PSK/DH2/A128/SHA1 + mode for IKEv1: main or aggressive + lifetime
 - In ISAKMP you can see mode: main or aggressive
 - Suggested encryption parametres
 - Key exchange
@@ -119,15 +121,32 @@ The information transmitted in the third exchange of messages is protected by th
 
 #### Aggressive mode
 
-### IKE Phase 1
+In aggressive mode, the initiator and recipient accomplish the same objectives as with main mode, but in only two exchanges, with a total of three messages:
+- First message—The initiator proposes the security association (SA), initiates a DH exchange, and sends a pseudorandom number and its IKE identity. When configuring aggressive mode with multiple proposals for Phase 1 negotiations, use the same DH group in all proposals because the DH group cannot be negotiated. Up to four proposals can be configured.
+- Second message—The recipient accepts the SA; authenticates the initiator; and sends a pseudorandom number, its IKE identity, and, if using certificates, the recipient's certificate.
+- Third message—The initiator authenticates the recipient, confirms the exchange, and, if using certificates, sends the initiator's certificate
+- Because the participants’ identities are exchanged in the clear (in the first two messages), aggressive mode does not provide identity protection
+- Main and aggressive modes applies only to IKEv1 protocol. IKEv2 protocol does not negotiate using main and aggressive modes
 
-- To build a tunnel 4 parametres are needed: Authentication, key exchange, encryption, MAC: PSK/DH2/A128/SHA1 + mode for IKEv1: main or aggressive + lifetime
+
+
+
 
 
 ### IKE Phase 2
 
 - Messages include Proxy-IDs: local networks, remote network, protocol, name - they should match on both sides
 - To build a tunnel 3 parametres are needed: Protocol (ESP/AH), encryption, MAC: ESP/A128/SHA1 + lifetime
+- There is only one mode - quick in Phase 2, 3 packets
+- IKE Phase 2 negotiations:
+    - Encryption
+    - Hashing
+- Phase 2 uses the shared secret to encrypt the exchange of information that determines theencryption parameters for the actual data
+- By default, Phase 2 keys are derived from the session key created in Phase 1. Perfect Forward Secrecy (PFS)
+forces a new Diffie-Hellman exchange when the tunnel starts and whenever the Phase 2 keylife expires, causing
+a new key to be generated each time. This exchange ensures that the keys created in Phase 2 are unrelated to
+the Phase 1 keys or any other keys generated automatically in Phase 2
+- Keylife - When the Phase 2 key expires, a new key is generated without interrupting service
 
 ### Xauth - Extended Authentication within IKE
 
@@ -149,7 +168,7 @@ https://datatracker.ietf.org/doc/html/draft-beaulieu-ike-xauth-02
 
 ## AH
 
-## Configuration
+## Configuration - Cisco
 
 `Tunnel` (vrf, bandwidth, ip, mss, mtu, load interval, bfd, source, mode, path mtu discovery, destination, **ipsec profile**) > `ipsec profile` (idle, **transform-set**, pfs group, **ike-v2-profile**) > `ike-v2-profile` (identity, authentication, **keyring**, lifetime, dpd), `transform set`(encryption, hash, mode) > `keyring` (address, key)  
   
@@ -283,3 +302,17 @@ Debug crypto condition peer ipv4 140.238.149.242
 Debug crypto ikev2
 Debug crypto ipsec
 ```
+
+## NAT-T
+
+```
++----------------+-----------+-------------+------------+------------------------+---------+-------------+----------+
+|  New IP header | UDP header| NAT-T header| ESP header |Original Inner IP Header| IP Data | ESP trailer | ESP auth |
+|    20 bytes    |  8 bytes  |   4 bytes   |  8 bytes   |                        |         |   2 bytes   | 12 bytes |
++----------------+-----------+-------------+------------+------------------------+---------+-------------+----------+
+```
+
+- UDP port 4500
+- Total overhead - 54 bytes!
+- NAT-T is an IKE phase 1 algorithm that is used when trying to establish a VPN between two gateways devices where a NAT device exists in front of one of the devices.
+- By enabling this option, IPSec traffic can pass through a NAT device.
