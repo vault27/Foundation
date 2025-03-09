@@ -13,24 +13,34 @@ Encryption is the process of securely encoding data in such a way that only auth
 
 ## Hash functions
 
-- Digest, hash, cheksum
+- Digest, hash, cheksum, fingerprints, message digests, digests  
 - The same input - the same output
 - Regardless of input size, output is always fixed length
 - Create a hash with OpenSSL: `openssl dgst -sha256 file`
 - `echo -n "hello " | openssl dgst -sha256 file`
-- Provides integrity and authenticity
-- Security property: second preimage resistance - it is impossible to find different input to generate the same output
+- Main practical implication: content integrity or authenticity, only when hash is securely communicated
 - Written in hexademical notation - base16 - to take less space
-- Hexademical (base16)and base64 are mostly used
+- Hexademical (base16) and base64 are mostly used
 - Wee need to trust web page which published digest, on other case hash is not enough for integrity
-- SHA256 - 256 bits - 32 bytes - 64 hexadecimal alphanumeric characters
 - It is one way
-- Three security properties:
-  - Pre-image resitance
-  - Second pre-image resitance - it is very hard, but possible to find another input
-  - Collision resistances
 - The size of digest does matter: 256 bits minimum
+- A hash function is an algorithm that converts input of arbitrary length into fixed-size output
+- This is a very good way to compare two large files
+- The strength of a hash function doesn’t equal the hash length
 
+Cryptographic hash functions have to have the following properties:
+
+- Preimage resistance - Given a hash, it’s computationally unfeasible to find or construct a message that produces it
+- Second preimage resistance - Given a message and its hash, it’s computationally unfeasible to find a different message with the same hash
+- Collision resistance - It’s computationally unfeasible to find two messages that have the same hash
+
+### Hash function algorithms
+
+- CRC32 - cheksum - no cryptographic hash function - only detect errors - no security properties
+- MD5 - broken
+- SHA1 - broken
+- SHA2: SHA 224,256,384,512
+- SHA3
 
 ## Key Exchange
 
@@ -152,20 +162,6 @@ Elliptic Curve IPSec groups
 
 
 ### Ecliptic curve arithmetic
-
-## Hash functions
-
-=fingerprints=message digests=digests  
-  
-A hash function is an algorithm that converts input of arbitrary length into fixed-size out- put.  
-This is a very good way to compare two large files.  
-The strength of a hash function doesn’t equal the hash length.
-
-Cryptographic hash functions have to have the following properties:
-
-- Preimage resistance - Given a hash, it’s computationally unfeasible to find or construct a message that produces it
-- Second preimage resistance - Given a message and its hash, it’s computationally unfeasible to find a different message with the same hash
-- Collision resistance - It’s computationally unfeasible to find two messages that have the same hash
 
 ## Symmetric Encryption
 
