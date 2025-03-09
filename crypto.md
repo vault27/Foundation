@@ -34,13 +34,18 @@ Cryptographic hash functions have to have the following properties:
 - Second preimage resistance - Given a message and its hash, it’s computationally unfeasible to find a different message with the same hash
 - Collision resistance - It’s computationally unfeasible to find two messages that have the same hash
 
+Password hashes protection techniques:
+
+- Salt is added to password before hashing it. It helps to avoid brute force attack, if a hacker gets all hashes
+- Password hashes - Argon2 - slows down brute force, standard hash functions are very fast
+
 ### Hash function algorithms
 
 - CRC32 - cheksum - no cryptographic hash function - only detect errors - no security properties
 - MD5 - broken
 - SHA1 - broken
-- SHA2: SHA 224,256,384,512
-- SHA3
+- SHA2: SHA 224,256 (most used),384,512 - lack of resistence to length extension attacks
+- SHA3 - ideal
 
 ## Key Exchange
 
