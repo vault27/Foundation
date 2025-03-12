@@ -7,6 +7,21 @@
 - mgmt0 - mgmt int
 - Every VDC has it
 
+## OS
+
+- Kickstart image - Linux kernel, drivers, filesystem
+    - `show module`
+    - `show version` - version + image files
+- System image - system software for Layers 4-7
+    - `show version` - version + image files
+- EPLD - Erasable Programmbable Logic Device - Nexus 7000 specific for I/O modules
+    - `show version module 7 epld`
+    - `show version fan 1 epld`
+    - `show version module 5` - supervisor - SUP - BIOS version
+- `dir bootflash`
+- EPLD are different from main version, it depends on module functionality, it is recomended to use the latest version of EPLD for particular version
+
+
 ## Show commands
 
 ### Hardware
