@@ -1707,13 +1707,21 @@ Requires Advanced Threat Prevention subscription
 ### Vulnerability Protection
 
 - Create profile, Add rules and exceptions to profile
-- Protect against buffer overflows, illegal code execution, and other attempts to exploit client- and server-side vulnerabilities
+- Protect against buffer overflows, illegal code execution, and other attempts to exploit client and server-side vulnerabilities
 - You create a rule, for every rule you filter signatures: CVE, Threat Name, Severity, Host Type, and then you specify what to do with these signatures: Action and Packet Capture
 - Packet capture can be enabled
 - Action for all signatures in a rule or Default
 - Host type can be configured: client or server 
 - When the vulnerability protection action profile is set to reset-both, the associated threat log might display action as reset-server. As discussed earlier, this occurs when the firewall detects the threat at the beginning of a session and presents the client with a 503-block page. Since, the block place disallows the connection, only the server-side connection is reset
 - The default Vulnerability Protection Profile protects clients and servers from all known critical-, high-, and medium-severity threats
+
+Exceptions
+
+- Exceptions from rules
+- Signature is searched by ID or name or CVE...
+- Signature is configured - for example amount of bruteforce attempts
+- Action is configured - Block IP fro example
+- Packet capture is configured
 
 Best practises
 
@@ -3078,6 +3086,19 @@ Commit options when you commit to Panorama:
 - Push the device state
 - Commit the device groups and templates
 - A CLI command will forward the pre-existing logs to Panorama
+
+### Migrate from one Panorama to another
+
+- Disable Lab Panorama on FW and commit a change: https://knowledgebase.paloaltonetworks.com/KCSArticleDetail?id=kA10g000000Cmd6CAC
+- Reset SC3 on FW: `request sc3 reset`
+- Restart Mgmt server on FW: `debug software restart process management-server`
+- Disable configuration synchronization between the HA peers
+- Add CAL firewalls to Prod Panorama with serial numbers and generate auth key
+- Enable new Panorama on CAL firewalls and commit the change
+- Ensure CAL firewalls are showing as connected in prod Panorama
+- Import devices to Prod Panorama (this is where you will create template and device group)
+- If import is successful, create a template stack for CAL firewalls and add newly created device template to it.
+- Push configuration to Firewalls and observe rule created/modified date on the firewalls (it will change to today's date). This will be a proof that firewall rules   came down from Panorama
 
 ### Firewall is disconnected in Panorama**
 
