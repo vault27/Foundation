@@ -3089,16 +3089,18 @@ Commit options when you commit to Panorama:
 
 ### Migrate from one Panorama to another
 
-- Disable Lab Panorama on FW and commit a change: https://knowledgebase.paloaltonetworks.com/KCSArticleDetail?id=kA10g000000Cmd6CAC
-- Reset SC3 on FW: `request sc3 reset`
-- Restart Mgmt server on FW: `debug software restart process management-server`
+- Disable Lab Panorama on FW and commit a change on both HA devices: https://knowledgebase.paloaltonetworks.com/KCSArticleDetail?id=kA10g000000Cmd6CAC
+- Reset SC3 on on both FWs `request sc3 reset`
+- Restart Mgmt server on both FWs: `debug software restart process management-server`
 - Disable configuration synchronization between the HA peers
-- Add CAL firewalls to Prod Panorama with serial numbers and generate auth key
-- Enable new Panorama on CAL firewalls and commit the change
-- Ensure CAL firewalls are showing as connected in prod Panorama
-- Import devices to Prod Panorama (this is where you will create template and device group)
-- If import is successful, create a template stack for CAL firewalls and add newly created device template to it.
-- Push configuration to Firewalls and observe rule created/modified date on the firewalls (it will change to today's date). This will be a proof that firewall rules   came down from Panorama
+- Add firewalls to Prod Panorama with serial numbers and generate auth key
+- Enable new Panorama on firewalls and commit the change - do not enbale device groups and temlates yet - commit
+- Ensure firewalls are showing as connected in prod Panorama
+- Import both devices to Prod Panorama - as a result you will get 2 templates and 2 device groups
+- Move passive fw to device group and template stack of active device, so we will have one device group and one template and one stack for both fws
+- Export device config bundle to both devices
+- Add additional required templates to a stack
+- Push configuration to Firewalls and observe rule created/modified date on the firewalls (it will change to today's date). This will be a proof that firewall rules came down from Panorama
 
 ### Firewall is disconnected in Panorama**
 
