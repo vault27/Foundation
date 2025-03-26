@@ -31,6 +31,7 @@
 - Routing protocols
 - Upload images + MD5
 - Wireless controllers - check before upgrade
+- Stack or not
 
 ### Part 4 - Change
 
@@ -66,27 +67,16 @@ Show flash1:
 Show flash2:
 ```
 
-- Upload image
+### Upload image
 
-For Catalyst via FTP:
+- For Catalyst via FTP: `copy /verify ftp://ftpuser:pass@1.1.1.1/IOS/c3560cx-universalk9-mz.152-7.E9.bin flash:`
+- For Nexus via SFTP: `copy sftp://user.scp@2.2.2.2/Images/nxos64-cs.10.2.6.M.bin bootflash:`
+- Veriify MD5 hash `verify /md5 flash:c3750e-universalk9-mz.152-4.E10.bin`
+- Verify MD5 on Nexus `show file bootflash:nxos64-cs.10.2.6.M.bin md5sum`
+- Upload image to main switch in stack `copy /verify scp://sw.scp:Canyon+paint1@10.2.53.13:c2960x-universalk9-mz.152-7.E11.bin flash:`
+- Upload image to second switch in stack `copy flash:c2960x-universalk9-mz.152-7.E11 flash2:`
 
-```
-copy /verify ftp://ftpuser:pass@1.1.1.1/IOS/c3560cx-universalk9-mz.152-7.E9.bin flash:
-```
-
-For Nexus via SFTP:
-`copy sftp://user.scp@2.2.2.2/Images/nxos64-cs.10.2.6.M.bin bootflash:`
-
-- Veriify MD5 hash
-
-```
-verify /md5 flash:c3750e-universalk9-mz.152-4.E10.bin
-```
-
-Verify MD5 on Nexus
-`show file bootflash:nxos64-cs.10.2.6.M.bin md5sum`
-
-### Appendix-B - MOP
+### MOP
 
 - Enable SSH log to file
 
@@ -189,7 +179,7 @@ copy run start
 reload
 ```
 
-For old one Stack - update all switches in a stack
+**For old one Stack - update all switches in a stack**
 
 ```
 boot system switch all flash:c3750e-universalk9-mz.152-4.E10.bin

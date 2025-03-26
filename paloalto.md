@@ -2940,7 +2940,6 @@ Renew cert
 - For every rule we can choose where to install: one particular firewall, device groups, tags...
 - One giant device group consists of many subgroups
 - Every device in panorama has its own tag or many tags
-- The master device is the firewall from which Panorama gathers user ID information for use in policies
 - Rules from upper Devices Groups automatically appears in lower Device Groups Policies
 - You attach devices only to lower Device Groups, because Device can be attached only to one Device Group
 - You cannot override or change rules arrived from Panorama
@@ -2952,14 +2951,15 @@ Renew cert
 - We can assign a reference template to a device group to see zones and interface when we create rules in policy - done During Device Group creation - used when FW does not have a Template assigned
 - When we create an object, we can make it Shared, it will be in Shared group and will be accessible for all device groups. We can also disable override for it, so lower hirerchy firewalls and groups will not be able to overrride it
 - Objects in Shared group never can be overrriden
-- Policy rules Hierarchy 
+- Every device group has Pre rules, Post rules and Default rules
+- **Policy rules Hierarchy** 
     - Shared Pre-policies
     - Device group hierarchy pre policies
     - Local firewall policies
     - Device group hierarchy post policies
     - Shared post-policies
     - Default rules
-- When we import firewall config to Panorama, its rules go to Pre rules section of Device Group
+- When we import firewall config to Panorama, its rules go to Pre rules or Post rules section of Device Group, we can choose
 
 ### Logs
 
@@ -3728,7 +3728,7 @@ Action: (action eq allow)
 **Date and time**
 
 ```
-receive_time geq '2015/08/30 08:30:00') and (receive_time leq '2015/08/31 01:25:00')
+(receive_time geq '2015/08/30 08:30:00') and (receive_time leq '2015/08/31 01:25:00')
 ```
 
 **Pre defined reports**
