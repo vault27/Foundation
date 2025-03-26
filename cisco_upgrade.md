@@ -53,7 +53,7 @@
 - Unmute monitoring system
 - Add change to monitoring system
 
-### Upload image
+## Upload image
 
 - For Catalyst via FTP: `copy /verify ftp://ftpuser:pass@1.1.1.1/IOS/c3560cx-universalk9-mz.152-7.E9.bin flash:`
 - For Nexus via SFTP: `copy sftp://user.scp@2.2.2.2/Images/nxos64-cs.10.2.6.M.bin bootflash:`
@@ -189,6 +189,12 @@ Stack: `boot system switch all flash:c3750e-universalk9-mz.152-4.E10.bin`
 - commit → Removes the old image to free up space.
 - prompt-level none → Prevents confirmation prompts.
 
+### Nexus
+
+```
+Install all nxos bootflash:nxos64-cs.10.2.6.M.bin
+```
+
 ### Troubleshooting
 
 If switch does not boot with new image, we need to connect with console and load switch with previous image:
@@ -201,8 +207,3 @@ you can do "dir" to see if flash is detected
 if it doesn't boot on the new code, it'll automatically go to rommon
 ```
 
-**For Nexus**
-
-```
-Install all nxos bootflash:nxos64-cs.10.2.6.M.bin
-```
