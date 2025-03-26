@@ -27,7 +27,7 @@
 - Local access
 - vPC and STP peculiarities
 - Routing protocols
-- Upload images + MD5
+- Upload images + MD5 + stack
 - Wireless controllers - check before upgrade
 - Stack or not
 
@@ -65,7 +65,6 @@
     - "flash:" means the flash directory of the MASTER switch.
     - "flash1:" means the flash directory of switch 1 of the stack.
     - "flash1:" does NOT necessarily mean it's the flash memory of the master switch.
-
 ```
 Show flash1:
 Show flash2:
@@ -93,7 +92,7 @@ show power inline - power over ethernet ports
 show inventory - slots, sfps, power supplies, fans
 show module - OS versions on all slots, MAC addresses 
 show switch - shows members of a stack + who is Master - only for stack
-show redundancy
+show redundancy - Chassis-based switches with dual supervisor modules (e.g., Catalyst 9400, 9500, 9600), StackWise Virtual configurations (e.g., Catalyst 9300, 9500), Routers that support redundant RPs (e.g., ASR, ISR series)
 show cdp nei
 ```
 
