@@ -1,5 +1,21 @@
 # Cisco
 
+## Stacks
+
+### Catalyst 2960-S stacks, also referred to as Cisco FlexStacks
+
+- Up to 4
+- Connected through their stack ports
+- One of the switches controls the operation of the stack and is called the stack master
+- A switch stack is different from a switch cluster
+- The master is the single point of stack-wide management.
+- System-level (global) features that apply to all members
+- Interface-level features for each member
+- One of the factors is the stack member priority value. The switch with the highest stack-member priority-value becomes the master
+- The master contains the saved and running configuration files for the stack
+- You manage the stack through a single IP address
+- 
+
 ## Routers and switches upgrade
 
 ### Part 1 - Reconnaissance
@@ -157,7 +173,7 @@ show feature
 show install all status
 ```
 
-**Upgrade**
+### Upgrade*
 
 Check version one more time
 
