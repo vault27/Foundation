@@ -16,210 +16,6 @@
 - You manage the stack through a single IP address
 - 
 
-## Routers and switches upgrade
-
-### Part 1 - Reconnaissance
-
-- What is connected to a device: clients, cameras, servers, APs, transit: CDP, port description, diagrams
-- Who support connected devices?
-- Maitenance window
-- Validators - they have to approve before and after
-- Will there be service interraption or not?
-- Impact allowed: can we do interruption or not
-- Find out the rack number
-- Find person on site availability - console cable + wired keyboard with Break key
-- Person on site requested access
-
-### Part 2 - Change creation
-
-- Notify on-site people
-- Notify servers people
-- Notify validators: application teams, security guards - send them Bridge link
-- Create MOP
-- Pass TAB
-- Pass SCRUM
-
-### Part 3 - Prepare for change
-
-- Local password
-- Local access
-- vPC and STP peculiarities
-- Routing protocols
-- Upload images + MD5
-- Wireless controllers - check before upgrade
-- Stack or not
-
-### Part 4 - Change
-
-- Disable monitoring system
-- Notify about start
-- Validators validate before start
-- Install + Verify
-
-### Part5 - Post Upgrade
-
-- Pre-checks
-- If Stack: check that member switches are upgraded as well
-- Access-points
-- Cameras
-- Security locks
-- Servers connections
-- Servers validators
-- App validators
-- Notify about end
-- Close change
-- Unmute monitoring system
-- Add change to monitoring system
-
-### Appendix-A - Images
-
-- Verify that image is on both nodes of the stack.
-    - "flash:" means the flash directory of the MASTER switch.
-    - "flash1:" means the flash directory of switch 1 of the stack.
-    - "flash1:" does NOT necessarily mean it's the flash memory of the master switch.
-
-```
-Show flash1:
-Show flash2:
-```
-
-### Upload image
-
-- For Catalyst via FTP: `copy /verify ftp://ftpuser:pass@1.1.1.1/IOS/c3560cx-universalk9-mz.152-7.E9.bin flash:`
-- For Nexus via SFTP: `copy sftp://user.scp@2.2.2.2/Images/nxos64-cs.10.2.6.M.bin bootflash:`
-- Veriify MD5 hash `verify /md5 flash:c3750e-universalk9-mz.152-4.E10.bin`
-- Verify MD5 on Nexus `show file bootflash:nxos64-cs.10.2.6.M.bin md5sum`
-- Upload image to main switch in stack `copy /verify scp://sw.scp:Canyon+paint1@10.2.53.13:c2960x-universalk9-mz.152-7.E11.bin flash:`
-- Upload image to second switch in stack `copy flash:c2960x-universalk9-mz.152-7.E11 flash2:`
-
-### MOP
-
-- Enable SSH log to file
-
-**Backup**
-
-```
-copy run start
-ter len 0
-sh run
-```
-
-**Hardware Pre-checks**
-
-```
-show environment all - fans, ps, alerts, sensors
-show interfaces status err-disabled
-show interfaces status | i connected
-show power inline - power over ethernet ports
-show inventory - slots, sfps, power supplies, fans
-show module - OS versions on all slots, MAC addresses 
-show switch - shows members of a stack + who is Master
-show redundancy
-show cdp nei
-```
-
-**Software Pre-checks**
-
-```
-show logging
-show ver - verify version on all switches in the stack
-```
-
-**L2 Pre-checks - for switches only**
-
-```
-show mac add dynamic
-show int trunk
-show spanning-tree summary
-show spanning-tree root
-```
-
-**L3 Pre-checks**
-
-General
-
-```
-show vrf
-show ip protocols
-show ip arp
-show ip route
-show ip route summary
-
-#For VRFs with Interfaces
-show ip arp vrf VRF_NAME
-show ip route vrf VRF_NAME
-show ip route vrf VRF_NAME summary
-```
-
-OSPF 
-
-```
-show ip ospf neighbor
-show ip ospf database
-show ip ospf interface
-```
-
-BGP
-
-```
-show ip bgp all summary
-```
-
-**Nexus Pre-checks**
-
-```
-show install all impact nxos bootflash:nxos64-cs.10.2.6.M.bin
-show feature
-show install all status
-```
-
-### Upgrade*
-
-Check version one more time
-
-If **show boot** shows bin file, then it is old catalyst
-
-For new Catalyst - the same for Stack
-```
-install add file flash:cat9k_iosxe.17.09.04a.SPA.bin activate commit prompt-level none
-```
-
-For old ones - we keep old one, new one on top, just in case new one will not boot
-
-```
-no boot system boot system flash:c2900-universalk9-mz.SPA.157-3.M4a.bin
-boot system flash:c2900-universalk9-mz.SPA.157-3.M8.bin
-boot system boot system flash:c2900-universalk9-mz.SPA.157-3.M4a.bin
-exit
-copy run start
-reload
-```
-
-**For old one Stack - update all switches in a stack**
-
-```
-boot system switch all flash:c3750e-universalk9-mz.152-4.E10.bin
-```
-
-If switch does not boot with new image, we need to connect with console and load switch with previous image:
-
-```
-Enter ROMMODE - CTRl+Break
-boot flash:IMAGE_NAME
-if flash is not detected, then you can try flash_init
-you can do "dir" to see if flash is detected
-if it doesn't boot on the new code, it'll automatically go to rommon
-```
-
-For Nexus
-
-```
-Install all nxos bootflash:nxos64-cs.10.2.6.M.bin
-```
-
-**Validation**
-
-
 ## IOS version naming
 
 - Different platforms ultimately run different Cisco IOS versions 
@@ -470,3 +266,82 @@ no monitor capture mycapture
 
 ##  Port security
 
+## Users
+
+- username netadmin privilege 15 secret 5 $1$0Q7y$2h6aQexKrhaOv4/VL5M9w/
+- username secopsadmin secret 9 $9$SU3dGhgTOfAaZE$GzcaRuORda/Y/3ZiV5MrNqvL7KctOHphPv1PChc.fQo
+- Privilege level 15 gives full administrative access (like enable mode)
+- By default, users have privilege level 1 (basic user mode)
+- secopsadmin does not specify a privilege level, so it defaults to 1
+
+Password Encryption Types in Cisco
+
+- Type	Syntax	Encryption Algorithm	Security Level
+- 0	username admin secret 0 password	Plain text	❌ Weak
+- 5	username admin secret 5 <hashed>	MD5	⚠️ Weak (deprecated)
+- 7	username admin password 7 <hashed>	Cisco Type 7 (Vigenère cipher)	❌ Very weak (easily reversible)
+- 8	username admin secret 8 <hashed>	PBKDF2	✅ Strong
+- 9	username admin secret 9 <hashed>	SHA-256	✅✅ Strongest
+
+## AAA
+
+- aaa new-model - Enables AAA (Authentication, Authorization, and Accounting) - Without this, the switch would only use local authentication
+
+### Tacacs
+ ```
+ aaa group server tacacs+ CORP_ACS
+ server-private 10.255.255.3 key 7 001C240436080C57497208160F3E2F0637273C5D791F082730
+ ip tacacs source-interface FastEthernet0
+ ```
+
+### Authentication
+
+It specifies a named list of methods:
+- Which authentication methods to use (e.g., TACACS+, RADIUS, local accounts, or simple line passwords).
+- The order in which authentication methods are tried (e.g., try TACACS+ first, then local).
+- Whether a username is required or just a password
+
+Commands:
+- `aaa authentication login <METHOD-LIST-NAME> <METHOD1> [METHOD2] [METHOD3]`
+- aaa authentication login default group CORP_ACS local
+- aaa authentication login umicn_line line
+
+**Common Authentication Methods**
+
+- Method	Description
+- group tacacs+	Use TACACS+ server for authentication
+- group radius	Use RADIUS server for authentication
+- local	Use local usernames/passwords (username <name> secret <password>)
+- line	Use the password set under line con 0 or line vty (no username)
+- enable	Use the enable password for authentication.
+- none	No authentication (not recommended).
+
+### Authorization
+
+- aaa authorization exec default group CORP_ACS if-authenticated 
+- aaa authorization commands 15 default group CORP_ACS local 
+
+### Accounting
+
+- aaa accounting exec default start-stop group CORP_ACS
+- aaa accounting commands 15 default start-stop group CORP_ACS
+
+## Console configuration
+
+- We mention which list of Auth methods we use
+- In this list method line is configured, which means to use password specified in console section
+- We mention password if required
+- By default we will get priviledge level 1, if only privilege level 15 is not specicified
+
+```
+aaa authentication login umicn_line line
+
+line con 0
+ session-timeout 15  output
+ exec-timeout 15 0
+ password 7 141D270D1E526C0E1E2D3E2021120C42
+ privilege level 15
+ logging synchronous
+ login authentication umicn_line
+
+```

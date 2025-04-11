@@ -169,7 +169,7 @@ show install all status
 ```
 no boot system boot system flash:c2900-universalk9-mz.SPA.157-3.M4a.bin
 boot system flash:c2900-universalk9-mz.SPA.157-3.M8.bin
-boot system boot system flash:c2900-universalk9-mz.SPA.157-3.M4a.bin
+boot system flash:c2900-universalk9-mz.SPA.157-3.M4a.bin
 exit
 copy run start
 reload

@@ -2607,17 +2607,8 @@ Configure User-ID Agent
 
 ### CLI commands
 
-**Show all user mappings**  
-`show user ip-user-mapping all`  
-
-**Check if service is running**  
-`show system software status | match user`  
-
-
-
-
-
-
+- Show all user mappings - `show user ip-user-mapping all`  
+- Check if service is running - `show system software status | match user`  
 - Display the status of the User-ID service - Collector - Redistributor:`show user user-id-service status`
 - Show status of all User-ID servers: `show user user-id-agent statistics`
 - Display the clients/firewalls that are connected to the collector - `show user user-id-service client all`
@@ -3728,7 +3719,7 @@ Action: (action eq allow)
 **Date and time**
 
 ```
-(receive_time geq '2015/08/30 08:30:00') and (receive_time leq '2015/08/31 01:25:00')
+g
 ```
 
 **Pre defined reports**
