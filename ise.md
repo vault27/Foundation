@@ -208,3 +208,13 @@ Any TACACS+ Shell Profile with "Shell" type should have "Idle Time" set to "10" 
   - EAP-FAST
   - EAP-TTLS
   - TEAP
+
+## Renew certs
+
+- On main node go to Administration > System > Certificates
+- Choose proper node
+- Prepare certificate in PEM format + key in separate file
+- Click Import, specify files + fiendly name
+- Choose usage the same as for previous cert
+- Click OK
+- Everything will be restarted!!!
