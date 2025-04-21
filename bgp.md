@@ -1259,3 +1259,7 @@ undebug all
 no debug-filter all
 clear debug logfile <FILE_NAME>
 ```
+
+## BGP InterAS Option A
+
+## BGP InterAS Option C

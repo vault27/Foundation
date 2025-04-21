@@ -33,6 +33,8 @@ Network Engineer Library
 - [IP](ip.md)
 - [IPv6](ipv6.md)
 - [MPLS](mpls.md)
+    - L3VPN BGP VPNv4
+    - L2VPN VPWS/VPLS
 - [TCP](tcp.md)
 - [UDP](udp.md)
 
@@ -146,10 +148,3 @@ Network Engineer Library
 - [OpenSSL](openssl.md)
 - [nmap](nmap.md)
 - [hping](hping.md)
-
-## ISP Transport technologies
-
-- MPLS
-- VPWS
-- VPLS
-- EVPN
