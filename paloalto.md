@@ -3489,7 +3489,7 @@ request restart system
 ```
 debug dataplane packet-diag set filter match destination 192.168.1.100
 debug dataplane packet-diag set filter on
-show counter global filter packet-filter  yes delta yes severity drop
+show counter global filter packet-filter yes delta yes severity drop
 ```
 
 **Check connection to URL database**
