@@ -2618,7 +2618,6 @@ Configure User-ID Agent
 - Search in System logs - `show log system direction equal backward subtype equal userid`
 - Show logged in users `debug dataplane show user all`
 - User-ID agents stats - `show user user-id-agent statistics`
-- Show User-IP mappings `show user ip-user-mapping all`
 - Server monitor situation - `show user server-monitor state all`
 - Show users and their LDAP groups - `show user user-ids all`
 - Show all groups - `show user group list`

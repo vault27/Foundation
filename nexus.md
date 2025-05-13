@@ -6,6 +6,7 @@
 - show run different sections
 - mgmt0 - mgmt int
 - Every VDC has it
+- VXLAN, EVPN, vPC, ACI, FabricPath, automation support
 
 ## OS
 
@@ -21,6 +22,31 @@
 - `dir bootflash`
 - EPLD are different from main version, it depends on module functionality, it is recomended to use the latest version of EPLD for particular version
 
+## VDC
+
+- Virtual Device Context
+- Each VDC has its own control plane and data plane
+- Separate configurations, management access (CLI), and resources (e.g., interfaces)
+- Inside each VDC, configure multiple VRFs
+- Each interface can only be assigned to one VDC at a time
+
+### Create VDC
+
+1. Enter Admin VDC: `switch# switchto vdc admin`
+2. Create the New VDC:
+```
+switch# configure terminal
+switch(config)# vdc <vdc-name>
+```
+3. Assign Interfaces to the VDC: `switch(config-vdc)# allocate interface <interface-id>`
+
+### Show all VDCs
+
+```
+switch# switchto vdc admin
+switch# show vdc
+show vdc membership
+```
 
 ## Show commands
 
