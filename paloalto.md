@@ -2605,11 +2605,9 @@ Configure User-ID Agent
 - You can include/exclude networks for IP-Tag and IP-user in `Device > Data Redistribution > Include/Exlcude networks`, as I understand it is both for collector and client
 - Passive and Active-Secondary devices are not connected to agents
 
-### CLI commands
+### Troubleshooting
 
 - Show all user mappings - `show user ip-user-mapping all`  
-- Check if service is running - `show system software status | match user`  
-- Display the status of the User-ID service - Collector - Redistributor:`show user user-id-service status`
 - Show status of all User-ID servers: `show user user-id-agent statistics`
 - Display the clients/firewalls that are connected to the collector - `show user user-id-service client all`
 - Show connections to agents - for new Pan versions - `show redistribution agent state all`
@@ -2619,10 +2617,20 @@ Configure User-ID Agent
 - Show logged in users `debug dataplane show user all`
 - User-ID agents stats - `show user user-id-agent statistics`
 - Server monitor situation - `show user server-monitor state all`
-- Show users and their LDAP groups - `show user user-ids all`
-- Show all groups - `show user group list`
-- Show users in a group - `show user group name "cn=internet,cn=users,dc=skynet,dc=ru"`
+
+Service
+
 - Restart User-ID service - `debug software restart process user-id`
+- Display the status of the User-ID service - Collector - Redistributor:`show user user-id-service status`
+- Check if service is running - `show system software status | match user` 
+
+Groups
+
+- Show all groups for the IP: `show user ip-user-mapping ip 10.120.139.21`
+- Show users in a group - `show user group name "cn=internet,cn=users,dc=skynet,dc=ru"`
+- Show all groups - `show user group list`
+- Show users and their LDAP groups - `show user user-ids all`
+- Show all LDAP servers and configured groups: `show user group-mapping state all`
 
 ### Map users to groups via LDAP
 
