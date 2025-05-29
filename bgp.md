@@ -47,14 +47,14 @@
 - Does not use hello packets to discover neighbors
 - TCP port 179
 - Neighbors may be several hops away
-- Multi hoop sessions require that the router uses underlying route installeed in the RIB static or from routing protocol
+- Multi hop sessions require that the router uses underlying route installed in the RIB static or from routing protocol
 - BGP routers do not have to be in a data path
 - 2 types of sessions: iBGP and eBGP
-- 2 BGP processes with different AS on one router - ?
+- 2 BGP processes with different AS on one router - supported on some platforms
 - BGP is not a routing protocol: BGP is an application used to exchange NLRI, IPv4, IPv6, l2vpn, VPnv4...All data in a packet is presented in the form of Path attributes, all these make it very flexible
 - For different addresses different AFI/SAFI numbers are used
 - Internet de facto protocol, Routing protocol of Intenet, Port 179 TCP, EGP
-- BGP knows the next-hop but not the outgoing interface
+- BGP knows the next-hop, but not the outgoing interface
 - IGP must be able to perform recursion otherwise the route cannot be used
 - It is not binded to interface, we just configure neighbors and then connect to them according to routing table
 - It does not use metric like IGP to calculate best route, it uses many steps and PAs
@@ -68,7 +68,7 @@
 - The AD Values: eBGP - 20, iBGP - 200
 - eBGP changes next-hop to self by default, if update-source is Loopback0, next-hop is LoopbackO, can be modified: "route-map action set ip next-hop" or "neighbor next-hop-unchanged"
 - Flow control, route manipulation, PBR - ???
-- What is happend when route is deleted??
+- What happens when route is deleted - Generates a withdrawal message and sends it to all affected BGP peers
 - Huge routing table
 - Announces only best path to prefix, even if got three for example, and all three are in ECMP and work well - anyway it will select best and propogate it
 - Router ID - Highest Loopback/Highest Active Physical Interface/Manual
@@ -77,7 +77,7 @@
 - Does not select the best path from a performance point of view, it will select the best path from a business point of view
 - The Internet, in its purest form, is a loosely connected graph of independent networks (also called Autonomous Systems (AS for short)). These networks use a signaling protocol called BGP (Border Gateway Protocol) to inform their neighbors (also known as peers) about the reachability of IP prefixes (a group of IP addresses) in and through their network. Part of this exchange contains useful metadata about the IP prefix that are used to inform network routing decisions. One example of the metadata is the full AS-path, which consists of the different autonomous systems an IP packet needs to pass through to reach its destination
 - Traffic engineering can be done with BGP - outbound is much easier, we just have to choose where to send traffic. Inbound is done with manipulating BGP attributes: AS_PATH(prepending) and communities(community-based local preference)
-- Prepending - form of traffic engineering - artificially increases AS-path length. Example: AS_PATH: 64500 64496 64496. Usually the operator uses their own AS, but that’s not enforced in the protocol. Unfortunately, prepending has a catch: To be the deciding factor, all the other attributes need to be equal. Excessive prepending opens a network up to wider spread route hijacks - ???.
+- Prepending - form of traffic engineering - artificially increases AS-path length. Example: AS_PATH: 64500 64496 64496. Usually the operator uses their own AS, but that’s not enforced in the protocol. Unfortunately, prepending has a catch: To be the deciding factor, all the other attributes need to be equal. Excessive prepending opens a network up to wider spread route hijacks
 - Default TTL - 1 for eBGP, >1 for iBGP, that is why peering from Loopback will not work by default, multihop command can help
 - By default most routers will not send BGP updates to routers with the same AS. It should be enabled with special command. For example, router A has neighbors B and C, which are in the same AS. Updates, received from B, will not be forwarded to C by default
 - Inbound updates containing local AS are discarded
