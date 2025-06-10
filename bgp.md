@@ -740,7 +740,6 @@ Don't use or advertise the route/s learned via an iBGP neighbor to an eBG neighb
 - During import we may decrease routes priority by decreasing local preference or weight (these attributes are local and will not leave AS) with route map after import command
 - Type 2 - MAC/IP advertisment route
 
-
 ## Load Share with BGP in Single and Multihomed Environments
 
 ## iBGP
@@ -789,6 +788,15 @@ Full Mesh Design Advantages
 - Path Diversity - All BGP peers learn all possible egress paths
 - Optimal Traffic Flows - All BGP peers learn the closest egress path
 - Path selection by default would be based on IP metric to egress router - I.e. Hot Potato Routing
+
+Hot potato routing
+
+- Network routing strategy
+- Router forwards a packet to the next available hop as quickly as possible—**"getting rid of it" like a hot potato—**with minimal delay or consideration for the optimal end-to-end path
+- Real-World Example:
+  - Two ISPs, A and B, exchange traffic at multiple locations.
+  - ISP A receives a packet destined for a customer of ISP B.
+  - With hot potato routing, ISP A finds the nearest point where it peers with ISP B and forwards the packet there—letting ISP B handle the rest, regardless of overall efficiency.
 
 Full Mesh Design Disadvantages
 
@@ -840,13 +848,35 @@ Large Scale Route Reflection
 
 Inter-Cluster Peerings
 
-- Inter-Cluster peerings between Rs can be client or non-client peerings
+- Inter-Cluster peerings between RRs can be client or non-client peerings
   - Depends on redundancy design
   - Duplicate routes, more processing
 - Cluster-ID is based on Router-|D
   - By default all RR are in separate clusters
 - Same cluster-id on both clusters or not?
   - Depends on redundancy design...
+- An inter-cluster peering is a regular iBGP session between:
+  - Two Route Reflectors from different clusters, or
+  - A Route Reflector and a non-client router in a different cluster.
+- These peers are not clients of each other, so route reflection rules do not apply. Instead, they follow the normal iBGP rules:
+  - A route learned from one iBGP peer is not advertised to another iBGP peer, unless it's a client (which they are not in this case).
+- To ensure full propagation between clusters, RRs need to peer with other RRs (or route reflector clients) in other clusters, or you use full mesh between RRs
+
+Example Topology:
+
+```
+          Cluster A                   Cluster B
+         -----------                -----------
+         RR1 (1.1.1.1)              RR2 (2.2.2.2)
+         /        \                /        \
+       R1          R2            R3          R4
+
+      iBGP          iBGP        iBGP         iBGP
+      (client)      (client)    (client)     (client)
+
+                Inter-cluster peering
+                   RR1 <-------> RR2
+```
 
 Virtual Route Reflectors
 
@@ -862,12 +892,32 @@ Virtual Route Reflectors
 - table-map [route-map] filter
 - Scale to 20 + Million VPNv4 routes
 
+### Cluster ID
+
+- A Cluster ID is a unique identifier assigned to a Route Reflector cluster. A cluster is a group of iBGP routers that includes:
+  - One Route Reflector (RR)
+  - One or more Route Reflector Clients (RRCs)
+- To prevent loops, each reflected route includes a Cluster List
+- If an RR sees its own Cluster ID in a received update’s Cluster List, it rejects the route—this avoids looping the route back into the cluster
+- Cluster ID is included in BGP UPDATE messages, but only within iBGP Route Reflector environments, and only for internal use between RRs and their peers—specifically as part of an optional, non-transitive BGP attribute called the Cluster List
+- It is set by RR, not the client
+
+Configuration example:
+
+```
+router bgp 65001
+ bgp cluster-id 1.1.1.1      ! Set cluster ID manually (optional)
+ neighbor 10.0.0.2 route-reflector-client
+```
+
+If bgp cluster-id is not set, the Router ID of the RR is used by default
+
 ### Confederation
 
 This is one if iBGP scaling techniques
 
 - Reduces full mesh iBGP requirement by splitting AS into smaller Sub-AS
-- Inside Sub-AS full mesh or R requirement remains
+- Inside Sub-AS full mesh or RR requirement remains
 - Between Sub-AS acts like EBGP
 - Devices outside the confederation do not know about the internal structure
 - Sub-AS numbers are stripped from advertisements to "true" EBGP peers
@@ -906,7 +956,7 @@ This is one if iBGP scaling techniques
 - Hijacks - bad guy announces prefixes, which are not theirs, and traffic goes to them instead of legitimate user. Nobody is protected from hijacking, because BGP is not secure
 - Bogons - bogon prefixes are leaked to public internet and hosts in LAN become available from th Internet. The same with bogon AS numbers - may be dropped by other provider.
 
-### Bogon ASNs
+## Bogon ASNs
 
 - 0 - RFC 7607
 - 23456 - RFC 4893 AS_TRANS
@@ -1223,7 +1273,25 @@ address-family ipv4 vrf IPSEC
   neighbor 10.125.5.20 route-map IPSec_ASRVPN_BGP_out out
 ```
 
-### Debug
+## Troubleshooting
+
+### Debug BGP updates on Nexus
+
+```
+N7K-2# debug-filter bgp neighbor 10.2.3.3
+N7K-2# debug-filter bgp prefix 10.255.255.1/32
+N7K-2# debug bgp updates
+N7K-2# 
+N7K-2# debug logfile bgpdebug.log
+
+N7K-2# show debug logfile bgpdebug.log
+
+undebug all
+no debug-filter all
+clear debug logfile <FILE_NAME>
+```
+
+### Debug in IOS
 
 ```
 debug ip bgp updates
@@ -1246,24 +1314,6 @@ Show logging -  after this - and log session to file
 show debug
 
 undebug all
-```
-
-## Troubleshooting
-
-**Debug BGP updates on Nexus**
-
-```
-N7K-2# debug-filter bgp neighbor 10.2.3.3
-N7K-2# debug-filter bgp prefix 10.255.255.1/32
-N7K-2# debug bgp updates
-N7K-2# 
-N7K-2# debug logfile bgpdebug.log
-
-N7K-2# show debug logfile bgpdebug.log
-
-undebug all
-no debug-filter all
-clear debug logfile <FILE_NAME>
 ```
 
 ## BGP InterAS Option A
