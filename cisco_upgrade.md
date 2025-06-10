@@ -159,9 +159,9 @@ show install all status
 - Check version one more time, that it is correct
 - Identify if it is old Catalyst (IOS) or new one (IOS-XE): `show version | include IOS`
 
-### Old Catalyst
+### Bundle mode - Old Catalyst
 
-- Example: Catalyst 9000 Series (9200, 9300, 9500, etc.)
+- Example: Catalyst 3000 Series
 - Non IOS-XE
 - If `show boot` shows bin file
 - Keeping the old image as a backup is a good practice
@@ -177,9 +177,15 @@ reload
 
 Stack: `boot system switch all flash:c3750e-universalk9-mz.152-4.E10.bin`
 
-### New Catalyst
+### Install mode - New Catalyst
 
 - IOS-XE
+- This breaks the .bin file up into smaller .pkg files that must be loaded into memory independently of each other, and allows you to boot faster and utilize memory better
+- The boot statement is looked at to determine what configuration file to load (usually packages.conf)
+- The configuration file is opened and used to sort out what .pkg files to load
+- The .pkg files are loaded and Cisco IOS completes the boot process
+- The .conf file is just a text file that is used as a pointer, and you are able open it up and look at it from the CLI
+- `Switch#more packages.conf`
 - Example: Catalyst 9000 Series (9200, 9300, 9500, etc.)
 - They use a package-based "install mode" instead of direct .bin boot
 - `install add file flash:cat9k_iosxe.17.09.04a.SPA.bin activate commit prompt-level none`
