@@ -1082,7 +1082,9 @@ as-set is et and all components of summarized route use IGP (i)
 ```
 
 **Allow announcing only empty AS path prefixes ( our own prefixes ), no transit prefixes**
+
 To fight with route leaks, when you are connected to 2 providers
+
 ```
 Leaker-R7(config)#ip as-path access-list 1 permit ^$
 Leaker-R7(config)#ip as-path access-list 1 deny *
@@ -1141,7 +1143,7 @@ Minimal configuration for EVPN adjacency:
 - Configure multihop 2
 - Enable both types of community
 
-One large configuration file on Nexus with comments, based on my experience
+**One large configuration file on Nexus with comments, based on my experience**
 
 ```
 feature bgp
@@ -1201,8 +1203,6 @@ router bgp 64701
         allowas-in 1 - Accept as-path with my AS present in it
         disable-peer-as-check - allow forward updates between two routers in the same AS
 ```
-
-## IOS XE
 
 ### IOS XE neighbor in VRF with replace AS, BFD, community, route-map, authentication
 
