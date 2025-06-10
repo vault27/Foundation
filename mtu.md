@@ -53,6 +53,7 @@ In Ideal World:
 
 ## Troubleshooting
 
+- Usual issue: server cannot send a large file, or sends it very slow
 - You need search for MTU issues in a PCAP file, search for ICMP message type 3 - destination unreachable, Code 4 - Fragmentation Needed, and MTU of next hop is specified in this ICMP message
 - Pings work ok in this situation, ping is only 64 bytes long
 - To test you need to use big ping

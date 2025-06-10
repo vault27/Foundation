@@ -47,6 +47,24 @@ Password hashes protection techniques:
 - SHA2: SHA 224,256 (most used),384,512 - lack of resistence to length extension attacks
 - SHA3 - ideal
 
+## Message authentication codes
+
+- Mix of hash function and secret key
+- Protect integroty of data
+- It takes key + message and generates authentication tag
+- It can be replayed, if you intercept it you can use it later. We can add a counter to a function to remediate it, but this will limit total number of messages. This can be remediated by changing keys every period of time and starting counter from scratch
+- In general 128 bit tags are used
+- Best practice: use 2 different secret keys for both sides of connection
+- Used in Integrity of cookies
+- Used in SSL: When sending a message, SSL computes the MAC over the message contents and sequence number, using a hash function and a shared secret key (derived during the SSL handshake). The MAC is appended to the plaintext message. The combined data (Plaintext || MAC) is encrypted using a symmetric encryption algorithm (like AES or 3DES). This ensures confidentiality and integrity. The receiver decrypts the message, recomputes the MAC on the plaintext, and compares it to the MAC received
+- In TLS (the modern successor to SSL), MAC usage is very similar, but in AEAD ciphers (like AES-GCM), integrity is ensured via authenticated encryption, and a separate MAC is not used 
+- PRF - pseudorandom function - ?
+
+### MAC functions
+
+- HMAC - most popular, mostly used with SHA-256
+- KMAC
+
 ## Key Exchange
 
 Concepts
