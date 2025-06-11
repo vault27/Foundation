@@ -60,10 +60,15 @@ Password hashes protection techniques:
 - In TLS (the modern successor to SSL), MAC usage is very similar, but in AEAD ciphers (like AES-GCM), integrity is ensured via authenticated encryption, and a separate MAC is not used 
 - PRF - pseudorandom function - ?
 
-### MAC functions
+MAC functions
 
 - HMAC - most popular, mostly used with SHA-256
-- KMAC
+- CMAC
+- GMAC
+- Poly1305
+- UMAC/VMAC
+- CBC-MAC
+- PMAC1
 
 ## Key Exchange
 
@@ -183,24 +188,32 @@ Elliptic Curve IPSec groups
 - a mod b = r
 - So, modulo operator shows the remainder of division a by b, b - is a modulus
 
-
-### Ecliptic curve arithmetic
-
 ## Symmetric Encryption
 
-Ciphers can be divided into 3 groups: stream, block and AEAD
-
-- Stream Ciphers - ou feed one byte of plaintext to the encryption algorithm, and out comes one byte of ciphertext. The reverse happens at the other end
+- Ciphers can be divided into 3 groups: stream, block and AEAD
+- They also can be authenticated with integrity checking or non authenticated
+- Stream Ciphers - you feed one byte of plaintext to the encryption algorithm, and out comes one byte of ciphertext. The reverse happens at the other end. They XOR ciphertext with key stream. No need for padding or mode of operations. Ciphertext is the same length as plaintext. Key stream is generated from the key.
 - Block Ciphers - encrypt entire blocks of data at a time; modern block ciphers tend to use a block size of 128 bits (16 bytes)
+- Limitations:
+  - They are deterministic; they always produce the same output for the same input
+  - You can only use them to encrypt data lengths equal to the size of the encryption block. To use a block cipher in practice, you need a scheme to handle data of arbitrary length  
+- In practice, block ciphers are used via encryption schemes called block cipher modes, which smooth over the limitations and sometimes add authentication to the mix
+- They do not provide integrity by default
+- Encrypt-then-MAC - HMAC+SHA256 - we apply MAC after padding the plaintext and encrypting it - it is called AES-CBC-HMAC - was one of the most widely used before AEAD
+- MAC-then encrypt - can sometimes lead to clever attacks - avoided in practice
+- Authentication tag is transmitted with plaintext
+- It is best practise to use different keys for AES-CBC and HMAC
 
-Limitations:
-        - They are deterministic; they always produce the same output for the same input. On their own, block ciphers are not very useful because of several limitations
-        - You can only use them to encrypt data lengths equal to the size of the encryption block. To use a block cipher in practice, you need a scheme to handle data of arbitrary length  
-In practice, block ciphers are used via encryption schemes called block cipher modes, which smooth over the limitations and sometimes add authentication to the mix.
-- AEAD
-  - Authenticated encryption assosiated data
-  - Provides encryption + integrity, earlier they did MAC-then-encrypt or encrypt-then-MAC, and now everything is combined
-  - TLS supports GCM and CCM authenticated ciphers, but only the former are currently used in practice
+### AEAD
+
+- Authenticated encryption assosiated data
+- Provides encryption + integrity, earlier they did MAC-then-encrypt or encrypt-then-MAC, and now everything is combined
+- TLS supports GCM and CCM authenticated ciphers, but only the former are currently used in practice
+- Most popular: AES-GCM and ChaCha20-Poly1305
+- Almost the same as AES-CBC-HMAC
+- ChaCha20-Poly1305 - ChaCha20 stream cipher and Poly1305 MAC - for use in software - contrary to AES which is slow when hardware support is not available
+- ChaCha20 takes  symmetric key and unique nonce - using them generates a key stream the same size as plaintext - XOR it with plaintext - produce ciphertext - ciphertext and plaintext are the same length
+- AEAD cannot be used in disk encryption and database encrytption
 
 ### Block ciphers
 
