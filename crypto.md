@@ -9,7 +9,7 @@ An example of encoding is: Base64
 
 ## Encryption
 
-Encryption is the process of securely encoding data in such a way that only authorized users with a key or password can decrypt the data to reveal the original.
+Encryption is the process of securely encoding data in such a way that only authorized users with a key or password can decrypt the data to reveal the original
 
 ## Hash functions
 
@@ -192,11 +192,9 @@ Ciphers can be divided into 3 groups: stream, block and AEAD
 
 - Stream Ciphers - ou feed one byte of plaintext to the encryption algorithm, and out comes one byte of ciphertext. The reverse happens at the other end
 - Block Ciphers - encrypt entire blocks of data at a time; modern block ciphers tend to use a block size of 128 bits (16 bytes)
-
-Limitations:
-        - They are deterministic; they always produce the same output for the same input. On their own, block ciphers are not very useful because of several limitations
-        - You can only use them to encrypt data lengths equal to the size of the encryption block. To use a block cipher in practice, you need a scheme to handle data of arbitrary length  
-In practice, block ciphers are used via encryption schemes called block cipher modes, which smooth over the limitations and sometimes add authentication to the mix.
+  - They are deterministic; they always produce the same output for the same input. On their own, block ciphers are not very useful because of several limitations
+  - You can only use them to encrypt data lengths equal to the size of the encryption block. To use a block cipher in practice, you need a scheme to handle data of arbitrary length  
+  - In practice, block ciphers are used via encryption schemes called block cipher modes, which smooth over the limitations and sometimes add authentication to the mix.
 - AEAD
   - Authenticated encryption assosiated data
   - Provides encryption + integrity, earlier they did MAC-then-encrypt or encrypt-then-MAC, and now everything is combined
@@ -216,7 +214,7 @@ In practice, block ciphers are used via encryption schemes called block cipher m
 
 **Algorithms**
 
-- AES
+- AES - 128, 192, 256 bits
   - AES GCM - best one - very fast mode of block cipher - used everywhere - AEAD
   - AES CCM - AEAD
   - AES CBC - ok, possible not good, is not AEAD cipher, which is required in TLS 1.3
