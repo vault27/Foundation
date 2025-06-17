@@ -91,7 +91,7 @@ Key exchange algorithms:
   - Diffie Hellman - Modular arithmetic, original algorithm
   - DHE(ethemeral, short lived) - secret numbers generated on server and client are generated again for every session - Modular arithmetic 
   - ECDH(ecliptic curve) - variant of the Diffie–Hellman protocol using elliptic-curve cryptography. The main advantage of ECDHE is that it is significantly faster than DHE - Elliptic curve point multiplication
-  - ECDHE(becoming the primary)  - best - Elliptic curve point multiplication
+  - ECDHE(becoming the primary) - best - Elliptic curve point multiplication
 - RSA(used from 1970s) - deprecated, large key size, no PFS, slow
 - PSK
 
@@ -158,38 +158,6 @@ Elliptic Curve IPSec groups
 - Group 21 - P-521
 - Group 31 - x25519
 - Group 32 - x448
-
-### Group theory
-
-- Group: set of elements binary operation
-- Properties of group:
-  - Closure: a and b are elements of the group, a*b - element of the group as well, this should work for any a and b in the group
-  - Associativity - `a*(b*c)=(a*b)*c`
-  - Identity element - `a*1=a`
-  - Inverse element - `a*1/a=1`
-
-### Modular arithmetic
-
-- why? - cryptography, cyclic structures, clock - 12 hours only, when it is 13 it "wrap up" starts from 1 again
-- Simplify working with large numbers, really big, for example 987654321987654321987654321
-- In cryptography we need to work a lot with big numbers
-- ∣x∣ — this is the absolute value (modulus), it just makes the number positive
-- x mod y — это операция по модулю ( modulo operation ), вычисляет остаток от деления числа 𝑥 на число y
-- Number after which numbers wrap around is called modulus, in clock modulus is 12
-- If modulus is 5, 6 is 1, 7 is 2....
-- 5mod3=2
-- 170=0mod17 - 170 device by 17 remainder will be 0
-- Euclidean division (or the division algorithm) is a method used to divide two integers, resulting in a quotient and a remainder
-- a=bq+r, or a/b=q+r
-    - a- divident
-    - b - divisor
-    - q - quotient
-    - r - remainder
-- 7=2mod5=5*1+2 - 2 is a remainder of deviding 7 by 5 - 7 is congruent to 2 modulo 5
-- Sometimes, we are only interested in what the remainder is when we divide a by b
-- For these cases there is an operator called the modulo operator (abbreviated as mod)
-- a mod b = r
-- So, modulo operator shows the remainder of division a by b, b - is a modulus
 
 ## Symmetric Encryption
 
@@ -264,13 +232,23 @@ Elliptic Curve IPSec groups
 ## Assymetric encryption
 
 - If you encrypt data using someone’s public key, only their corresponding private key can decrypt it. On the other hand, if data is encrypted with the private key anyone can use the public key to unlock the message
+- Hybrid encryption - mix of symmetric encryption and assymetric
 - First is used for encryption
 - Second is used for digital signature
+- Third it is used for symmetric key exchange - usually with RSA - now it is changed to ECDH - Key Encapsulation Mechanism (KEM), seond symme tric part - data encapsulation mechanism - DEM
 - Rather slow and unsuitable for use with large quantities of data
+- Restricted length of messages it can encrypt
 - It’s usually deployed for authentication and negotiation of shared secrets, which are then used for fast symmetric encryption
 - RSA (named from the initials of Ron Rivest, Adi Shamir, and Leonard Adleman) - most popular
 - The recommended strength for RSA today is 2,048 bits, which is equivalent to about 112 symmetric bits
 - Not all digital signature algorithms function in the same way as RSA. In fact, RSA is an exception, because it can be used for both encryption and digital signing. Other popular public key algorithms, such as DSA and ECDSA, can’t be used for encryption and rely on different approaches for signing
+- You have to generate public and private key using particular algorithm
+- RSA-OAEP - the main standard for assymetric encryption with RSA
+- ECIES - The main standard for hybrid encryption with ECDH - symmtetric key is generated based on Diffie Hellman - most used
+- PKCS - public key cryptography standard
+- Textbook RSA standard - not secure
+- RSA PKCS 1.5 - not secure
+- PKCS 2.0 - 2.2 - RSA-OAEP
 
 ## Digital signature
 
