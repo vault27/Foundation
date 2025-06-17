@@ -4,7 +4,10 @@
 
 ## Encoding
 
-Encoding data is a process involving changing data into a new format using a scheme. Encoding is a reversible process and data can be encoded to a new format and decoded to its original format. Encoding typically involves a publicly available scheme that is easily reversed. Encoding data is typically used to ensure the integrity and usability of data and is commonly used when data cannot be transferred in its current format between systems or applications. Encoding is not used to protect or secure data because it is easy to reverse.  
+- Encoding data is a process involving changing data into a new format using a scheme. - Encoding is a reversible process and data can be encoded to a new format and decoded to its original format. 
+- Encoding typically involves a publicly available scheme that is easily reversed. 
+- Encoding data is typically used to ensure the integrity and usability of data and is commonly used when data cannot be transferred in its current format between systems or applications
+- Encoding is not used to protect or secure data because it is easy to reverse
 An example of encoding is: Base64
 
 ## Encryption
@@ -203,7 +206,8 @@ Elliptic Curve IPSec groups
   - TLS supports GCM and CCM authenticated ciphers, but only the former are currently used in practice
 - Limitations:
   - They are deterministic; they always produce the same output for the same input
-  - You can only use them to encrypt data lengths equal to the size of the encryption block. To use a block cipher in practice, you need a scheme to handle data of arbitrary length  
+  - You can only use them to encrypt data lengths equal to the size of the encryption block
+- To use a block cipher in practice, you need a scheme to handle data of arbitrary length  
 - In practice, block ciphers are used via encryption schemes called block cipher modes, which smooth over the limitations and sometimes add authentication to the mix
 - They do not provide integrity by default
 - Encrypt-then-MAC - HMAC+SHA256 - we apply MAC after padding the plaintext and encrypting it - it is called AES-CBC-HMAC - was one of the most widely used before AEAD
