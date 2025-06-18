@@ -252,21 +252,36 @@ Elliptic Curve IPSec groups
 
 ## Digital signature
 
+Consist of three algorithms
+
+- Key pair generation algorithm
+- Signing algorithm - takes private key and message and creates a signature'
+- Verifying algorithm - takes public key, message and signature and returns success or error
+
+Purposes
+
+- Origin authentication
+- Message integrity
+
 - Digital signature - this is encrypted (with private key) hash of a data - non repudiation
 - Person 1 encrypts hash of the message with its private key
+- It is different from MAC: participant can verify a message without knowing a secret key
+- Authenticated key excahnge - user signs the public key part of key exchange with his signing key
+- Mutually authenticated key exchange - when both users sign their public keys of key exchange
+- There are: RSA assymetric encription, RSA signature, RSA company
 
 Algorithms
 
-- RSA - first digital signature, de facto standard
-- Elgamal - it differs from Elgamal encryption scheme. Native Elgamal signature algorithm is rarely used. DSA is much more popular
-- DSA - extension of Elgamal, better than Elgamal. Can be used only for signing, not encryption
-- Elliptic curve digital signature algorithm (ECDSA) - extension of Elgamal
-
-- Calculate a hash of the document you wish to sign; no matter the size of the input doc- ument, the output will always be fixed, for example, 256 bits for SHA256
-- Encode the resulting hash and some additional metadata. For example, the receiver will need to know the hashing algorithm you used before she can process the signa- ture
-- Encrypt the encoded hash using the private key; the result will be the signature, which you can append to the document as proof of authenticity
-- To verify the signature, the receiver takes the document and calculates the hash indepen- dently using the same algorithm. Then, she uses your public key to decrypt the message and recover the hash, confirm that the correct algorithms were used, and compare with the de- crypted hash with the one she calculated. The strength of this signature scheme depends on the individual strengths of the encryption, hashing, and encoding components
-- Algorithms: RSA, DSA, ECDSA
+- RSA PKCS 1.5 - first digital signature - many issues - PKCS v2(RSA-OAEP) - PKCS v2.1(RSA-PSS) 
+  - Signing with RSA is opposite to encrypting with RSA - to sign you encreypt a message with private key - to verify signature you use public key to decrypt
+  - In reality message is usually hashed before encryption
+  - Calculate a hash of the document you wish to sign; no matter the size of the input doc- ument, the output will always be fixed, for example, 256 bits for SHA256
+  - Encode the resulting hash and some additional metadata. For example, the receiver will need to know the hashing algorithm you used before she can process the signature
+  - Encrypt the encoded hash using the private key; the result will be the signature, which you can append to the document as proof of authenticity
+  - To verify the signature, the receiver takes the document and calculates the hash indepen-dently using the same algorithm. Then, she uses your public key to decrypt the message and recover the hash, confirm that the correct algorithms were used, and compare with the de-crypted hash with the one she calculated. The strength of this signature scheme depends on the individual strengths of the encryption, hashing, and encoding components
+- DSA
+- ECDSA - EllipticCurve Digital Signature Algorithm
+- EdDSA - Edwards-Curve Digital Signature Algorithm
 
 ## Random Number Generation
 
