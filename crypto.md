@@ -1,6 +1,6 @@
 # Cryptography
 
-- In mathematics, computer science and physics, a deterministic system is a system in which no randomness is involved in the development of future states of the system.[1] A deterministic model will thus always produce the same output from a given starting condition or initial state
+- In mathematics, computer science and physics, a deterministic system is a system in which no randomness is involved in the development of future states of the system. A deterministic model will thus always produce the same output from a given starting condition or initial state
 
 ## Encoding
 
@@ -266,7 +266,7 @@ Purposes
 - Digital signature - this is encrypted (with private key) hash of a data - non repudiation
 - Person 1 encrypts hash of the message with its private key
 - It is different from MAC: participant can verify a message without knowing a secret key
-- Authenticated key excahnge - user signs the public key part of key exchange with his signing key
+- Authenticated key excahnge - user signs the public key part (in Diffue Hellman) of key exchange with his signing key
 - Mutually authenticated key exchange - when both users sign their public keys of key exchange
 - There are: RSA assymetric encription, RSA signature, RSA company
 
@@ -292,13 +292,7 @@ Three types
 - Pseudorandom number generators (PRNGs) - used in programming - not suitable for cryptography - use small amounts of true random data to get them going. This process is known as seeding. From the seed, PRNGs produce unlimited amounts of pseudorandom data on demand
 - Cryptographic pseudo- random number generators (CPRNGs) - PRNGs that are also unpredictable
 
-## Elliptic curve cryptography
-
-- This public key system. The same as RSA.
-- ECC key 256 bits is the same as 3072 RSA key. So ECC can use smaller keys.
-- ECC key 384 bits - US government top secret
-
-### (Perfect) Forward Secrecy
+## (Perfect) Forward Secrecy
 
 - Forward because it avoids: if attacker captures encrypted traffic and then later he gets private key and can decrypt everything
 - If SSL RSA is used for key exchange, however if you have server’s private key you can decrypt session keys and then decrypt all traffic
@@ -346,4 +340,3 @@ MACs in TLS/SSL:
 - SHA1 - not good - 160 bits
 - MD5  - not good
 - SHA1 and SHA256 are used everywhere
-
