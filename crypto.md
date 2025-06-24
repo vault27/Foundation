@@ -340,3 +340,9 @@ MACs in TLS/SSL:
 - SHA1 - not good - 160 bits
 - MD5  - not good
 - SHA1 and SHA256 are used everywhere
+
+## End-to-end encryption
+
+- Prevents any server in the middle to observe clear text
+- Main issue is protecting public key from tampering, so a trust question
+- GPG/PGP - message includes encrypted symmetric key + encrypted message + signature + Public key identifier - encryption is not authenticated - does not provide forward secrecy - web of trust for trusting public keys
