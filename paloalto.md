@@ -3726,7 +3726,7 @@ Action: (action eq allow)
 **Date and time**
 
 ```
-g
+(receive_time geq '2024/06/26 01:00:00') and (receive_time leq '2024/06/26 11:00:00')
 ```
 
 **Pre defined reports**
