@@ -346,3 +346,16 @@ MACs in TLS/SSL:
 - Prevents any server in the middle to observe clear text
 - Main issue is protecting public key from tampering, so a trust question
 - GPG/PGP - message includes encrypted symmetric key + encrypted message + signature + Public key identifier - encryption is not authenticated - does not provide forward secrecy - web of trust for trusting public keys
+- S/MIME
+- Both S/MIME and PGP use old standards
+- Email still has issues with encryption
+- OTR protocol
+- Signal protocol - central server - Whatsapp - Facebook Messenger - Skype - much more secure then email encryption
+
+## Authentication
+
+- Message/payload authentication - message is genuine and hasn't been modified
+- Origin/entity/identiry authentication - ypu are really who you are - I actually communicate to google
+- User authentication
+- User-aided authentication
+
