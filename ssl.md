@@ -521,6 +521,12 @@ If F5 does not know this certificate, there will be a error:
 verify error:num=20:unable to get local issuer certificate
 verify error:num=21:unable to verify the first certificate
 ```
+
+Show SAN for cert: 
+- `openssl s_client -connect wpcp-dc1.corp.ad.ctc:636 -showcerts </dev/null`
+- Create a file called cert.pem, and paste the first certificate block contents into it
+- `openssl x509 -in cert.pem -noout -text`
+
 ## Nmap
 
 Show SSL cert
