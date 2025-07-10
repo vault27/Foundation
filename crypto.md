@@ -53,7 +53,7 @@ Password hashes protection techniques:
 ## Message authentication codes
 
 - Mix of hash function and secret key
-- Protect integroty of data
+- Protect integrity of data
 - It takes key + message and generates authentication tag
 - It can be replayed, if you intercept it you can use it later. We can add a counter to a function to remediate it, but this will limit total number of messages. This can be remediated by changing keys every period of time and starting counter from scratch
 - In general 128 bit tags are used
@@ -61,7 +61,6 @@ Password hashes protection techniques:
 - Used in Integrity of cookies
 - Used in SSL: When sending a message, SSL computes the MAC over the message contents and sequence number, using a hash function and a shared secret key (derived during the SSL handshake). The MAC is appended to the plaintext message. The combined data (Plaintext || MAC) is encrypted using a symmetric encryption algorithm (like AES or 3DES). This ensures confidentiality and integrity. The receiver decrypts the message, recomputes the MAC on the plaintext, and compares it to the MAC received
 - In TLS (the modern successor to SSL), MAC usage is very similar, but in AEAD ciphers (like AES-GCM), integrity is ensured via authenticated encryption, and a separate MAC is not used 
-- PRF - pseudorandom function - ?
 
 MAC functions
 
@@ -91,7 +90,7 @@ Key exchange algorithms:
   - Diffie Hellman - Modular arithmetic, original algorithm
   - DHE(ethemeral, short lived) - secret numbers generated on server and client are generated again for every session - Modular arithmetic 
   - ECDH(ecliptic curve) - variant of the Diffie–Hellman protocol using elliptic-curve cryptography. The main advantage of ECDHE is that it is significantly faster than DHE - Elliptic curve point multiplication
-  - ECDHE(becoming the primary) - best - Elliptic curve point multiplication
+  - ECDHE(becoming the primary) - best - Elliptic curve point multiplication - Ethemeral - Keys are changed every session
 - RSA(used from 1970s) - deprecated, large key size, no PFS, slow
 - PSK
 
@@ -175,8 +174,6 @@ Elliptic Curve IPSec groups
 - Limitations:
   - They are deterministic; they always produce the same output for the same input
   - You can only use them to encrypt data lengths equal to the size of the encryption block
-- To use a block cipher in practice, you need a scheme to handle data of arbitrary length  
-- In practice, block ciphers are used via encryption schemes called block cipher modes, which smooth over the limitations and sometimes add authentication to the mix
 - They do not provide integrity by default
 - Encrypt-then-MAC - HMAC+SHA256 - we apply MAC after padding the plaintext and encrypting it - it is called AES-CBC-HMAC - was one of the most widely used before AEAD
 - MAC-then encrypt - can sometimes lead to clever attacks - avoided in practice
@@ -355,7 +352,19 @@ MACs in TLS/SSL:
 ## Authentication
 
 - Message/payload authentication - message is genuine and hasn't been modified
-- Origin/entity/identiry authentication - ypu are really who you are - I actually communicate to google
+- Origin/entity/identiry authentication - you are really who you are - I actually communicate to google
 - User authentication
 - User-aided authentication
+- SSO: SAML and Open ID connect(OIDC)
+- One Time Passwords: Additional Data and symmetric key generate an OTP
+  - HMAC based one time password - additional data is a counter
+  - Time based one time password - additional data is time
+- How TOTP works:
+  - When registering, service sends a symmetric key to the user - for example via QR code
+  - Service generates symmetric key for every client and stores it
+  - User adds this key to a TOTP application
+  - TOTP application computes OTP via HMAC using symmetric key and time
+  - User sends OTP to the service
+  - Service uses user's symmetric key and also computes OTP
+
 
