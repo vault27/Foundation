@@ -367,4 +367,28 @@ MACs in TLS/SSL:
   - User sends OTP to the service
   - Service uses user's symmetric key and also computes OTP
 
+## Crypto currency
 
+- Bitcoin - based on PoW, 2008
+- Every full Bitcoin node stores the entire history of transactions
+- Every block from Block 0 (Genesis Block) to the latest one
+- Each block stores a hash of the previous block
+- The blocks are stored in files like: `~/.bitcoin/blocks/blk00000.dat`
+- Each blk*.dat file:
+  - Contains multiple blocks (not just one)
+  - Is a binary file storing raw block data
+  - Default file size is about 128 MB
+- Structure of a block (simplified):
+  - Field	Description
+  - Block Header	Metadata: version, previous hash, time, nonce
+  - Transactions	List of all TXs in this block
+  - Merkle Root	Summary hash of all transactions
+  - Block Hash	Fingerprint of the whole block (from header)
+- Bitcoin blockchain = All valid blocks, in the correct order, starting from the Genesis Block (2009) to today (over 850,000+ blocks as of 2025)
+- Nodes speak the Bitcoin P2P protocol over TCP port 8333
+- When you first run Bitcoin Core (or another full node), it has a list of DNS seed hostnames baked into the software 
+- These DNS seeds return a list of IP addresses of known nodes currently online
+- Wallet software generates public and private keys locally on your device
+- The public key is hashed and encoded into a Bitcoin address (like starting with 1, 3, or bc1)
+- This is what you share with others to receive Bitcoin
+- Your private key never leaves your wallet unless you export it
