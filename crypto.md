@@ -397,6 +397,7 @@ MACs in TLS/SSL:
 - Smart cards have ROM, RAM, CPU, EEPROM, that is why they are smart - they can run programs in contrast with cards with magnetic stripe which can only store data
 - HSMs - 4 levels - Level 1 - no protection against physical attacks - Level 3 - wipe secrests if detect intrusion - Level 4 - wipes data several times - even during power outages - internal batteries
 - HSM - external device connected to a server - PCIe card - small USB devices
+- Stores private keys and do all the operations which require private keys
 - The key never leaves the HSM
 - The app sends data to be signed/decrypted to the HSM
 - The HSM returns the result, not the key
