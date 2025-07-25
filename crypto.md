@@ -395,3 +395,35 @@ MACs in TLS/SSL:
 
 - Generate and store keys on separate hardware is more safe bacuase virus cannot extract the keys
 - Smart cards have ROM, RAM, CPU, EEPROM, that is why they are smart - they can run programs in contrast with cards with magnetic stripe which can only store data
+- HSMs - 4 levels - Level 1 - no protection against physical attacks - Level 3 - wipe secrests if detect intrusion - Level 4 - wipes data several times - even during power outages - internal batteries
+- HSM - external device connected to a server - PCIe card - small USB devices
+- The key never leaves the HSM
+- The app sends data to be signed/decrypted to the HSM
+- The HSM returns the result, not the key
+- PKCS#11 over TCP/IP (often via a software client/agent that handles calls to the HSM)
+- KMIP (Key Management Interoperability Protocol) — an open standard
+- An NGINX or Apache server terminates HTTPS using a certificate whose private key is stored in an HSM
+- Stores and uses CA keys, Performs signing of subordinate certs, CRLs, OCSP responses, Enforces key usage and access controls
+- In firewalls decrytption: Stores the private key of the trusted internal CA, Performs signing of new TLS certificates on-the-fly
+
+What the HSM does:
+
+- Generate keys (e.g., RSA, ECC, AES)
+- Import keys (with strict controls, often wrapped/encrypted)
+- Export public keys (only public; private keys never leave)
+- Store and protect keys from software or unauthorized access
+- Delete keys securely (ensures no recovery is possible)
+
+Asymmetric crypto operations
+
+- Sign (e.g., RSA, ECDSA) → sends back the signature
+- Verify → tells you if a signature is valid
+- Decrypt → e.g., decrypts a message encrypted with the public key
+- Encrypt (less common in HSMs — often done client-side)
+
+Symmetric crypto operations
+
+- Encrypt / Decrypt with AES, 3DES, etc.
+- Wrap / Unwrap keys (encrypt a key for export/import)
+- Generate MAC (e.g., HMAC-SHA256)
+
