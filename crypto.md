@@ -280,15 +280,6 @@ Algorithms
 - ECDSA - EllipticCurve Digital Signature Algorithm
 - EdDSA - Edwards-Curve Digital Signature Algorithm
 
-## Random Number Generation
-
-It is a problem for computer to generate a true random numbers, which are requires for keys generating in Cryptography.  
-Three types
-
-- True random number generator (TRNG)- based on reliable external events - mouse movements, keystrokes.. - is hard to use directly - if data is not enough - system will stall
-- Pseudorandom number generators (PRNGs) - used in programming - not suitable for cryptography - use small amounts of true random data to get them going. This process is known as seeding. From the seed, PRNGs produce unlimited amounts of pseudorandom data on demand
-- Cryptographic pseudo- random number generators (CPRNGs) - PRNGs that are also unpredictable
-
 ## (Perfect) Forward Secrecy
 
 - Forward because it avoids: if attacker captures encrypted traffic and then later he gets private key and can decrypt everything
@@ -392,3 +383,15 @@ MACs in TLS/SSL:
 - The public key is hashed and encoded into a Bitcoin address (like starting with 1, 3, or bc1)
 - This is what you share with others to receive Bitcoin
 - Your private key never leaves your wallet unless you export it
+- A blockchain is a distributed ledger (a type of database) where data is grouped into blocks, and each block is linked (chained) to the previous one using cryptographic hashes.
+- Once data is recorded in a block and added to the chain, it’s very hard to change. To modify one block, you’d need to change all subsequent blocks, which requires enormous computational power
+- Blocks are not encrypted in most blockchains like Bitcoin or Ethereum
+- Blockchain is a type of database, but with some very unique characteristics
+- Enterprise blockchains can replace or complement traditional databases — but only in specific scenarios
+- Invented by Satoshi Nakamoto in 2008
+- All cryptocurrencies are based on the same core technical principles and blockchain concepts
+
+## Hardware cryptography
+
+- Generate and store keys on separate hardware is more safe bacuase virus cannot extract the keys
+- Smart cards have ROM, RAM, CPU, EEPROM, that is why they are smart - they can run programs in contrast with cards with magnetic stripe which can only store data
