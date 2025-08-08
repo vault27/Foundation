@@ -394,7 +394,18 @@ MACs in TLS/SSL:
 ## Hardware cryptography
 
 - Generate and store keys on separate hardware is more safe bacuase virus cannot extract the keys
-- Smart cards have ROM, RAM, CPU, EEPROM, that is why they are smart - they can run programs in contrast with cards with magnetic stripe which can only store data
+
+Device types:
+
+- Smart cards - have ROM, RAM, CPU, EEPROM, that is why they are smart - they can run programs in contrast with cards with magnetic stripe which can only store data - bank cards - turned on by terminal
+- Secure elements - sim cards
+- Hardware security modules
+- Trusted platform module
+- Integrated security chip
+- Trusted execution environment - implemented within CPU instruction set in most modern CPUs
+
+### HSM
+
 - HSMs - 4 levels - Level 1 - no protection against physical attacks - Level 3 - wipe secrests if detect intrusion - Level 4 - wipes data several times - even during power outages - internal batteries
 - HSM - external device connected to a server - PCIe card - small USB devices
 - Stores private keys and do all the operations which require private keys
@@ -427,4 +438,13 @@ Symmetric crypto operations
 - Encrypt / Decrypt with AES, 3DES, etc.
 - Wrap / Unwrap keys (encrypt a key for export/import)
 - Generate MAC (e.g., HMAC-SHA256)
+
+## Trusted Platform Modules - TPM
+
+- It is a standard
+- TPM device which implements TPM standard: microcontroller with hardware random number generator + secure memory for storing secrestd + can perform cryptographic operations + tamper resistant
+- Plugged into the motherboard
+- Does not run arbitartry code
+- Can be built ino CPU to avoid bus based communication via motherboard
+
 
