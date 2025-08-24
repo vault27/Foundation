@@ -1,18 +1,16 @@
 # Cryptography
 
-- In mathematics, computer science and physics, a deterministic system is a system in which no randomness is involved in the development of future states of the system. A deterministic model will thus always produce the same output from a given starting condition or initial state
-
 ## Encoding
 
 - Encoding data is a process involving changing data into a new format using a scheme. - Encoding is a reversible process and data can be encoded to a new format and decoded to its original format. 
 - Encoding typically involves a publicly available scheme that is easily reversed. 
 - Encoding data is typically used to ensure the integrity and usability of data and is commonly used when data cannot be transferred in its current format between systems or applications
 - Encoding is not used to protect or secure data because it is easy to reverse
-An example of encoding is: Base64
+- An example of encoding is: Base64
 
 ## Encryption
 
-Encryption is the process of securely encoding data in such a way that only authorized users with a key or password can decrypt the data to reveal the original
+- Encryption is the process of securely encoding data in such a way that only authorized users with a key or password can decrypt the data to reveal the original
 
 ## Hash functions
 
@@ -33,9 +31,8 @@ Encryption is the process of securely encoding data in such a way that only auth
 
 Cryptographic hash functions have to have the following properties:
 
-- Preimage resistance - Given a hash, it’s computationally unfeasible to find or construct a message that produces it
-- Second preimage resistance - Given a message and its hash, it’s computationally unfeasible to find a different message with the same hash
-- Collision resistance - It’s computationally unfeasible to find two messages that have the same hash
+- Given a hash, it’s computationally unfeasible to find or construct a message that produces it
+- Given a message and its hash, it’s computationally unfeasible to find a different message with the same hash
 
 Password hashes protection techniques:
 
@@ -50,7 +47,7 @@ Password hashes protection techniques:
 - SHA2: SHA 224,256 (most used),384,512 - lack of resistence to length extension attacks
 - SHA3 - ideal
 
-## Message authentication codes
+## MAC - Message Authentication Codes
 
 - Mix of hash function and secret key
 - Protect integrity of data
@@ -61,6 +58,13 @@ Password hashes protection techniques:
 - Used in Integrity of cookies
 - Used in SSL: When sending a message, SSL computes the MAC over the message contents and sequence number, using a hash function and a shared secret key (derived during the SSL handshake). The MAC is appended to the plaintext message. The combined data (Plaintext || MAC) is encrypted using a symmetric encryption algorithm (like AES or 3DES). This ensures confidentiality and integrity. The receiver decrypts the message, recomputes the MAC on the plaintext, and compares it to the MAC received
 - In TLS (the modern successor to SSL), MAC usage is very similar, but in AEAD ciphers (like AES-GCM), integrity is ensured via authenticated encryption, and a separate MAC is not used 
+- Symmetric key version of digital signatures, but digital signature provide non-repudiation, MAC does not
+- You need a way to verify that a message came from an authentic sender (not an imposter) and that the data hasn’t been modified (i.e., it arrived as intended)
+- MAC authenticates the sender using private key
+- Used also in SSH
+- Any hash function can be used as the basis for a MAC using a construction known as HMAC (short for hash-based message authentication code)
+- MAC from the record sequence number, header, and plaintext is calculated, MAC is added to plaintext, then al this is encrypted and sent together with header, SO MAC IS SENT IN ENCRYPTED FORM TOGETHER WITH PLAIN TEXT - This process is known as MAC-then-encrypt - has many problems
+- Encrypt-then-MAC - plaintext and padding are first encrypted and then fed to the MAC algorithm. This ensures that the active network attacker can’t manipulate any of the encrypted data
 
 MAC functions
 
@@ -71,6 +75,14 @@ MAC functions
 - UMAC/VMAC
 - CBC-MAC
 - PMAC1
+
+MACs in TLS/SSL:
+
+- SHA 256 - good - 256 bits
+- SHA384 - good - 384 bits
+- SHA1 - not good - 160 bits
+- MD5  - not good
+- SHA1 and SHA256 are used everywhere
 
 ## Key Exchange
 
@@ -88,7 +100,7 @@ Key exchange algorithms:
 
 - Diffie Hellman
   - Diffie Hellman - Modular arithmetic, original algorithm
-  - DHE(ethemeral, short lived) - secret numbers generated on server and client are generated again for every session - Modular arithmetic 
+  - DHE(ethemeral, short lived) - secret numbers on server and client are generated again for every session - Modular arithmetic 
   - ECDH(ecliptic curve) - variant of the Diffie–Hellman protocol using elliptic-curve cryptography. The main advantage of ECDHE is that it is significantly faster than DHE - Elliptic curve point multiplication
   - ECDHE(becoming the primary) - best - Elliptic curve point multiplication - Ethemeral - Keys are changed every session
 - RSA(used from 1970s) - deprecated, large key size, no PFS, slow
@@ -160,38 +172,27 @@ Elliptic Curve IPSec groups
 
 ## Symmetric Encryption
 
-- Ciphers can be divided into 3 groups: stream, block and AEAD
+- Symmetric Ciphers can be divided into 3 groups
+  - Stream
+  - Block
+  - AEAD
 - They also can be authenticated with integrity checking or non authenticated
-- Stream Ciphers - you feed one byte of plaintext to the encryption algorithm, and out comes one byte of ciphertext. The reverse happens at the other end. They XOR ciphertext with key stream. No need for padding or mode of operations. Ciphertext is the same length as plaintext. Key stream is generated from the key.
+
+### Stream ciphers
+
+- Stream Ciphers - you feed one byte of plaintext to the encryption algorithm, and out comes one byte of ciphertext. The reverse happens at the other end. They XOR ciphertext with key stream. No need for padding or mode of operations. Ciphertext is the same length as plaintext. Key stream is generated from the key
+
+### Block ciphers
+
 - Block Ciphers - encrypt entire blocks of data at a time; modern block ciphers tend to use a block size of 128 bits (16 bytes)
-  - They are deterministic; they always produce the same output for the same input. On their own, block ciphers are not very useful because of several limitations
-  - You can only use them to encrypt data lengths equal to the size of the encryption block. To use a block cipher in practice, you need a scheme to handle data of arbitrary length  
-  - In practice, block ciphers are used via encryption schemes called block cipher modes, which smooth over the limitations and sometimes add authentication to the mix.
-- AEAD
-  - Authenticated encryption assosiated data
-  - Provides encryption + integrity, earlier they did MAC-then-encrypt or encrypt-then-MAC, and now everything is combined
-  - TLS supports GCM and CCM authenticated ciphers, but only the former are currently used in practice
-- Limitations:
-  - They are deterministic; they always produce the same output for the same input
-  - You can only use them to encrypt data lengths equal to the size of the encryption block
+- They are deterministic; they always produce the same output for the same input. On their own, block ciphers are not very useful because of several limitations
+- You can only use them to encrypt data lengths equal to the size of the encryption block. To use a block cipher in practice, you need a scheme to handle data of arbitrary length  
+- In practice, block ciphers are used via encryption schemes called block cipher modes, which smooth over the limitations and sometimes add authentication to the mix
 - They do not provide integrity by default
 - Encrypt-then-MAC - HMAC+SHA256 - we apply MAC after padding the plaintext and encrypting it - it is called AES-CBC-HMAC - was one of the most widely used before AEAD
 - MAC-then encrypt - can sometimes lead to clever attacks - avoided in practice
 - Authentication tag is transmitted with plaintext
 - It is best practise to use different keys for AES-CBC and HMAC
-
-### AEAD
-
-- Authenticated encryption assosiated data
-- Provides encryption + integrity, earlier they did MAC-then-encrypt or encrypt-then-MAC, and now everything is combined
-- TLS supports GCM and CCM authenticated ciphers, but only the former are currently used in practice
-- Most popular: AES-GCM and ChaCha20-Poly1305
-- Almost the same as AES-CBC-HMAC
-- ChaCha20-Poly1305 - ChaCha20 stream cipher and Poly1305 MAC - for use in software - contrary to AES which is slow when hardware support is not available
-- ChaCha20 takes  symmetric key and unique nonce - using them generates a key stream the same size as plaintext - XOR it with plaintext - produce ciphertext - ciphertext and plaintext are the same length
-- AEAD cannot be used in disk encryption and database encrytption
-
-### Block ciphers
 
 **Block Cipher Modes**  
 
@@ -212,8 +213,6 @@ Elliptic Curve IPSec groups
 - Camellia
 - DES - not good - Block
 - 3DES - not good - Block
-- RC4 - not good - stream
-- RC2 - not good
 
 **Padding**
 
@@ -224,7 +223,19 @@ Elliptic Curve IPSec groups
 - Receiver should know exactly how many bytes to discard
 - In TLS, the last byte of an encryption block contains padding length, which indicates how many bytes of padding (excluding the padding length byte) there are. All padding bytes are set to the same value as the padding length byte. This approach enables the receiver to check that the padding is correct
 <img width="502" alt="image" src="https://user-images.githubusercontent.com/116812447/225607064-bff68c8f-069f-4921-a521-4ee8a0c8b193.png">
+
 - To discard the padding after decryption, the receiver examines the last byte in the data block and removes it. After that, he removes the indicated number of bytes while checking that they all have the same value
+  
+### AEAD
+
+- Authenticated encryption assosiated data
+- Provides encryption + integrity, earlier they did MAC-then-encrypt or encrypt-then-MAC, and now everything is combined
+- TLS supports GCM and CCM authenticated ciphers, but only the former are currently used in practice
+- Most popular: AES-GCM and ChaCha20-Poly1305
+- Almost the same as AES-CBC-HMAC
+- ChaCha20-Poly1305 - ChaCha20 stream cipher and Poly1305 MAC - for use in software - contrary to AES which is slow when hardware support is not available
+- ChaCha20 takes  symmetric key and unique nonce - using them generates a key stream the same size as plaintext - XOR it with plaintext - produce ciphertext - ciphertext and plaintext are the same length
+- AEAD cannot be used in disk encryption and database encrytption
 
 ## Assymetric encryption
 
@@ -286,48 +297,6 @@ Algorithms
 - If SSL RSA is used for key exchange, however if you have server’s private key you can decrypt session keys and then decrypt all traffic
 - Instead of RSA Diffie Helman can be used, then even if you have access to private key, you cannot get session keys - this feature is called forward secrecy
 - And if you choose Ethemeral Diffie-Hellman then you achieve Perfect Forward Secrecy
-
-### MAC
-
-- Does MAC function provide always the same amount of bits like hash?
-- RFC 2104: HMAC: Keyed-Hashing for Message Authentication (Krawczyk et al., February 1997)
-- It is a cryptographic primitive
-- MACs Provide Authentication & Data Integrity Checks (But Can’t Support Non-Repudiation)
-- It is a mix of Hash and secret key: as Input it accepts a message + secret key and generates an Authentication Tag - this process is deterministic
-- MAC is like a private hash function, which only you can produce
-- Mac is prone to reply attacks. Nothing prevents malicious actor from replying captured message with MAC. To remediate it counters are used: they add to the function the sequence number: MAC (k1, 1, how are you). And if such message is replied later, it will be droopped because it does not match the sequence
-- Symmetric key version of digital signatures, but digital signature provide non-repudiation, MAC does not
-- You need a way to verify that a message came from an authentic sender (not an imposter) and that the data hasn’t been modified (i.e., it arrived as intended)
-- MAC authenticates the sender using private key
-- Used also in SSH
-- It’s also sometimes referred to as a keyed hash function 
-- A pure hash function could be used to verify data integrity, but only if the hash of the data is transported separately from the data itself. Otherwise, an attacker could modify both the message and the hash, easily avoiding detection
-- MAC is a type of digital signature; it can be used to verify authenticity provided that the secret hashing key is securely exchanged ahead of time
-- It’s limited because it still relies on a private secret key
-- Message authentication code (MAC) or a keyed-hash is a cryptographic function that extends hashing with authentication
-- Only those in possession of the hashing key can produce a valid MAC
-- If there is no MAC, encrypted message can be altered
-- Any hash function can be used as the basis for a MAC using a construction known as HMAC (short for hash-based message authentication code)
-- MACs are resistant against forgery
-- Minimum length of authentication tag is 128 bits - to be strong
-- HMAC works by interleaving the hashing key with the message in a secure way
-- A MAC is created by combining a symmetric (secret) key with the message and then hashing it using a hashing function
-- MAC from the record sequence number, header, and plaintext is calculated, MAC is added to plaintext, then al this is encrypted and sent together with header, SO MAC IS SENT IN ENCRYPTED FORM TOGETHER WITH PLAIN TEXT - This process is known as MAC-then-encrypt - has many problems
-- Encrypt-then-MAC - plaintext and padding are first encrypted and then fed to the MAC algorithm. This ensures that the active network attacker can’t manipulate any of the encrypted data
-
-Types:
-
-- CMAC
-- HMAC
-- KMAC  
-
-MACs in TLS/SSL:
-
-- SHA 256 - good - 256 bits
-- SHA384 - good - 384 bits
-- SHA1 - not good - 160 bits
-- MD5  - not good
-- SHA1 and SHA256 are used everywhere
 
 ## End-to-end encryption
 
@@ -439,7 +408,7 @@ Symmetric crypto operations
 - Wrap / Unwrap keys (encrypt a key for export/import)
 - Generate MAC (e.g., HMAC-SHA256)
 
-## Trusted Platform Modules - TPM
+### Trusted Platform Modules - TPM
 
 - It is a standard
 - TPM device which implements TPM standard: microcontroller with hardware random number generator + secure memory for storing secrestd + can perform cryptographic operations + tamper resistant
