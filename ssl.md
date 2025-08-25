@@ -1,11 +1,18 @@
 # TLS/SSL
 
-TLS/SSL for network engineer. All you need to know in 1 place. Short and clear.
-
 - Secure transport protocol
 - SSL v3 - 1996 - Netscape
 - Netscape handed it over to IETF
 - IETF renamed it to TLS in 1999
+
+To encrypt messages peers need to exchange secret key. Moreover key exchange process needs to be authenticated at least from one side: server authenticates itself to a client. Authentication is done via certificate(that is signed bu trusted CA, not expired or revoked), signature which is verified by public key in a certificate (signature is applied to transcript). After both peers have a shared secret key. They use negotiated symmetric cipher + apply HMAC authentication tag to each encrypted message, or they use AEAD ciphers which already include authentication.  
+  
+## High level
+
+- Share a secret key: RSA, DH, EDH, ECEDH
+- Authenticate server to client: RSA certificate, digital signature of handshake transcript
+- Authenticate client to server - possible
+- Encrypt data with symmetric algorithm + HMAC authentication or AEAD ciphers
 
 ## Versions
 
@@ -49,7 +56,7 @@ TLS/SSL for network engineer. All you need to know in 1 place. Short and clear.
 - Symmetric encryption algorithm
 - Symmetric encryption key size
 - Simmetric encryption mode
-- Hash function - message integrity and key derivation in the TLS handshake and record layer
+- Hash function - That hash was used inside an HMAC (Hash-based MAC) to generate the record’s authentication tag - In AEAD suites, the “hash” part in the name is gone — because integrity is built into the AEAD mode itself - Not used in TLS 1.3
 
 ### 3 Handshake Stages
 
@@ -104,7 +111,6 @@ Key derivation
 
 Key types
 
-
 - In TLS 1.3 client sends in ClientHello list of supported ECDHE groups: X25519 and X448 plus it sends X25519 public key
 - If Server does not support X25519, but does support X448, it sends HelloRetryRequest, announcing that it only suoports X448
 - The Client sends the same ClientHello, but with X448 public key instead
@@ -137,6 +143,7 @@ Signature Hash Algorithms (11 algorithms)
 
 ```
 
+- No matter what algorithm is used  - first hash of transcript is done and then signature algorithm is applied together with private key
 - The ServerHello does not explicitly confirm the signature algorithm chosen for the handshake
 - The actual signature algorithm used by the server is implicitly confirmed later in the CertificateVerify message when the server signs the handshake transcript
 - Server chooses Signature Algorithm from Client's list based on a compatible signature algorithm that it supports and that matches its certificate's capabilities
@@ -175,12 +182,9 @@ Signature Hash Algorithms (11 algorithms)
 Key derivation
 
 - The hash function is also used during the key derivation process to generate session keys from shared secrets
-
-
 - TLS 1.3 allows SHA-256 and SHA-384
 
 ### Session resumption
-
 
 ## Record protocol - Application Data
 
@@ -218,6 +222,8 @@ Transport Layer Security
 - Alert example
 
 ![image](https://github.com/phph9/Foundation/assets/116812447/84324f16-9698-41df-a068-f0c4f2597b33)
+
+- Alert types
 
 ```
 close_notify(0)
