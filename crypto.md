@@ -111,26 +111,32 @@ Key exchange algorithms:
 - 1976 - first key exchange algorithm invented
 - RFC 3526: Predefined Groups (Modular Arithmetic) - old
 - Finite-Field Diffie-Hellman (FFDHE) is essentially a modular-based Diffie-Hellman method, but with a slight difference in terminology to emphasize that the arithmetic is performed within a finite field
-- DH provides forward secrecy and perfect(DHE) forward secrecy, which are required for TLS 1.3  
-- DH is based on group theory
-- DH works in a mulpiplicative group
-- DF uses the following group: positive integers: 1,2,3,4...p-1 - p is prime number - 1: identity element
-- Prime number - can be devided by itself and 1 - this is a group
+- DH provides forward secrecy and perfect(DHE) forward secrecy, which are required for TLS 1.3, comparing to RSA
 - Prime numbers used in cryptography are super puper large in real world
-- Also DH is based on modular multiplication
+- DH is based on modular multiplication
 - The security of DH relies on discrete logarithm problem - it is hard to solve
 
 Order of operations:
 
-- Both parties must have the same values for the prime number p and the base (generator) g
+- Both parties must have the same values for the prime number p and the base generator g - these values are specified in groups
 - p and g are defined in a standard, RFC 7919, RFC 3526, which defines a set of known safe primes and corresponding generators that are recommended for use in TLS 1.3 (and earlier versions of TLS as well)
-- On network devices it is configured with groups for IPSec
+- On network devices it is configured with groups for IPSec - there are also groups for SSL with different names
 - The larger prime, the better, more secure, more load
 - Generate Private Keys - random numbers between 1 and p-2, each side keeps it secret
-- Compute Public Keys - A=g to the power of a mod p - where a is private key
+- Compute Public Keys
 - Exchnage public keys
-- Compute shared secret
+- Compute shared secret: Alice uses Bob's public key and her own private key to calculate a shared secret
+- Symmetric Key Derivation: The calculated shared secret is then used to derive a new, symmetric key, often using a key derivation function (KDF). This derived key is then used for symmetric encryption and decryption of subsequent communications
 - The same order for ECDH, but different math
+
+Why we need Symmetric Key Derivation?
+
+- Shared secret is not enough
+- Not uniformly random
+- Different algorithms (AES, HMAC, etc.) may require keys of specific lengths. The DH secret doesn’t magically match those requirements
+- Modern protocols (like TLS, IPsec, SSH) need multiple symmetric keys (encryption, integrity, IVs) — not just one. The raw DH secret is one big blob, not conveniently separable
+- Key Derivation Function (KDF) Takes the DH shared secret S (and usually extra context like nonces, session IDs, algorithm identifiers), Produces one or more cryptographically strong, uniform, independent symmetric keys
+- Shared secret calculation gives both parties the same big number, but that number isn’t directly suitable as a symmetric key. Symmetric key derivation ensures the final keys are uniformly random, the right size, independent, and safe for use in cryptographic algorithms
 
 ### Ecliptic Curve DH algorithm
 
@@ -142,7 +148,6 @@ Order of operations:
 - ECDHE by itself is worthless against an active attacker - there's no way to tie the received ECDH key to the site you're trying to visit, so an attacker could just send their own ECDH key
 - This is because ECDHE is ephemeral, meaning that the server's ECDH key isn't in its certificate. So, the server signs its ECDH key using RSA, with the RSA public key being the thing in the server's certificate
 - X25519 is a specific implementation of ECDH, where the elliptic curve Curve25519 is used to perform the key exchange
-- RFC 7919: Customizable Groups (FFDHE) - new
 
 ### Diffie-Hellman Groups
 

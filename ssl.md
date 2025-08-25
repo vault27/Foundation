@@ -9,10 +9,10 @@ To encrypt messages peers need to exchange secret key. Moreover key exchange pro
   
 ## High level
 
-- Share a secret key: RSA, DH, EDH, ECEDH
-- Authenticate server to client: RSA certificate, digital signature of handshake transcript
+- Key exchange + shared secret calculation: RSA, DH, DHE, ECDHE
+- Key exchange should be authenticated - Authenticate server to client: RSA certificate(that is signed bu trusted CA, not expired or revoked), digital signature of handshake transcript - RSA, 
 - Authenticate client to server - possible
-- Encrypt data with symmetric algorithm + HMAC authentication or AEAD ciphers
+- Encrypt data with (symmetric algorithm + HMAC authentication) or AEAD ciphers
 
 ## Versions
 
