@@ -271,12 +271,15 @@ Purposes
 - Origin authentication
 - Message integrity
 
+Concepts
+
 - Digital signature - this is encrypted (with private key) hash of a data - non repudiation
 - Person 1 encrypts hash of the message with its private key
 - It is different from MAC: participant can verify a message without knowing a secret key
 - Authenticated key excahnge - user signs the public key part (in Diffue Hellman) of key exchange with his signing key
 - Mutually authenticated key exchange - when both users sign their public keys of key exchange
 - There are: RSA assymetric encription, RSA signature, RSA company
+- Only RSA algorithm uses encryption/decryption for signing, verification, DSA does not
 
 Algorithms
 
@@ -295,8 +298,8 @@ Algorithms
 
 - Forward because it avoids: if attacker captures encrypted traffic and then later he gets private key and can decrypt everything
 - If SSL RSA is used for key exchange, however if you have server’s private key you can decrypt session keys and then decrypt all traffic
-- Instead of RSA Diffie Helman can be used, then even if you have access to private key, you cannot get session keys - this feature is called forward secrecy
-- And if you choose Ethemeral Diffie-Hellman then you achieve Perfect Forward Secrecy
+- Instead of RSA **Diffie Helman** can be used, then even if you have access to private key, you cannot get session keys - this feature is called **forward secrecy**
+- And if you choose **Ethemeral Diffie-Hellman** then you achieve **Perfect Forward Secrecy** - because keys are generated every session
 
 ## End-to-end encryption
 
@@ -352,7 +355,7 @@ Algorithms
 - The public key is hashed and encoded into a Bitcoin address (like starting with 1, 3, or bc1)
 - This is what you share with others to receive Bitcoin
 - Your private key never leaves your wallet unless you export it
-- A blockchain is a distributed ledger (a type of database) where data is grouped into blocks, and each block is linked (chained) to the previous one using cryptographic hashes.
+- A blockchain is a distributed ledger (a type of database) where data is grouped into blocks, and each block is linked (chained) to the previous one using cryptographic hashes
 - Once data is recorded in a block and added to the chain, it’s very hard to change. To modify one block, you’d need to change all subsequent blocks, which requires enormous computational power
 - Blocks are not encrypted in most blockchains like Bitcoin or Ethereum
 - Blockchain is a type of database, but with some very unique characteristics
@@ -366,7 +369,7 @@ Algorithms
 
 Device types:
 
-- Smart cards - have ROM, RAM, CPU, EEPROM, that is why they are smart - they can run programs in contrast with cards with magnetic stripe which can only store data - bank cards - turned on by terminal
+- Smart cards - have ROM, RAM, CPU, EEPROM, that is why they are smart - they can run programs in contrast with cards with magnetic stripe which can only store data - bank cards - Turned on by terminal
 - Secure elements - sim cards
 - Hardware security modules
 - Trusted platform module
@@ -411,7 +414,7 @@ Symmetric crypto operations
 ### Trusted Platform Modules - TPM
 
 - It is a standard
-- TPM device which implements TPM standard: microcontroller with hardware random number generator + secure memory for storing secrestd + can perform cryptographic operations + tamper resistant
+- TPM device which implements TPM standard: microcontroller with hardware random number generator + secure memory for storing secrets + can perform cryptographic operations + tamper resistant
 - Plugged into the motherboard
 - Does not run arbitartry code
 - Can be built ino CPU to avoid bus based communication via motherboard
