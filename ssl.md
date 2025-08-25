@@ -5,13 +5,12 @@
 - Netscape handed it over to IETF
 - IETF renamed it to TLS in 1999
 
-To encrypt messages peers need to exchange secret key. Moreover key exchange process needs to be authenticated at least from one side: server authenticates itself to a client. Authentication is done via certificate(that is signed bu trusted CA, not expired or revoked), signature which is verified by public key in a certificate (signature is applied to transcript). After both peers have a shared secret key. They use negotiated symmetric cipher + apply HMAC authentication tag to each encrypted message, or they use AEAD ciphers which already include authentication.  
-  
 ## High level
 
 - Key exchange + shared secret calculation: RSA, DH, DHE, ECDHE
-- Key exchange should be authenticated - Authenticate server to client: RSA certificate(that is signed bu trusted CA, not expired or revoked), digital signature of handshake transcript - RSA, 
-- Authenticate client to server - possible
+- Key exchange should be authenticated - Server to client: mandatory - Client to server - optional
+    - X.509 certificate signed by trusted CA (any signature algorithm can be used), not expired or revoked - contains RSA or ECDSA or EdDSA public key in it - to prove that this is indeed correct server
+    - Digital signature of handshake transcript with server's private key - RSA, ECDSA... - signature algorithm should be the same as public key type in a certificate - to prove that server has private key
 - Encrypt data with (symmetric algorithm + HMAC authentication) or AEAD ciphers
 
 ## Versions
@@ -46,19 +45,23 @@ To encrypt messages peers need to exchange secret key. Moreover key exchange pro
 - Authentication of key exchange - digital signature algorithm + hash algorithm - two, for different parts of the handshake - one signature algorithm is used for server certificate signature, the other one for signing key exchange parameters or messages exchanged between the client and server
 - Session resumption - to avoid redoing key exchange every time user connects again
 
-### What should be negotiated - 9 parametres
+### Negotiated parametres
+
+9
 
 - TLS version
 - Key Exchange Algorithm
+    - In TLS 1.2: specified inside the cipher suite name (e.g. DHE-RSA, ECDHE-ECDSA).
+    - In TLS 1.3: always (EC)DHE, but the key exchange group is negotiated separately
 - Key exchange group
-- 2 Signature algorithms for authenticated key exchange: one for certificate, one for transcript
-- Hash functions to use with signature alorithms: one for certificate, one for transcript
+- 2 Signature algorithms for authenticated key exchange: one for certificate(Not really “negotiated” — the client just needs to support it in its crypto library), one for transcript
+- Hash functions to use with signature alorithms: one for certificate(fixed by the cert (e.g. cert signed with sha256WithRSA). Not negotiated.), one for transcript
 - Symmetric encryption algorithm
 - Symmetric encryption key size
-- Simmetric encryption mode
+- Symmetric encryption mode
 - Hash function - That hash was used inside an HMAC (Hash-based MAC) to generate the record’s authentication tag - In AEAD suites, the “hash” part in the name is gone — because integrity is built into the AEAD mode itself - Not used in TLS 1.3
 
-### 3 Handshake Stages
+### Handshake Stages
 
 - Key Exchange
     - ClientHello
@@ -101,21 +104,7 @@ Random
 - Contains one cipher suite, which was chosen from Client Hello
 - If Server cannot find an algorithm it supports, it may drop a connection or it may ask a client for more information via Hello Retry Request, then client resends its Hello
 
-### Key exchange
-
-Key derivation
-
-- TLS1.2: `Premaster secret from ECDHE > Master secret from pre-master secret, client random and server random > session keys from master`
-- TLS 1.3: Directly deriving session keys from ECDHE-derived secrets using HKDF (HMAC-based Extract-and-Expand Key Derivation Function)
-- Premaster is not enough: This ensures that even if the same ECDHE pre-master secret is derived again in another session, the master secret will be different because of the unique random values
-
-Key types
-
-- In TLS 1.3 client sends in ClientHello list of supported ECDHE groups: X25519 and X448 plus it sends X25519 public key
-- If Server does not support X25519, but does support X448, it sends HelloRetryRequest, announcing that it only suoports X448
-- The Client sends the same ClientHello, but with X448 public key instead
-
-### Auth
+## Authentication
 
 - Authentication of key exchange is done using assymetric cryptography and hash algorithms
 - Signature and hash algorithms are negotiated in Client/Server Hello
