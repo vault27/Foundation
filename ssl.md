@@ -41,7 +41,7 @@
 ### Tasks
 
 - Negotiation of ciphers and protocols: authenticated encryption algorithms
-- Key exchange - main goal actually: algorithm itself + groups
+- Key exchange - main goal actually: algorithm itself + groups + key derivation algorithm
 - Authentication of key exchange - digital signature algorithm + hash algorithm - two, for different parts of the handshake - one signature algorithm is used for server certificate signature, the other one for signing key exchange parameters or messages exchanged between the client and server
 - Session resumption - to avoid redoing key exchange every time user connects again
 
@@ -59,13 +59,17 @@
 - Symmetric encryption algorithm
 - Symmetric encryption key size
 - Symmetric encryption mode
-- Hash function - That hash was used inside an HMAC (Hash-based MAC) to generate the record’s authentication tag - In AEAD suites, the “hash” part in the name is gone — because integrity is built into the AEAD mode itself - Not used in TLS 1.3
+- Hash function - That hash was used inside an HMAC (Hash-based MAC) to generate the record’s authentication tag - In AEAD suites, the “hash” part in the name is gone — because integrity is built into the AEAD mode itself - Not used in TLS 1.3 - plus this hash function is used in key derivation process
 
 ### Handshake Stages
 
 - Key Exchange
     - ClientHello
     - ServerHello
+- Key Derivation - This derivation process is called the key schedule — it takes the shared key from ECDHE, mixes in random values (nonces), and runs them through a hash-based pseudorandom function (PRF) or HKDF to produce strong, independent session keys. Set of shared secrets:
+    - handshake traffic keys
+    - application traffic keys
+    - MAC keys (if needed)    
 - Server Parametres
     - The server sends a CertificateRequest message with details about the accepted certificate types, supported signature algorithms, and acceptable certificate authorities (CAs)
     - A server's X.509 certificate chain is sent, including: The server's certificate, Intermediate certificates, if required, Root certificate (often omitted, as it's known to the client)
@@ -104,7 +108,7 @@ Random
 - Contains one cipher suite, which was chosen from Client Hello
 - If Server cannot find an algorithm it supports, it may drop a connection or it may ask a client for more information via Hello Retry Request, then client resends its Hello
 
-## Authentication
+### Authentication
 
 - Authentication of key exchange is done using assymetric cryptography and hash algorithms
 - Signature and hash algorithms are negotiated in Client/Server Hello
@@ -235,29 +239,26 @@ decompression_failure(30),
           decrypt_error(51)
 ```
 
-## Cipher suite - parameters used during the communication
+## Cipher suite
 
 https://ciphersuite.info  
-
-Attributes:
-- Authentication method
-- Key exchange method
-- Encryption algorithm
-- Encryption key size
-- Cipher mode (when applicable)
-- MAC algorithm (when applicable)
-- PRF (TLS 1.2 only—depends on the protocol otherwise)
-- Hash function used for the Finished message (TLS 1.2)
-- Length of the verify_data structure (TLS 1.2)
 
 TLS suites use the TLS_ prefix, SSL 3 suites use the SSL_ prefix, and SSL 2 suites use the SSL_CK_ prefix. In all cases, the approach to naming is roughly the same. However, not all vendors use the standard suite names. OpenSSL and GnuTLS use different names. Microsoft largely uses the standard names but sometimes extends them with suffixes that are used to indicate the strength of the ECDHE key exchange.  
 
 **TLS1.2 cipher suite - 4 parametres**
+
 ```
 TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
 ```
 
+- ECDHE - key exchange algorithm
+- RSA - Authentication method - specifies which digital signature algorithm the server uses to sign the hash of handshake data, proving that it owns the private key corresponding to the public key in its certificate
+- AES_128_GCM - symmetric encryption algorithm + key length + mode
+- SHA256 - hash function for the HMAC used to authenticate each record (data packet) + hash function used in the PRF / key derivation function
+- All other parametres are negotiated via extensions
+
 **TLS 1.3 cipher suite - 2 parametres**
+
 ```
 TLS_AES_128_GCM_SHA256
 ```
@@ -265,6 +266,9 @@ TLS_AES_128_GCM_SHA256
 - In TLS 1.3 there are fewer parametres to avoid many variants of suites.  
 - Signature algorithm is sent as extension in Client hello
 - Key exchange is ECDHE always
+- AES_128_GCM - symmetric encryption algorithm + key length + mode - all algorithms are AEAD, so authentication per packet is included, no need a HMAC
+- SHA256 - This derivation process is called the key schedule — it takes the shared key from ECDHE, mixes in random values (nonces), and runs them through a hash-based pseudorandom function (PRF) or HKDF to produce strong, independent session keys. If your cipher suite ends in SHA256, then SHA256 is the hash function used inside that PRF/HKDF
+- All other parametres are negotiated via extensions
 
 TLS 1.3 Cipher Suites:
 
@@ -275,10 +279,6 @@ TLS 1.3 Cipher Suites:
 - TLS_AES_128_CCM_8_SHA256  
 
 TLS 1.3 cipher suites are defined differently, only specifying the symmetric ciphers, and cannot be used for TLS 1.2. Similarly, cipher suites for TLS 1.2 and lower cannot be used with TLS 1.3.
-
-### Symmetric encryption
-
-### Hash function
 
 ## TLS 1.2 packet flow
 
@@ -509,8 +509,9 @@ Why decryption fails:
 ```
 openssl s_client -connect meetup.sberbank.ru:443
 ```
+
 This command will show certificates, protocol and ciphers
-If F5 does not know this certificate, there will be a error: 
+If F5 does not know this certificate, there will be a error:
 
 ```
 verify error:num=20:unable to get local issuer certificate
@@ -524,6 +525,4 @@ Show SAN for cert:
 
 ## Nmap
 
-Show SSL cert
-
-`nmap -p 443 --script ssl-cert example.com`
+- Show SSL cert - `nmap -p 443 --script ssl-cert example.com`
