@@ -78,6 +78,36 @@
 - Authetication
 - Post-Handshake
 
+### TLS 1.2 handshake
+
+- Client sends Hello: cipher suite, protocol version
+- Server sends hello with chosen cipher suite + server certificate(public key + certificate info)
+- Server sends Hello Done
+- Client checks certificate
+- Client generates pre-master key, encrypt it with server public key and sends it to server if RSA is used, Diffie-Hellman may be also used
+- Client sends client finished
+- Client and server generate symmetric key based on pre master key
+- Both send change cypher spec - changing to symmetric encryption
+- If Diffie-Hellman is used, than private key on the server side is used for Auth only, not for encryption
+
+Handshake process, records, 10 in total: 
+
+1. Client hello - Type 1 - TLS version, Cipher Suites, Server Name Indication  
+2. Server Hello - Type 2 - chosen cipher suite,TLS version  
+3. Certificate (Type 11) - both certs - server and intermediate  
+4. Server Key Exchange (Type 12) - Difie Hellman Data  
+5. Server Hello Done(Type 14)  
+6. Client key Exchange(Type 16) - Difie Hellman data from client
+7. Client Change Cipher Spec (Type - 20, This message notifies the server that all the future messages will be encrypted using the algorithm and keys that were just negotiated.)
+8. Client Encrypted Handshake Message
+9. Change Cipher Spec from server
+10. Encrypted handshake message from server
+
+### TLS 1.3 Handshake
+
+- Client Hello: Supported Cipher Suites, Guesses Key Agreement Protocol, Key Share
+- Server Hello, Key Agreement Protocol, Key Share, Server Finished
+
 ### Client Hello
 
 - Universal for all TLS versions
@@ -102,6 +132,82 @@ Random
     - Remaining 28 bytes: A cryptographically secure random value
 - The master secret is derived using the Client Random, Server Random, and the pre-master secret from key exchange (e.g., from an RSA-encrypted or DH-derived value)
 - The master secret is then used to generate session keys
+
+A lot of extensions and fields:
+
+```
+Handshake Protocol: Client Hello
+    Handshake Type: Client Hello (1)
+    Length: 508
+    Version: TLS 1.2 (0x0303)
+    Random: c980be07b33ea29eb4f92d274d366a9bcc00fa70957336a16f050c136fc778e2
+    Session ID Length: 32
+    Session ID: b144d555d1ccdc1453a3950601fe1b165bb40c94a7522cebcbb8f480c02c5a10
+    Cipher Suites Length: 42
+    Cipher Suites (21 suites)
+    Compression Methods Length: 1
+    Compression Methods (1 method)
+    Extensions Length: 393
+    Extension: Reserved (GREASE) (len=0)
+    Extension: server_name (len=13)
+    Extension: extended_master_secret (len=0)
+    Extension: renegotiation_info (len=1)
+    Extension: supported_groups (len=12)
+    Extension: ec_point_formats (len=2)
+    Extension: application_layer_protocol_negotiation (len=14)
+    Extension: status_request (len=5)
+    Extension: signature_algorithms (len=24)
+    Extension: signed_certificate_timestamp (len=0)
+    Extension: key_share (len=43)
+    Extension: psk_key_exchange_modes (len=2)
+    Extension: supported_versions (len=11)
+    Extension: compress_certificate (len=3)
+    Extension: Reserved (GREASE) (len=1)
+    Extension: padding (len=198)
+    [JA3 Fullstring: 771,4865-4866-4867-49196-49195-52393-49200-49199-52392-49162-49161-49172-49171-157-156-53-47-49160-49170-10,0-23-65281-10-11-16-5-13-18-51-45-43-27-21,29-23-24-25,0]
+    [JA3: 773906b0efdefa24a7f2b8eb6985bf37]
+```
+
+Cipher suites are particular important, every suite has its own code
+
+```
+Cipher Suites (21 suites)
+    Cipher Suite: Reserved (GREASE) (0xfafa)
+    Cipher Suite: TLS_AES_128_GCM_SHA256 (0x1301)
+    Cipher Suite: TLS_AES_256_GCM_SHA384 (0x1302)
+    Cipher Suite: TLS_CHACHA20_POLY1305_SHA256 (0x1303)
+    Cipher Suite: TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384 (0xc02c)
+    Cipher Suite: TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256 (0xc02b)
+    Cipher Suite: TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256 (0xcca9)
+    Cipher Suite: TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (0xc030)
+    Cipher Suite: TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256 (0xc02f)
+    Cipher Suite: TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256 (0xcca8)
+    Cipher Suite: TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA (0xc00a)
+    Cipher Suite: TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA (0xc009)
+    Cipher Suite: TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA (0xc014)
+    Cipher Suite: TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA (0xc013)
+    Cipher Suite: TLS_RSA_WITH_AES_256_GCM_SHA384 (0x009d)
+    Cipher Suite: TLS_RSA_WITH_AES_128_GCM_SHA256 (0x009c)
+    Cipher Suite: TLS_RSA_WITH_AES_256_CBC_SHA (0x0035)
+    Cipher Suite: TLS_RSA_WITH_AES_128_CBC_SHA (0x002f)
+    Cipher Suite: TLS_ECDHE_ECDSA_WITH_3DES_EDE_CBC_SHA (0xc008)
+    Cipher Suite: TLS_ECDHE_RSA_WITH_3DES_EDE_CBC_SHA (0xc012)
+    Cipher Suite: TLS_RSA_WITH_3DES_EDE_CBC_SHA (0x000a)
+
+```
+
+Server Name Indication is very important as well
+
+```
+Extension: server_name (len=13)
+    Type: server_name (0)
+    Length: 13
+    Server Name Indication extension
+        Server Name list length: 11
+        Server Name Type: host_name (0)
+        Server Name length: 8
+        Server Name: nasa.gov
+```
 
 ### Server Hello
 
@@ -177,7 +283,41 @@ Key derivation
 - The hash function is also used during the key derivation process to generate session keys from shared secrets
 - TLS 1.3 allows SHA-256 and SHA-384
 
-### Session resumption
+## TLS 1.3
+
+https://tls13.xargs.org  
+https://blog.cloudflare.com/rfc-8446-aka-tls-1-3/  
+ 
+ High level:
+
+ - Increased speed
+ - More Secure
+
+ Main features:
+
+ - Only strong ciphers and algorithms
+ - Faster handshake - increased performance
+ - The server now signs the entire handshake, including the cipher negotiation, so it is impossible to forge handshake process
+ - No user-defined DH parameters, no RSA. This means that every connection will use a DH-based key agreement and the parameters supported by the server are likely easy to guess (ECDHE with X25519 or P-256). Because of this limited set of choices, the client can simply choose to send DH key shares in the first message instead of waiting until the server has confirmed which key shares it is willing to support. That way, the server can learn the shared secret and send encrypted data one round trip earlier. SO CLIENT sends KEY IMMEDIATELY.
+ - Everything after Server Hello is encrypted, Certificate is encrypted - in order to understand where client goes, we need full interception
+ - Passive decryption, when you have TLS server private key, will not work - perfect forward secrecy
+ - Short notation of cipher suite: authentication algotithm is sent as an extension, key exchange algorithm is always Ephemeral Diffie-Hellman, cipher suite became too long too complex, there were too many variants of suites, for every suite IANA created a code
+ - Version negotiation removed
+ - SNI is still opened, but there is new RFC where it is encrypted
+ - 0-RTT Resumption (early data): if the client has connected to the server before, TLS 1.3 permits a zero-round trip handshake. This is accomplished by storing secret information (typically, Session ID or Session Tickets) of previous sessions and using them when both parties connect with each other in future. But it leads to the absense of Forward Secrecy. The second security concern when it comes to TLS 1.3 0-RTT is that it doesn’t provide a guarantee of non-replay between connections. If an attacker somehow manages to get hold of your 0-RTT encrypted data, it can fool the server into believing that the request came from the client. It is not very recomendeded to use it.
+
+**Strong ciphers and algorithms**
+
+Symmetric encryption - only AEAD ciphers:
+- AES-GCM(most common)
+- AES-EAX
+- ChaCha20 with Poly1305(as MAC)
+
+Perfect forward secrecy is mandatory, no RSA, only Diffie Hellman, TLS v1.3 supports only three key exchange methods:
+
+- Ephemeral Diffie-Hellman (combined with digital signatures for authentication);
+- PSK with ephemeral Diffie-Hellman;
+- PSK without ephemeral Diffie-Hellman.
 
 ## Record protocol - Application Data
 
@@ -264,7 +404,7 @@ TLS_AES_128_GCM_SHA256
 ```
 
 - In TLS 1.3 there are fewer parametres to avoid many variants of suites.  
-- Signature algorithm is sent as extension in Client hello
+- Signature algorithm is sent as extension in Client hello - for signing hash of handshake with server's private key
 - Key exchange is ECDHE always
 - AES_128_GCM - symmetric encryption algorithm + key length + mode - all algorithms are AEAD, so authentication per packet is included, no need a HMAC
 - SHA256 - This derivation process is called the key schedule — it takes the shared key from ECDHE, mixes in random values (nonces), and runs them through a hash-based pseudorandom function (PRF) or HKDF to produce strong, independent session keys. If your cipher suite ends in SHA256, then SHA256 is the hash function used inside that PRF/HKDF
@@ -280,160 +420,78 @@ TLS 1.3 Cipher Suites:
 
 TLS 1.3 cipher suites are defined differently, only specifying the symmetric ciphers, and cannot be used for TLS 1.2. Similarly, cipher suites for TLS 1.2 and lower cannot be used with TLS 1.3.
 
-## TLS 1.2 packet flow
+## TLS 1.3 VS TLS 1.2
 
-- Client sends Hello: cipher suite, protocol version
-- Server sends hello with chosen cipher suite + server certificate(public key + certificate info)
-- Server sends Hello Done
-- Client checks certificate
-- Client generates pre-master key, encrypt it with server public key and sends it to server if RSA is used, Diffie-Hellman may be also used
-- Client sends client finished
-- Client and server generate symmetric key based on pre master key
-- Both send change cypher spec - changing to symmetric encryption
-- If Diffie-Hellman is used, than private key on the server side is used for Auth only, not for encryption
+There are 2 main high level advantages and goals in TLS 1.3:
 
-Handshake process, records, 10 in total: 
+- Increased speed
+- More Secure
 
-1. Client hello - Type 1 - TLS version, Cipher Suites, Server Name Indication  
-2. Server Hello - Type 2 - chosen cipher suite,TLS version  
-3. Certificate (Type 11) - both certs - server and intermediate  
-4. Server Key Exchange (Type 12) - Difie Hellman Data  
-5. Server Hello Done(Type 14)  
-6. Client key Exchange(Type 16) - Difie Hellman data from client
-7. Client Change Cipher Spec (Type - 20, This message notifies the server that all the future messages will be encrypted using the algorithm and keys that were just negotiated.)
-8. Client Encrypted Handshake Message
-9. Change Cipher Spec from server
-10. Encrypted handshake message from server
+Symmetric encryption - only strong AEAD ciphers
 
-## TLS 1.3
-
-https://tls13.xargs.org  
-https://blog.cloudflare.com/rfc-8446-aka-tls-1-3/  
- 
- High level:
-
- - Increased speed
- - More Secure
-
- Main features:
-
- - Only strong ciphers and algorithms
- - Faster handshake - increased performance
- - The server now signs the entire handshake, including the cipher negotiation, so it is impossible to forge handshake process
- - No user-defined DH parameters, no RSA. This means that every connection will use a DH-based key agreement and the parameters supported by the server are likely easy to guess (ECDHE with X25519 or P-256). Because of this limited set of choices, the client can simply choose to send DH key shares in the first message instead of waiting until the server has confirmed which key shares it is willing to support. That way, the server can learn the shared secret and send encrypted data one round trip earlier. SO CLIENT sends KEY IMMEDIATELY.
- - Everything after Server Hello is encrypted, Certificate is encrypted - in order to understand where client goes, we need full interception
- - Passive decryption, when you have TLS server private key, will not work - perfect forward secrecy
- - Short notation of cipher suite: authentication algotithm is sent as an extension, key exchange algorithm is always Ephemeral Diffie-Hellman, cipher suite became too long too complex, there were too many variants of suites, for every suite IANA created a code
- - Version negotiation removed
- - SNI is still opened, but there is new RFC where it is encrypted
- - 0-RTT Resumption (early data): if the client has connected to the server before, TLS 1.3 permits a zero-round trip handshake. This is accomplished by storing secret information (typically, Session ID or Session Tickets) of previous sessions and using them when both parties connect with each other in future. But it leads to the absense of Forward Secrecy. The second security concern when it comes to TLS 1.3 0-RTT is that it doesn’t provide a guarantee of non-replay between connections. If an attacker somehow manages to get hold of your 0-RTT encrypted data, it can fool the server into believing that the request came from the client. It is not very recomendeded to use it.
-
-### Handshake
-
-- Client Hello: Supported Cipher Suites, Guesses Key Agreement Protocol, Key Share
-- Server Hello, Key Agreement Protocol, Key Share, Server Finished
-
-### Strong ciphers and algorithms
-
-Symmetric encryption - only AEAD ciphers:
-- AES-GCM(most common)
-- AES-EAX
+- AES-GCM - most common
+- AES-EAX 
 - ChaCha20 with Poly1305(as MAC)
 
-Perfect forward secrecy is mandatory, no RSA, only Diffie Hellman, TLS v1.3 supports only three key exchange methods:
+Key exchange - only Ecliptic Curve Diffie Hellman Ephemeral (ECDHE)
 
-- Ephemeral Diffie-Hellman (combined with digital signatures for authentication);
-- PSK with ephemeral Diffie-Hellman;
-- PSK without ephemeral Diffie-Hellman.
+- No RSA algorithm for key exchange
+- No user-defined DH parameters
 
-### Client Hello
+Key share is sent right in Client Hello
+- In TLS 1.3 Client does not wait for Server's opinion, it speculatively sends Client public key for Diffie-Hellman key exchange algorithm in the Client Hello message as well as preferred Group to avoid waiting for the server to confirm which key shares it supports, consequently to speed up handshake
 
-A lot of extensions and fields:
-```
-Handshake Protocol: Client Hello
-    Handshake Type: Client Hello (1)
-    Length: 508
-    Version: TLS 1.2 (0x0303)
-    Random: c980be07b33ea29eb4f92d274d366a9bcc00fa70957336a16f050c136fc778e2
-    Session ID Length: 32
-    Session ID: b144d555d1ccdc1453a3950601fe1b165bb40c94a7522cebcbb8f480c02c5a10
-    Cipher Suites Length: 42
-    Cipher Suites (21 suites)
-    Compression Methods Length: 1
-    Compression Methods (1 method)
-    Extensions Length: 393
-    Extension: Reserved (GREASE) (len=0)
-    Extension: server_name (len=13)
-    Extension: extended_master_secret (len=0)
-    Extension: renegotiation_info (len=1)
-    Extension: supported_groups (len=12)
-    Extension: ec_point_formats (len=2)
-    Extension: application_layer_protocol_negotiation (len=14)
-    Extension: status_request (len=5)
-    Extension: signature_algorithms (len=24)
-    Extension: signed_certificate_timestamp (len=0)
-    Extension: key_share (len=43)
-    Extension: psk_key_exchange_modes (len=2)
-    Extension: supported_versions (len=11)
-    Extension: compress_certificate (len=3)
-    Extension: Reserved (GREASE) (len=1)
-    Extension: padding (len=198)
-    [JA3 Fullstring: 771,4865-4866-4867-49196-49195-52393-49200-49199-52392-49162-49161-49172-49171-157-156-53-47-49160-49170-10,0-23-65281-10-11-16-5-13-18-51-45-43-27-21,29-23-24-25,0]
-    [JA3: 773906b0efdefa24a7f2b8eb6985bf37]
-```
+Server certificate is sent encrypted
+- Server certificate cannot be seen in traffic capture
+- Everything after Server Hello is encrypted
+- In Wireshark, you will see nothing except Client and Server Hellos
 
-Cipher suites are particular important, every suite has its own code
+SNI can be encrypted
+- RFC 8744
+- Both client and server should support it
+- In this case it will be impossible to use URLs and URL categories as a condition for traffic decryption, only IP addresses can be used
+- In order to understand where client goes, we need full interception: both Server Certificate and SNI are encrypted
+
+Short notation of cipher suite
+- TLS 1.2 cipher suite contains 4 parameters and looks like this:
 
 ```
-Cipher Suites (21 suites)
-    Cipher Suite: Reserved (GREASE) (0xfafa)
-    Cipher Suite: TLS_AES_128_GCM_SHA256 (0x1301)
-    Cipher Suite: TLS_AES_256_GCM_SHA384 (0x1302)
-    Cipher Suite: TLS_CHACHA20_POLY1305_SHA256 (0x1303)
-    Cipher Suite: TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384 (0xc02c)
-    Cipher Suite: TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256 (0xc02b)
-    Cipher Suite: TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256 (0xcca9)
-    Cipher Suite: TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (0xc030)
-    Cipher Suite: TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256 (0xc02f)
-    Cipher Suite: TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256 (0xcca8)
-    Cipher Suite: TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA (0xc00a)
-    Cipher Suite: TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA (0xc009)
-    Cipher Suite: TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA (0xc014)
-    Cipher Suite: TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA (0xc013)
-    Cipher Suite: TLS_RSA_WITH_AES_256_GCM_SHA384 (0x009d)
-    Cipher Suite: TLS_RSA_WITH_AES_128_GCM_SHA256 (0x009c)
-    Cipher Suite: TLS_RSA_WITH_AES_256_CBC_SHA (0x0035)
-    Cipher Suite: TLS_RSA_WITH_AES_128_CBC_SHA (0x002f)
-    Cipher Suite: TLS_ECDHE_ECDSA_WITH_3DES_EDE_CBC_SHA (0xc008)
-    Cipher Suite: TLS_ECDHE_RSA_WITH_3DES_EDE_CBC_SHA (0xc012)
-    Cipher Suite: TLS_RSA_WITH_3DES_EDE_CBC_SHA (0x000a)
-
+TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+ECDHE - key exchange algorithm
+RSA - type of certificate used by the server for authentication
+AES_128_GCM - Encryption algorithm + Encryption key size + Cipher mode
+SHA256 - Hash function for message integrity and key derivation in the TLS handshake and record layer
 ```
 
-Server Name Indication is very important as well
+TLS 1.3 cipher suite contains 2 parameters and looks like this:
 
-```
-Extension: server_name (len=13)
-    Type: server_name (0)
-    Length: 13
-    Server Name Indication extension
-        Server Name list length: 11
-        Server Name Type: host_name (0)
-        Server Name length: 8
-        Server Name: nasa.gov
-```
-- For TLS1.3 notaion is shorter, for example most popular - TLS13-AES128-GCM-SHA256 - No data about Key Exchange and Auth, because AEAD ciphers are used
-- There is hexadecimal representation for every possible cipher suite
-- Different protocols support different cipher suites
+`TLS_AES_128_GCM_SHA256`
+
+- In TLS 1.3 there are fewer parameters to avoid many variants of suites
+- Certificate type is not specified any more, the certificate type (RSA or ECDSA) is automatically determined by the certificate itself when the server sends it to the client
+- Key exchange algorithm is ECDHE always
+- Authentication method - specifies which digital signature algorithm the server uses to sign the hash of handshake data, proving that it owns the private key corresponding to the public key in its certificate - in extension
+
+Shorter and faster handshake
+- TLS 1.2 - 2 round trips, because Diffie-Hellman public keys are sent in separate messages
+- TLS 1.3 - 1 round trip, Diffie-Hellman public keys are sent in Client Hello and Server Hello
+
+Possible decryption issues
+- Passive decryption, when traffic in mirrored to decryption device is not possible any more, because RSA key exchange is not used
+- Active decryption during traffic interception is still possible and can be done by most NGFWs
+
+New extensions in Client Hello messages
+
+- Supported Versions - Indicates the versions of TLS that the client supports. This allows a client to explicitly declare support for TLS 1.3 and fallback to older versions if necessary. TLS 1.2 does not use this extension; instead, version negotiation is done using the ClientHello.version field
+- Key Share - The client includes its Diffie-Hellman (DH) or Elliptic Curve Diffie-Hellman (ECDH) key shares in this extension
+- Pre-Shared Key - Supports resumption and 0-RTT (zero round-trip time) handshakes by allowing the client to use a previously established Pre-Shared Key (PSK). In TLS 1.2 session resumption is handled using session IDs or session tickets, without a dedicated extension
+- Signature Algorithms Certificate - Specifies supported signature algorithms for certificate verification. This is separate from the existing signature_algorithms extension used for handshake signatures. TLS 1.2 does not distinguish between handshake and certificate signatures. This extension is optional and is not always used. Most probably, you will not see it in requests from browser
 
 ## SNI
 
-ServerName encryption    
-Server Name (the domain part of the URL) is presented in the ClientHello packet, in plain text.  
-From RFC:  
-3.1. Server Name Indication
-[TLS] does not provide a mechanism for a client to tell a server the name of the server it is contacting. It may be desirable for clients to provide this information to facilitate secure connections to servers that host multiple 'virtual' servers at a single underlying network address.
-In order to provide the server name, clients MAY include an extension of type "server_name" in the (extended) client hello.  
+- Server Name Indication
+- Can be encrypted in TLS 1.3   
+- Server Name (the domain part of the URL) is presented in the ClientHello packet, in plain text.  
 - The payload in the SNI extension can now be encrypted in TLS1.3
 - **SNI can be changed by client to bypass security policies, so it is very important to check server certificate not only SNI**
 - All policies on NGWF and SSL decryptors are based on SNI or Server certificate, Server certificate is more accurate source. In TLS 1.3 it is encrypted. So it is more difficult to understand what to decrypt and what not
@@ -442,6 +500,7 @@ In order to provide the server name, clients MAY include an extension of type "s
 - SNI Routing can be uased on load balancers to forward traffic without SSL termination to particular pool
 - Browsers add SNI to every request
 - Example from traffic capture
+
 ```
 Extension: server_name (len=12)
 Type: server_name (0)
@@ -455,6 +514,11 @@ Server Name Indication extension
 
 ## HSTS
 
+- HTTP Strict Transport Security
+- Forces browsers to use HTTPS only when connecting to a website
+- The server sends a special HTTP header: `Strict-Transport-Security: max-age=31536000; includeSubDomains; preload`
+- The browser remembers this instruction for the given time (max-age in seconds)
+- The browser never attempts HTTP — it goes straight to HTTPS
 
 ## Wireshark
 
