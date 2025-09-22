@@ -124,15 +124,6 @@ Handshake process, records, 10 in total:
         - Signature alhorithms
         - ALPN protocol
 
-Random
-
-- Critical role in ensuring session uniqueness, preventing replay attacks, and contributing to key generation
--It consists of:
-    - First 4 bytes: A UNIX timestamp (seconds since 1970-01-01).
-    - Remaining 28 bytes: A cryptographically secure random value
-- The master secret is derived using the Client Random, Server Random, and the pre-master secret from key exchange (e.g., from an RSA-encrypted or DH-derived value)
-- The master secret is then used to generate session keys
-
 A lot of extensions and fields:
 
 ```
@@ -222,7 +213,7 @@ Extension: server_name (len=13)
 - TLS 1.3 introduces signature_algorithms_cert (a separate extension) to list signature algorithms specifically for certificate signatures. This separates the algorithms used for certificates from those used for the handshake - `This extension is optional` - You will not see it in a capture from browser
 - In TLS 1.2 certificate type is also specified in Cipher Suite, this is not used in TLS 1.3
 - The certificate type (RSA or ECDSA) is automatically determined by the certificate itself when the server sends it to the client
-- Unlike in TLS 1.2, signature algorithms in TLS 1.3 are not tightly coupled to hash algorithms - ?
+- Unlike in TLS 1.2, signature algorithms in TLS 1.3 are not tightly coupled to hash algorithms
 
 Example of signature_algorithms in TLS 1.3:
 
