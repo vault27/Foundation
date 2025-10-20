@@ -203,17 +203,20 @@ R | 172.16.4.0/26 | 120/2 | via 1.1.1.1 | 00:00:12 | Etherntet 0/0
 
 ## Route filtering
 
-Route filtering during redistribution or BGP advertising can be done via
-
-- route-maps
-- distribute lists
+- In BGP, you can directly apply prefix-lists, distribute-lists, or filter-lists to a neighbor without a route-map
+- When you do need a route-map
+  - Match multiple attributes (prefix + AS_PATH + community, etc.)
+  - Set attributes (e.g. local-pref, MED, next-hop, weight)
+  - Perform conditional redistribution (e.g., from OSPF into BGP)
+  - Filter based on communities
+  - Tag or modify routes
+- Distribute lists - old syntax
 
 Conditional matching
 
 - ACL
 - Prefix list
-- Regex
-- AS Path ACL
+- AS Path ACL + Regex
 
 ### ACL
 
@@ -248,6 +251,8 @@ ip access-list extended 150|name
 - One or more statements with the same name
 - Each has a sequence number
 - Permit or deny, means if packet should match statement or not
+- Goes up to down
+- First match - stop
 
 Example on Cisco IOS, allow send to BGP neighboor all networks except one:
 
@@ -261,9 +266,30 @@ match ip address prefix-list BLOCK_EXTERNAL
 neighbor 192.168.5.1 route-map BLOCK_EXTERNAL out
 ```
 
+**le/ge**
+
+- `ip prefix-list test seq 5 permit 192.168.1.0/24 ge 32` - allow all /32 prefixes in 192.168.1.0/24 network - 192.168.1.1/32, 192.168.1.100/32, 192.168.1.255/32
+- `ip prefix-list test seq 10 deny 192.168.1.0/24 ge 25 le 27 - allow all /25-/27 networks in 192.168.1.0/24 network - 192.168.1.0/25, 192.168.1.128/25, 192.168.1.0/26
+- To avoid writing dozens (or hundreds) of individual entries for subnets of a larger prefix
+
+
+### AS Path ACL + Regex
+
+```
+ip as-path access-list 1 permit ^65001$
+# ^65001$ means: “The entire AS_PATH consists of just AS 65001
+
+ip as-path access-list 2 permit _65001_
+#_65001_ means: “AS 65001 appears anywhere in the path
+
+route-map FROM_CUSTOMER permit 10
+ match as-path 3
+```
+
+
 ### Route maps
 
-Mostly used for route redistribution: permit or deny redistribution based on match + changing something in route with set command as a bonus. Plus they are used to generate default route in OSPF, BGP routing policies(in neighbor statement, in export import commands for RT to control exported and imported routes) and in policy routing.
+Mostly used for route redistribution: permit or deny redistribution based on match + changing something in route with set command as a bonus. Plus they are used to generate default route in OSPF, BGP routing policies(in neighbor statement, in export import commands for RT to control exported and imported routes) and in policy routing.  
 - If/Then/Else logic
 - One or more commands
 - Processed in sequential order
