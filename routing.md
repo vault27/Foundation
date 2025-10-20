@@ -156,10 +156,9 @@ Routing Protocol Characteristics
 - Generally some variant of Dijkstra's algorithm is used
 - LPM - Long Prefix Match - network with longest mask will be chosen from routing table. Default route has the shortest prefix and the lowest priority
 - Classful routing protocols (RIPv1 and IGRP) do not advertise subnet mask information
-- Discontinious networks - discontiguous ? - 192.168.1.0 > 10.2.3.0 > 192.168.3.0 -  ???
 - Contiguous network: A single classful network in which packets sent between every pair of subnets will pass only through subnets of that same classful network, without having to pass through subnets of any other classful network
-- Discontiguous network: A single classful network in which packets sent between at least one pair of subnets must pass through subnets of a different classful network
-- Split horizon - 
+- Discontiguous network: A single classful network in which packets sent between at least one pair of subnets must pass through subnets of a different classful network - 192.168.1.0 > 10.2.3.0 > 192.168.3.0
+- Split horizon - loop-prevention technique used in distance-vector routing protocols - router will not advertise a route back out the same interface from which it learned that route
 
 ## Administrative distances
 
@@ -184,7 +183,6 @@ Can be changed with distance command
 - Redistribution is configured on that side where we redistribute
 - If we want to redistribute to BGP from OSPF, we configure it in BGP
 - When we use redistribution, espeacially double mutual: ospf > bgp > ospf - loops are possible - why? - tags are used to help?
-- 
 
 ## Routing table
 
@@ -200,92 +198,6 @@ R | 172.16.4.0/26 | 120/2 | via 1.1.1.1 | 00:00:12 | Etherntet 0/0
 - D: Identifies that the route was learned dynamically from another router using the EIGRP routing protocol.
 - O: Identifies that the route was learned dynamically from another router using the OSPF routing protocol.
 - R: Identifies that the route was learned dynamically from another router using the RIP routing protocol.
-
-## Route filtering
-
-- In BGP, you can directly apply prefix-lists, distribute-lists, or filter-lists to a neighbor without a route-map
-- When you do need a route-map
-  - Match multiple attributes (prefix + AS_PATH + community, etc.)
-  - Set attributes (e.g. local-pref, MED, next-hop, weight)
-  - Perform conditional redistribution (e.g., from OSPF into BGP)
-  - Filter based on communities
-  - Tag or modify routes
-- Distribute lists - old syntax
-
-Conditional matching
-
-- ACL
-- Prefix list
-- AS Path ACL + Regex
-
-### ACL
-
-- Compesed of access control entries - ACE
-- Starts at the top and proceeds down
-- Once match is found, action is applied and processing is stopped
-- At the end implicit deny
-- Standard ACL: only source network, named ACL, 1-99, 1300-1999
-- Extended ACL - source, destination, protocol, port, named, 100-199, 2000-2699
-
-```
-ip access-list standard 85|name
-10 permit|deny 192.168.0.0 0.255.255.255
-20 permit|deny any
-30 permit|deny host 192.168.1.1
-
-ip access-list extended 150|name
-10 permit|deny ip any any
-20 permit|deny ip host 192.168.1.1 host 192.168.1.2
-```
-
-- Different matching for BGP and IGP
-- For BGP: source and source wildcard for Matches Networks
-- For BGP: destination and destination wildcard for Matches Network Mask
-- For BGP: `permit ip 10.0.0.0 0.0.255.0(permit any 10.0.x.0 network) 255.255.255.0 0.0.0.0 (with /24 prefix length)`
-- For IGP - ?
- 
- ### IP prefix
-
-- Describes prefix number and its length
-- Used by route map, and route map is used by redistribute
-- One or more statements with the same name
-- Each has a sequence number
-- Permit or deny, means if packet should match statement or not
-- Goes up to down
-- First match - stop
-
-Example on Cisco IOS, allow send to BGP neighboor all networks except one:
-
-```
-ip prefix-list BLOCK_EXTERNAL seq 10 deny 159.33.0.0/24
-ip prefix-list BLOCK_EXTERNAL seq 20 permit 0.0.0.0/0 le 32
-
-route-map BLOCK_EXTERNAL permit 10
-match ip address prefix-list BLOCK_EXTERNAL
- 
-neighbor 192.168.5.1 route-map BLOCK_EXTERNAL out
-```
-
-**le/ge**
-
-- `ip prefix-list test seq 5 permit 192.168.1.0/24 ge 32` - allow all /32 prefixes in 192.168.1.0/24 network - 192.168.1.1/32, 192.168.1.100/32, 192.168.1.255/32
-- `ip prefix-list test seq 10 deny 192.168.1.0/24 ge 25 le 27 - allow all /25-/27 networks in 192.168.1.0/24 network - 192.168.1.0/25, 192.168.1.128/25, 192.168.1.0/26
-- To avoid writing dozens (or hundreds) of individual entries for subnets of a larger prefix
-
-
-### AS Path ACL + Regex
-
-```
-ip as-path access-list 1 permit ^65001$
-# ^65001$ means: “The entire AS_PATH consists of just AS 65001
-
-ip as-path access-list 2 permit _65001_
-#_65001_ means: “AS 65001 appears anywhere in the path
-
-route-map FROM_CUSTOMER permit 10
- match as-path 3
-```
-
 
 ### Route maps
 
