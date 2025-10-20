@@ -115,6 +115,21 @@ What you need to think through, when you design BGP network
 - Redistribute only networks connected to Leafs, looopbacks for instance
 - On Spines we configure dynamic neighboring using peer filter, where we configure which AS we accept from leafs, and listen command to specify networks on which we listen for BGP connections. Listen command is a passive mode. Leafs cannot be configured in this mode, they should be active. Listen command specifies which networks to listen, to which peer group place these neighbores and which AS accept
 
+## Multihoming
+
+Resiliency in Service Providers
+
+- One router in company - one in ISP - 2 lines
+- One router in company - 2 routers in ISP - 2 lines
+- One router in company - 2 ISPs - 2 lines
+- Two routers in company (iBGP between them) - 2 ISPs - 2 lines
+
+Internet transit routing - when 2 ISPs are connected to a company - company AS can become a transit AS - to avoid it company routers should advertise only local prefixes. 
+
+Determenistic path - flow between sites is predetermined and predictable. 
+
+Branch routers may become transit routers as well if one of determenistic path fails. Then routing becomes non determenistic. Transit routing can be avoided by configuring outbound routing filtering at each branch. Branch do not advertise what they learn from WAN. They advertise only theie LANs.
+
 ## Operations workflow
 
 - If everything is fine, only keepalives are sent, nothing inside them
