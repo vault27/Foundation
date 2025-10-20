@@ -203,7 +203,63 @@ R | 172.16.4.0/26 | 120/2 | via 1.1.1.1 | 00:00:12 | Etherntet 0/0
 
 ## Route filtering
 
-Route filtering during redistribution or BGP advertising can be done via route-maps, distribute lists, ip-prefixes, ip acls
+Route filtering during redistribution or BGP advertising can be done via
+
+- route-maps
+- distribute lists
+
+Conditional matching
+
+- ACL
+- Prefix list
+- Regex
+- AS Path ACL
+
+### ACL
+
+- Compesed of access control entries - ACE
+- Starts at the top and proceeds down
+- Once match is found, action is applied and processing is stopped
+- At the end implicit deny
+- Standard ACL: only source network, named ACL, 1-99, 1300-1999
+- Extended ACL - source, destination, protocol, port, named, 100-199, 2000-2699
+
+```
+ip access-list standard 85|name
+10 permit|deny 192.168.0.0 0.255.255.255
+20 permit|deny any
+30 permit|deny host 192.168.1.1
+
+ip access-list extended 150|name
+10 permit|deny ip any any
+20 permit|deny ip host 192.168.1.1 host 192.168.1.2
+```
+
+- Different matching for BGP and IGP
+- For BGP: source and source wildcard for Matches Networks
+- For BGP: destination and destination wildcard for Matches Network Mask
+- For BGP: `permit ip 10.0.0.0 0.0.255.0(permit any 10.0.x.0 network) 255.255.255.0 0.0.0.0 (with /24 prefix length)`
+- For IGP - ?
+ 
+ ### IP prefix
+
+- Describes prefix number and its length
+- Used by route map, and route map is used by redistribute
+- One or more statements with the same name
+- Each has a sequence number
+- Permit or deny, means if packet should match statement or not
+
+Example on Cisco IOS, allow send to BGP neighboor all networks except one:
+
+```
+ip prefix-list BLOCK_EXTERNAL seq 10 deny 159.33.0.0/24
+ip prefix-list BLOCK_EXTERNAL seq 20 permit 0.0.0.0/0 le 32
+
+route-map BLOCK_EXTERNAL permit 10
+match ip address prefix-list BLOCK_EXTERNAL
+ 
+neighbor 192.168.5.1 route-map BLOCK_EXTERNAL out
+```
 
 ### Route maps
 
@@ -241,27 +297,7 @@ Mostly used for route redistribution: permit or deny redistribution based on mat
 - metric type - internal | external | type-1 | type-2 - for IS-IS and OSPF
 - tag
 
-## IP prefix
-
-- Describes prefix number and its length
-- Used by route map, and route map is used by redistribute
-- One or more statements with the same name
-- Each has a sequence number
-- Permit or deny, means if packet should match statement or not
-
-Example on Cisco IOS, allow send to BGP neighboor all networks except one:
-
-```
-ip prefix-list BLOCK_EXTERNAL seq 10 deny 159.33.0.0/24
-ip prefix-list BLOCK_EXTERNAL seq 20 permit 0.0.0.0/0 le 32
-
-route-map BLOCK_EXTERNAL permit 10
-match ip address prefix-list BLOCK_EXTERNAL
- 
-neighbor 192.168.5.1 route-map BLOCK_EXTERNAL out
-```
-
-## Distribute list
+### Distribute list
 
 - Work together with ACLs
 - Can be attached directly to neighbor BGP command
@@ -317,8 +353,6 @@ Configure method on Nexus
 ```
 switch(config)# ip load-sharing address source-destination
 ```
-
-## Route map / Prefix map / IP prefix
 
 ## FHRP: GLBP/HSRP/VRRP
 
