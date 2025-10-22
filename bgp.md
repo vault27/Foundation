@@ -699,6 +699,9 @@ route-map FROM_CUSTOMER permit 10
 - neighbor route-map in|out applies changes to updates, sent or received. It also acts as filter, it can drop update based on match
 - Implicit deny at the end
 - Continue keyword - continue even after match
+- Allow or deny route is specified in route map action: permit or deny
+- If match is empty - all routes
+- Set command to change route options
 - Has 4 components:
   - Sequence number
   - Conditional matching criteria - if empty - all prefixes - as-path, ip address, ip address prefix list, local preference, metric, tag
