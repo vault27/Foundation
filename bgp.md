@@ -392,8 +392,9 @@ ip bgp-community new-format
 
 neighbor ip-address send-community [standard | extended | both] [additive] - for additional community
 ```
-
-Can Delete Community by setting to none on route-map
+- Show BGP table with community detail: `show bgp afi safi detail`
+- Show BGP table for particular communit: `show bgp ipv4 unicast community 333:333`
+- Can Delete Community by setting to none on route-map
 
 Match occurs via community list
 
@@ -608,14 +609,14 @@ route-map redistribute_static permit 10
 
 ## Route filtering
 
-- In BGP, you can directly apply prefix-lists, distribute-lists, or filter-lists to a neighbor without a route-map
-- When you do need a route-map
+- Pure filtering: In BGP, you can directly apply prefix-lists, distribute-lists, or filter-lists(AS Path ACL) to a neighbor without a route-map
+- Advanced filtering: When you do need a route-map
   - Match multiple attributes (prefix + AS_PATH + community, etc.)
   - Set attributes (e.g. local-pref, MED, next-hop, weight)
   - Perform conditional redistribution (e.g., from OSPF into BGP)
   - Filter based on communities
   - Tag or modify routes
-- Distribute lists - old syntax
+- Distribute lists - old syntax  - Based on ACL
 
 Conditional matching
 
@@ -676,7 +677,7 @@ neighbor 192.168.5.1 route-map BLOCK_EXTERNAL out
 - `ip prefix-list test seq 5 permit 192.168.1.0/24 ge 32` - allow all /32 prefixes in 192.168.1.0/24 network - 192.168.1.1/32, 192.168.1.100/32, 192.168.1.255/32
 - `ip prefix-list test seq 10 deny 192.168.1.0/24 ge 25 le 27` - allow all /25-/27 networks in 192.168.1.0/24 network - 192.168.1.0/25, 192.168.1.128/25, 192.168.1.0/26
 - To avoid writing dozens (or hundreds) of individual entries for subnets of a larger prefix
-
+ 
 ### AS Path ACL + Regex
 
 ```
@@ -743,23 +744,52 @@ redistribute ospf 1 route-map OSPF-to-BGP
 - BFD - Tx/Rx 100 ms x 3 - for CLOS
 - MicroBFD if LAG is used - for CLOS
 
-## Restart
+## Restart/Clear/Reset BGP connections
 
-Graceful
+**Hard reset**
 
-- BGP Graceful Restart is a feature of the Border Gateway Protocol (BGP) that enables BGP sessions to be restarted without causing a disruption in the network. It works by allowing routers to maintain their established routes even after a session reset or restart
-- When a BGP session is established, GR capability for BGP is negotiated by neighbors through the BGP OPEN message
-- If the neighbor also advertises support for GR, GR is activated for that neighbor session
-- If the BGP session is lost, the BGP peer router, known as a GR helper, marks all routes associated with the device as “stale” but continues to forward packets to these routes for a set period of time. The restarting device also continues to forward packets for the duration of the graceful restart. When the graceful restart is complete, routes are obtained from the helper so that the device is able to quickly resume full operation
-- Graceful shutdown A feature in routing protocols allowing a router to inform its neighbors about its impending deactivation. The neighbors can react to this indication immediately, instead of waiting for the Hold or Dead intervals to expire.
-
-Restart
+- Tearing down the TCP session between BGP peers, forcing a complete re-establishment and full route exchange
+- It interrupts traffic for that session
+- Use hard reset only when:
+  - A session is stuck (e.g., Active/Idle forever).
+  - Route refresh or soft reset doesn’t fix route inconsistency
+- Otherwise, prefer `clear ip bgp <neighbor> in` (route refresh) — it’s safe and non-disruptive
 
 ```
 configure terminal
 router bgp 4294965004
 clear ip bgp 10.125.5.20
 ```
+
+**BGP Graceful Restart (GR)**
+
+- Purpose: Keep forwarding traffic during a control-plane restart
+- When a BGP process (or router) restarts, but the data plane keeps forwarding packets
+- Before restart, both peers must have advertised the Graceful Restart capability
+- If one router restarts, its peer marks routes from it as “stale” instead of removing them immediately
+- If the restarting router comes back before a timer expires and re-advertises routes — session recovery is seamless
+- If it doesn’t, the stale routes are withdrawn after the timer expires
+- Graceful shutdown A feature in routing protocols allowing a router to inform its neighbors about its impending deactivation. The neighbors can react to this indication immediately, instead of waiting for the Hold or Dead intervals to expire.
+
+```
+router bgp <ASN>
+ bgp graceful-restart
+```
+
+**Soft Reset (Inbound / Outbound)**
+
+- Historically, if you changed a route-map, you had to clear ip bgp * — which resets the TCP session (bad)
+- Soft reset allows you to reapply policies without session reset
+- nbound soft reset originally required storing all received routes in memory — heavy resource use. That’s why route refresh was introduced
+- `clear ip bgp <neighbor> soft in|out`
+
+**Route Refresh**
+
+- Purpose: Lightweight alternative to **inbound** soft reset
+- If both peers support Route Refresh capability, your router can simply ask the neighbor to resend its routes
+- The neighbor re-advertises its routes; your router applies new inbound policies when processing them
+- No need to store Adj-RIB-In in memory
+- `clear ip bgp <neighbor> in`
 
 ## Path hunting
 
