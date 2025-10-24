@@ -331,13 +331,8 @@ BGP Message
 
 ## Communities
 
-What is BGP community?
-
 - Cummunity is optional transitive BGP attribute that can traverse from AS to AS
 - Any BGP prefix can have more than one tag (BGP community), you can attach up to 32 communities to a single route
-
-Why use BGP communities?
-
 - Additional capability for tagging routes and for modifying BGP routing policy
 - BGP communities can be appended, removed, or modified selectively on each attribute as a route travels from router to router
 - Service providers can make an agreement with your customers on a specific policy to be applied to their prefixes using BGP communities - Incoming traffic engineering - set local preference based on community
@@ -346,35 +341,47 @@ Types of BGP communnities
 - Standard communities
 - Extended communities
 - Large communities
+- Private communities - work only in local AS
+- Public communities - known everywhere
 
-Standard communities
+### Standard communities
 
-- Written as numeric 32-bit tags in (AS:Action) format
+- Written as numeric 32-bit tags in (AS:Action) format: 3356:70
 - The first 16 bits is the (AS) number of the AS that defines the community
 - The second 16 bits have the local significance (Action)
 - The primary purpose of standard communities is to the group and tag routes so that actions can perform
-- The BGP community can be displayed in full 32-bit format (0-4,294,967,295) or as two 16 bit numbers (0-65535):(0-65535) commonly referred to as new-format
+- The BGP community can be displayed in full 32-bit format (4259840100) or as two 16 bit numbers (0-65535):(0-65535) commonly referred to as new-format
 
-Well-known standard communities
+### Well-known standard communities
 
-- Internet: should be advertised on the Internet
-- No_Advertise: Routes with this community should not be advertised to any BGP peer (iBGP or eBGP)
-- No_Export: When a route with this community is received, the route is not advertised to any eBGP peer. Routes with this community can be advertised to iBGP peers
-- Local-as: prevent sending tagged routes outside the local AS within the confederation.(route will not send to any EBGP neighbor or any to intra-confederation external neighbor )
+- Even in configuration we use them as words
+- Internet: should be advertised on the Internet - 0:0
+- No_Advertise: Routes with this community should not be advertised to any BGP peer (iBGP or eBGP) - 65535:65281
+- No_Export: When a route with this community is received, the route is not advertised to any eBGP peer. Routes with this community can be advertised to iBGP peers - 65535:65282
+- Local-as: prevent sending tagged routes outside the local AS within the confederation.(route will not send to any EBGP neighbor or any to intra-confederation external neighbor) - 65535:65283
 
-Extended communities 
+### Extended communities 
 
-- Written as numeric 64-bit tags in (Type:AS:Membership) format
+- Standard - Not enough for modern uses like MPLS VPNs or cross-provider coordination
+- No type field / no structure - Routers just see a 32-bit number — they don’t know what it means
+- There’s no built-in way to say, “This tag is a Route Target” vs. “This tag is a QoS policy.”
+- No support for IPv6 or 4-byte ASNs
+- No room for extended attributes
+- MPLS VPNs needed to carry more information per route
+- Which VPN a route belongs to (Route Target)
+- Which site originated it (Route Origin)
+- QoS markings (Color, Bandwidth hints, etc.)
+- Written as numeric 64-bit tags in (Type:AS:Membership) format: rt:65000:100
 - The first 16 bits are used to encode a type that defines a specific purpose for an extended community, extended community type numbers are assigned by Internet Assigned Numbers Authority (IANA)
 - The remaining 48 bits can be used by operators
 - Examples: Site of Origin (SOO), Ethernet VPN (EVPN), OSPF Domain Identifier, Route Target
 
-Large communities 
+### Large communities 
 
-- Written as numeric 96-bit tags in (Source AS:Action: Target AS) 
+- Written as numeric 96-bit tags in (Source AS:Action:Target AS) 
 - Format split into three 32-bit values which can accommodate more identification data including 4-byte AS numbers
 
-How to set community attribute values?
+### Configuration
 
 Using Route-maps associated with:
 
@@ -383,7 +390,6 @@ Using Route-maps associated with:
 - Neighbor command
 - Redistribution command
 
-Configuration  
 IOS and IOS XE routers do not advertise BGP communities to peers by default
 
 ```
@@ -392,8 +398,9 @@ ip bgp-community new-format
 
 neighbor ip-address send-community [standard | extended | both] [additive] - for additional community
 ```
+
 - Show BGP table with community detail: `show bgp afi safi detail`
-- Show BGP table for particular communit: `show bgp ipv4 unicast community 333:333`
+- Show BGP table for particular community: `show bgp ipv4 unicast community 333:333`
 - Can Delete Community by setting to none on route-map
 
 Match occurs via community list
@@ -406,20 +413,17 @@ Match occurs via community list
 - Reference from route-map
   - match community AS100
 
-BGP Cost-Community - BGP Custom Decision Process
+### BGP Cost-Community 
 
-- http://tools.ietf.org/html/draft-retana-bqp-custom-decision-02
-- Only advertised within the AS or to confederation peers
-- Influences BGP path selection at the Point of Insertion 
-  - "pre-bestpath" point of insertion can be used 
-  - Compares cost-community value before Weight
-- EIGRP PE/CE
-  - Uses "pre-bestpath" cost-community to encode composite metric into BGP
+- Extended community attribute
+- Allows a route originator or controller to signal a cost or preference value across the network — especially for intra-domain traffic engineering
+- Influence path selection within an AS
 
-GSHUT Community
+### GSHUT Community
 
+- Standard BGP community used to signal to neighbors that a route is being withdrawn intentionally, such as during a planned maintenance or shutdown
+- So before tearing down the BGP session, you advertise routes with the GSHUT community
 - Graceful BGP session shutdown
-- http://tools.ietf.org/html/draft-ietf-grow-bgp-gshut-05
 - Used in conjunction with Graceful Restart
 - Takes the restarting peer out of the data-path by modifying local preference
 - Similar to IS-IS Overload or OSPF Max Metric LSA
