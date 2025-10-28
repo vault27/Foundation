@@ -265,9 +265,9 @@ States:
 ## Path Attributes
 
 <img width="671" alt="image" src="https://github.com/philipp-ov/foundation/assets/116812447/c5e511a8-6318-4367-9c34-3bacd0ffa26c">
-
-10 attributes in total! 
-Only 3 are absolutely mandatory!   
+    
+**10** attributes in total!   
+Only **3** are absolutely mandatory!   
 
 Path attributes fall into four separate categories:
 
@@ -287,8 +287,9 @@ Path attributes fall into four separate categories:
 
 ### Well-known disretionary
 
-- Local Preference - used only in iBGP, used to show the best exit from AS, the higher the better route, default - 100. Default value exists only for routes, which originate from this router and with in AS, if router is received from different AS, local preference is empty. If an AS receives multiple routes to the same destination via different eBGP neighbors, it can set a higher LOCAL_PREF on one route (via route maps or policies), and that preference will be communicated to all iBGP peers within the AS. They will then choose the path with the higher LOCAL_PREF when routing traffic out of the AS
-- ATOMIC_AGGREGATE - The purpose of the attribute is to alert BGP speakers along the path that some information have been lost due to the route aggregation process and that the aggregate path might not be the best path to the destination
+- **Local Preference** - used only in iBGP, used to show the best exit from AS, the higher the better route, default - 100. Default value exists only for routes, which originate from this router and with in AS, if router is received from different AS, local preference is empty. If an AS receives multiple routes to the same destination via different eBGP neighbors, it can set a higher LOCAL_PREF on one route (via route maps or policies), and that preference will be communicated to all iBGP peers within the AS. They will then choose the path with the higher LOCAL_PREF when routing traffic out of the AS
+
+- **ATOMIC_AGGREGATE** - The purpose of the attribute is to alert BGP speakers along the path that some information have been lost due to the route aggregation process and that the aggregate path might not be the best path to the destination
 
 ### Optional transitive
 
@@ -297,17 +298,11 @@ Path attributes fall into four separate categories:
  
 ### Optional non transitive
 
-- ORIGINATOR_ID - new optional, non-transitive BGP attribute of Type code 9.  This attribute is 4 bytes long and it will be created by an RR in reflecting a route.  This attribute will carry the BGP Identifier of the originator of the route in the local AS
-- CLUSTER_LIST - is a new, optional, non-transitive BGP attribute of Type code 10.  It is a sequence of CLUSTER_ID values representing the reflection path that the route has passed. When an RR reflects a route, it MUST prepend the local CLUSTER_ID to the CLUSTER_LIST.  If the CLUSTER_LIST is empty, it MUST create a new one.  Using this attribute an RR can identify if the routing information has looped back to the same cluster due to misconfiguration.  If the local CLUSTER_ID is found in the CLUSTER_LIST, the advertisement received SHOULD be ignored - to put it simple - all RRs, via which route passed, should be on this list
-- Multi Exit Discriminator (MED) - suggestion to other directly connected networks on which path should be taken if multiple options are available, and the lowest value wins. Transfered from iBGP to eBGP. Allow routers in one AS to tell routers in a neighboring AS how good a particular route is. We send a route with lower MED, and this route becomes preferable
+- **ORIGINATOR_ID** - new optional, non-transitive BGP attribute of Type code 9.  This attribute is 4 bytes long and it will be created by an RR in reflecting a route.  This attribute will carry the BGP Identifier of the originator of the route in the local AS
 
-### MED
+- **CLUSTER_LIST** - is a new, optional, non-transitive BGP attribute of Type code 10.  It is a sequence of CLUSTER_ID values representing the reflection path that the route has passed. When an RR reflects a route, it MUST prepend the local CLUSTER_ID to the CLUSTER_LIST.  If the CLUSTER_LIST is empty, it MUST create a new one.  Using this attribute an RR can identify if the routing information has looped back to the same cluster due to misconfiguration.  If the local CLUSTER_ID is found in the CLUSTER_LIST, the advertisement received SHOULD be ignored - to put it simple - all RRs, via which route passed, should be on this list
 
-- In Cisco IOS, the keyword metric inside a BGP route-map = MED
-- Purpose: To tell external BGP neighbors which path is preferred into your AS when there are multiple entry points
-- Lower MED is preferred
-- Non-transitive: Only passed between directly connected ASes by default
-- Usually used between two ISPs or two sites of the same organization
+- **Multi Exit Discriminator (MED)** - suggestion to other directly connected networks on which path should be taken if multiple options are available, and the lowest value wins. Transfered from iBGP to eBGP. Allow routers in one AS to tell routers in a neighboring AS how good a particular route is. We send a route with lower MED, and this route becomes preferable
 
 ```
 BGP Message
@@ -324,10 +319,49 @@ BGP Message
 
 ### Weight
 
-- Only for Cisco
+- Only for Cisco, works only locally
+- Influences only outbound traffic
 - Checked in the first place
 - Set for a neighbor or via route map for particular matches
 - The higher - ther better!
+
+## Best path selection
+
+- BGP router advertises only best path for the route to neighbors
+- Best path recalculation happens when:
+  - Next hop reachability changes
+  - Failure of an interface
+  - Redistribution change
+  - Reception of new or removed paths
+
+**13 steps/attributes** 
+
+First nine are main  
+Remaining 4 are tiebreackers
+
+1. Is next hop reachable?
+2. Weight
+3. Local preference - is set when router receives a route. A higher value is a higher preference
+4. Locally injected routes - injected into BGP locally (using the network command, redistribution, or route summarization)
+5. AS Path length
+6. Origin code, the less - the better
+7. Lowest MED
+8. Neighbor Type: Prefer external BGP (eBGP) routes over internal BGP (iBGP)
+9. IGP metric for reaching the NEXT_HOP, the lower the value, the better the route
+10. The oldest path - first which was received
+11. Smallest RID of the neighbor
+12. Route with the minimum cluster list length
+13. Smallest neighbor IP address
+
+- If the best path for an NLRI is determined in Steps 1 through 9, BGP adds only one BGP route to the IP routing table—the best route, of course
+- If the best path for an NLRI is determined after Step 9, BGP considers placing mul-tiple BGP routes into the IP routing table
+- Even if multiple BGP routes are added to the IP routing table according to ECMP, BGP still chooses only one route per NLRI as the best route; that best route is the only route to that NLRI that BGP will advertise to neighbors
+
+Community based local preference:  
+
+- They are used for inbound traffic engineering. 
+- Some transit providers allow their customers to influence the local preference in the transit network through the use of BGP communities
+- For example community 174:10 means local preference 10
 
 ## Communities
 
@@ -432,7 +466,7 @@ Match occurs via community list
 ## BGP tables
 
 - Adj-RIB-In - routes in original form, `before filters`, deleted after processed
-- Loc-RIB - all local routes and routes received from beighbors. Validity checked. Next hop reachibility checked. Best path is chosen is chosen from this table and presented to routing table
+- Loc-RIB - all local routes and routes received from beighbors. Validity checked. Next hop reachibility checked. Best path is chosen from this table and presented to routing table
 - Adj-RIB-Out - routes `after` outbound filters. It is mainteined for every neighbor separately. Next hop in it is 0.0.0.0 - local router, will be changed after sending
 
 Four flows are possible:
@@ -474,37 +508,6 @@ Four flows are possible:
 ### Show Global RIB BGP routes
 
 `sh ip route bgpe`
-
-## Best path selection
-
-**12 steps** 
-
-First nine are main  
-Remaining 3 are tiebreackers
-
-1. Is next hop reachable?
-2. Weight
-3. Local preference - is set when router receives a route. A higher value is a higher preference
-4. Locally injected routes - injected into BGP locally (using the network command, redistribution, or route summarization)
-5. AS Path length
-6. Origin code, the less - the better
-7. MED
-8. Neighbor Type: Prefer external BGP (eBGP) routes over internal BGP (iBGP)
-9. IGP metric for reaching the NEXT_HOP, the lower the value, the better the route
-10. The oldest path
-11. Smallest RID
-12. Smallest neighbor ID
-
-The decision for eBGP routes can reach Step 11 if at Step 10 the formerly best route fails and BGP is comparing two other alternate routes.  
-- If the best path for an NLRI is determined in Steps 1 through 9, BGP adds only one BGP route to the IP routing table—the best route, of course
-- If the best path for an NLRI is determined after Step 9, BGP considers placing mul-tiple BGP routes into the IP routing table
-- Even if multiple BGP routes are added to the IP routing table, BGP still chooses only one route per NLRI as the best route; that best route is the only route to that NLRI that BGP will advertise to neighbors
-
-Community based local preference:  
-
-- They are used for inbound traffic engineering. 
-- Some transit providers allow their customers to influence the local preference in the transit network through the use of BGP communities
-- For example community 174:10 means local preference 10
 
 ## Capabilities
 
