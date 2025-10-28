@@ -293,8 +293,9 @@ Path attributes fall into four separate categories:
 
 ### Optional transitive
 
-- AGGREGATOR - When some routes are aggregated by an aggregator, the aggregator does attache its Router-ID to the aggregated route into the AGGREGATOR_ID attribute
-- COMMUNITIES
+- **AGGREGATOR** - When some routes are aggregated by an aggregator, the aggregator does attache its Router-ID to the aggregated route into the AGGREGATOR_ID attribute
+
+- **COMMUNITIES**
  
 ### Optional non transitive
 
@@ -302,7 +303,12 @@ Path attributes fall into four separate categories:
 
 - **CLUSTER_LIST** - is a new, optional, non-transitive BGP attribute of Type code 10.  It is a sequence of CLUSTER_ID values representing the reflection path that the route has passed. When an RR reflects a route, it MUST prepend the local CLUSTER_ID to the CLUSTER_LIST.  If the CLUSTER_LIST is empty, it MUST create a new one.  Using this attribute an RR can identify if the routing information has looped back to the same cluster due to misconfiguration.  If the local CLUSTER_ID is found in the CLUSTER_LIST, the advertisement received SHOULD be ignored - to put it simple - all RRs, via which route passed, should be on this list
 
-- **Multi Exit Discriminator (MED)** - suggestion to other directly connected networks on which path should be taken if multiple options are available, and the lowest value wins. Transfered from iBGP to eBGP. Allow routers in one AS to tell routers in a neighboring AS how good a particular route is. We send a route with lower MED, and this route becomes preferable
+- **Multi Exit Discriminator (MED)** - suggestion to other directly connected networks on which path should be taken if multiple options are available, and the lowest value wins. Transfered from iBGP to eBGP. Allow routers in one AS to tell routers in a neighboring AS how good a particular route is. We send a route with lower MED, and this route becomes preferable. MED is not propagated to a third AS. A router sends MED only to external (eBGP) peers for prefixes that originated inside its own AS. `AS1 > AS2 > iBGP > AS2`  - this will work.
+
+- **Accumulated IGP (Interior Gateway Protocol) metric** - The AIGP attribute allows BGP to use IGP-like metric accumulation across multiple autonomous systems (or within one large AS) to select the shortest path based on true cumulative IGP cost, not just BGP policy values
+  - When a route is imported into BGP, the router sets the AIGP metric to the IGP cost from itself to the BGP next-hop
+  - Each BGP router that propagates the route adds its own IGP cost to the AIGP value before advertising it onward
+  - The receiving router then compares AIGP values among routes — lower is preferred, just like in an IGP 
 
 ```
 BGP Message
@@ -334,24 +340,25 @@ BGP Message
   - Redistribution change
   - Reception of new or removed paths
 
-**13 steps/attributes** 
+**14 steps/attributes** 
 
-First nine are main  
+First 10 are main  
 Remaining 4 are tiebreackers
 
 1. Is next hop reachable?
 2. Weight
 3. Local preference - is set when router receives a route. A higher value is a higher preference
 4. Locally injected routes - injected into BGP locally (using the network command, redistribution, or route summarization)
-5. AS Path length
-6. Origin code, the less - the better
-7. Lowest MED
-8. Neighbor Type: Prefer external BGP (eBGP) routes over internal BGP (iBGP)
-9. IGP metric for reaching the NEXT_HOP, the lower the value, the better the route
-10. The oldest path - first which was received
-11. Smallest RID of the neighbor
-12. Route with the minimum cluster list length
-13. Smallest neighbor IP address
+5. AIGP
+6. AS Path length
+7. Origin code, the less - the better
+8. Lowest MED
+9. Neighbor Type: Prefer external BGP (eBGP) routes over internal BGP (iBGP)
+10. IGP metric for reaching the NEXT_HOP, the lower the value, the better the route
+11. The oldest path - first which was received
+12. Smallest RID of the neighbor
+13. Route with the minimum cluster list length
+14. Smallest neighbor IP address
 
 - If the best path for an NLRI is determined in Steps 1 through 9, BGP adds only one BGP route to the IP routing table—the best route, of course
 - If the best path for an NLRI is determined after Step 9, BGP considers placing mul-tiple BGP routes into the IP routing table
