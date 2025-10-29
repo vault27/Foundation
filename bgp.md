@@ -836,7 +836,7 @@ Five tuples are used for load balancing. Hash is calculated for these 5 parametr
 
 ## Synchronization
 
-Don't use or advertise the route/s learned via an iBGP neighbor to an eBG neighbor unless & until the same is/are learned via some other IP like RIP, OSPF, EIGRP...
+Don't use or advertise the route/s learned via an iBGP neighbor to an eBG neighbor unless & until the same is/are learned via some other IP like RIP, OSPF, EIGRP... Synchronization is no longer a default  and is not commonly used. Earlier it was used when network prefixes were redistributed to IGP.
 
 ## MP-BGP
 
@@ -929,7 +929,7 @@ show bgp ipv6 unicast neighbors 2001:DB8:0:12::2
 iBGP vs eBGP
 
 - TTL in IP header, eBGP - 1, iBGP-255
-- eBGP router modifies next hop to its own addresssourcing BGP connection
+- eBGP router modifies next hop to its own address sourcing BGP connection
 - eBGP router prepends its ASN to the existing AS_Path variable
 - Receiving eBGP router checks AS_Path, so it does not have its own AS already
 - iBGP route cannot be forwarded to another iBGP router, to avoid loops
@@ -949,6 +949,10 @@ Concepts
 - iBGP peers typically peer via Loopbacks
     - Allows rerouting around failed paths via IP
     - Required for some application such as MPLS L3VPN
+    - Loopback interfaces are advertised into the IGP
+    - Interface update source should be configured for each neighbor as Loopback
+    - No need to recompute best path if one of the links fails
+    - Automatic load balancing if there are multiple equal-cost paths through IGP
 - Loop prevention via route filtering: IBGP learned routes cannot be advertised on to another iBGP neighbor, as a result it requires:
     - Fully meshed iBGP peerings
     - Route reflectors
@@ -959,9 +963,11 @@ Concepts
 - One of the key component of the route reflection approach in addressing the scaling issue is that the RR summarizes routing information and only reflects its best path
 - Certain route reflection topologies the route reflection approach may not yield the same route selection result as that of the full IBGP mesh approach
 - A way to make route selection the same... is by configuring the intra-cluster IP metrics to be better than the inter-cluster IGP metrics, and maintaining full mesh within the cluster
-- By default Outbound iBGP updates do not modify the next-hop attribute regardless of iBGP peer type
+- By default outbound iBGP updates do not modify the next-hop attribute regardless of iBGP peer type
+- When next hop is not modified, then peering networks (between edge router and router of other AS) need to be advertised to iBGP or IGP, so all routers can reach unchanged next hop address of router from neighbor AS
+- To avoid this advertisment of peer networks next modification is used
 - Can be modified
-  - neighbor next-hop-self
+  - neighbor next-hop-self - enabled on edge routers for neighborship with internal routers
   - route-map action set ip next-hop
   - "next-hop-self ALL" for inserting RR in the data-path: packets will go via RR: Used in Unified MPLS design
 
