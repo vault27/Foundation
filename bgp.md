@@ -299,7 +299,7 @@ Path attributes fall into four separate categories:
  
 ### Optional non transitive
 
-- **ORIGINATOR_ID** - new optional, non-transitive BGP attribute of Type code 9.  This attribute is 4 bytes long and it will be created by an RR in reflecting a route.  This attribute will carry the BGP Identifier of the originator of the route in the local AS
+- **ORIGINATOR_ID** - new optional, non-transitive BGP attribute of Type code 9.  This attribute is 4 bytes long and it will be created by an RR in reflecting a route.  This attribute will carry the BGP Identifier of the originator of the route in the local AS. Created by the first route reflector and sets the RID of the router that advertised the route(not the RID of RR!) into AS. If this attribute already exists, then it should not be touched. If routers sees its RID in ORIGINATOR_ID, NLRI is discarded
 
 - **CLUSTER_LIST** - is a new, optional, non-transitive BGP attribute of Type code 10.  It is a sequence of CLUSTER_ID values representing the reflection path that the route has passed. When an RR reflects a route, it MUST prepend the local CLUSTER_ID to the CLUSTER_LIST.  If the CLUSTER_LIST is empty, it MUST create a new one.  Using this attribute an RR can identify if the routing information has looped back to the same cluster due to misconfiguration.  If the local CLUSTER_ID is found in the CLUSTER_LIST, the advertisement received SHOULD be ignored - to put it simple - all RRs, via which route passed, should be on this list
 
@@ -999,7 +999,7 @@ Full Mesh Design Disadvantages
 
 ### iBGP Route Reflection  
 
-This is one if iBGP scaling techniques  
+This is one of iBGP scaling techniques  
 
 - Eliminates need for full mesh
 - Only need peering(s) to the RR(s)
@@ -1039,7 +1039,7 @@ Inter-Cluster Peerings
 - Inter-Cluster peerings between RRs can be client or non-client peerings
   - Depends on redundancy design
   - Duplicate routes, more processing
-- Cluster-ID is based on Router-|D
+- Cluster-ID is based on Router-ID
   - By default all RR are in separate clusters
 - Same cluster-id on both clusters or not?
   - Depends on redundancy design...
@@ -1102,7 +1102,7 @@ If bgp cluster-id is not set, the Router ID of the RR is used by default
 
 ### Confederation
 
-This is one if iBGP scaling techniques
+This is one of iBGP scaling techniques
 
 - Reduces full mesh iBGP requirement by splitting AS into smaller Sub-AS
 - Inside Sub-AS full mesh or RR requirement remains
