@@ -4740,49 +4740,41 @@ Verify slots
 
 ## RMA
 
-The most difficult is to restore config, sync with HA node, restore connection with Panorama and successfully Push from Panorama.
-
-- All interfaces are disconnected except Mgmt
-- Version of RMA device should be the same
-- Do a Factory reset of new RMA device
-- Backup failed device if available
-- Check jumbo frames
-- Check session distribution policy for 7000
-- Configure Mgmt interface on new FW
-- Transfer licenses of Palo Alto Portal
-- Install license on new device
-- Install OS on new device the same as on old one
-- Install dynamic updates the same as on old
-- Replace Serial in Panorama
-- Restore configuration and Commit
-- Ensure the new device stays in a passive state, suspend it
-- Check that Panorama is connected
-- Push Template and Device Group
-- Go to Device > High Availability > General > Setup and uncheck the Enable Config Sync option
-- Disable "Preemptive" under Election Settings
-- Configure the device with the highest Device Priority value (255)
-- Perform a commit
-- Connect HA1 Interfaces
-- Make sure the replacement device has the same configuration as the active device
-- If the configurations are not the same, go to Device > High Availability and click "Push configuration to peer" from the active device
-- Verify there are no active commit jobs running and the devices are in sync
-  
-```
-show jobs all
-show high-availability all | match "Running Configuration"
-```
-
-- Verify there is no difference in idmgr between the devices
+- Mute in monitoring
+- Create devoce config state of old FW if possible
+- Prepare local admin password
+- Suspend old fw
+- Shutdown old fw
+- Unrack old fw
+- Rack new fw
+- Connect mgmt cable
+- Power on
+- Configure IP and gateway and DNS
+- Register new device on PA site
+- Transfer license to a new device
+- Request license
+- Upgrade OS - maybe many steps
+- Upgrade databases
+- Import the device state to new FW
+- In Panorama:
 
 ```
-debug device-server dump idmgr high-availability state
+replace device old <old SN#> new <new SN#>
+> configure 
+# commit 
 ```
 
-- Log into the Active unit. Go to Device > Config Audit > Do config audit between "Running Config" and "Peers Running Config." Make sure both are the same. If the case of any differences, try to manually configure the passive unit
-- Connect the HA2 interface and wait for the session synchronization to be completed
-- If the Firewall is suspended make it functional now
-- Connect the other dataplane interfaces now
-- Test Failover
+- Add Panorama configuration to new FW
+- Verify that new FW is connected in Panorama
+- Push Template and Device group
+- Suspend New FW
+- Connect Data Cables
+- Unsuspend New FW
+- Failover to New Fw
+- Verify that traffic is flowing
+- Failover back to Primary
+- Unregister old fw
+- Unmute in monitoring
 
 ## Assymetric routing
 
