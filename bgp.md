@@ -273,8 +273,8 @@ Path attributes fall into four separate categories:
 
 - Well-known mandatory - The PA must be in every BGP Update, all devices have to support it
 - Well-known discretionary - he PA is not required in every BGP Update, all devices have to support it
-- Optional transitive - not all have to support it, the router should silently forward the PA to other routers without needing to consider the meaning of the PA
-- Optional non-transitive - not all have to support it, the router should remove the PA so that it is not propagated to any peers
+- Optional transitive - not all have to support it, if the router does not understand it, then router should silently forward the PA to other routers without needing to consider the meaning of the PA, so PA will be forwarded anyway
+- Optional non-transitive - not all have to support it, if the router does not understand it then it should remove the PA so that it is not propagated to any peers, but if router understands it, it may modify it and send further
 
 ### Well-known mandatory
 
@@ -840,15 +840,16 @@ Don't use or advertise the route/s learned via an iBGP neighbor to an eBG neighb
 
 ## MP-BGP
 
--  IETF RFC 4760
--  Extension to BGP, which allows to transfer different address families
--  IPv4, IPv6, multicast, unicast, VPN
--  Unicast and multicast are stored in different tables
--  When MP-BGP is configured, BGP installs the MP-BGP routes into different routing tables. Each routing table is identified by the protocol family or address family indicator (AFI) and a subsequent address family identifier (SAFI).
--  EVPN AFI/SAFI - 25/70 - RFC 7209, 7432, 8365
-- New optional and nontransitive attributes:
+- IETF RFC 4760
+- Extension to BGP, which allows to transfer different address families
+- IPv4, IPv6, multicast, unicast, VPN
+- Unicast and multicast are stored in different tables
+- When MP-BGP is configured, BGP installs the MP-BGP routes into different routing tables. Each routing table is identified by the protocol family or address family indicator (AFI) and a subsequent address family identifier (SAFI).
+- EVPN AFI/SAFI - 25/70 - RFC 7209, 7432, 8365
+- New optional and nontransitive attributes in the UPDATE message (specifically the MP_REACH_NLRI and MP_UNREACH_NLRI attributes):
   - Multiprotocol reachable NLRI - install route
   - Multiprotocol unreachable NLRI - withdraws route
+- Non-Transitive: Means they are not passed to other BGP peers only if router does not understand it
 
 ### Address families
 
