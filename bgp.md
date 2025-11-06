@@ -518,6 +518,65 @@ Four flows are possible:
 
 ## Capabilities
 
+Specified in OPEN message
+
+```
+Border Gateway Protocol - OPEN Message
+    Marker: ffffffffffffffffffffffffffffffff
+    Length: 157
+    Type: OPEN Message (1)
+    Version: 4
+    My AS: 65001
+    Hold Time: 90
+    BGP Identifier: 192.0.2.1
+    Optional Parameters Length: 104
+    Optional Parameters (104 bytes)
+        Parameter: Capability (2), length: 6
+            Capability Code: Multiprotocol extensions (1)
+            Capability Length: 4
+            AFI: IPv6 (2)
+            Reserved: 0
+            SAFI: Unicast (1)
+        Parameter: Capability (2), length: 6
+            Capability Code: Multiprotocol extensions (1)
+            Capability Length: 4
+            AFI: L3VPN (1)
+            Reserved: 0
+            SAFI: MPLS-labeled VPN address (128)
+        Parameter: Capability (2), length: 2
+            Capability Code: Route Refresh (2)
+            Capability Length: 0
+        Parameter: Capability (2), length: 2
+            Capability Code: Outbound Route Filtering (3)
+            Capability Length: 0
+        Parameter: Capability (2), length: 2
+            Capability Code: Extended Next Hop Encoding (5)
+            Capability Length: 0
+        Parameter: Capability (2), length: 2
+            Capability Code: Graceful Restart (64)
+            Capability Length: 0
+        Parameter: Capability (2), length: 6
+            Capability Code: 4-Octet AS Number (65)
+            Capability Length: 4
+            4-Octet ASN: 65001
+        Parameter: Capability (2), length: 2
+            Capability Code: Add-Path (69)
+            Capability Length: 0
+        Parameter: Capability (2), length: 2
+            Capability Code: Enhanced Route Refresh (70)
+            Capability Length: 0
+        Parameter: Capability (2), length: 2
+            Capability Code: Long-Lived Graceful Restart (71)
+            Capability Length: 0
+        Parameter: Capability (2), length: 2
+            Capability Code: FQDN Capability (73)
+            Capability Length: 0
+        Parameter: Capability (2), length: 2
+            Capability Code: BGP Role (9)
+            Capability Length: 1
+            Role: Provider
+```
+
 ## Autonomous System Numbers
 
 - Can be 16 bit (2 bytes) and 32 bit (4 bytes)
@@ -840,16 +899,119 @@ Don't use or advertise the route/s learned via an iBGP neighbor to an eBG neighb
 
 ## MP-BGP
 
-- IETF RFC 4760
-- Extension to BGP, which allows to transfer different address families
-- IPv4, IPv6, multicast, unicast, VPN
+- MP-BGP (Multiprotocol BGP, defined in RFC 4760) is not a separate protocol — it’s the same BGP-4, but extended with new capabilities and attributes to support multiple address families (AFI/SAFI), such as IPv6, VPNv4, multicast, EVPN, etc
+- During session establishment (OPEN message), both peers advertise their capabilities (Capability Advertisement, per RFC 5492)
+  - One of these is the Multiprotocol Extensions Capability, which lists which AFI/SAFI pairs the router supports (e.g., IPv4-unicast, VPNv4, EVPN)
+  - If both sides support the same AFI/SAFI, MP-BGP for that family becomes active
+- After the session is established, routes for each AFI/SAFI are exchanged **using The MP_REACH_NLRI and MP_UNREACH_NLRI path attributes instead of NLRI field in BGP-4 UPDATEs**
+- If peers don’t advertise MP-BGP capability, the session defaults to classic BGP-4 (IPv4 unicast only)
+- AFI/SAFI pair is explicitly encoded in each UPDATE’s MP_REACH_NLRI (or MP_UNREACH_NLRI) attribute, defining which address family the NLRI belongs to (e.g., IPv6, VPNv4, EVPN, etc.)
 - Unicast and multicast are stored in different tables
 - When MP-BGP is configured, BGP installs the MP-BGP routes into different routing tables. Each routing table is identified by the protocol family or address family indicator (AFI) and a subsequent address family identifier (SAFI).
-- EVPN AFI/SAFI - 25/70 - RFC 7209, 7432, 8365
 - New optional and nontransitive attributes in the UPDATE message (specifically the MP_REACH_NLRI and MP_UNREACH_NLRI attributes):
   - Multiprotocol reachable NLRI - install route
   - Multiprotocol unreachable NLRI - withdraws route
 - Non-Transitive: Means they are not passed to other BGP peers only if router does not understand it
+
+Open message:
+
+```
+Border Gateway Protocol - OPEN Message
+    Marker: ffffffffffffffffffffffffffffffff
+    Length: 73
+    Type: OPEN Message (1)
+    Version: 4
+    My AS: 65001
+    Hold Time: 90
+    BGP Identifier: 192.0.2.1
+    Optional Parameters Length: 32
+    Optional Parameters (32 bytes)
+        Parameter: Capability (2), length: 6
+            Capability code: Multiprotocol extensions (1)
+            Capability length: 4
+            AFI: IPv6 (2)
+            Reserved: 0
+            SAFI: Unicast (1)
+        Parameter: Capability (2), length: 6
+            Capability code: Multiprotocol extensions (1)
+            Capability length: 4
+            AFI: L3VPN (VPNv4) (1)
+            Reserved: 0
+            SAFI: MPLS-labeled VPN address (128)
+        Parameter: Capability (2), length: 2
+            Capability code: Route Refresh (2)
+            Capability length: 0
+        Parameter: Capability (2), length: 6
+            Capability code: 64-bit ASN (65)
+            Capability length: 4
+            4-octet ASN: 65001
+        Parameter: Capability (2), length: 2
+            Capability code: Graceful Restart (64)
+            Capability length: 0
+```
+
+Update message for EVPN:
+
+```
+Border Gateway Protocol - UPDATE Message
+    Marker: ffffffffffffffffffffffffffffffff
+    Length: 160
+    Type: UPDATE Message (2)
+    Withdrawn Routes Length: 0
+    Total Path Attribute Length: 124
+    Path attributes
+        Path Attribute - ORIGIN: IGP (1)
+        Path Attribute - AS_PATH: 65001
+        Path Attribute - NEXT_HOP: 0.0.0.0
+        Path Attribute - LOCAL_PREF: 100
+        Path Attribute - MP_REACH_NLRI (14), length: 104
+            Flags: 0x90 (Optional, Non-transitive, Extended Length)
+            Type Code: MP_REACH_NLRI (14)
+            Address Family Identifier (AFI): L2VPN (25)
+            Subsequent Address Family Identifier (SAFI): EVPN (70)
+            Next Hop Network Address Length: 4
+            Next Hop: 192.0.2.1
+            Reserved: 0
+            Network Layer Reachability Information (NLRI)
+                EVPN NLRI: Route Type 2 (MAC/IP Advertisement)
+                    Route Type: 2 (MAC/IP Advertisement)
+                    Length: 49
+                    Route Type 2 - Fields
+                        RD: 65001:100
+                        Ethernet Segment Identifier (ESI): 00:00:00:00:00:00:00:00:00:00
+                        Ethernet Tag ID: 100
+                        MAC Address Length: 48
+                        MAC Address: 00:11:22:33:44:55
+                        IP Address Length: 32
+                        IP Address: 10.1.1.10
+                        MPLS Label1: 2000
+                        MPLS Label2: 0 (Bottom of Stack)
+```
+
+Update message for IPv6
+
+```
+Border Gateway Protocol - UPDATE Message
+    Marker: ffffffffffffffffffffffffffffffff
+    Length: 104
+    Type: UPDATE Message (2)
+    Withdrawn Routes Length: 0
+    Total Path Attribute Length: 78
+    Path attributes
+        Path Attribute - ORIGIN: IGP (1)
+        Path Attribute - AS_PATH: 65001
+        Path Attribute - LOCAL_PREF: 100
+        Path Attribute - MP_REACH_NLRI (14), length: 54
+            Flags: 0x90 (Optional, Non-transitive, Extended Length)
+            Type Code: MP_REACH_NLRI (14)
+            Address Family Identifier (AFI): IPv6 (2)
+            Subsequent Address Family Identifier (SAFI): Unicast (1)
+            Next Hop Network Address Length: 16
+            Next Hop: 2001:db8:0:1::1
+            Reserved: 0
+            Network Layer Reachability Information (NLRI)
+                2001:db8:100::/64
+```
 
 ### Address families
 
@@ -857,30 +1019,48 @@ Don't use or advertise the route/s learned via an iBGP neighbor to an eBG neighb
 - RFC 2858 added Multi-Protocol BGP (MP-BGP) capability by adding an extension called the address family identifier (AFI)
 - Address family shows particular network protocol, for example IPv4, IPv6
 - Additional granularity is provided through a subsequent address-family identifier (SAFI) such as unicast or multicast
-- MPBGP achieves this separation by using the BGP path attributes (PAs) MP_REACH_NLRI and MP_UNREACH_NLRI
+- MP-BGP achieves this separation by using the BGP path attributes (PAs) MP_REACH_NLRI and MP_UNREACH_NLRI
 - These attributes are carried inside BGP update messages and are used to carry network reachability information for different address families
 - Every address family maintains a separate database and configuration for each protocol (address family + sub-address family) in BGP
 - BGP includes an AFI and SAFI with every route advertisement to differentiate between the AFI and SAFI databases
 - IOS activates IPv4 address family by default
 - On IOS and IOS XE default SAFI is Unicast
+- One TCP connection → multiple AFI/SAFI route exchanges possible
+- Each AFI/SAFI = separate routing context, import/export policy, and RIB
+- Address family is activated for each neighbor
+
+Example of several address families for 1 neighbor:
+
+```
+router bgp 65001
+  neighbor 10.0.0.2 remote-as 65002
+  address-family ipv4
+    neighbor 10.0.0.2 activate
+  address-family ipv6
+    neighbor 10.0.0.2 activate
+  address-family vpnv4
+    neighbor 10.0.0.2 activate
+```
 
 ### Families(15 in total)
 
-1. IPv4 Unicast (AFI: 1, SAFI: 1) - The standard BGP address family for IPv4 unicast routing. It is used to exchange standard IPv4 routes 
-2. IPv4 Multicast (AFI: 1, SAFI: 2) - Used for IPv4 multicast routing. This address family deals with multicast routes and forwarding information
-3. IPv6 Unicast (AFI: 2, SAFI: 1) The BGP address family used to advertise IPv6 unicast routes
-4. IPv6 Multicast (AFI: 2, SAFI: 2) - This address family is used for IPv6 multicast routing
-5. VPNv4 (AFI: 1, SAFI: 128) - This is used in MPLS-based VPNs for advertising IPv4 routes along with their associated VRF (Virtual Routing and Forwarding) instances. Routes in the VPNv4 address family carry both the IPv4 prefix and additional attributes (such as Route Distinguishers and Route Targets).
-6. VPNv6 (AFI: 2, SAFI: 128) - Similar to VPNv4 but for IPv6 addresses, used in MPLS-based VPNs to carry IPv6 routes within a VRF context
-7. EVPN (Ethernet VPN) (AFI: 1 or 2, SAFI: 70) - Used for Ethernet VPNs, which is a technology designed to extend Ethernet services over IP/MPLS networks. It supports multi-tenant environments by advertising MAC addresses and Ethernet segment information
-8. IPv4 Labeled Unicast (AFI: 1, SAFI: 4) - Used in MPLS networks for advertising IPv4 unicast routes with labels (i.e., routes that are subject to MPLS label swapping)
-9. IPv6 Labeled Unicast (AFI: 2, SAFI: 4) - Similar to IPv4 Labeled Unicast, but used for IPv6 routes with MPLS labels
-10. FlowSpec (AFI: 1, SAFI: 133) - BGP FlowSpec is used for distributing traffic flow specifications (typically used for traffic filtering and rate-limiting). It allows BGP to carry flow rules to protect against DoS (Denial of Service) attacks
-11. MPLS VPN (Multicast VPN) (AFI: 1, SAFI: 128) - This address family deals with MPLS VPNs but specifically targets multicast traffic within those VPNs
-12. L3VPN (Layer 3 VPN) (AFI: 1, SAFI: 128) - Similar to VPNv4 and VPNv6, but typically refers to Layer 3 VPN services, such as MPLS VPNs
-13. L2VPN (Layer 2 VPN) (AFI: 1, SAFI: 65) - Used for Layer 2 VPN services, such as Virtual Private LAN Services (VPLS) or pseudowire services, typically to carry Ethernet frames or other Layer 2 traffic over an MPLS backbone
-14. EVPN Type 5 (AFI: 1, SAFI: 70) - EVPN type 5 is used to advertise IP prefix routes with associated Ethernet segments in an EVPN
-15. SrTE (Segment Routing Traffic Engineering) (AFI: 1 or 2, SAFI: 132)
+| # | Address Family | AFI | SAFI | Description |
+|---|----------------|-----|------|--------------|
+| 1 | **IPv4 Unicast** | 1 | 1 | Standard BGP family for IPv4 unicast routing. Used to exchange regular IPv4 routes. |
+| 2 | **IPv4 Multicast** | 1 | 2 | Used for IPv4 multicast routing. Carries multicast route and group information. |
+| 3 | **IPv6 Unicast** | 2 | 1 | Used to advertise IPv6 unicast routes. |
+| 4 | **IPv6 Multicast** | 2 | 2 | Used for IPv6 multicast routing. |
+| 5 | **VPNv4 (IPv4 MPLS L3VPN)** | 1 | 128 | MPLS-based VPNs for IPv4 routes. Routes carry a Route Distinguisher (RD) and Route Target (RT) to identify VRFs. |
+| 6 | **VPNv6 (IPv6 MPLS L3VPN)** | 2 | 128 | Same as VPNv4 but for IPv6 routes in MPLS-based VPNs. |
+| 7 | **Labeled IPv4 Unicast** | 1 | 4 | Advertises IPv4 unicast routes with MPLS labels (RFC 8277). |
+| 8 | **Labeled IPv6 Unicast** | 2 | 4 | Advertises IPv6 unicast routes with MPLS labels. |
+| 9 | **L2VPN (VPLS / Pseudowire)** | 25 | 65 | Used for Layer 2 VPNs such as VPLS and point-to-point pseudowires (RFC 4761, RFC 6074). |
+| 10 | **EVPN (Ethernet VPN)** | 25 | 70 | Used for Ethernet VPNs (RFC 7432, RFC 8365). Advertises MAC/IP bindings and Ethernet segments. |
+| 11 | **FlowSpec IPv4** | 1 | 133 | Distributes IPv4 traffic flow specifications (RFC 8955). Used for DDoS mitigation and traffic control. |
+| 12 | **FlowSpec IPv6** | 2 | 133 | IPv6 version of FlowSpec (RFC 8956). |
+| 13 | **Multicast VPN (MVPN IPv4)** | 1 | 129 | Used for multicast routing within MPLS VPNs (RFC 6514). Carries multicast VPN membership info. |
+| 14 | **EVPN Type 5 (IP Prefix Route)** | 25 | 70 | Not a separate AFI/SAFI — a route type within EVPN for IP prefix advertisement. |
+| 15 | **SR-TE (Segment Routing Traffic Engineering)** | 1 or 2 | 73 or 76 | Used to advertise Segment Routing policies for IPv4/IPv6 (RFC 9012). |
 
 ## IPv6
 
