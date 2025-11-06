@@ -13,13 +13,9 @@
 - RFC 2858 - MP-BGP
 - RFC 7938 - Use of BGP for Routing in Large-Scale Data Centers: private ASN, single-hop, AS numbering to avoid path hunting, timers hardening, BFD
 
-## Books
-
-- Google Talks - BGP at 18: Lessons In Protocol Design - Dr. Yakov Rekhter, co-designer of BGP
-- Cisco Live 365 BRKRST-3321 Scaling BGP
-
 ## Main features
 
+- Regular TCP application to exchange data for different address families
 - Path attributes
   - AS_Path
   - Origin
@@ -900,6 +896,7 @@ Don't use or advertise the route/s learned via an iBGP neighbor to an eBG neighb
 ## MP-BGP
 
 - MP-BGP (Multiprotocol BGP, defined in RFC 4760) is not a separate protocol — it’s the same BGP-4, but extended with new capabilities and attributes to support multiple address families (AFI/SAFI), such as IPv6, VPNv4, multicast, EVPN, etc
+- Over **one IPv4 BGP session**, MP-BGP can exchange IPv4, IPv6, EVPN, VPNv4, and other address families — as long as both peers advertise support for those AFI/SAFI values
 - During session establishment (OPEN message), both peers advertise their capabilities (Capability Advertisement, per RFC 5492)
   - One of these is the Multiprotocol Extensions Capability, which lists which AFI/SAFI pairs the router supports (e.g., IPv4-unicast, VPNv4, EVPN)
   - If both sides support the same AFI/SAFI, MP-BGP for that family becomes active
@@ -912,6 +909,11 @@ Don't use or advertise the route/s learned via an iBGP neighbor to an eBG neighb
   - Multiprotocol reachable NLRI - install route
   - Multiprotocol unreachable NLRI - withdraws route
 - Non-Transitive: Means they are not passed to other BGP peers only if router does not understand it
+- Enabling MP-BGP capability doesn’t automatically move IPv4 routes into MP attributes
+- IPv4 Unicast still uses the legacy NLRI
+- All other AFI/SAFI families (IPv6, VPNv4, EVPN, etc.) use MP_REACH_NLRI and MP_UNREACH_NLRI
+- Some modern vendors (Cisco IOS XR, Juniper, Arista, Nokia SR OS, etc.) do support exchanging IPv4 unicast routes via MP_REACH_NLRI — but only if both sides explicitly negotiate AFI 1 / SAFI 1 under the multiprotocol capability
+- The next hop can even be IPv6, allowing “IPv4 NLRI over IPv6 transport” (common in IPv6-only cores)
 
 Open message:
 
