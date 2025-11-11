@@ -49,7 +49,7 @@
 - 2 BGP processes with different AS on one router - supported on some platforms
 - BGP is not a routing protocol: BGP is an application used to exchange NLRI, IPv4, IPv6, l2vpn, VPnv4...All data in a packet is presented in the form of Path attributes, all these make it very flexible
 - For different addresses different AFI/SAFI numbers are used
-- Internet de facto protocol, Routing protocol of Intenet, Port 179 TCP, EGP
+- Internet de facto protocol, Routing protocol of Intenet
 - BGP knows the next-hop, but not the outgoing interface
 - IGP must be able to perform recursion otherwise the route cannot be used
 - It is not binded to interface, we just configure neighbors and then connect to them according to routing table
@@ -63,7 +63,7 @@
 - ECMP to work: AS Path should be absolutely identical
 - The AD Values: eBGP - 20, iBGP - 200
 - eBGP changes next-hop to self by default, if update-source is Loopback0, next-hop is LoopbackO, can be modified: "route-map action set ip next-hop" or "neighbor next-hop-unchanged"
-- Flow control, route manipulation, PBR - ???
+- route manipulation, PBR - ???
 - What happens when route is deleted - Generates a withdrawal message and sends it to all affected BGP peers
 - Huge routing table
 - Announces only best path to prefix, even if got three for example, and all three are in ECMP and work well - anyway it will select best and propogate it
@@ -632,6 +632,17 @@ address-family ipv4
 
 ## Summarization/aggregation
 
+In a nutshell
+
+- Dynamic Route Summarization
+  - summary-only
+  - as-set
+- Static Route Summarization
+- Atomic Aggregate Attribute
+- Aggregator Attribute
+
+In Details
+
 - In BGP world it is called aggregation - it is a whole world with attributes and rules
 - Conserve router resources
 - Accelerated best path calculation
@@ -639,22 +650,26 @@ address-family ipv4
 - Most service providers do not except prefixes larger then /24
 - We configure summarization in address family section for Nexus and it works for all neighbors, we specify summarized prefix there with as-set option and summer only, without summer only option it will advertise all prefixes plus summary
 - No auto-summary is the default
-- Dynamic route summarization is done via address-family command 
-    - aggregate-address network subnet-mask [summary-only] [as-set]
-- `as-set` means to keep AS_PATH information from small agregated routes
+- `Dynamic route summarization` is done via address-family command 
+    - `aggregate-address network subnet-mask [summary-only] [as-set]`
+- `as-set` - means to keep AS_PATH information from small agregated routes
+- When you add as-set, BGP includes `all unique AS numbers` that appear in any of the component routes, wrapped inside an AS_SET (unordered list), duplicates are removed
+- `10.0.0.0/16  AS_PATH: 65001 {65010, 65020}`
 - Example: 172.16.1.0/24, 172.16.2.0/24, 172.16.3.0/24 are aggregated with command: aggregate-address 172.16.0.0 255.255.240.0
 - This command will add to BGP table prefix 172.16.0.0/20 - but it will not delete smaller route
-- summer-only option suppresses the component network prefixes
-- Suppression - when BGP process does not advertise routes (fo example connected) because of aggregation
-- When new summary route is advertised it is advertised without any previous attributes or AS Path. It is sent as if an aggregating router is an originator of route: AS Path contains only AS of aggregating router
-- Atomic-aggregate and Aggregator Path Attributes is added by the aggregator and all other routers see in BGP table: aggregated by 65200 192.168.2.2 
+- `summer-only` - option suppresses the component network prefixes
+- Suppression - when BGP process does not advertise routes (for example connected) because of aggregation
+- When new summary route is advertised without as-set it is advertised `without any previous attributes or AS Path`. It is sent as if an aggregating router is an originator of route: AS Path contains only AS of aggregating router
+- `Atomic-aggregate` and `Aggregator` Path Attributes is added by the aggregator and all other routers see in BGP table: aggregated by 65200 192.168.2.2 
+- `Atomic-aggregate` just notifies that it is an aggregated route
+- `Aggregator` includes router ID of aggregator
 - Aggregated route appears in BGP table only after at least one viable component route enters BGP table, for example 172.16.1.0/24
 - After enabling aggregation BGP installs aggregated route to RIB of originating router with gateway Null0 - it is called summary discard route it is created to avoid loops
 - Loops explanation: R1 aggregates 192.168.1.0/24 and 192.168.2.0/24 and sends to everyone 192.168.0.0/16. After this it gets a packet with destination 192.168.3.1 - it does not know about this network - and what it does? It sends it to default gateway! - Bad! And if summary discard route is installed this packaet will be silently dropped :)
 - To sum up agrregated route is in two tables: RIB and BGP, in BGP default route is 0.0.0.0 and in RIB NULL0
 - Component routes are still in BGP table but they have status - s -suppressed
 - If we configure summarization, for example two LANs connected to Leaf, and then if we disconnect one LAN, summerized route will continue propogating and everyone will consider this LAN available. Especially summarization is unacceptable on Spines. This is relevant only with "summer only" option
-- Static summarization: we add static route with Null0 as gateway,then advertise it with `network` command or `redistribute static`
+- `Static summarization`: we add static route with Null0 as gateway,then advertise it with `network` command or `redistribute static`
 - The route with AD 254 ensures the prefix remains in the routing table only as a last resort when no other routes exist
 - The tag 50 in the static route can be used for route filtering or policy purposes, such as identifying and applying specific policies to this route in redistribution or routing decisions
 
@@ -674,113 +689,6 @@ route-map redistribute_static permit 10
  set weight 0
  set origin incomplete
  set community 65534:10 additive
-```
-
-## Route filtering
-
-- Pure filtering: In BGP, you can directly apply prefix-lists, distribute-lists, or filter-lists(AS Path ACL) to a neighbor without a route-map
-- Advanced filtering: When you do need a route-map
-  - Match multiple attributes (prefix + AS_PATH + community, etc.)
-  - Set attributes (e.g. local-pref, MED, next-hop, weight)
-  - Perform conditional redistribution (e.g., from OSPF into BGP)
-  - Filter based on communities
-  - Tag or modify routes
-- Distribute lists - old syntax  - Based on ACL
-
-Conditional matching
-
-- ACL
-- Prefix list
-- AS Path ACL + Regex
-
-### ACL
-
-- Compesed of access control entries - ACE
-- Starts at the top and proceeds down
-- Once match is found, action is applied and processing is stopped
-- At the end implicit deny
-- Standard ACL: only source network, named ACL, 1-99, 1300-1999
-- Extended ACL - source, destination, protocol, port, named, 100-199, 2000-2699
-
-```
-ip access-list standard 85|name
-10 permit|deny 192.168.0.0 0.255.255.255
-20 permit|deny any
-30 permit|deny host 192.168.1.1
-
-ip access-list extended 150|name
-10 permit|deny ip any any
-20 permit|deny ip host 192.168.1.1 host 192.168.1.2
-```
-
-- Different matching for BGP and IGP
-- For BGP: source and source wildcard for Matches Networks
-- For BGP: destination and destination wildcard for Matches Network Mask
-- For BGP: `permit ip 10.0.0.0 0.0.255.0(permit any 10.0.x.0 network) 255.255.255.0 0.0.0.0 (with /24 prefix length)`
-- For IGP - ?
- 
- ### IP prefix
-
-- Describes prefix number and its length
-- Used by route map, and route map is used by redistribute
-- One or more statements with the same name
-- Each has a sequence number
-- Permit or deny, means if packet should match statement or not
-- Goes up to down
-- First match - stop
-
-Example on Cisco IOS, allow send to BGP neighboor all networks except one:
-
-```
-ip prefix-list BLOCK_EXTERNAL seq 10 deny 159.33.0.0/24
-ip prefix-list BLOCK_EXTERNAL seq 20 permit 0.0.0.0/0 le 32
-
-route-map BLOCK_EXTERNAL permit 10
-match ip address prefix-list BLOCK_EXTERNAL
- 
-neighbor 192.168.5.1 route-map BLOCK_EXTERNAL out
-```
-
-**le/ge**
-
-- `ip prefix-list test seq 5 permit 192.168.1.0/24 ge 32` - allow all /32 prefixes in 192.168.1.0/24 network - 192.168.1.1/32, 192.168.1.100/32, 192.168.1.255/32
-- `ip prefix-list test seq 10 deny 192.168.1.0/24 ge 25 le 27` - allow all /25-/27 networks in 192.168.1.0/24 network - 192.168.1.0/25, 192.168.1.128/25, 192.168.1.0/26
-- To avoid writing dozens (or hundreds) of individual entries for subnets of a larger prefix
- 
-### AS Path ACL + Regex
-
-```
-ip as-path access-list 1 permit ^65001$
-# ^65001$ means: “The entire AS_PATH consists of just AS 65001
-
-ip as-path access-list 2 permit _65001_
-#_65001_ means: “AS 65001 appears anywhere in the path
-
-route-map FROM_CUSTOMER permit 10
- match as-path 3
-```
-
-### Route maps
-
-- Allow or denies a route based on conditions + change route options
-- Route map can be added after network command and after neighbor command
-- network route-map command changes attributes before adding prefix to BGP table, except AS path
-- neighbor route-map in|out applies changes to updates, sent or received. It also acts as filter, it can drop update based on match
-- Implicit deny at the end
-- Continue keyword - continue even after match
-- Allow or deny route is specified in route map action: permit or deny
-- If match is empty - all routes
-- Set command to change route options
-- Has 4 components:
-  - Sequence number
-  - Conditional matching criteria - if empty - all prefixes - as-path, ip address, ip address prefix list, local preference, metric, tag
-  - Processing action: permit(default) or deny
-  - Optional action: modify route options: as=path prepend, next hop, local preference, metric, origin, tag, weight
-
-```
-route-map example 10 permit 10
-match ip address ACL
-set metric 20
 ```
 
 ## Redistribution
@@ -865,6 +773,16 @@ router bgp <ASN>
 
 ## Path hunting
 
+- 1 router looses link and starts to send withdraws to everyone
+- Path hunting in BGP is when routers, after losing their best route, repeatedly try other alternate routes — each of which later also fails — before giving up. It’s a natural side effect of BGP’s distributed, incremental decision process
+
+```
+Time → 
+|---- Best path A | Withdraw | Try B | Withdraw | Try C | Withdraw | None
+
+UPDATEs sent each time → high churn
+
+```
 - Starts on big networks, 30 routers and above
 - It is relevant for CLOS networks as well
 - Spines in one AS helps to avoid this issue, because in this case route which passed spine 1 will be dropped by spine 2. Super spines have the same AS as well
@@ -873,6 +791,7 @@ router bgp <ASN>
 ## ECMP
 
 Criteria:
+
 - weight
 - local preference - only for iBGP
 - AS_PATH - whole path, not only length
@@ -880,6 +799,7 @@ Criteria:
 - MED - only from iBGP to eBGP
 - IGP metric
 - Next hop should be different
+
 Five tuples are used for load balancing. Hash is calculated for these 5 parametres. If all traffic is absolutely identical, it will always go via one link. It is called traffic polarization. Traffic entropy is zero. The entropy can be added manually.
 
 ## Maintenence
@@ -1375,37 +1295,6 @@ address-family ipv4 [unicast | multicast | vrf vrf-name ]
 bgp dampening [half-life reuse suppress max-suppress-time ] [route-map map-name ]
 ```
 
-## BGP AS Path Manipulations
-
-### local-as
-
-```
-router bgp 65000
-neighbor 1.1.1.1 local-as 2 no-prepend replace-as dual-as`
-```
-
-- Can only be used with EBGP peers
-- By default, the **alternate** ASN is added to the AS_PATH for routes that are **sent** and **received** between the peers
-- 2 will be used on peer router to establish neigborship
-- Peer router will see in the PATH both AS numbers: 65000 and 2
-- Routes received from remote route will also be prepanded with 2
-- It is very usefull when we connect VRFs in Fabric via external  firewall
-- no-prepend - if we want to stop the alternate ASN from being prepended when receiving routes
-- replace-as - to stop the alternate ASN from being prepended when sending routes
-- local-as directive does not influence how receiving of routes is checked, AS path in received routes will be still compared with general AS number 65000 - and you will see drops only on debug stage, you will not see it in a received route stage
-- If route passes the same router twice via different VRFs, we need to use local-as in all VRFs not in only one
-- dual-as - allows the remote peer to use either ASN for the BGP session
-
-### allowas-in
-
-### remove-pravate-as
-
-### Prepend
-
-### Regexp + as-path access-lists
-
-### as-path replace
-
 ## Configuration
 
 ### IOS
@@ -1691,13 +1580,165 @@ undebug all
 
 ## BGP InterAS Option C
 
-## Outbound traffic manipulation
+## Route/traffic manipulation/filtering
+
+Outbound
 
 - Local preference
 - Weight
+- AS_PATH length
+- MED
+- Route filtering / policy - Accept or deny prefixes
 
-## Inbound traffic manipulation
+Inbound
 
 - AS Path Prepending
 - BGP communities
 - MED
+- Selective advertisement
+
+Tools
+
+- route-maps
+- prefix-lists 
+- AS_PATH access-lists
+- BGP communities
+- policy-statements (Juniper)
+
+### Route filtering
+
+- Pure filtering: In BGP, you can directly apply prefix-lists, distribute-lists, or filter-lists(AS Path ACL) to a neighbor without a route-map
+- Advanced filtering: When you do need a route-map
+  - Match multiple attributes (prefix + AS_PATH + community, etc.)
+  - Set attributes (e.g. local-pref, MED, next-hop, weight)
+  - Perform conditional redistribution (e.g., from OSPF into BGP)
+  - Filter based on communities
+  - Tag or modify routes
+- Distribute lists - old syntax  - Based on ACL
+
+Conditional matching
+
+- ACL
+- Prefix list
+- AS Path ACL + Regex
+
+#### ACL
+
+- Compesed of access control entries - ACE
+- Starts at the top and proceeds down
+- Once match is found, action is applied and processing is stopped
+- At the end implicit deny
+- Standard ACL: only source network, named ACL, 1-99, 1300-1999
+- Extended ACL - source, destination, protocol, port, named, 100-199, 2000-2699
+
+```
+ip access-list standard 85|name
+10 permit|deny 192.168.0.0 0.255.255.255
+20 permit|deny any
+30 permit|deny host 192.168.1.1
+
+ip access-list extended 150|name
+10 permit|deny ip any any
+20 permit|deny ip host 192.168.1.1 host 192.168.1.2
+```
+
+- Different matching for BGP and IGP
+- For BGP: source and source wildcard for Matches Networks
+- For BGP: destination and destination wildcard for Matches Network Mask
+- For BGP: `permit ip 10.0.0.0 0.0.255.0(permit any 10.0.x.0 network) 255.255.255.0 0.0.0.0 (with /24 prefix length)`
+- For IGP - ?
+ 
+ #### IP prefix
+
+- Describes prefix number and its length
+- Used by route map, and route map is used by redistribute
+- One or more statements with the same name
+- Each has a sequence number
+- Permit or deny, means if packet should match statement or not
+- Goes up to down
+- First match - stop
+
+Example on Cisco IOS, allow send to BGP neighboor all networks except one:
+
+```
+ip prefix-list BLOCK_EXTERNAL seq 10 deny 159.33.0.0/24
+ip prefix-list BLOCK_EXTERNAL seq 20 permit 0.0.0.0/0 le 32
+
+route-map BLOCK_EXTERNAL permit 10
+match ip address prefix-list BLOCK_EXTERNAL
+ 
+neighbor 192.168.5.1 route-map BLOCK_EXTERNAL out
+```
+
+**le/ge**
+
+- `ip prefix-list test seq 5 permit 192.168.1.0/24 ge 32` - allow all /32 prefixes in 192.168.1.0/24 network - 192.168.1.1/32, 192.168.1.100/32, 192.168.1.255/32
+- `ip prefix-list test seq 10 deny 192.168.1.0/24 ge 25 le 27` - allow all /25-/27 networks in 192.168.1.0/24 network - 192.168.1.0/25, 192.168.1.128/25, 192.168.1.0/26
+- To avoid writing dozens (or hundreds) of individual entries for subnets of a larger prefix
+ 
+#### AS Path ACL + Regex
+
+```
+ip as-path access-list 1 permit ^65001$
+# ^65001$ means: “The entire AS_PATH consists of just AS 65001
+
+ip as-path access-list 2 permit _65001_
+#_65001_ means: “AS 65001 appears anywhere in the path
+
+route-map FROM_CUSTOMER permit 10
+ match as-path 3
+```
+
+#### Route maps
+
+- Allow or denies a route based on conditions + change route options
+- Route map can be added after network command and after neighbor command
+- network route-map command changes attributes before adding prefix to BGP table, except AS path
+- neighbor route-map in|out applies changes to updates, sent or received. It also acts as filter, it can drop update based on match
+- Implicit deny at the end
+- Continue keyword - continue even after match
+- Allow or deny route is specified in route map action: permit or deny
+- If match is empty - all routes
+- Set command to change route options
+- Has 4 components:
+  - Sequence number
+  - Conditional matching criteria - if empty - all prefixes - as-path, ip address, ip address prefix list, local preference, metric, tag
+  - Processing action: permit(default) or deny
+  - Optional action: modify route options: as=path prepend, next hop, local preference, metric, origin, tag, weight
+
+```
+route-map example 10 permit 10
+match ip address ACL
+set metric 20
+```
+
+### BGP AS Path Manipulations
+
+local-as
+
+```
+router bgp 65000
+neighbor 1.1.1.1 local-as 2 no-prepend replace-as dual-as`
+```
+
+- Can only be used with EBGP peers
+- By default, the **alternate** ASN is added to the AS_PATH for routes that are **sent** and **received** between the peers
+- 2 will be used on peer router to establish neigborship
+- Peer router will see in the PATH both AS numbers: 65000 and 2
+- Routes received from remote route will also be prepanded with 2
+- It is very usefull when we connect VRFs in Fabric via external  firewall
+- no-prepend - if we want to stop the alternate ASN from being prepended when receiving routes
+- replace-as - to stop the alternate ASN from being prepended when sending routes
+- local-as directive does not influence how receiving of routes is checked, AS path in received routes will be still compared with general AS number 65000 - and you will see drops only on debug stage, you will not see it in a received route stage
+- If route passes the same router twice via different VRFs, we need to use local-as in all VRFs not in only one
+- dual-as - allows the remote peer to use either ASN for the BGP session
+
+allowas-in
+
+remove-private-as
+
+Prepend
+
+Regexp + as-path access-lists
+
+as-path replace
