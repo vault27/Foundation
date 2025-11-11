@@ -1,27 +1,5 @@
 # IPSec
 
-## IKE
-
-- Peer IP
-- Proxy IDs Local and Remote if required by one of the sides
-- IKE version
-- DH group - defines form of DH: Ecliptic Curve or Classic Module based, and the size of prime numbers which will be used
-- Hash
-- Symmetric cipher
-- Lifetime
-- Auth type: pre shared key or certificate
-- Preshared key
-- IKE Call Admission Control (CAC) - limit amount of connections and tries to establish IKE phase one tunnel
-
-## IPSec
-
-- IPSec protocol: ESP or AH
-- ESP mode: tunnel or transport mode
-- Symmetric cipher
-- Hash
-- DH group
-- Lifetime
-
 ## Concepts
 
 - IPsec is not a protocol, it's a framework for securing unicast traffic
@@ -44,6 +22,28 @@
 - Tunnel 1 is used to negotiate parametres for tunnel 2, tunnel 1 is used only for communication between firewalls, then for actual data only tunnel 2 is used directly, they work in paralell
 - Is there any IKE traffic, when everything is established and data flows normally?
 - Security Associations are negotiated for both tunnels
+
+## IKE
+
+- Peer IP
+- Proxy IDs Local and Remote if required by one of the sides
+- IKE version
+- DH group - defines form of DH: Ecliptic Curve or Classic Module based, and the size of prime numbers which will be used
+- Hash
+- Symmetric cipher
+- Lifetime
+- Auth type: pre shared key or certificate
+- Preshared key
+- IKE Call Admission Control (CAC) - limit amount of connections and tries to establish IKE phase one tunnel
+
+## IPSec
+
+- IPSec protocol: ESP or AH
+- ESP mode: tunnel or transport mode
+- Symmetric cipher
+- Hash
+- DH group
+- Lifetime
 
 ## SA
 
@@ -156,8 +156,13 @@ https://datatracker.ietf.org/doc/html/draft-beaulieu-ike-xauth-02
 
 ## ESP
 
-- Transport mode
-- Tunnel mode
+- Separate IP protocol for Data Plane
+- Confidentiality, authentication, replay protection
+- IP protocol number 50
+- Supports encryption and NAT-T
+- 2 modes of operation
+- Transport mode - adds ESP header after original IP header + ESP trailer + ESP auth
+- Tunnel mode - encrypts the entire original packet - adds a new set of IP headers
 
 <img width="1151" alt="image" src="https://github.com/philipp-ov/foundation/assets/116812447/dd8e9064-7dde-478f-906f-48ef43077b04">
 
@@ -167,6 +172,13 @@ https://datatracker.ietf.org/doc/html/draft-beaulieu-ike-xauth-02
 
 
 ## AH
+
+- Separate protocol above IP with encapsulation for data plane
+- Data Integrity, Authentication, protection from replays
+- IP 51
+- Does not support encryption
+- Does not support NAT-T
+
 
 ## Configuration - Cisco
 
