@@ -80,6 +80,8 @@
 
 ## Design
 
+- Preferable for large enterprise networks instead of IGP
+
 What you need to think through, when you design BGP network
 
 - ASN numbering
@@ -96,7 +98,7 @@ What you need to think through, when you design BGP network
 - Prioritize particular routes via route map and increasing local preference
 - Allow only certain prefixes from certain neighboors via ip prefixes and route maps 
 
-## Data Centre Design
+### Data Centre Design
 
 - ASN numbering to exclude path hunting: Spines have the same AS
 - Multipath
@@ -111,7 +113,7 @@ What you need to think through, when you design BGP network
 - Redistribute only networks connected to Leafs, looopbacks for instance
 - On Spines we configure dynamic neighboring using peer filter, where we configure which AS we accept from leafs, and listen command to specify networks on which we listen for BGP connections. Listen command is a passive mode. Leafs cannot be configured in this mode, they should be active. Listen command specifies which networks to listen, to which peer group place these neighbores and which AS accept
 
-## Multihoming
+### Multihoming
 
 Resiliency in Service Providers
 
