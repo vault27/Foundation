@@ -34,6 +34,7 @@
     - Propose IPsec SA 
     - Exchange traffic selectors (Proxy-ID)
     - SPI
+    - Transform sets
 - ESP encapsulation — Actual data traffic encryption/authentication using the negotiated keys
 
 ## IKE
@@ -49,8 +50,6 @@
 - Preshared key
 - IKE Call Admission Control (CAC) - limit amount of connections and tries to establish IKE phase one tunnel
 
-### IKEv1
-
 IKE does the following:
 
 - Negotiates and manages IKE and IPsec parameters
@@ -58,7 +57,7 @@ IKE does the following:
 - Provides mutual peer authentication by means of shared secrets (not passwords) and public keys
 - Provides identity protection (in main mode)
 
-#### Phase 1 - ISAKMP protocol
+### Phase 1 - ISAKMP protocol
 
 - During traffic capture you cannot see Phase 2 negotiation, only Phase 1 as ISAKMP protocol, everything else is encrypted
 - To build a tunnel 4 parametres are needed: Authentication, key exchange, encryption, MAC: PSK/DH2/A128/SHA1 + mode for IKEv1: main or aggressive + lifetime
@@ -124,7 +123,7 @@ In aggressive mode, the initiator and recipient accomplish the same objectives a
 - Because the participants’ identities are exchanged in the clear (in the first two messages), aggressive mode does not provide identity protection
 - Main and aggressive modes applies only to IKEv1 protocol. IKEv2 protocol does not negotiate using main and aggressive modes
 
-#### IKE Phase 2
+### Phase 2
 
 Phase 2 has 3 packets only:
 
@@ -201,8 +200,21 @@ Encrypted Payloads (inside IKE SA):
     - Protocol ID (ESP = 50, AH = 51)
     - SPI Size (usually 4 bytes)
     - SPI Value (the actual 32-bit number)
-    - Transform list (encryption, auth, lifetime)
+    - Transform set (encryption, auth, lifetime)
 - Outbound and inbound SAs are different
+
+**Transform set**
+
+- They are used only in Phase 2
+- A transform set is a combination of one or more transforms used to build an IPsec Security Association (SA) during Phase 2 (Quick Mode / Child SA) negotiation
+- Each transform describes one specific aspect of how IPsec protects the traffic
+- Transform types:
+    - Encryption Algorithm (ENCR) - AES-CBC, AES-GCM, 3DES, ChaCha20-Poly1305
+    - Pseudo-Random Function (PRF) - In IKEv1, PRF is not a separate transform — it’s implicit in Phase 1 - PRF-HMAC-SHA1, PRF-HMAC-SHA256
+    - Integrity / Authentication Algorithm (INTEG) - HMAC-SHA1, HMAC-SHA256, AES-XCBC
+    - Diffie-Hellman Group (D-H Group) - Defines key exchange strength (PFS in Phase 2) - MODP-2048 (Group 14), ECP-256 (Group 19)
+- ESP transform set includes encryption + integrity
+- AH - integrity only  
 
 **Traffic Selectors**
 
@@ -243,7 +255,7 @@ Traffic Selector Remote: 192.168.1.0/24
 State: Active
 ```
 
-**Flow in practice**
+**Data flow in practice**
 
 - Router receives an ESP packet
 - Reads SPI from the ESP header
@@ -294,7 +306,7 @@ To confirm Phase 2 happened, look for:
 - Traffic selectors are Mandatory: you must specify the exact local and remote subnets or hosts that this Child SA will cover
 - Workarounds for “any-to-any” for route based VPN: Cover all relevant subnets with broad TS +   Use the VTI to route all traffic through a single IPsec SA
 
-#### Xauth - Extended Authentication within IKE
+### Xauth - Extended Authentication within IKE
 
 https://datatracker.ietf.org/doc/html/draft-beaulieu-ike-xauth-02
 
