@@ -23,6 +23,19 @@
 - Is there any IKE traffic, when everything is established and data flows normally?
 - Security Associations are negotiated for both tunnels
 
+## Workflow
+
+- IKE Phase 1 — Establish a secure channel (IKE SA)
+    - `Main mode` - 6 messages
+    - `Aggressive mode` - 3 messages
+    - DH key exchange
+    - Authentication
+- IKE Phase 2 — Negotiate IPsec SAs (ESP or AH) - `Quick mode`
+    - Propose IPsec SA 
+    - Exchange traffic selectors (Proxy-ID)
+    - SPI
+- ESP encapsulation — Actual data traffic encryption/authentication using the negotiated keys
+
 ## IKE
 
 - Peer IP
@@ -36,24 +49,7 @@
 - Preshared key
 - IKE Call Admission Control (CAC) - limit amount of connections and tries to establish IKE phase one tunnel
 
-## IPSec
-
-- IPSec protocol: ESP or AH
-- ESP mode: tunnel or transport mode
-- Symmetric cipher
-- Hash
-- DH group
-- Lifetime
-
-## SA
-
-An SA is a set of IPSec specifications that are negotiated between devices that are establishing an IPSec relationship.  
-An SA can be either unidirectional or bidirectional, depending on the choices made by the network administrator. An SA is uniquely identified by a Security Parameter Index (SPI), an IPv4 or IPv6 destination address, and a security protocol (AH or ESP) identifier.  
-There are two types of SAs: manual and dynamic.  
-Manual SAs require no negotiation; all values, including the keys, are static and specified in the configuration. Manual SAs statically define the Security Parameter Index (SPI) values, algorithms, and keys to be used, and require matching configurations on both ends of the tunnel. Each peer must have the same configured options for communication to take place.  
-Dynamic SAs require additional configuration. With dynamic SAs, you configure IKE first and then the SA. IKE creates dynamic security associations; it negotiates SAs for IPsec. The IKE configuration defines the algorithms and keys used to establish the secure IKE connection with the peer security gateway. This connection is then used to dynamically agree upon keys and other data used by the dynamic IPsec SA. The IKE SA is negotiated first and then used to protect the negotiations that determine the dynamic IPsec SAs.
-
-## IKEv1
+### IKEv1
 
 IKE does the following:
 
@@ -62,7 +58,7 @@ IKE does the following:
 - Provides mutual peer authentication by means of shared secrets (not passwords) and public keys
 - Provides identity protection (in main mode)
 
-### Phase 1 - ISAKMP protocol
+#### Phase 1 - ISAKMP protocol
 
 - During traffic capture you cannot see Phase 2 negotiation, only Phase 1 as ISAKMP protocol, everything else is encrypted
 - To build a tunnel 4 parametres are needed: Authentication, key exchange, encryption, MAC: PSK/DH2/A128/SHA1 + mode for IKEv1: main or aggressive + lifetime
@@ -104,13 +100,13 @@ A Diffie-Hellman (DH) exchange allows participants to produce a shared secret va
 We do not recommend the use of DH groups 1, 2, and 5.  
 Because the modulus for each DH group is a different size, the participants must agree to use the same group
 
-#### IKE identity
+**IKE identity**
 
 - If you do not configure a local-identity, the device uses the IPv4 or IPv6 address corresponding to the local endpoint by default
 - It can be: distinguished-name, hostname, ip-address, e-mail-address, key-id
 - Configurated on most devices, maybe none, on every device we configure both local and remote ID - on Palo Alto it is configured in IKE gateway
 
-#### Main Mode
+**Main Mode**
 
 At the cost of three extra messages, Main Mode provides identity protection, enabling the peers to hide their actual identities from potential attackers. This means that the peers’ identities are never exchanged unencrypted in the course of the IKE negotiation.  
 In main mode, the initiator and recipient send three two-way exchanges (six messages total) to accomplish the following services:
@@ -119,7 +115,7 @@ In main mode, the initiator and recipient send three two-way exchanges (six mess
 - Third exchange (messages 5 and 6)—Sends and verifies the identities of the initiator and recipient.
 The information transmitted in the third exchange of messages is protected by the encryption algorithm established in the first two exchanges. Thus, the participants’ identities are encrypted and therefore not transmitted “in the clear.”
 
-#### Aggressive mode
+**Aggressive mode**
 
 In aggressive mode, the initiator and recipient accomplish the same objectives as with main mode, but in only two exchanges, with a total of three messages:
 - First message—The initiator proposes the security association (SA), initiates a DH exchange, and sends a pseudorandom number and its IKE identity. When configuring aggressive mode with multiple proposals for Phase 1 negotiations, use the same DH group in all proposals because the DH group cannot be negotiated. Up to four proposals can be configured.
@@ -128,31 +124,179 @@ In aggressive mode, the initiator and recipient accomplish the same objectives a
 - Because the participants’ identities are exchanged in the clear (in the first two messages), aggressive mode does not provide identity protection
 - Main and aggressive modes applies only to IKEv1 protocol. IKEv2 protocol does not negotiate using main and aggressive modes
 
+#### IKE Phase 2
+
+Phase 2 has 3 packets only:
+
+```
+Initiator → Responder : SA, Nonce, traffic selectors, key exchange - optional]
+Responder → Initiator : SA, Nonce, key exchange - optional]
+Initiator → Responder : HASH (ack)
+```
+
+Example of first packet
+
+```
+ISAKMP Header (HDR*)
+ ├─ Initiator Cookie: 0xA1B2C3D4E5F60708
+ ├─ Responder Cookie: 0x1122334455667788
+ ├─ Next Payload: HASH (0x08)
+ ├─ Version: 1.0
+ ├─ Exchange Type: Quick Mode (32)
+ ├─ Flags: Encrypted
+ ├─ Message ID: 0x00001234
+ └─ Length: 240 bytes
+
+Encrypted Payloads (inside IKE SA):
+
+1. HASH(1)
+ └─ Integrity hash computed using Phase 1 keys
+    (covers SA, Ni, KE, IDci, IDcr)
+
+2. SA Payload (Security Association)
+ ├─ Proposal #1
+ │    ├─ Protocol ID: ESP (50)
+ │    ├─ SPI Size: 4
+ │    ├─ SPI Value (initiator): 0x3F2A1B4C
+ │    ├─ Transform #1: Encryption
+ │    │     • AES-CBC-256
+ │    │     • Key Length: 256 bits
+ │    ├─ Transform #2: Integrity
+ │    │     • HMAC-SHA1-96
+ │    ├─ Transform #3: Lifetime
+ │    │     • 3600 seconds
+ │    └─ Transform #4 (optional, PFS requested)
+ │          • DH Group: 14
+
+3. Ni (Nonce - Initiator)
+ └─ Value: 0x8F3D4A9C12BEEF556677889900112233
+
+4. KE (optional - DH for PFS)
+ └─ DH Public Value (DH Group 14)
+    • Example: 0xB7E3A2F9C4D1...
+
+5. IDci (Identification - Initiator / Local Proxy-ID)
+ ├─ Type: IPv4_ADDR_SUBNET
+ ├─ Protocol: 0 (any)
+ ├─ Port: 0 (any)
+ ├─ Address: 10.0.0.0
+ └─ Subnet Mask: 255.255.255.0
+
+6. IDcr (Identification - Responder / Remote Proxy-ID)
+ ├─ Type: IPv4_ADDR_SUBNET
+ ├─ Protocol: 0 (any)
+ ├─ Port: 0 (any)
+ ├─ Address: 192.168.1.0
+ └─ Subnet Mask: 255.255.255.0
+
+7. Optional Payloads
+ ├─ NAT-D detection (if NAT present)
+ └─ Vendor ID (if implementation-specific)
+```
+
+**SA**
+
+- Each SA payload contains one or more Proposals
+- Each Proposal has:
+    - Protocol ID (ESP = 50, AH = 51)
+    - SPI Size (usually 4 bytes)
+    - SPI Value (the actual 32-bit number)
+    - Transform list (encryption, auth, lifetime)
+- Outbound and inbound SAs are different
+
+**Traffic Selectors**
+
+- Proxy-IDs or traffic selectors: local networks, remote network, protocol, port - they should match on both sides
+- They are sent separatly outside the SA
+- Some vendors allow “any-to-any” traffic without strict traffic selectors, meaning the SA could match all traffic between the peers’ IPs
+- For route based VPN TS are set to 0.0.0.0
+
+**SPI**
+
+- Each peer generates its own SPI and sends to peer
+- So after Phase 2 completes, each side knows two SPIs: one for inbound traffic, one for outbound traffic
+- The SPI is never reused between peers
+- It uniquely identifies the IPsec SA in the device’s Security Association Database (SAD)
+- The ESP header in data packets uses the SPI as the first field to indicate which SA/key to use
+- SPI is the lookup key: Incoming ESP/AH packets contain SPI → device looks it up in the SAD
+- SPI in an ESP header is not encrypted
+- The SAD is a per-device table that stores all active Security Associations (SAs). Each SA represents a unidirectional IPsec tunnel (or flow) with all the parameters needed to process packets
+- Inbound SA: How to decrypt and authenticate packets arriving at the device
+- Outbound SA: How to encrypt and authenticate packets leaving the device
+- Every active SA has an entry in the SAD
+
+Example of SAD entry
+
+```
+SPI: 0x3F2A1B4C
+Destination IP: 192.168.1.2
+Protocol: ESP (50)
+Mode: Tunnel
+Encryption: AES-CBC-256
+Encryption Key: 0xA1B2C3D4E5F60708...
+Integrity: HMAC-SHA1-96
+Integrity Key: 0x11223344556677889900...
+Lifetime: 3600 seconds / 4608000 bytes
+Sequence Number Window: 64
+Traffic Selector Local: 10.0.0.0/24
+Traffic Selector Remote: 192.168.1.0/24
+State: Active
+```
+
+**Flow in practice**
+
+- Router receives an ESP packet
+- Reads SPI from the ESP header
+- Looks up SAD to find:
+    - Encryption key
+    - Integrity key
+    - Mode, lifetime, etc.
+- Verifies ICV (if authentication is used).
+- Decrypts payload only using the key.
+
+Negotiated options list
+
+- Protocol: ESP or AH
+- Mode: Tunnel or Transport
+- Encryption transform: AES-CBC-256 -If AEAD (e.g., AES-GCM) was chosen in the encryption transform, separate integrity transform is not needed
+- Integrity transform: HMAC-SHA1-96
+- Lifetime: 3600 seconds and 4608000 kilobytes
+- PFS: group 14 (if requested)
+- Traffic Selectors(Proxy ID): 10.0.0.0/24 <-> 192.168.0.0/24 (proto any)
+- Responder SPI (e.g. 0x3f2a1b4c) and Initiator SPI (e.g. 0x9a7e6c2d) — assigned by peers
+- ESN: enabled (if negotiated / supported)
+
+Concepts
 
 
-
-
-
-### IKE Phase 2
-
-- Messages include Proxy-IDs: local networks, remote network, protocol, name - they should match on both sides
-- To build a tunnel 3 parametres are needed: Protocol (ESP/AH), encryption, MAC: ESP/A128/SHA1 + lifetime
 - There is only one mode - quick in Phase 2, 3 packets
-- IKE Phase 2 negotiations:
-    - Encryption
-    - Hashing
-- Phase 2 uses the shared secret to encrypt the exchange of information that determines theencryption parameters for the actual data
 - By default, Phase 2 keys are derived from the session key created in Phase 1. Perfect Forward Secrecy (PFS)
 forces a new Diffie-Hellman exchange when the tunnel starts and whenever the Phase 2 keylife expires, causing
 a new key to be generated each time. This exchange ensures that the keys created in Phase 2 are unrelated to
 the Phase 1 keys or any other keys generated automatically in Phase 2
 - Keylife - When the Phase 2 key expires, a new key is generated without interrupting service
+- Phase 2 (Quick Mode) packets are sent inside that encrypted IKE SA
+- In your packet capture you will still see UDP 500 (or UDP 4500 if NAT-T) packets
+- But their payloads are encrypted — they look like random binary blobs
+- You can no longer see SA proposals, proxy-IDs, algorithms, etc
 
-### Xauth - Extended Authentication within IKE
+To confirm Phase 2 happened, look for:
+
+- Three small encrypted IKEv1 packets right after Phase 1
+- ESP traffic starting immediately after them
+- UDP/500 or 4500
+
+**IKEv2**
+
+- Here it is called IKEv2 Child SA
+- Functionally, Phase 2 in IKEv1 (Quick Mode) and IKEv2 (Child SA) both negotiate ESP/AH SAs, keys, lifetimes, and traffic selectors, optionally with PFS
+- IKEv2 merges and simplifies the process, reduces message count, enforces explicit traffic selectors, and has cleaner rekey/Child SA creation flows
+- Traffic selectors are Mandatory: you must specify the exact local and remote subnets or hosts that this Child SA will cover
+- Workarounds for “any-to-any” for route based VPN: Cover all relevant subnets with broad TS +   Use the VTI to route all traffic through a single IPsec SA
+
+#### Xauth - Extended Authentication within IKE
 
 https://datatracker.ietf.org/doc/html/draft-beaulieu-ike-xauth-02
-
-## IKEv2
 
 ## ESP
 
@@ -160,25 +304,53 @@ https://datatracker.ietf.org/doc/html/draft-beaulieu-ike-xauth-02
 - Confidentiality, authentication, replay protection
 - IP protocol number 50
 - Supports encryption and NAT-T
-- 2 modes of operation
+- ESP mode: tunnel or transport mode
 - Transport mode - adds ESP header after original IP header + ESP trailer + ESP auth
+- Transport mode is practically never used, only when 2 firewalls communicate only with each other
 - Tunnel mode - encrypts the entire original packet - adds a new set of IP headers
+- Required parametres for Tunnel mode:
+    - Symmetric cipher
+    - Hash
+    - DH group
+    - Lifetime
 
 <img width="1151" alt="image" src="https://github.com/philipp-ov/foundation/assets/116812447/dd8e9064-7dde-478f-906f-48ef43077b04">
 
-### Transport mode
+## Security Assisiation - SA
 
-- Transport mode is practically never used, only when 2 firewalls communicate only with each other
+- SA is a set of IPSec specifications that are negotiated between devices that are establishing an IPSec relationship
+- SA can be either unidirectional or bidirectional, depending on the choices made by the network administrator
+- SA is uniquely identified by a Security Parameter Index (SPI), an IPv4 or IPv6 destination address, and a security protocol (AH or ESP) identifier 
+- There are two types of SAs: manual and dynamic 
 
+**Manual SA**
 
-## AH
+- Manual SAs require no negotiation; all values, including the keys, are static and specified in the configuration
+- If you configure static/manual IPsec SAs, you do not need (and cannot use) IKE
+- All parameters are manually configured on both sides:
+    - SPI (Security Parameter Index)
+    - Encryption & authentication algorithms
+    - Keys
+    - Peer IPs
+    - Lifetimes (if any)
+- There is no key negotiation, rekeying, or authentication exchange
+- Used only in test setups or simple, static environments
+- Drawback: keys must be changed manually — no automatic refresh → insecure and unscalable 
+
+**Dynamic SA**
+
+- Dynamic SAs require additional configuration. With dynamic SAs, you configure IKE first and then the SA. IKE creates dynamic security associations; it negotiates SAs for IPsec
+- The IKE configuration defines the algorithms and keys used to establish the secure IKE connection with the peer security gateway
+- This connection is then used to dynamically agree upon keys and other data used by the dynamic IPsec SA. The IKE SA is negotiated first and then used to protect the negotiations that determine the dynamic IPsec SAs
+
+## Authentication Header
 
 - Separate protocol above IP with encapsulation for data plane
-- Data Integrity, Authentication, protection from replays
+- Data Integrity, Authentication, Protection from replays
 - IP 51
 - Does not support encryption
 - Does not support NAT-T
-
+- Transorm set for authentication header defines only HMAC function, for example `ah-sha-hmac`
 
 ## Configuration - Cisco
 
