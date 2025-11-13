@@ -200,6 +200,9 @@ Encrypted Payloads (inside IKE SA):
 
 **SA**
 
+- SA is a set of IPSec specifications that are negotiated between devices that are establishing an IPSec relationship
+- SA can be either unidirectional or bidirectional, depending on the choices made by the network administrator
+- SA is uniquely identified by a Security Parameter Index (SPI), an IPv4 or IPv6 destination address, and a security protocol (AH or ESP) identifier 
 - Each SA payload contains one or more Proposals
 - Each Proposal has:
     - Protocol ID (ESP = 50, AH = 51)
@@ -207,6 +210,27 @@ Encrypted Payloads (inside IKE SA):
     - SPI Value (the actual 32-bit number)
     - Transform set (encryption, auth, lifetime)
 - Outbound and inbound SAs are different
+- There are two types of SAs: manual and dynamic 
+
+**Manual SA**
+
+- Manual SAs require no negotiation; all values, including the keys, are static and specified in the configuration
+- If you configure static/manual IPsec SAs, you do not need (and cannot use) IKE
+- All parameters are manually configured on both sides:
+    - SPI (Security Parameter Index)
+    - Encryption & authentication algorithms
+    - Keys
+    - Peer IPs
+    - Lifetimes (if any)
+- There is no key negotiation, rekeying, or authentication exchange
+- Used only in test setups or simple, static environments
+- Drawback: keys must be changed manually — no automatic refresh → insecure and unscalable 
+
+**Dynamic SA**
+
+- Dynamic SAs require additional configuration. With dynamic SAs, you configure IKE first and then the SA. IKE creates dynamic security associations; it negotiates SAs for IPsec
+- The IKE configuration defines the algorithms and keys used to establish the secure IKE connection with the peer security gateway
+- This connection is then used to dynamically agree upon keys and other data used by the dynamic IPsec SA. The IKE SA is negotiated first and then used to protect the negotiations that determine the dynamic IPsec SAs
 
 **Transform set**
 
@@ -397,35 +421,6 @@ If only ONE peer supports NAT-T
 - Does not support encryption
 - Does not support NAT-T
 - Transorm set for authentication header defines only HMAC function, for example `ah-sha-hmac`
-
-## Security Assisiation - SA
-
-- SA is a set of IPSec specifications that are negotiated between devices that are establishing an IPSec relationship
-- SA can be either unidirectional or bidirectional, depending on the choices made by the network administrator
-- SA is uniquely identified by a Security Parameter Index (SPI), an IPv4 or IPv6 destination address, and a security protocol (AH or ESP) identifier 
-- There are two types of SAs: manual and dynamic 
-
-**Manual SA**
-
-- Manual SAs require no negotiation; all values, including the keys, are static and specified in the configuration
-- If you configure static/manual IPsec SAs, you do not need (and cannot use) IKE
-- All parameters are manually configured on both sides:
-    - SPI (Security Parameter Index)
-    - Encryption & authentication algorithms
-    - Keys
-    - Peer IPs
-    - Lifetimes (if any)
-- There is no key negotiation, rekeying, or authentication exchange
-- Used only in test setups or simple, static environments
-- Drawback: keys must be changed manually — no automatic refresh → insecure and unscalable 
-
-**Dynamic SA**
-
-- Dynamic SAs require additional configuration. With dynamic SAs, you configure IKE first and then the SA. IKE creates dynamic security associations; it negotiates SAs for IPsec
-- The IKE configuration defines the algorithms and keys used to establish the secure IKE connection with the peer security gateway
-- This connection is then used to dynamically agree upon keys and other data used by the dynamic IPsec SA. The IKE SA is negotiated first and then used to protect the negotiations that determine the dynamic IPsec SAs
-
-
 
 ## Configuration - Cisco
 
