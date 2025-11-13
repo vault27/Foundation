@@ -20,24 +20,29 @@
 - Does not support multicast and broadcast, OSPF, EIGRP cannot be used, GRE inside IPSec solves the problem
 - IKE Phase 1 + IKE Phase 2 - 2 tunnels
 - Tunnel 1 is used to negotiate parametres for tunnel 2, tunnel 1 is used only for communication between firewalls, then for actual data only tunnel 2 is used directly, they work in paralell
-- Is there any IKE traffic, when everything is established and data flows normally?
+- Is there any IKE traffic, when everything is established and data flows normally - yes, keepalives via port UDP/500, if NAT-T is enabled then UDP/4500 is used
 - Security Associations are negotiated for both tunnels
+- In the IPsec/IKE world, the “initiator” is the peer that first sends an IKE packet to start the negotiation
+- The responder replies. This role is independent of who sends actual data over ESP later
 
-## Workflow
+## Workflow IKEv1
 
-- IKE Phase 1 — Establish a secure channel (IKE SA)
+- IKE Phase 1 — Establish a secure channel (IKE SA) - starts with UDP/500, may switch to UDP/4500
     - `Main mode` - 6 messages
     - `Aggressive mode` - 3 messages
     - DH key exchange
     - Authentication
-- IKE Phase 2 — Negotiate IPsec SAs (ESP or AH) - `Quick mode`
+    - NAT-T negotiation
+- XAuth
+- Config mode
+- IKE Phase 2 — Negotiate IPsec SAs (ESP or AH) - `Quick mode` - UDP/500 or UDP4500
     - Propose IPsec SA 
     - Exchange traffic selectors (Proxy-ID)
     - SPI
     - Transform sets
-- ESP encapsulation — Actual data traffic encryption/authentication using the negotiated keys
+- ESP encapsulation — Actual data traffic encryption/authentication using the negotiated keys - IP/50 or UDP/4500
 
-## IKE
+## IKE v1
 
 - Peer IP
 - Proxy IDs Local and Remote if required by one of the sides
@@ -306,9 +311,65 @@ To confirm Phase 2 happened, look for:
 - Traffic selectors are Mandatory: you must specify the exact local and remote subnets or hosts that this Child SA will cover
 - Workarounds for “any-to-any” for route based VPN: Cover all relevant subnets with broad TS +   Use the VTI to route all traffic through a single IPsec SA
 
-### Xauth - Extended Authentication within IKE
+### Xauth - Extended Authentication - replaced by IKEv2
 
-https://datatracker.ietf.org/doc/html/draft-beaulieu-ike-xauth-02
+- XAuth (Extended Authentication) is an optional extra authentication step used only with IKEv1, mainly to authenticate individual users (not just devices)
+- XAuth is an extension to IKEv1 Phase 1, and it happens after Phase 1 but before Phase 2
+- Standard IKEv1 Phase 1 authenticates devices or gateways (via PSK or certificates)
+- XAuth adds a user-level authentication step — typically username and password
+- Peers complete Phase 1 (Main Mode) → a secure channel (IKE SA) is established
+- The responder (gateway) requests XAuth credentials from the initiator
+- The initiator (client) provides username and password
+- The gateway validates them (e.g., against local DB, RADIUS, LDAP, etc.)
+- If successful → proceed to Phase 2 (Quick Mode) to negotiate IPsec SAs
+- IKEv2 replaced XAuth with EAP (Extensible Authentication Protocol) for user-level auth
+
+### Mode-Config Phase
+
+- Assign IP, DNS, WINS, Split tunnel
+- Happens after XAuth
+- Not used in IKEv2
+- In IKEv2 it is called Configuration Payloads (CP) inside the IKE_AUTH exchange
+
+## NAT-T
+
+```
++----------------+-----------+-------------+------------+------------------------+---------+-------------+----------+
+|  New IP header | UDP header| NAT-T header| ESP header |Original Inner IP Header| IP Data | ESP trailer | ESP auth |
+|    20 bytes    |  8 bytes  |   4 bytes   |  8 bytes   |                        |         |   2 bytes   | 12 bytes |
++----------------+-----------+-------------+------------+------------------------+---------+-------------+----------+
+```
+
+- ESP breaks when NAT is present
+- ESP Tunnel Mode does not include the outer IP header in its Integrity Check Value (ICV)
+- ESP Tunnel Mode protects: ESP header, Inner IP header, Payload, `It does NOT include the outer IP header`
+- So if NAT changes the outer source/destination IP, `the ICV is not affected`
+- `NAT cannot translate ESP because ESP has no ports` - NAT cannot track the flow
+- `NAT breaks IPsec because IPsec expects stable src/dst IPs` - Even if ESP ICV survives, the security association itself is bound to a pair of IP addresses
+- When NAT-T is enabled, `only SPI` is used for SA lookup
+- Without NAT-T `SPI + IPs` are used for SA lookup
+- UDP port 4500
+- Total overhead - 54 bytes!
+- Peers detect NAT-Traversal (NAT-T) automatically using a built-in mechanism in IKE phase 1 (IKEv1 Main Mode or IKEv2 IKE_SA_INIT)
+- Each peer sends two special hashes: HASH(Original Source IP, Source Port), HASH(Original Destination IP, Destination Port)
+- Each peer receives the other’s NAT-D payloads and compares them to what the packet actually arrived with
+- The hashes match → no NAT
+- By enabling this option, IPSec traffic can pass through a NAT device
+- If the peers detect NAT in the path, they switch to: UDP/4500 for IKE, ESP-in-UDP/4500 for data
+- Both peers must explicitly signal support for NAT-Traversal during Phase 1
+
+The steps are:
+
+- Announce NAT-T support
+- Exchange NAT-D hashes
+- Detect NAT (if hashes mismatch)
+- Switch to UDP/4500
+
+If only ONE peer supports NAT-T
+
+- NAT-T = disabled
+- Traffic stays UDP/500 + ESP
+- Tunnel will fail if a real NAT is present
 
 ## ESP
 
@@ -327,6 +388,15 @@ https://datatracker.ietf.org/doc/html/draft-beaulieu-ike-xauth-02
     - Lifetime
 
 <img width="1151" alt="image" src="https://github.com/philipp-ov/foundation/assets/116812447/dd8e9064-7dde-478f-906f-48ef43077b04">
+
+## Authentication Header
+
+- Separate protocol above IP with encapsulation for data plane
+- Data Integrity, Authentication, Protection from replays
+- IP 51
+- Does not support encryption
+- Does not support NAT-T
+- Transorm set for authentication header defines only HMAC function, for example `ah-sha-hmac`
 
 ## Security Assisiation - SA
 
@@ -355,14 +425,7 @@ https://datatracker.ietf.org/doc/html/draft-beaulieu-ike-xauth-02
 - The IKE configuration defines the algorithms and keys used to establish the secure IKE connection with the peer security gateway
 - This connection is then used to dynamically agree upon keys and other data used by the dynamic IPsec SA. The IKE SA is negotiated first and then used to protect the negotiations that determine the dynamic IPsec SAs
 
-## Authentication Header
 
-- Separate protocol above IP with encapsulation for data plane
-- Data Integrity, Authentication, Protection from replays
-- IP 51
-- Does not support encryption
-- Does not support NAT-T
-- Transorm set for authentication header defines only HMAC function, for example `ah-sha-hmac`
 
 ## Configuration - Cisco
 
@@ -499,16 +562,4 @@ Debug crypto ikev2
 Debug crypto ipsec
 ```
 
-## NAT-T
 
-```
-+----------------+-----------+-------------+------------+------------------------+---------+-------------+----------+
-|  New IP header | UDP header| NAT-T header| ESP header |Original Inner IP Header| IP Data | ESP trailer | ESP auth |
-|    20 bytes    |  8 bytes  |   4 bytes   |  8 bytes   |                        |         |   2 bytes   | 12 bytes |
-+----------------+-----------+-------------+------------+------------------------+---------+-------------+----------+
-```
-
-- UDP port 4500
-- Total overhead - 54 bytes!
-- NAT-T is an IKE phase 1 algorithm that is used when trying to establish a VPN between two gateways devices where a NAT device exists in front of one of the devices.
-- By enabling this option, IPSec traffic can pass through a NAT device.
