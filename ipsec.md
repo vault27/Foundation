@@ -44,8 +44,29 @@
 
 ## IKE v1
 
+- IKE is a key exchange protocol that uses ISAKMP as its message framework
+- ISAKMP (RFC 2408) is a framework and message format for negotiating security associations (SAs)
+- It defines: How packets are formatted (headers, payload types), A generic state machine for SA negotiation, But not how keys are exchanged
+- IKE (Internet Key Exchange, RFC 2409 for v1, RFC 5996/7296 for v2) is a protocol that uses ISAKMP as its payload/container format plus adds the cryptographic logic
+- IKEv1 = Oakley + SKEME + ISAKMP
+- Oakley protocol → key exchange modes + use of Diffie-Hellman
+- Defines:
+    - Use of Diffie–Hellman
+    - Key derivation techniques
+    - Security properties (anti-clogging tokens, identities, nonces)
+    - "Oakley Groups": Predefined mathematical groups (e.g., specific prime numbers and generators) used for the DH exchange
+- SKEME protocol → ideas about rekeying, quick key refresh, key derivation
+- Contributed:
+    - Ideas for identity protection
+    - How to refresh keys easily
+    - Key hierarchy concepts
+- ISAKMP → packet format, payload types, SA negotiation framework
+- Negotiates and manages IKE and IPsec parameters
+- Authenticates secure key exchange
+- Provides mutual peer authentication by means of shared secrets (not passwords) and public keys
+- Provides identity protection (in main mode)
+
 - Peer IP
-- Proxy IDs Local and Remote if required by one of the sides
 - IKE version
 - DH group - defines form of DH: Ecliptic Curve or Classic Module based, and the size of prime numbers which will be used
 - Hash
@@ -55,14 +76,9 @@
 - Preshared key
 - IKE Call Admission Control (CAC) - limit amount of connections and tries to establish IKE phase one tunnel
 
-IKE does the following:
 
-- Negotiates and manages IKE and IPsec parameters
-- Authenticates secure key exchange
-- Provides mutual peer authentication by means of shared secrets (not passwords) and public keys
-- Provides identity protection (in main mode)
 
-### Phase 1 - ISAKMP protocol
+### Phase 1
 
 - During traffic capture you cannot see Phase 2 negotiation, only Phase 1 as ISAKMP protocol, everything else is encrypted
 - To build a tunnel 4 parametres are needed: Authentication, key exchange, encryption, MAC: PSK/DH2/A128/SHA1 + mode for IKEv1: main or aggressive + lifetime
@@ -394,6 +410,13 @@ If only ONE peer supports NAT-T
 - NAT-T = disabled
 - Traffic stays UDP/500 + ESP
 - Tunnel will fail if a real NAT is present
+
+## IKEv2
+
+- Supports EAP
+- Anti-DDOS
+- Fewer messages to establish IPSEC SA
+- IKEv2 removed ISAKMP entirely and defined its own message format
 
 ## ESP
 
