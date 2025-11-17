@@ -66,81 +66,55 @@
 - Provides mutual peer authentication by means of shared secrets (not passwords) and public keys
 - Provides identity protection (in main mode)
 
-- Peer IP
-- IKE version
-- DH group - defines form of DH: Ecliptic Curve or Classic Module based, and the size of prime numbers which will be used
-- Hash
-- Symmetric cipher
-- Lifetime
-- Auth type: pre shared key or certificate
-- Preshared key
-- IKE Call Admission Control (CAC) - limit amount of connections and tries to establish IKE phase one tunnel
-
-
-
 ### Phase 1
 
 - During traffic capture you cannot see Phase 2 negotiation, only Phase 1 as ISAKMP protocol, everything else is encrypted
-- To build a tunnel 4 parametres are needed: Authentication, key exchange, encryption, MAC: PSK/DH2/A128/SHA1 + mode for IKEv1: main or aggressive + lifetime
-- In ISAKMP you can see mode: main or aggressive
-- Suggested encryption parametres
-- Key exchange
+- Phase 1 SA is called ISAKMP SA or IKE SA
+- The Phase 1 keys are long-lived and tied to identity/authentication
+- IKE SA and IPSec SAs must be cryptographically independent
+- Phase 1 establishes an ISAKMP(Internet Security Association and Key Management Protocol) SA, which is a secure channel through which the IPsec SA negotiation can take place.  
+- Next step in Phase 1 is to run Diffie Hellman and to establish secret keys And the next step is to authenticate each other 
+- And only after this IKE Phase 1 is established, it is used only for communications between firewalls themselves.  
+
+Negotiations:
+
+- Hashing - md5 or sha - used inside HMAC for authentication and integrity - Identity authentication (HASH_I / HASH_R) + Integrity of IKE messages
+- Authentication - PSK or certificates
+- Group - Diffie Helman group - algorithm which is used to establish shared secret keys
+- Lifetime - 24 hours default - don't have to match
+- Encryption
 
 IKE Phase 1 can be established via 
 
 - main mode(6 messages)  
-- aggressive mode(3 messages)
+- aggressive mode(3 messages) 
 
-During this phase peers authenticate each other, using pre-shared keys(PSK) or RSA signatures(PKI)  
+**Workflow**
   
-Negotiations:
-
-- Hashing - md5 or sha
-- Authentication - PSK or certificates
-- Group - Diffie Helman group - algorithm which is used to establish shared secret keys
-- Lifetime
-- Encryption
-
-Phase 1 establishes an ISAKMP(Internet Security Association and Key Management Protocol) SA, which is a secure channel through which the IPsec SA negotiation can take place.  
-Next step in Phase 1 is to run Diffie Hellman and to establish secret keys And the next step is to authenticate each other  
+`HAGEL > DH exchange > Authentication ` 
   
-HAGEL > DH exchange > Authentication  
-  
-And only after this IKE Phase 1 is established, it is used only for communications between firewalls themselves.  
-
-A Diffie-Hellman (DH) exchange allows participants to produce a shared secret value. The strength of the technique is that it allows participants to create the secret value over an unsecured medium without passing the secret value through the wire. The size of the prime modulus used in each group's calculation differs as follows:
-- DH Group 1 — 768-bit modulus
-- DH Group 2 — 1024-bit modulus
-- DH Group 5 — 1536-bit modulus
-- DH Group 14 — 2048-bit modulus
-- DH Group 19 — 256-bit modulus elliptic curve
-- DH Group 20 — 384-bit modulus elliptic curve
-- DH Group 24 — 2048-bit modulus with 256-bit prime order subgroup
-
-We do not recommend the use of DH groups 1, 2, and 5.  
-Because the modulus for each DH group is a different size, the participants must agree to use the same group
-
 **IKE identity**
 
 - If you do not configure a local-identity, the device uses the IPv4 or IPv6 address corresponding to the local endpoint by default
 - It can be: distinguished-name, hostname, ip-address, e-mail-address, key-id
 - Configurated on most devices, maybe none, on every device we configure both local and remote ID - on Palo Alto it is configured in IKE gateway
+- It must match the peer’s expectations
 
 **Main Mode**
 
-At the cost of three extra messages, Main Mode provides identity protection, enabling the peers to hide their actual identities from potential attackers. This means that the peers’ identities are never exchanged unencrypted in the course of the IKE negotiation.  
-In main mode, the initiator and recipient send three two-way exchanges (six messages total) to accomplish the following services:
-- First exchange (messages 1 and 2)—Proposes and accepts the encryption and authentication algorithms.
-- Second exchange (messages 3 and 4)—Executes a DH exchange, and the initiator and recipient each provide a pseudorandom number.
-- Third exchange (messages 5 and 6)—Sends and verifies the identities of the initiator and recipient.
-The information transmitted in the third exchange of messages is protected by the encryption algorithm established in the first two exchanges. Thus, the participants’ identities are encrypted and therefore not transmitted “in the clear.”
+- At the cost of three extra messages, Main Mode provides identity protection, enabling the peers to hide their actual identities from potential attackers. This means that the peers’ identities are never exchanged unencrypted in the course of the IKE negotiation
+- In main mode, the initiator and recipient send three two-way exchanges (six messages total) to accomplish the following services:
+- First exchange (messages 1 and 2) — Proposes and accepts the encryption and authentication algorithms.
+- Second exchange (messages 3 and 4) — Executes a DH exchange, and the initiator and recipient each provide a pseudorandom number
+- Third exchange (messages 5 and 6) — Sends and verifies the identities of the initiator and recipient
+- The information transmitted in the third exchange of messages is protected by the encryption algorithm established in the first two exchanges. Thus, the participants’ identities are encrypted and therefore not transmitted “in the clear.”
 
 **Aggressive mode**
 
 In aggressive mode, the initiator and recipient accomplish the same objectives as with main mode, but in only two exchanges, with a total of three messages:
-- First message—The initiator proposes the security association (SA), initiates a DH exchange, and sends a pseudorandom number and its IKE identity. When configuring aggressive mode with multiple proposals for Phase 1 negotiations, use the same DH group in all proposals because the DH group cannot be negotiated. Up to four proposals can be configured.
-- Second message—The recipient accepts the SA; authenticates the initiator; and sends a pseudorandom number, its IKE identity, and, if using certificates, the recipient's certificate.
-- Third message—The initiator authenticates the recipient, confirms the exchange, and, if using certificates, sends the initiator's certificate
+- First message — The initiator proposes the security association (SA), initiates a DH exchange, and sends a pseudorandom number and its IKE identity. When configuring aggressive mode with multiple proposals for Phase 1 negotiations, use the same DH group in all proposals because the DH group cannot be negotiated. Up to four proposals can be configured.
+- Second message — The recipient accepts the SA; authenticates the initiator; and sends a pseudorandom number, its IKE identity, and, if using certificates, the recipient's certificate.
+- Third message — The initiator authenticates the recipient, confirms the exchange, and, if using certificates, sends the initiator's certificate
 - Because the participants’ identities are exchanged in the clear (in the first two messages), aggressive mode does not provide identity protection
 - Main and aggressive modes applies only to IKEv1 protocol. IKEv2 protocol does not negotiate using main and aggressive modes
 
