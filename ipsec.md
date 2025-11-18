@@ -33,14 +33,22 @@
     - DH key exchange
     - Authentication
     - NAT-T negotiation
+    - IKE SA - one for inbound and outbound - IKE SA is bidirectional
+    - Local SPI → The SPI that your router uses when sending ISAKMP messages
+    - Remote SPI → The SPI your router expects in incoming ISAKMP messages from the peer
 - XAuth
 - Config mode
 - IKE Phase 2 — Negotiate IPsec SAs (ESP or AH) - `Quick mode` - UDP/500 or UDP4500
-    - Propose IPsec SA 
-    - Exchange traffic selectors (Proxy-ID)
-    - SPI
+    - Negotiate 2 IPsec SAs - inbound and outbound - crypto parametres the same - keys are different
+    - Exchange traffic selectors (Proxy-ID) - should be the same
+    - `Outbound SPI` - The SPI my router inserts into ESP packets I send
+    - `Inbound SPI` - The SPI my router expects to see in ESP packets I receive
     - Transform sets
-- ESP encapsulation — Actual data traffic encryption/authentication using the negotiated keys - IP/50 or UDP/4500
+- ESP encapsulation — Actual data traffic encryption/authentication using the negotiated keys - IP/50 or UDP/4500 - Destination SPI is in header
+
+## Workflow IKEv2
+
+- 
 
 ## IKE v1
 
@@ -74,7 +82,10 @@
 - IKE SA and IPSec SAs must be cryptographically independent
 - Phase 1 establishes an ISAKMP(Internet Security Association and Key Management Protocol) SA, which is a secure channel through which the IPsec SA negotiation can take place.  
 - Next step in Phase 1 is to run Diffie Hellman and to establish secret keys And the next step is to authenticate each other 
-- And only after this IKE Phase 1 is established, it is used only for communications between firewalls themselves.  
+- And only after this IKE Phase 1 is established, it is used only for communications between firewalls themselves
+- The ISAKMP header has its own SPI pair
+- These SPIs identify the IKE SA
+- IKE SAs are bidirectional
 
 Negotiations:
 
@@ -109,14 +120,124 @@ IKE Phase 1 can be established via
 - Third exchange (messages 5 and 6) — Sends and verifies the identities of the initiator and recipient
 - The information transmitted in the third exchange of messages is protected by the encryption algorithm established in the first two exchanges. Thus, the participants’ identities are encrypted and therefore not transmitted “in the clear.”
 
+Message one example
+
+```
+Internet Security Association and Key Management Protocol (ISAKMP)
+    Initiator SPI:  a1b2c3d4e5f60708
+    Responder SPI:  0000000000000000
+    Next payload:   Security Association (SA)
+    Version:        1.0
+    Exchange type:  Identity Protection (Main Mode) (5)
+    Flags:          0x00  (no encryption)
+    Message ID:     00000000
+    Length:         216  (example)
+
+Payload: Security Association (SA)
+    DOI:    IPsec (1)
+    Situation: Identity Only (1)
+    Proposal:
+        Proposal #1
+        Protocol ID: ISAKMP (1)
+        SPI Size: 0
+        # of Transforms: 4
+        Transform #1: Encryption Algorithm
+            Type:   ENCR
+            ID:     AES-CBC
+        Transform #2: Hash Algorithm
+            Type:   HASH
+            ID:     SHA1
+        Transform #3: Authentication Method
+            Type:   AUTH
+            ID:     Pre-shared Key (PSK)
+        Transform #4: Diffie-Hellman Group
+            Type:   GROUP_DESC
+            ID:     Group 2 (MODP-1024)
+```
+
 **Aggressive mode**
 
 In aggressive mode, the initiator and recipient accomplish the same objectives as with main mode, but in only two exchanges, with a total of three messages:
-- First message — The initiator proposes the security association (SA), initiates a DH exchange, and sends a pseudorandom number and its IKE identity. When configuring aggressive mode with multiple proposals for Phase 1 negotiations, use the same DH group in all proposals because the DH group cannot be negotiated. Up to four proposals can be configured.
-- Second message — The recipient accepts the SA; authenticates the initiator; and sends a pseudorandom number, its IKE identity, and, if using certificates, the recipient's certificate.
+- First message — The initiator proposes the security association (SA), initiates a DH exchange, and sends a pseudorandom number and its IKE identity. When configuring aggressive mode with multiple proposals for Phase 1 negotiations, use the same DH group in all proposals because the DH group cannot be negotiated. Up to four proposals can be configured. Message one contains everything that was in messages 1,3,5 in Main mode.
+- Second message — The recipient accepts the SA; authenticates the initiator; and sends a pseudorandom number, its IKE identity, and, if using certificates, the recipient's certificate. It contains the same as messages 2,4,6 in Main mode
 - Third message — The initiator authenticates the recipient, confirms the exchange, and, if using certificates, sends the initiator's certificate
 - Because the participants’ identities are exchanged in the clear (in the first two messages), aggressive mode does not provide identity protection
 - Main and aggressive modes applies only to IKEv1 protocol. IKEv2 protocol does not negotiate using main and aggressive modes
+
+**IKEv2**
+
+- In IKEv2 there is no Main Mode or Aggressive Mode
+- Total: 4 messages if no EAP. More if EAP
+- IKEv2 has:
+    - IKE SPI (for both IKE_SA_INIT and IKE_AUTH)
+    - ESP/AH SPI for CHILD_SA (used only in ESP/AH traffic)
+- Initiator sends IKE_SA_INIT packet: it contains Security assosiations wuth proposals: Encryption, Integrity, DH group + Key Exchange + Nonce + Initiator SPI
+
+```
+Internet Key Exchange Version 2
+  Initiator SPI:  a1b2c3d4e5f60708
+  Responder SPI:  0000000000000000
+  Next payload:   SA
+  Exchange type:  IKE_SA_INIT (34)
+  Flags:          Initiator
+
+  Payload: Security Association
+    Proposal #1: ESP + IKE transforms
+      Encryption: AES-CBC-256
+      Integrity : SHA256
+      DH group  : 14 (2048-bit MODP)
+  Payload: Key Exchange
+    DH Group: 14
+    KEi: <256 bytes of DH>
+  Payload: Nonce (Ni)
+    Ni: <random 32 bytes>
+```
+
+- Responder sends  IKE_SA_INIT packet as well: chosen proposal, DH public part, Nonce, Cookie if AntiDDoS is used + Initiator, Responder SPI
+
+```
+Internet Key Exchange Version 2
+  Initiator SPI:  a1b2c3d4e5f60708
+  Responder SPI:  1122334455667788
+  Next payload:   SA
+  Exchange type:  IKE_SA_INIT (34)
+  Flags:          Response
+
+  Payload: Security Association
+    Selected Proposal:
+      Encryption: AES-CBC-256
+      Integrity : SHA256
+      DH group  : 14
+
+  Payload: Key Exchange
+    KEr: <256 bytes of DH>
+  Payload: Nonce (Nr)
+    Nr: <random 32 bytes>
+
+  OPTIONAL:
+  Payload: Cookie (if DoS-protection active)
+```
+
+- Initiator sends IKE_AUTH - Encrypted! - ID, SPIs, Auth type, ESP proposal, traffic selectors
+
+```
+Internet Key Exchange Version 2
+  Initiator SPI:  a1b2c3d4e5f60708
+  Responder SPI:  1122334455667788
+  Next payload:   Encrypted
+  Exchange type:  IKE_AUTH (35)
+  Flags:          Initiator, Encrypted
+
+  Encrypted payload contents:
+    IDi             → "CN=vpn-client.example.com"
+    AUTH            → HMAC or RSA signature
+    SA (for CHILD_SA)
+      ESP proposal (AES-GCM-128, no integrity)
+    TSi             → 192.168.10.0/24
+    TSr             → 10.10.10.0/24
+```
+
+- Responder sends sends IKE_AUTH - Encrypted! - SPIs, ID, Auth, ESP proposal accepted, traffic selectors
 
 ### Phase 2
 
@@ -200,6 +321,11 @@ Encrypted Payloads (inside IKE SA):
     - SPI Value (the actual 32-bit number)
     - Transform set (encryption, auth, lifetime)
 - Outbound and inbound SAs are different
+- `Both SAs (inbound and outbound) use the same crypto parameters, negotiated during Phase 2`
+- `But the keys are different for each direction`
+- `Each SA has its own SPI`
+- We need multiple IPsec SAs between two peers because each SA is one-directional and tied to a specific set of crypto parameters
+- Any time direction, keying material, protocol, or traffic selectors differ → a separate SA is required
 - There are two types of SAs: manual and dynamic 
 
 **Manual SA**
@@ -254,24 +380,44 @@ Encrypted Payloads (inside IKE SA):
 - The SAD is a per-device table that stores all active Security Associations (SAs). Each SA represents a unidirectional IPsec tunnel (or flow) with all the parameters needed to process packets
 - Inbound SA: How to decrypt and authenticate packets arriving at the device
 - Outbound SA: How to encrypt and authenticate packets leaving the device
+- `Outbound SPI` - The SPI my router inserts into ESP packets I send
+- `Inbound SPI` - The SPI my router expects to see in ESP packets I receive
 - Every active SA has an entry in the SAD
+- Their SPIs appear ONLY inside ESP/AH packets, not in IKE messages
+- IKE messages use their own SPIs for phase 1
 
-Example of SAD entry
+Example of SAD entry: includes traffic selectors
 
 ```
-SPI: 0x3F2A1B4C
-Destination IP: 192.168.1.2
-Protocol: ESP (50)
-Mode: Tunnel
-Encryption: AES-CBC-256
-Encryption Key: 0xA1B2C3D4E5F60708...
-Integrity: HMAC-SHA1-96
-Integrity Key: 0x11223344556677889900...
-Lifetime: 3600 seconds / 4608000 bytes
-Sequence Number Window: 64
-Traffic Selector Local: 10.0.0.0/24
-Traffic Selector Remote: 192.168.1.0/24
-State: Active
+Router# show crypto ipsec sa
+
+interface: GigabitEthernet0/0
+    Crypto map tag: VPN-MAP, local addr 203.0.113.10
+
+   protected vrf: (none)
+   local ident (addr/mask/prot/port): (10.1.0.0/255.255.255.0/0/0)
+   remote ident (addr/mask/prot/port): (10.2.0.0/255.255.255.0/0/0)
+
+   #pkts encaps:  12345, #pkts encrypt: 12345, #pkts digest: 12345
+   #pkts decaps:  12010, #pkts decrypt: 12010, #pkts verify: 12010
+
+   inbound esp sas:
+      spi: 0x32A1B44C(850000964)
+        transform: esp-aes esp-sha-hmac ,
+        in use settings ={Tunnel, }
+        conn id: 1011, flow_id: SW:11, crypto map: VPN-MAP
+        sa timing: remaining key lifetime (k/sec): (4294967295/2460)
+        replay detection support: Y
+        Status: ACTIVE
+
+   outbound esp sas:
+      spi: 0xA4BB9923(2769075235)
+        transform: esp-aes esp-sha-hmac ,
+        in use settings ={Tunnel, }
+        conn id: 1012, flow_id: SW:12, crypto map: VPN-MAP
+        sa timing: remaining key lifetime (k/sec): (4294967295/2460)
+        replay detection support: Y
+        Status: ACTIVE
 ```
 
 **Data flow in practice**
@@ -319,11 +465,13 @@ To confirm Phase 2 happened, look for:
 
 **IKEv2**
 
-- Here it is called IKEv2 Child SA
+- IKEv2 does not have phase 2
+- One child Ipsec SA is created by default in IKE_AUTH message
+- If you need additional Child SA - 2 more messages - request and response
 - Functionally, Phase 2 in IKEv1 (Quick Mode) and IKEv2 (Child SA) both negotiate ESP/AH SAs, keys, lifetimes, and traffic selectors, optionally with PFS
 - IKEv2 merges and simplifies the process, reduces message count, enforces explicit traffic selectors, and has cleaner rekey/Child SA creation flows
 - Traffic selectors are Mandatory: you must specify the exact local and remote subnets or hosts that this Child SA will cover
-- Workarounds for “any-to-any” for route based VPN: Cover all relevant subnets with broad TS +   Use the VTI to route all traffic through a single IPsec SA
+- Workarounds for “any-to-any” for route based VPN: Cover all relevant subnets with broad TS + Use the VTI to route all traffic through a single IPsec SA
 
 ### Xauth - Extended Authentication - replaced by IKEv2
 
@@ -391,6 +539,8 @@ If only ONE peer supports NAT-T
 - Anti-DDOS
 - Fewer messages to establish IPSEC SA
 - IKEv2 removed ISAKMP entirely and defined its own message format
+- Consist of request/response  pairs, called exchages: IKE_SA_INIT, IKE_AUTH, 
+
 
 ## ESP
 
