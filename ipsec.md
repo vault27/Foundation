@@ -6,9 +6,9 @@
 - It consists of 3 protocols:
     - ESP 
     - AH(obsolete)
-    - IKE
-- For negotiations(IKE) UDP port 500 is used. 
-- Encapsulating Security Payload uses IP protocol 50
+    - IKE v1 or v2
+- For negotiations(IKE) UDP port 500 is used
+- Encapsulating Security Payload uses IP protocol 50 or UDP 4500 if NAT is present
 - Authentication Header uses IP protocol 51.  
 - IKE - set of protocols to exchange keys
 - ISAKMP -  protocol to manage keys - responsible for Security Associations
@@ -18,7 +18,7 @@
     - SKEME
     - OAKLEY
 - Does not support multicast and broadcast, OSPF, EIGRP cannot be used, GRE inside IPSec solves the problem
-- IKE Phase 1 + IKE Phase 2 - 2 tunnels
+- IKE v1 Phase 1 + IKE Phase 2 - 2 tunnels
 - Tunnel 1 is used to negotiate parametres for tunnel 2, tunnel 1 is used only for communication between firewalls, then for actual data only tunnel 2 is used directly, they work in paralell
 - Is there any IKE traffic, when everything is established and data flows normally - yes, keepalives via port UDP/500, if NAT-T is enabled then UDP/4500 is used
 - Security Associations are negotiated for both tunnels
@@ -52,6 +52,9 @@
 
 ## IKE v1
 
+- v1 - 9 messages in total via main mode
+- v1 - 6 messages in total via aggressive mode
+- v2 - 4 messages in total
 - IKE is a key exchange protocol that uses ISAKMP as its message framework
 - ISAKMP (RFC 2408) is a framework and message format for negotiating security associations (SAs)
 - It defines: How packets are formatted (headers, payload types), A generic state machine for SA negotiation, But not how keys are exchanged
