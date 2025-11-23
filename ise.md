@@ -1,9 +1,21 @@
 # ISE
 
+## 802.1X
+
+- 802.1X is an IEEE standard for network access control
+- It defines how devices authenticate before they are allowed to send normal traffic on: wired Ethernet, Wi-Fi (WPA2/WPA3-Enterprise), MACsec-enabled networks
+- 802.1X is a framework that controls who can connect to the network by requiring authentication at the moment a device plugs in or associates to Wi-Fi
+- Login before network access
+- Supplicant - PC
+- Authenticator - switch, AP
+- Authentication server - ISE
+- This standard defines using of Radius, EAP, EAPOL...
+- 802.1X itself does not define authentication—it only transports EAP methods
+
 ## EAP
 
-- Extensible Authentication Protocol (EAP) is not an authentication method by itself.
-It is a framework that allows many authentication methods to be plugged into it
+- Extensible Authentication Protocol (EAP) is not an authentication method by itself
+- It is a framework that allows many authentication methods to be plugged into it
 - EAP = a wrapper / container for authentication carried over something else
 - EAP defines:
   - message types (Request, Response, Success, Failure)
@@ -15,12 +27,13 @@ It is a framework that allows many authentication methods to be plugged into it
   - how servers authenticate
 - The method defines those
 - EAP is used in:
-  - IKEv2 – VPN authentication% EAP messages are carried inside IKE_AUTH encrypted payloads
-  - 802.1X (Wired/Wireless): EAP runs between the client and authenticator, and is transported to RADIUS/ISE - EAP inside EAPOL The full TLS handshake is between the Supplicant (Client PC) and the Authentication Server (Cisco ISE) - switch or AP is just a forwarder
-  - PPP (PPP-EAP)
-  - Dial-in, broadband, LTE, etc.
-  - RADIUS: EAP is encapsulated in EAP-Message attributes inside RADIUS packets
-  - Everything is just Request/Response pairs, repeated until the method finishe
+  - IKEv2 – VPN authentication EAP messages are carried inside IKE_AUTH encrypted payloads
+  - 802.1X (Wired/Wireless): EAP runs between the client and authenticator, and is transported to RADIUS/ISE - EAP inside EAPOL
+- The full TLS handshake is between the Supplicant (Client PC) and the Authentication Server (Cisco ISE) - switch or AP is just a forwarder
+- PPP (PPP-EAP)
+- Dial-in, broadband, LTE, etc.
+- RADIUS: EAP is encapsulated in EAP-Message attributes inside RADIUS packets
+- Everything is just Request/Response pairs, repeated until the method finishes
 
 ```
   Server         Client
@@ -175,8 +188,36 @@ In EAP-TLS, the authentication is completed by the certificates during the TLS h
 
 ### EAP METHODS
 
-- EAP-MSCHAPv2: username/password, used for VPNs, weak, avoid for Wi-Fi
+**Native Methods(a.k.a. "standalone methods")**
+
 - EAP-TLS: mutual certificate authentication, strongest, widely used for Wi-Fi and VPN with smartcards - full TLS session inside EAP - `TLS → wrapped in EAP → wrapped in RADIUS → transported between ISE and NAS/switch/WLC`
+- EAP-MD5 - insecure, no server auth
+- EAP-PWD - password based, stromg crypto
+- EAP-SRP - secure remote password
+- EAP itself carries all authentication data
+- No “inner” methods
+- No tunnel wrapping EAP
+- Example: EAP-TLS is entirely self-contained: TLS handshake happens directly in EAP messages. No second method inside
+- Only EAP messages are carried inside EAPOL frames on the LAN
+
+```
+Ethernet
+ └─ 802.1X (EAPOL)
+     └─ EAP
+         └─ EAP-Method (TLS handshake messages)
+```
+
+**Tunneled EAP Methods (methods that create a secure tunnel first)**
+
+- A tunneled method first creates an encrypted outer tunnel, then authenticates inside that tunnel using some inner method
+- Outer methods (PEAP, EAP-TTLS, EAP-FAST) REQUIRE an inner method
+- They only create an encrypted channel
+- Because outer methods only provide:
+  - Server authentication
+  - TLS tunnel creation
+  - Protection against credential snooping
+- 
+- EAP-MSCHAPv2: username/password, used for VPNs, weak, avoid for Wi-Fi
 - EAP-TTLS: TLS tunnel + username/password inside
 - PEAP: Microsoft flavor, TLS tunnel + MSCHAPv2 inside
 
