@@ -10,7 +10,37 @@
 - Authenticator - switch, AP
 - Authentication server - ISE
 - This standard defines using of Radius, EAP, EAPOL...
-- 802.1X itself does not define authentication—it only transports EAP methods
+- 802.1X itself does not define authentication — it only transports EAP methods
+
+## Wired auth work flow
+
+- Client (supplicant) sends EAPOL-Start broadcast to the switch (authenticator)
+- Switch (authenticator) sends EAP-Request/Identity frame to client
+- Client responds with username (EAP-Response/Identity) - At this point, no method is chosen yet — only the identity is exchanged
+- Authenticator passes identity to authentication server
+- Switch encapsulates the EAP packet in RADIUS Access-Request and forwards to RADIUS / AAA server (authentication server)
+- Server now knows the username and can look up the user’s profile/policy: Which EAP method is allowed
+- It decides the method based on user group, device, or other policy
+- Server responds with EAP-Request specifying outer method: For example: EAP-Request / PEAP Start
+- The EAP Type field indicates which outer method the client should use
+- Switch forwards this packet to client
+- Client evaluates supported methods
+- If supported: proceeds → starts TLS handshake
+- Inside that tunnel, the inner authentication method is negotiated
+- Once the tunnel is up, the server sends an EAP-Request inside the TLS tunnel
+- The Type field specifies the inner method
+- The server may also send an initial challenge if the inner method is challenge/response
+- Client examines the inner method, If supported → proceeds with inner authentication
+- After agreeing on the inner method, actual authentication proceeds inside the TLS tunnel
+- EAP-MSCHAPv2 example:
+  - Server → Client: Challenge (16-byte random)
+  - Client → Server: Response (hash of password + challenge)
+  - Server verifies → sends Success / Failure
+- In practice:
+  - PEAP → nearly fixed: MSCHAPv2
+  - TTLS → can vary: PAP/CHAP/MSCHAPv2/EAP
+  - FAST → usually MSCHAPv2 or GTC
+
 
 ## EAP
 
@@ -212,14 +242,21 @@ Ethernet
 - A tunneled method first creates an encrypted outer tunnel, then authenticates inside that tunnel using some inner method
 - Outer methods (PEAP, EAP-TTLS, EAP-FAST) REQUIRE an inner method
 - They only create an encrypted channel
+- Outer method = secure tunnel
+- Inner method = how you prove who you are inside the tunnel
 - Because outer methods only provide:
   - Server authentication
   - TLS tunnel creation
   - Protection against credential snooping
-- 
-- EAP-MSCHAPv2: username/password, used for VPNs, weak, avoid for Wi-Fi
-- EAP-TTLS: TLS tunnel + username/password inside
-- PEAP: Microsoft flavor, TLS tunnel + MSCHAPv2 inside
+- Outer methods - cannot work by it self - they need inner method:
+  - PEAP → TLS tunnel + MSCHAPv2 inside, requires server cert - Enterprise Wi-Fi with AD (most common) - only allows EAP inner methods
+  - EAP-TTLS → TLS tunnel + ANY inner method (PAP/CHAP/MSCHAPv2/EAP), requires server cert - username+passwd - Best for RADIUS servers in Linux/FreeRADIUS setups needing PAP/LDAP
+  - EAP-FAST → TLS tunnel built using PAC instead of server cert, Cisco-centric - Cisco-only shops where certificate deployment is hard
+- Inner methods - cannot live without outer methods:
+  - EAP-MSCHAPv2: username/password, used for VPNs, weak, avoid for Wi-Fi
+  - PAP
+  - CHAP / MS-CHAP / MS-CHAPv2
+
 
 **EAP-TLS**
 
