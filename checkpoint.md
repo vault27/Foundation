@@ -1270,3 +1270,75 @@ Between "o" and "O" on the outbound/server side of the firewall kernel, the foll
 - Outbound Anti-spoofing
 - HTTPS/VPN encryption
 - Source IP NAT
+
+## NAT
+
+- It is possible to configure 2 NAT ruls wich match a connection, but only when using Automatic NAT (bidirectional NAT)
+
+## BGP
+
+- Restrict sending routes to peer from which we got these routes and redistribute one directly connected network
+- Allow all other routes to be exported and imported
+
+```
+set routemap FILTER_LAN_OUT id 1 on
+set routemap FILTER_LAN_OUT id 1 restrict
+set routemap FILTER_LAN_OUT id 1 match nexthop 172.31.41.73 on
+set routemap FILTER_LAN_OUT id 2 on
+set routemap FILTER_LAN_OUT id 2 allow
+set routemap FILTER_LAN_OUT id 2 match interface bond3.342 on
+set routemap FILTER_LAN_OUT id 2 match protocol direct
+set routemap FILTER_LAN_OUT id 3 on
+set routemap FILTER_LAN_OUT id 3 allow
+
+
+set bgp external remote-as 64900 on
+set bgp external remote-as 64900 peer 172.31.41.73 on
+set bgp external remote-as 64900 peer 172.31.41.73 holdtime 15
+set bgp external remote-as 64900 peer 172.31.41.73 keepalive 5
+set bgp external remote-as 64900 peer 172.31.41.73 graceful-restart on
+set bgp external remote-as 64900 peer 172.31.41.73 export-routemap "FILTER_LAN_OUT" preference 2 on
+set bgp external remote-as 64900 peer 172.31.41.73 import-routemap "allow" preference 1 on
+```
+
+## Core XL
+
+- CoreXL is a Check Point technology that allows firewall and IPS security code to run on multiple processors/cores concurrently
+- The CoreXL layer accelerates traffic that cannot be handled by the SecureXL device or traffic that requires deep packet inspection
+- CoreXL is able to provide near linear scalability of performance, based on the number of processing cores on a single machine 
+- This increase in performance is achieved without requiring any changes to management or network topology
+- In a CoreXL gateway, the firewall kernel is replicated so that each replicated copy (instance) runs on a processing core. These instances handle traffic concurrently, and each instance is a complete and independent inspection kernel
+- CoreXL improves performance with almost linear scalability in the following scenarios:
+    - Much of the traffic can not be accelerated by SecureXL
+    - Many IPS features enabled, which disable SecureXL functionality
+    - Large rulebase
+    - NAT rules
+- The CoreXL software architecture includes the Secure Network Distributor (SND). The SND is responsible for:
+    - Processing incoming traffic from the network interfaces
+    - Securely accelerating authorized packets (if SecureXL is running)
+    - Distributing non-accelerated packets or Medium Path packets among CoreXL FW kernel instances - this functionality is also referred to as dispatcher
+- The dispatcher is executed when a packet should be forwarded to a CoreXL FW instance (in Slow path and Medium path - see sk98737 for details) and is in charge of selecting the CoreXL FW instance that will inspects the packet
+- In R77.20 and lower versions, traffic distribution between CoreXL FW instances is statically based on Source IP addresses, Destination IP addresses, and the IP 'Protocol' type. Therefore, there are possible scenarios where one or more CoreXL FW instances would handle more connections, or perform more processing on the packets forwarded to them, than the other CoreXL FW instances.
+- This may lead to a situation, where the load is not balanced across the CPU cores, on which the CoreXL FW instances are running
+- To help mitigate the above issue, CoreXL Dynamic Dispatcher feature was introduced in R77.30 Security Gateway.
+- The new dynamic assignment mechanism is based on the utilization of CPU cores, on which the CoreXL FW instances are running
+- R77.30 - To check the current mode on Security Gateway: `[Expert@HostName]# fw ctl multik get_mode`
+- Enable: `[Expert@HostName]# fw ctl multik set_mode 9`
+- In R80 is enabled by default
+- Show: `[Expert@R80.10:0]# fw ctl multik dynamic_dispatching get_mode`
+- Current mode is On
+- Enable: `[Expert@HostName]# fw ctl multik dynamic_dispatching on`
+- Change number of firewall instances: cpconfig, reboot required
+- CoreXL will not improve performance in the following scenarios:
+    - SecureXL accelerates much of the traffic
+    - Traffic mostly consists of VPN
+    - Traffic mostly consists of VoIP
+- Affinity - Association of a particular network interface / FW kernel instance / daemon with a CPU core (either 'Automatic' (default), or 'Manual')
+- Note: The default CoreXL interface affinity setting for all interfaces is 'Automatic' when SecureXL is installed and enable
+- You can configure the number of firewall kernel instances (fw_worker) on a on a multi-core Check Point gateway via 'cpconfig'
+- Show status and connection table for each core:`fw ctl multik stat`
+- When configuring the CoreXL in 'cpconfig' menu, the configuration is saved in the /etc/fw.boot/boot.conf file
+- Number of CoreXL FW instances must be identical on all members of the cluster because the state synchronization between members is performed per CoreXL FW instance
+- Traffic is processed by the CoreXL FW instances only when the traffic is not accelerated by SecureXL
+- VPN and VoIP are not load balanced with CoreXL and always handled by the same FW instance.
+- Multi-queue lets you configure more than one traffic queue for each network interface. This means more than one CPU can be used for acceleration.
