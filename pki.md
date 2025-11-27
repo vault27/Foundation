@@ -23,13 +23,59 @@ Certificate ::= SEQUENCE {
 
 ### Certificate formats
 
-`ASN.1 > DER > Base64 > PEM`
+**ASN.1**
 
-- DER - bytes format
-- DER is converted to base64 for comfort
-- Base64 is wraped into PEM format for convenience
+- Abstract Syntax Notation One
+- This is the data model / schema used for certificates
+- All X.509 certificates are structured according to the ASN.1 rules
+- DER or PEM are encodings of ASN.1
+- ASN.1 describes the structure of certificates
+- The raw ASN.1 notation is never used as the certificate itself
+
+**PEM**
+
+- Extensions: .pem, .crt, .cer, .key
+- Encoding: Base64 encoded (ASCII) with -----BEGIN ...-----.
+- Contains
+    - Certificates
+    - Private keys
+    - Certificate chains
+    - All can be included in the same file, or separated
+- Looks like
+
+```
+-----BEGIN CERTIFICATE-----
+MIIDXTCCAkWgAwIBAgIEU...
+-----END CERTIFICATE-----
+```
 
 Convert pem to ASN.1: `openssl x509 -in google.pem -text`
+
+**DER**
+
+- Extensions: .der, .cer
+- Encoding: Binary form of a certificate (no base64)
+- Contains certificate only (never private key in common usage)
+- Binary file — NOT human readable
+
+**PFX / P12**
+
+- Extensions: .pfx, .p12
+- Encoding: Binary PKCS#12 container (password protected)
+- Contains
+    - Private key
+    - Leaf certificate
+    - Certificate chain
+    - All bundled together
+
+**P7B / PKCS#7**
+
+- Extensions: .p7b, .p7c
+- Encoding: Base64 or binary PKCS#7 structure
+- Contains
+    - Certificate(s)
+    - Certificate chain
+    - Never contains a private key
 
 ### Certificate generation
 
@@ -84,7 +130,10 @@ Everything else is constructed by the CA
 
 ### Self-signed certificate
 
-In self-signed certificate all data in Subject Name is identical to all data in Issuer Name section.
+A certificate is truly self-signed if:
+
+- Issuer DN = Subject DN
+- The certificate was signed with the certificate's own private key
 
 ## OCSP
 
