@@ -127,7 +127,64 @@ Versions of firewall itself:
 Checkpoint calls stateful inspection - INSPECT engine
 Logs to third party can be provided via LEA - Log Export Api
 
+**NAT order**
 
+- Manual - pre automatic NAT
+- Automatic static NAT
+- Automatic Hide NAT
+- Post automatic/Manual NAT
+
+SRC NAT is done on server side
+DST NAT is done on client side
+
+When we create Hide NAT it works only when source from inside is trying to connect to destination outside, not vice versa.
+When we create automatic static nat it works in both directions.
+
+**Authentication in firewall rules**
+
+- User authentication - can be configured only for HTTP, FTP, HTTPS, rlogin, Telnet. Very intrusive, is not applied first in rule base
+- Session authentication - requires agent, does not fit for HTTP because HTTP creates many sessions.
+- Client authentication - per IP address, after auth rules are allowed for this IP
+
+**Daemons**
+
+- cprid - upgrade operations - listen on Gateway for connections from Management server
+- cpd (Checkpoint Daemon) - core process: SIC functionality(port18xxx), licenses operations, listen on Gateway for connections from Management server, transfer messages between processes, policy installation, pull the application monitoring status from the GW/Management using Smart Event
+- pdp and pep - Identity awareness
+- confd - provides access to GAIA configuration database
+- fwm (Firewall management) - available on all managament servers: if smartdashboard login fails, gui client communication, database manipulation, policy compilation, management HA sync
+- fwd - allows other processes to forward logs to external log server, responsible for other security processes, responsible for full sync in ClusterXL, responsible for kernel tables info across cluster memebers
+- fw kernel - responsible for delta sync in Cluster XL
+- cpwd - checkpoint watchdog
+- fwssd - child process of fwd, maintain SMS, maintain security servers
+- cplmd - starts when Smartview tracker starts
+- vpnd - authenticates IPSec vpn users
+- cvpnd - SSL VPN
+- snd - secure network distributor - process incoming traffic and distributes among kernel instances
+- gated - manages dynamic routing protocols
+- fw gen - compiles $FWDIR/conf/*.W files into machine language
+
+**Configuration files**
+
+- $FWDIR/conf/fwauthd.conf - security server configuration
+- $FWDIR/conf/fwauth.NDB - user definition
+- $FWDIR/conf/vpn_route.conf - VPN routing
+- ike.elg - log file about negotiation encryption
+- vpnd.elg - verbose info about vpn failures
+- $RTDIR/distrib and $RTDIR/events_db - all system events
+- $RTDIR/Database/conf/my.cnf - Smart Reporter database settings in Linux
+- %RTDIR%\Database\conf\my.ini - in Windows
+
+## VPN AD CA certificate
+
+- Gateway options > IPSec VPN > Import certificate
+- Gateway options > VPN Clients > Authentication > certificate
+- Gateway options > VPN Clients > gateway authenticates with certificate....
+- Gateway options > Mobile Access > Authentication > certificcate
+- Manage > OPsec > New CA
+- Manage > Opsec >  new LDAP account unit
+- Create LDAP group mandatory
+- configure OCSP
 
 ## CLI
 
@@ -167,7 +224,7 @@ modify network_objects net-internal netmask 255.255.255.0
 
 ## Mass add networks to database
 
-```
+```bash
 #! /bin/bash
 
 rm add_net
@@ -201,7 +258,8 @@ cat add_net
 
 ## Add networks from Palo Alto
 
-```
+```bash
+
 #! /bin/bash
 
 cdr2mask (){
@@ -233,6 +291,108 @@ echo "update_all" >> add_net
 echo "savedb" >> add_net
 
 ```
+
+## Script add ranges
+
+```bash
+#! /bin/bash
+rm add_range
+
+while read line
+do
+echo $line
+name=`echo $line | cut -d";" -f 1`
+ip1=`echo $line | cut -d";" -f 2`
+ip2=`echo $line | cut -d";" -f 3`
+comment=`echo $line | cut -d";" -f 4`
+
+echo "create address_range $name" >> add_range
+echo "modify network_objects $name ipaddr_first $ip1" >> add_range
+echo "modify network_objects $name ipaddr_last $ip2" >> add_range
+
+if [ -n "$comment" ]
+then
+echo "modify network_objects $name comments $comment" >> add_range
+fi
+
+done < ranges.csv
+
+echo "update_all" >> add_range
+echo "savedb" >> add_range
+```
+
+## Script add nets
+
+```bash
+#! /bin/bash
+
+cdr2mask (){
+  # Number of args to shift, 255..255, first non-255 byte, zeroes
+  set -- $(( 5 - ($1 / 8) )) 255 255 255 255 $(( (255 << (8 - ($1 % 8))) & 255 )) 0 0 0
+  [ $1 -gt 1 ] && shift $1 || shift
+  echo ${1-0}.${2-0}.${3-0}.${4-0}
+}
+
+rm add_net
+rm nets2
+
+cat nets.txt | sed 's=/=;=g' > nets2
+
+while read line
+do
+
+echo $line
+name=`echo $line | cut -d ';' -f 1`
+ip=`echo $line | cut -d ';' -f 2`
+netmask=`echo $line | cut -d ';' -f 3`
+netmask2=$(cdr2mask $netmask)
+comment=`echo $line | cut -d ';' -f 4`
+
+echo "create network $name" >> add_net
+echo "modify network_objects $name ipaddr $ip" >> add_net
+echo "modify network_objects $name netmask $netmask2" >> add_net
+
+if [ -n "$comment" ]
+then
+echo "modify network_objects $name comments $comment" >> add_net
+fi
+
+done < nets2
+
+echo "update_all" >> add_net
+echo "savedb" >> add_net
+```
+
+## Script add hosts
+
+Make sure that there are no spaces, no objects start with a number, no dublicates and end of line is in Linux format
+
+```bash
+#! /bin/bash
+rm add_ip
+while read line
+do
+echo $line
+name=`echo $line | cut -d";" -f 1`
+ip=`echo $line | cut -d";" -f 2`
+comment=`echo $line | cut -d";" -f 3`
+
+echo "create host_plain $name" >> add_ip
+echo "modify network_objects $name ipaddr $ip" >> add_ip
+if [ -n "$comment" ]
+then
+echo "modify network_objects $name comments $comment" >> add_ip
+fi
+
+done < hosts
+
+echo "update_all" >> add_ip
+echo "savedb" >> add_ip
+```
+
+And then
+
+`dbedit -globallock -f add_ip`
 
 ## VSX
 
@@ -732,3 +892,381 @@ cat /proc/net/bonding/bond0
 cphaconf show_bond bond0
 ```
 
+## R75, R55
+
+FW monitor on R55
+
+```
+fw monitor -e "accept dst=10.63.8.60;"
+```
+
+Manage managers on R75 cli
+
+```
+mdsstat
+mdsstop hsia.dms
+mdsstart hsia.dms
+```
+
+Kill the process
+
+```
+mdsstop_customer hsia.dms fyi
+```
+
+and then make sure the process is dead
+
+```
+mdsstat
+```
+
+## Troubleshooting
+
+- `cphaprob stat`  > with more clusterxl informations
+- `fwaccel ranges`  > show's anti spoofing ranges
+- `fw ctl multik utilize`  > shows the CoreXL queue utilization for each CoreXL FW instance
+- `fw ctl multik print_heavy_conn` > shows the table with heavy connections
+- `cpinfo -y all` - Show all hotfixes installed
+- `fwaccel stat` - Check if SecureXL is enabled - This command also shows if Drop Templates are enabled. Drop templates accelerate drops with Secure XL. If you have many drops, it may help.
+- `$CPDIR/log/cpwd.elg` - cpd daemon does not work, 18191 port does not listen, policy cannot be pushed
+- During the tracert Checkpoint replies with interface address of Cluster, not from the address of 1 particular fw
+- `fw ctl zdebug + drop | grep 1.1.1.1` - See all dropped connections and more importantly the reason (e.g. anti-spoofing, IPS , FW rule)
+- `cpstat fw` - Quickly see stats of number of connections (accepted,denied,logged) with a breakdown
+- Capture traffic
+
+```
+fw monitor | grep 1.1.1.1
+fw monitor -e 'accept host(75.154.130.239) and host(100.70.184.5);
+fw monitor -e 'accept host(100.66.100.16) and udpport(69);'
+fw monitor -e "accept;" -o capture.pcap
+tcpdump -s 0 -nn -w capture.pcap -i bond2.340 host 192.168.180.19 and port 443
+```
+
+- `cpview; show sysenv all; show asset` -  hardware
+- `fw ctl chain` - Shows inbound and outbound chains
+- `cpwd_admin list; cpwd_admin stop -name FWM` - Control watch dog and processes
+- `vpn crl_zap` - Erase all CRLs
+- `fw accel off` - Turn off SecureXL
+- `fw ctl pstat` - Gather statistics about the connections
+- `fw tab -t connections -s` - Show amount of connections
+- Hold table issues: Issue description: traffic is silently dropped, and fw ctl zdebug + drop shows the following: `dropped by fw_filter_chain Reason: chain hold failed;`
+- `fw tab -t hold_table -s` - Show state of hold table
+- `fw ctl get int fwhold_limit` - Show hold table limit
+- To solve this issue we need to increase hold limit, install policy, and optimize policy: all access role rules to the bottom
+
+## Smart event + logging
+
+You can deploy SmartEvent in these ways:
+- As part of the SmartEvent – A renewable one year license is included with the SmartEvent
+package
+- As a dedicated server – You can purchase a perpetual license for a SmartEvent Server
+
+Three modes in Smarttracker:
+- Log
+- Active
+- Audit - super detail
+
+Many predefined quieries + you can create custom
+Logs are stored: /$FWDIR/log
+Smartlog searches all logs, tracker only fw.log
+By default firewall does not store logs by itself, it sends them to management server, but we can configure it manually
+Email alerts, SNMP traps
+We can block people right from SmartTracker
+We also have Smartlog and Smart reporter to deal with many log files simultaneously 
+Smarttracker watches only on current log file
+Active mode in Smarttracker overloads system
+
+See where firewall sends logs, on firewall itself: `netstat -an | grep 257`
+
+Search logs in multidomain
+
+```
+mdsenv mobility.dls
+mcd log
+
+fw log -ftnlp | grep <ip>
+fw monitor -e 'accept host(172.23.96.71);'
+```
+
+Syslog
+
+- Earlier OPSEC and LEA were used.
+- Now Log Exporter is primarly used. It is integrated into system since R80.10.
+- Filtering based on fields is supported but only from certain versions in 80.20 and 80.30.
+
+## VPN
+
+Steps:
+
+- Enable on Gateway
+- ID DOmain
+- Create community
+- Add rules
+
+Community members - firewalls themselves
+Domains -  local networks behind firewalls
+VPN site = domain + member
+
+vpn tu - toll on firewall itself to manage VPNs
+Domain based takes precedence over route based
+Communities may be star or full mesh.
+
+Remote access
+- Which addresses will clients get - `Gateway options > VPN clients > Office mode > manual Using pool`
+- When using Office Mode, a special IKE mode called config mode is inserted between phase 1 and phase 2 of IKE. During config mode, the client requests an IP from the Security Gateway. Several other parameters are also configurable this way, such as a DNS server IP address, and a WINS server IP address
+- A remote user with SecuRemote only is not supported in Office Mode
+- IPSec is used with NAT-T: ESP is encapsulated into UDP port 4500
+- UDP 4500 and TCP 443 are always used for RA VPN
+
+MEP
+- MEP gateways are not restricted to geography
+- They can be managed by different management servers
+- VPN client selects the secondary gateway
+- MEP VPNs use proproetary Probing Protocol (PP) to send special UDP RDP packets to port 259
+
+Troubleshooting
+
+```
+vpn debug on > check $FWDIR/log/ike.elg, vpnd.elg
+```
+
+Verify that all tunnels are established
+```
+vpn tunnelutil
+```
+
+Verify that configured properly - `vpn shell show interface detailed <VTI name>`
+
+Wire mode
+- Allows traffic to pass without any inspection from trusted sources to trusted sources. Based on routed VPN.
+- Enabed on Gateway or on Comminity
+
+## Sandblast
+
+- Обязательная лицензия NGTX
+- Ставится на шлюз или на саму песочницу если она работает одна без шлюза Чекпоинта
+- Threat Extraction - присылает пользователю пдфку вместо файла или просто пустой файл - без задержек - это же поддерживается в агенте
+- Агент все отправляет в облако
+- Агент постоянно собирает кучу информации локально, если срабатывает триггер, то агент сгенерит мега отчет о том откуда что и как пришло, для логов нужен 1 гиг
+- Краковременные бекапы - 1 гб, для защиты от шифровальщиков, сразу после запуска шифровальщика агент определяет это, восстанавливает файлы из бэкапа, и блочит шифровальщика и создает отчет для расследования
+- Самый полный агент - это Checkpoint Endpoint Security - в него все входит включая сандбласт агент
+- Threat Emulation - запуск в виртуалке - 4 минуты примерно
+- Для агета управлялка обязательня
+
+Useful CLI
+
+Show images status
+```
+tecli show downloads images
+```
+
+Disable persistancy mode before clearing queue, or all files will be back!!!
+```
+tecli ad per set enable 1
+tecli ad per show
+```
+
+Show files in cache
+```
+tecli cache sha1 c92bb9e83cc1ec1f6614c060fb819f34670629b9
+```
+
+Remove file from cache
+```
+tecli cache remove sha1 c92bb9e83cc1ec1f6614c060fb819f34670629b9
+```
+
+Show file emulation queue
+```
+tecli show emulator queue
+```
+
+Find file in queue
+```
+tecli show emulator queue | grep sha1_of_this_file
+```
+
+Show file status in a queue
+```
+tecli s e e | grep filename
+```
+
+Show queue status
+```
+tecli s e e | grep "Pending emulating" -A 2
+```
+
+Remove file from cache
+```
+tecli cache remove sha1 _sh1_of_file
+```
+
+Cache by default is 7 days
+Configure cache
+```
+tecli ca ttl
+```
+
+Show engine version
+```
+tecli ad en ve
+```
+
+Kill process
+```
+fw kill ted
+```
+
+On gateway check if file is still emulated based on part of its SHA-1
+```
+tecli s r q | grep -i c92bb9E83
+```
+
+### Sandblast Agent
+
+Sandblast agent content:
+
+- Threat Emuation
+- Threat Extraction
+- Anti Exploit - браузеры флеш адоб ридер офис
+- Zero fishing  - защита в браузере от кражи учеток, плагин
+- Форензика - для расследования, все логируется
+- Anti Ransomware - против шифровальщиков
+- Behaviral guard - сравниваются деревья и блокируется на основе анализа без песочницы, чтобы работала нужно днлиться форензикой
+- Antibot
+- Firewall + application control + compliance - implicitly included, explicitly in Cpmplete bundle
+- Possible Anti-malware - Kaspersky, then it is called NExt Gen Antivirus
+ 
+License types:
+
+- Anti ransomware
+- Sandblast agent
+- Next gen antivirus
+- Complete
+
+For pilot we need 
+
+1. Management server
+2. AD server
+3. Couple of VMs with agents
+4. Take snapshot of al VMs at one time
+5. Acess to VMs via RDP without buffer or VMware client
+6. Do not integrate with local Sandblast device
+
+Good for TLS 1.3 and GOST as no need decryption
+
+Anti bot modes:
+1. Detect and alert
+2. Hold and prevent
+Antibot on agent does support inspection of encrypted traffic, or works only with http and IPs
+
+Antifishing starts analyzing a page only after you click on input field
+openphish.com
+Smartendpoint console program
+Gui dbedit is often used
+Agent does not support proxy at all
+
+## Optimization
+
+- Firewall policy: Rules with access roles in the very bottom
+- Firewall policy: top hit hit rules in the top
+- HTTPS policy: rules with categories in the very bottom, as minimum rules as possible
+- HTTPS policy: access roles rules can damage whole policy, use with care
+- Delete log files base on percentage, not megabytes
+- Smartevent correlation unit should be on a log server
+- Sandblast policy should contain only threatemulation blade
+- Threat prevention rules should be minimum
+
+## Threat prevention
+
+- Threat prevention policy uses multi match approach, where traffic is matched against all rules in all layers
+- You can use layers for different protection scopes
+- Different admins can work with difeerent layers
+- We can use speicific layer for specific blade
+
+Threat Prevention Layers enforcement is calculated by the following:
+
+- Each layer has a first-match logic. Once a match is found, processing is done at the other layers.
+- Unlike Access Control, there is no requirement for clean-up rule. So if there is no match on a layer, assumption is that no threat prevention inspection is needed.
+- In case there are multiple threat prevention layers, and a match was found in several layers, the strictest option matters. So if you chose to prevent a protection for a subnet in the first layer but detect that protection in another layer, it will be in prevent
+
+Search for emulated cab files from microsoft.com in Logs in R80.10
+
+```
+blade:"Threat Emulation" AND file_name:*.cab AND *microsoft.com*
+```
+
+Troubleshooting:
+
+Collect logs `$FWDIR/log/cpm.elg*`
+`$FWDIR/log/install_policy.elg*`
+
+If it's IPS update failure, run debug
+
+```
+fw debug fwm on TDERROR_ALL_ALL=5
+```
+
+Run update, disable debug
+
+```
+fw debug fwm off
+```
+## Capsule
+
+- Capsule WorkSpace - is a mobile security container that creates an isolated corporate workspace on personal devices, making it simple to secure corporate data and assets both inside and outside the corporate network.
+- Capsule Docs - is a secure mobile document management system that follows your documents wherever they go, making sure you have complete control over who is accessing sensitive data and what they can do with it.
+Encryption, authentication, authorization, sharing.
+- Capsule CLoud - offers real-time protections by directing all traffic from laptops through a secure tunnel to the cloud where corporate policies are enforced. A single policy can be applied for both on premise and off premise laptops that is centrally managed through SmartConsole or remotely through an intuitive web user interface for pure cloud deployments
+- IPS
+- Application Control
+- URL Filtering
+- Antivirus
+- Anti-Bot
+- Threat Emulation
+- VPN (IPsec)
+
+## Secure XL
+
+- Performance pack uses SecureXL technology to accelerate traffic
+- Implemented in software
+- Drop Template - Feature that accelerates the speed, at which a connection is dropped by matching a new connection to a set of attributes. When a new connection matches the Drop Template, subsequent connections are dropped without performing a rule match and therefore are accelerated. Currently, Drop Template acceleration is performed only on connections with the same destination port.
+- Accelerated path - Packet flow when the packet is completely handled by the SecureXL device. It is processed and forwarded to the network.
+- Firewall path / Slow path (F2F) - Packet flow when the SecureXL device is unable to process the packet (refer to sk32578 - SecureXL Mechanism). The packet is passed on to the CoreXL layer and then to one of the Core FW instances for full processing. This path also processes all packets when SecureXL is disabled.
+
+Allocate network interface to core
+
+```
+sim affinity
+```
+
+Show status
+
+```
+fwaccel stat
+```
+
+## Inspection points
+
+- 1st - i – Pre-inbound - rule/inspection is applied at this point
+- 2nd - I – Post-inbound - after being permitted by the rule/inspections
+- 3rd - o – Pre-outbound - route look up has been performed to determine the egress interface
+- 4th - O – Post-outbound - after egressing the correct firewall interface based on route lookup
+
+The vast majority of firewall security operations (and possible drops) happen on the inbound/client side of the firewall kernel between "i" and "I" such as:
+
+- Inbound Anti-spoofing
+- Geo Policy
+- HTTPS/VPN decryption
+- Connections state table lookups
+- Access Control policy layer evaluation
+- Destination IP NAT
+- Threat Prevention policy layer evaluation
+
+Between "I" and "o" the Gaia IP driver performs routing.
+
+Between "o" and "O" on the outbound/server side of the firewall kernel, the following types of operations occur:
+
+- Outbound Anti-spoofing
+- HTTPS/VPN encryption
+- Source IP NAT
