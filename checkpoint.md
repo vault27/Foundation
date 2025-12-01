@@ -1341,4 +1341,196 @@ set bgp external remote-as 64900 peer 172.31.41.73 import-routemap "allow" prefe
 - Number of CoreXL FW instances must be identical on all members of the cluster because the state synchronization between members is performed per CoreXL FW instance
 - Traffic is processed by the CoreXL FW instances only when the traffic is not accelerated by SecureXL
 - VPN and VoIP are not load balanced with CoreXL and always handled by the same FW instance.
-- Multi-queue lets you configure more than one traffic queue for each network interface. This means more than one CPU can be used for acceleration.
+- Multi-queue lets you configure more than one traffic queue for each network interface. This means more than one CPU can be used for acceleration
+
+## Policies
+
+- A policy package is a collection of different types of policies.
+
+- A policy package can have one or more of these policy types:
+- Access Control - consists of these types of rules:
+    - Firewall
+    - NAT
+    - Application & URL Filtering
+    - Content Awareness
+- QoS - Quality of Service rules for bandwidth management
+- Desktop Security - the Firewall policy for endpoint computers that have the Endpoint Security VPN remote access client installed as a standalone client.
+- Threat Prevention - consists of:
+    - IPS - IPS protections continually updated by IPS Services
+    - Anti-Bot - Detects bot-infected machines, prevents bot damage by blocking bot commands and Control            (C&C) communications
+    - Anti-Virus - Includes heuristic analysis, stops viruses, worms, and other malware at the gateway
+    - Threat Emulation - Detects zero-day and advanced polymorphic attacks by opening suspicious files in a         sandbox
+    - Threat Extraction - Extracts potentially malicious content from e-mail attachments before they enter the         corporate network
+- You can organize the Access Control rules in more manageable subsets of rules using Ordered Layers and Inline Layers
+- An Inline Layer is a sub-policy which is independent of the rest of the Rule Base - it is like Section, but there are Sections themselves as well
+- Ordered layers are just processed one bby one and can be used in different policy packages. Layers may be for Access control and may be for Threat Prevention
+
+## Cluster XL
+
+- Load sharing can be multicast or unicast. If it is unicast then pivot member gets all packets and then sends them to the other members. Pivot is choosen automatically buy ClusterXL
+- Multicast - router sends packets to all members via multicast, only one member processes it, others drop it, not all routers can support it
+- IPv6 is not supported in load sharing
+- During Failover cluster sends gratuitous ARP request to inform everyone about new MAC address
+- Cluster XL uses virtual IP and physical IP for every gateway
+- ClusterXL uses Cluster Control Protocol (CCP) to sync connections, UDP 8116
+- High availability does not require additional licenses
+- Load sharing requires Acceleration and Clustering Blade
+- ClusterXL requires good clock synchronisation via NTP
+- We should use a separate cabel for sync
+- We can use WAN for sync as well
+- We can also use VLAN for sync
+- Initially there is a Full sync - fwd daemon, encrypted TCP connection
+- Then only changes via Delta sync are made, it is handled by Security Gateway kernel, using UDP multicast and broadcast on port 8116
+- It is generally a good practice to disable syncronisation for protocols whose connections live for a short time, such as HTTP, DNS, for instance
+- 6 devices maximum
+- Sync network may include only switches and hubs, 100 ms max, 5% loss max
+- FWD daemon uses port 256 for initial full sync
+- Check cluster status + who is active: `cphaprob state`
+- Verify failover: `clusterxl_admin down/clusterxl_admin up`
+- Verify failover type 2: `cphaprob -d STOP -s problem -t 0 register; cphaprob -d STOP unregister`
+- Change CCP type: `cphaconf set_ccp broadcast; cphaconf set_ccp multicast`
+- If several clusters in the same subnet we need to change global ID: `cphaconf cluster_id set vaule`
+- Debug: `cphaconf debug_data`, /var/log/messages
+
+ClusterXL member requirements
+
+- same OS
+- Same Checkpoint version
+- Same policy
+- SecureXL status - SecureXL on all members has to be either enabled, or disabled
+- Number of CoreXL FW instances - number of instances on all members must be identical
+- Advanced Dynamic Routing - on all members has to be either enabled, or disabled
+
+The default critical devices are:
+
+- The cluster interfaces on the cluster members
+- Synchronization — full synchronization completed successfully
+- Filter — the Security Policy, and whether it is loaded
+- cphad — which follows the ClusterXL process called cphamcset
+- fwd — the Security Gateway daemon
+
+Check synchronisation
+
+- fw ctl pstat
+- cphaprob -i list
+
+Disable sync on one cluster: `fw ctl setsync off`
+
+Check interfaces: `cphaprob -a if`
+
+**VRRP**
+
+- Management server cannot be on VRRP member
+- VRRP and ClusterXL cannot be on the same host
+- VRRP supprts 255 virtual routers
+- VRRP router might participate in more than one VRID
+
+Configuring VRRP
+
+- In WebGUI
+- Priority - the higher - the better
+- Priority delta - where priority goes after failure
+
+## API
+
+There are four ways to communicate use the management APIs:
+
+1. Typing API commands from a dialog inside the SmartConsole GUI application
+2. Typing API commands using the "mgmt_cli" executable (available in both Windows, Linux/Gaia flavors)
+3. Typing API commands using Gaia's secure shell (clish)
+4. Sending API commands over an https connection using web-services
+
+```
+api status
+api restart
+```
+
+```
+mgmt_cli add host name host1 ip-address 192.0.2.100
+```
+
+## Kernel, module, chain, table
+
+- Inbound and outbound directions consist of modules and modules from chains.
+- Show all active chains: `[Expert@HostName]# fw ctl chain`
+- When troubleshooting and trying to understand which chain is causing a problem on the Security Gateway, use the following command: `[Expert@HostName]# fw monitor -e "accept;" -p all`
+- The '-p all' flag will show all the chains, through which the traffic passed
+- To see all active modules on the Security Gateway, run: `[Expert@HostName]# fw ctl debug -m`
+
+**Kernel tables**
+
+- The kernel writes all of its actions to relevant tables. Every kernel table has an assigned name and assigned kernel ID, and it holds specific information
+- The forwarding, handling and decisions will be done based on informatin that is stored in different kernel tables
+- To view the kernel tables, run: `[Expert@HostName]# fw tab`
+- To view a certain table, run: `[Expert@HostName]# fw tab -t <Table_Name | Table_ID>`
+- To view all entries (unlimited number) in the table: `[Expert@HostName]# fw tab -t <Table_Name | Table_ID> -u`
+- To delete all entries from a certain kernel table (all involved connections will be immediately lost and disconnected): `[Expert@HostName]# fw tab -t <Table_Name | Table_ID> -x -y`
+- Important Note: This operation deletes all information from the table. Do NOT use this command in production environment, as it might cause a traffic outage.
+- To delete specific entry: `[Expert@HostName]# fw tab -t <Table_Name | Table_ID> -x -e <Entry_ID | Tuple>`
+- Display a summary about entries in certain table: `[Expert@HostName]# fw tab -t <Table_Name | Table_ID> -s`
+- Display a summary about entries in all tables: `[Expert@HostName]# fw tab -s`
+
+## Identity Awareness
+
+- AD query security event logs using WMI over DCE-RPC (port 135 and then dynamic)
+- Captive portal - browser - Kerberos is also supported
+- Agents - Endpoint or Terminal Services
+- VPN
+- Steps: Enable Feature(this is a separate blade) > Create Access Roles > Use them in rules
+- Support Non English names - Set the SupportUnicode attribute in AU object
+- Captive portal Logs: /opt/CPNacPortal/logs
+- PDP - The process on the Security Gateway responsible for collecting and sharing identities
+- Turn PDP logging on: `pdp tracker on`
+- Show AD groups and all other info for the user: `pdp monitor user Ivanov`
+
+In expert mode:
+
+```
+pdp monitor client_type portal
+pdp monitor ip 10.1.1.1 
+pdp monitor user petrov
+pdp control revoke_ip 10.1.1.1
+```
+
+Check connectivity with LDAP server 
+
+```
+[Expert@MSK-TK1-CP23500-1:0]# $FWDIR/bin/test_ad_connectivity -d test.ru -i 192.168.32.30 -u srv.Checkpoint -D "CN=srv.Checkpoint,OU=Service Accounts,OU=Admins,DC=test,DC=ru" -a -v -o my_test.txt
+```
+
+## Sizing
+
+- If customer needs 1Gb VPN performance, search for a device with 2 Gbit performance 🙂
+- Relative speeds of algorithms for IPsec and SSL - sk73980
+- Best Practices - VPN Performance - sk105119
+
+## Backup and restore
+
+There are 3 main types: Snapshot/revert, backup/restore, upgarde_export
+
+- DB version - 50 Mb - Policy and objects - Dashboard - CLI(dbver) - HTTPS NO
+- Backup - 500 Mb - Gaia config and CP database - Dashboard NO - show/add/set backup - HTTPS YES
+- Image/Snapshot - 5000 Mb - Partition including CP database - Dashboard NO - show/add/set/ snapshot - HTTPS YES
+- Upgrade_export and upgrade_import - does not include route tables, it is used when upgrading Security Mangement server, it stores all objects database and the /conf directories
+- Policy Package management
+
+Schedule recomendations
+
+- Snapshot - before major changes
+- Backup - every couple of months
+- upgrade_export - migrate tool is used now instead - every month?
+- `add backup-scheduled name testb local`
+- `set backup-scheduled name testb recurrence daily time 01:00`
+
+## Transaction
+
+- The utility commits all operations to the management database together when the transaction ends.
+- If the transaction fails, the utility discards all its commands
+
+```
+gaia> start transaction
+
+gaia [Xact]> set interface Mgmt ipv4-address 172.30.1.1 mask-length 24
+gaia [Xact]> set static-route default nexthop gateway address 172.30.1.254 on
+gaia [Xact]> commit
+```
