@@ -204,7 +204,153 @@ Show description of all interfaces to understand what goes where
 show int description
 ```
 
-## IOS VS ASA
+## ASA
+
+- Global ACL
+- Object oriented approach, you can name all objets(nets, hosts, ports), you can create objext groups, for instance many ports.
+- Packet tracer
+- ASDM
+- capture
+- show logging
+- Advanced Level 5-7 application inspection
+- Advanced NAT
+- Failover
+- modular policy framework
+- scp server
+- more convenient cli - grep, not necessarily to use do 
+- TCP advanced options - ASA allows to control options of TCP flow such as adding or removing 19 option or preventing SYN flood attacks or TCP state by pass, TCP syn cookies
+- Deep packet inspection - IOS has it in zone based firewall + ip inspect command
+- ASA can inspect protocols on layers 5-7: ftp, dns, http, esmtp
+- ASA can filter Botnet traffic
+- LDAP authorisation
+- ASA does not support DMVPN and GRE
+- No Policy Base Routing in ASA
+- ASA faster in VPN
+- ASA can threat detection
+- User based policies (cut through proxy)
+- No wild cards!!! on ASA
+- No Telnet and SSH client on ASA
+- security levels on interfaces on ASA
+- default inspection of TCP and UDP on ASA
+- On ASA real IP address is used in ACLs not mapped one
+- Transparent firewall - when you switch to this mode all configuration is erased, BPDU, multicast, broadcast are not forwarded by default
+- Virtual firewall - in multiple mode you can't use VPNs and routing protocols. However this mode is required for active/active failover mode
+- 8.2 > 8.3 - NAT commands changed
+- All interfaces are named
+- Object related approach
+
+**Modular policy framework**
+
+- By default global-class is configured 
+- It includes match default-inspection-traffic
+- In your own classes you can match ACl, ports UDP and TCP, tunnel group
+- Besides classic class we can configure 3 types of classes:
+  - inspect - used for layer 5-7 protocol inspection
+  - management
+  - regex
+- Besides classic policy map there is an inspect type of policy map
+- You can configure match INSIDE inspect policy map without using class
+- ICMP inspection is off by default
+- TCP and UDP inspection is ON by default
+- Configuration defines set of rules for applying firewall features, such as traffic inspection, QoS etc. to the traffic transiting the firewall
+- Traffic inspection we can use for accepting replies, for instance if we add to policy map command inspect icmp, than echo replies will be automatically allowed, but only for existing echos
+
+Enable ICMP inspection
+
+```
+policy-map global_policy
+        class inspection_default
+          inspect icmp
+```
+
+Example - configure blocking trace method in HTTP
+
+```
+class-map type inspect http match-all http-class
+ match request method trace
+
+policy-map type inspect http http-map
+ class http-class
+  reset log
+
+policy-map global-policy
+ class global-class
+  inspect http http-map
+
+```
+
+Another practical usage is 
+
+- ftp inspection(Application inspection)
+- Connection tweaking
+- QOS
+- Rate liniting
+- Traffic shaping
+- Send data to IPS
+
+```
+class-map test
+ match any
+policy-map test_map
+class test
+  inspect http
+service-policy test_map global
+```
+
+Things required for BGP starts working:
+
+- Permit TCP option 19
+- Configure TCP normalizer to disable TCP ISN randomization
+
+```
+show activation-key
+show version
+dir disk0:/
+asdm image disk0:/asdm-645.bin
+```
+
+**CLI**
+
+Create VLAN interface
+
+```
+interface Ethernet0.1
+ vlan 2
+ nameif vlan2
+ security-level 0
+ ip address 172.16.3.1 255.255.255.252
+!
+```
+
+Save config
+
+```
+Write memory
+```
+
+Troubleshooting
+
+```
+show asp table socket
+show run http
+show run asdm
+```
+
+Capture traffic
+
+```
+capture capin interface inside-ipsec match ip host 142.174.132.100  host 96.1.255.176 
+show capture
+no capture capin
+show capture capin
+```
+
+**TCP normalization**
+
+- Create a tcp map where we describe what to do
+- Then we create a standard class map
+- Next, standard policy map, where we add a tcp map to our class map: `set connection advanced-options my_tcp_map`
+- Using set connection command we also can configure connection limits, including embryonic ones for anti Dos purposes
 
 ## Wildcard masks
 
@@ -345,3 +491,134 @@ line con 0
  login authentication umicn_line
 
 ```
+
+## Firepower
+
+- My course book:  https://learningspace.cisco.com/content 
+- Threat Grid - local and cloud sandboxing
+- Multidomain management in management centre
+- Security group tags based filtering in cooperation with ISE
+- Remember that, for the allow rules, you are logging connections at the end. The SSH session is not displayed in Connection Events until the session is completed
+- FXOS + Firepower Management Center
+- Firepower device manager is avalable for some models - Local GUI management
+
+### CLI
+
+Change management IP
+
+```
+configure network ipv4 manual 192.168.139.167 255.255.255.0 192.168.139.1
+```
+
+Verify management interface
+
+```
+show network
+```
+
+Add firepower to management server
+
+```
+configure manager add XXX.XXX.XXX.XXX my_reg_key
+```
+
+Configure network on management center
+
+```
+sudo /usr/local/sf/bin/configure-network
+```
+
+Show interfaces(except management) config
+
+```
+show ip
+```
+
+Ping from MANAGMENT interface
+
+```
+ping system 192.168.1.1
+```
+
+show ntp
+
+```
+show ntp
+```
+
+show logging
+
+```
+show logging
+```
+
+show failover
+
+```
+show failover
+```
+
+switch to secondary (can be done in FMC as well)
+
+```
+no failover active
+```
+
+Show NAT details
+
+```
+show nat detail
+```
+
+### HA
+
+Configuration steps
+
+- Who primary
+- Failover link
+- Stateful link
+- Secondary IPs - not mandatory, but desirable
+
+For the Firepower 4100/9300 chassis, all interfaces must be preconfigured in FXOS identically before you enable High Availability. If you change the interfaces after you enable High Availability, make the
+interface changes in FXOS on the standby unit, and then make the same changes on the active unit.
+
+- Be in the same firewall mode (routed or transparent)
+- Have the same major (first number), minor (second number), and maintenance (third number) software version
+- Be in the same domain or group on the Firepower Management Center
+- Have the same NTP configuration. See Configure NTP Time Synchronization for Threat Defense, on page 1003
+- Be fully deployed on the Firepower Management Center with no uncommitted changes
+- Not have DHCP or PPPoE configured in any of their interfaces
+
+The failover link and the optional stateful failover link are dedicated connections between the two units. The same interface on both devices should to be used for failover and stateful failover links
+
+The following information is communicated over the failover link:
+
+- The unit state (active or standby)
+- Hello messages (keep-alives)
+- Network link status
+- MAC address exchange
+- Configuration replication and synchronization
+
+Workflow
+
+- The active unit always uses the primary unit's IP addresses and MAC addresses
+- When the active unit fails over, the standby unit assumes the IP addresses and MAC addresses of thefailed unit and begins passing traffic
+- When the failed unit comes back online, it is now in a standby state and takes over the standby IP addressesand MAC addresses
+- Cisco recommends that the bandwidth of the stateful failover link should at least match the bandwidth of thedata interfaces.
+
+### Migration from ASA to FTD
+
+- Allocate separate FMC - trail VM is OK
+- Go to root: sudo su -
+- Launch migration tool enableMigrationtool.pl
+- Copy ASA config to a file
+- On FMC go to System > Tools > Import/Export and upload ASA config
+- Save resulted configuration to a file after conversion
+- On Production FMC go to System > Tools > Import/Export and upload ASA converted config
+
+### Configuration
+
+- Configure health monitoring  centrally from FMC: `System > Health > Policy`
+- Hardware alarms, CPU, Interfaces, malware analysus. disks...etc... many things can be monitored, including on FMC itself
+- Centrally configure NTP, logging, SNMp, SMTP.... etc `Devices > Platform settings`
+- Configure devices individually - Routing, interfaces + Add new Device + Configure HA or Cluster: `Devices > Device Management`
