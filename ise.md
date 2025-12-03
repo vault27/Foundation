@@ -64,9 +64,7 @@ This is the typical order:
 3. EAP-Response/Identity (client)
 4. EAP-Request (method) (switch)
 5. EAP-Response (method) (client)
-6. EAP-Success or Failure
-
-
+6. EAP-Success or Failure 
 
 ### EAP METHODS
 
@@ -549,7 +547,205 @@ show application status ise
 
 ## RADIUS
 
+- RADIUS (Remote Authentication Dial-In User Service) is one of the fundamental AAA (Authentication, Authorization, Accounting) protocols in networking
 
+- UDP port 1812 - auth, 1813 - accounting, no retransmission state beyond NAS implementation
+- Radius does not provide the ability to control which commands can be executed - Only supports authorization after authentication is complete (not dynamic real-time policy during session)
+- Radius encrypts only password - No end-to-end encryption
+- Radius used PAP, CHAP, MS-CHAP
+- Radius carries authentication traffic
+- Radius combines auth and author in one reply in the form of AV pairs
+- Radius uses UDP ports: 1812 for auth and 1813 for accounting or
+- 1645 auth and 1646 accounting
+- Radius server cannot send requests to radius client, so RFC 3576 and RFC 5176 were created, so called Dyncamic Authorization Extensions or CoA - Change of Authorization
+- With these extensions we can disable port or disconnect user for example or request reauthentication
+- CoA - server initiated authorization update
+
+Use cases:
+
+- 802.1X wired and wireless networks
+- Wi-Fi enterprise authentication
+- VPN authentication
+- Device management access (TACACS+ is more common for CLI)
+- Captive portals
+- Accounting & billing systems
+
+### Workflow
+
+- We configure on NAS, for example on VPN gateway:
+  - Radius server IP
+  - Shared Secret
+  - Port - 1812
+  - Authentication method: EAP methods, PAP, CHAP...
+  - CA certificate to verify Radius server certificate
+- Shared secret is used to calculate authenticator fields both from server and client, so both know that other part knows secret
+- NAS collects user credentials → sends a `RADIUS Access-Request`
+- Access request consists of `many Attribute Value Pairs`
+- The password never appears in the Access-Request if EAP based Auth methods are used (EAP-TLS, PEAP + EAP-MSCHAPv2...)
+- The password stays inside the EAP conversation, `not in RADIUS fields`
+- RADIUS does not natively understand EAP methods
+- Instead, RADIUS carries EAP inside the EAP-Message attribute as a transport
+
+```
+EAP-Message: <raw EAP frame>
+Message-Authenticator: <HMAC>
+```
+
+- The RADIUS server (like ISE, FreeRADIUS, Azure AD) terminates EAP
+- RADIUS itself does not interpret PEAP, EAP-TLS, EAP-TTLS logic, EAP is only encapsulated inside RADIUS
+- RADIUS natively supports `PAP, CHAP, and MS-CHAPv2`
+- Only PAP sends a user password in the Access-Request in the form of `User-Password attribute`, CHAP, MSCHAP do not use password as well, they use challenges
+- So `RADIUS Access-Request` may contain a little bit different `Attribute Value Pairs`, depending on who sent the request
+- Example of request from VPN Gateway:
+  - NAS-Port-Type = Virtual
+  - Framed-IP-Address (the IP assigned to client or requested)
+  - Calling-Station-Id = client IP
+  - Connect-Info = SSL/IPsec parameters
+  - Service-Type = Framed-User
+
+```
+RADIUS Protocol
+    Code: Access-Request (1)
+    Identifier: 0x4b
+    Length: 152
+    Authenticator: 3c5d76996e8fbdc642114f9b3b2b884a
+    Attribute Value Pairs
+        User-Name: johndoe
+        NAS-IP-Address: 10.1.1.10
+        NAS-Identifier: vpn-gw01
+        NAS-Port: 0
+        NAS-Port-Type: Virtual (5)
+        Service-Type: Framed (2)
+        Calling-Station-Id: 203.0.113.55
+        Called-Station-Id: vpn.company.com
+        Framed-IP-Address: 10.50.10.25
+        Connect-Info: "SSL VPN, TLS1.2"
+        Tunnel-Type: VPDN (3)
+        Tunnel-Medium-Type: IPv4 (1)
+        EAP-Message: 02 01 00 12 01 6a 6f 68 6e 64 6f 65
+        Message-Authenticator: 06:91:f3:0e:18:be:22:44:...
+```
+
+- Example of request from 802.1X Switch
+  - NAS-Port (physical interface number)
+  - NAS-Port-Type = Ethernet
+  - Calling-Station-Id = client MAC
+  - EAP-Message (fragmented during EAP-TLS)
+  - Service-Type = Framed
+  - Called-Station-Id = MAC of switch interface
+
+```
+RADIUS Protocol
+    Code: Access-Request (1)
+    Identifier: 0x22
+    Length: 210
+    Authenticator: 8b0eae3db88511a3c11adb3f5acdd922
+    Attribute Value Pairs
+        User-Name: 00-1C-42-BE-12-01
+        NAS-IP-Address: 10.10.1.2
+        NAS-Identifier: access-sw01
+        NAS-Port: 50112
+        NAS-Port-Type: Ethernet (15)
+        Service-Type: Framed (2)
+        Calling-Station-Id: 00-1C-42-BE-12-01
+        Called-Station-Id: 00-25-90-AA-BB-CC
+        EAP-Message:
+            02 03 00 1a 01 00 00 16 30 14 30 12 06 ...
+        Message-Authenticator: 77:13:ba:55:92:ae:6f:...
+        Cisco-AVPair: "device-traffic-class=voice"
+```
+
+- Example of request from Router for Administrative Login
+  - Service-Type = Login
+  - NAS-Port-Type = Virtual or Async
+  - NAS-Port identifies CLI session
+  - User-Name = admin login username
+  - No EAP
+  - User password via PAP
+- Often includes NAS-Port-Id = “tty0”, "vty1", etc
+
+```
+RADIUS Protocol
+    Code: Access-Request (1)
+    Identifier: 0x17
+    Length: 128
+    Authenticator: 22d3b8fa72bb001e2a11230d49d951ab
+    Attribute Value Pairs
+        User-Name: admin
+        User-Password: <encrypted>
+        NAS-IP-Address: 192.168.2.1
+        NAS-Identifier: core-rtr01
+        NAS-Port: 501
+        NAS-Port-Type: Virtual (5)
+        NAS-Port-Id: vty1
+        Service-Type: Login (1)
+        Calling-Station-Id: 192.168.2.44
+        Acct-Session-Id: 00000023
+        Message-Authenticator: 1c:ab:f1:77:1d:9e:bc:...
+```
+
+- Thus initial packet contains a lot of useful information: NAS IP-address, Username, User password, vendor specific Attribute Value Pairs
+- This informaytion may be used to identify which policy will be used to access the request
+- After first packet, if EAP is used, there is a series of packets to build the EAP tunnel
+- Next, there is another series of packets for inner method authentication, for example MSCHAPv2
+
+```
+Code: Access-Challenge
+Identifier: 0x08
+AVPs:
+    EAP-Message:
+        01 08 00 2a 1a 01
+        <MSCHAPv2 Challenge: 16-byte ServerChallenge>
+    State: 0x987634ab3829
+    Message-Authenticator: <value>
+
+Code: Access-Request
+Identifier: 0x09
+AVPs:
+    User-Name: "johndoe"
+    State: 0x987634ab3829
+    EAP-Message:
+        02 09 00 3a 1a 02
+        <MSCHAPv2 Response: PeerChallenge + NT-Response>
+    Message-Authenticator: <value>
+```
+
+### Packet Types
+
+Authentication
+
+- Access-Request
+- Access-Accept
+- Access-Reject
+- Access-Challenge (used in EAP, token codes, OTP)
+
+Accounting
+
+- Accounting-Request (Start / Interim / Stop)
+- Accounting-Response
+
+CoA / DM (RFC 5176)
+
+- CoA-Request / CoA-ACK / CoA-NAK
+- Disconnect-Request / Disconnect-ACK / Disconnect-NAK
+
+### Attributes
+
+Radius attribute 6 Service-Type can be:
+- Framed - 802.1x
+- Call-Check - MAB
+- Login - Local Web auth
+
+Radius attribute 8 - framed ip address
+Radius atrribute 25 - Class
+
+## Security Model
+
+- RADIUS uses a shared secret and MD5-based hashing
+- The password in Access-Request is obfuscated using MD5 + secret (not actual encryption)
+- Entire packet is NOT encrypted
+- EAP payloads (EAP-TLS etc.) are carried inside RADIUS but security comes from TLS, not RADIUS
+- Modern deployments rely on EAP-TLS or PEAP for true security
 
 ### CoA
 
