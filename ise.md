@@ -565,6 +565,8 @@ Portal types
 - Radius server cannot send requests to radius client, so RFC 3576 and RFC 5176 were created, so called Dyncamic Authorization Extensions or CoA - Change of Authorization
 - With these extensions we can disable port or disconnect user for example or request reauthentication
 - CoA - server initiated authorization update
+- Radius packet is a bunch of Attribute Value Pairs
+- EAP, PAP, MSCHAP are encapsulated in the form of AVP as well
 
 Use cases:
 
@@ -811,14 +813,41 @@ Service-Type (6)
 - 5 = Call Check - MAB
 - Example: Service-Type = Framed
 
-- Radius attribute 6 Service-Type can be:
-  - Framed - 802.1x
-  - Call-Check - MAB
-  - Login - Local Web auth
-- Radius attribute 8 - framed ip address
-- Radius atrribute 25 - Class
+EAP Attributes
 
-## Security Model
+- EAP-Message (79) - Example: EAP-Message = 0x02000005... - Contains EAP-TLS/PEAP/etc
+- Message-Authenticator (80) - Example: Message-Authenticator = 0x45a8... - HMAC-MD5 integrity check for EAP - Used in: All EAP methods
+
+Calling/Called Attributes
+
+- Calling-Station-Id (31) - Example: Calling-Station-Id = "AA-BB-CC-DD-EE-FF" - Meaning: Client MAC address for 802.1X/Wi-Fi
+- Called-Station-Id (30) - Example (Wi-Fi): - Called-Station-Id = "88-AC-F1-01-02-03:CorpWiFi" - Meaning: AP MAC + SSID
+
+Framed Attributes (mostly for VPN)
+
+- Framed-IP-Address (8) - This is typically sent in Accept packet - Example: Framed-IP-Address = 192.168.10.55 - IP address for client, instead of DHCP
+- Framed-MTU (12) - Example: Framed-MTU = 1400
+- Framed-Protocol (7) - Example: Framed-Protocol = PPP (1) - Mostly for VPN/PPP
+
+Vendor-Specific Attributes (VSA)
+
+- Vendor-Specific (26) - Contains nested vendor attributes - Example showing a Cisco AVPair: Cisco-AVPair = "shell:roles=network-admin"
+- VSA examples by vendor: Cisco: VLAN, ACLs, roles - Aruba: Aruba-User-Role - Palo Alto: Filter-Id for group mapping - Microsoft: MS-CHAP attributes
+
+Authorization (Accept Packet) Attributes
+
+- Filter-Id (11) - Example: Filter-Id = "StudentPolicy" - Common for VPN and WLAN ACL assignment
+- Tunnel-Medium-Type (65) - Example: Tunnel-Medium-Type = 6 (802) - Required for VLAN assignment
+- Tunnel-Type (64) - Example: Tunnel-Type = VLAN (13)
+- Tunnel-Private-Group-ID (81) - Example: Tunnel-Private-Group-Id = "30" - Means VLAN 30
+
+Accounting Attributes
+
+- Acct-Status-Type (40) - Values: Start (1), Stop (2), Interim-Update (3)
+- Acct-Session-Id (44) - Example: Acctime.12345abcd
+- Acct-Input-Octets (42), Acct-Output-Octets (43) - Traffic counters
+
+### Security Model
 
 - RADIUS uses a shared secret and MD5-based hashing
 - The password in Access-Request is obfuscated using MD5 + secret (not actual encryption)
@@ -836,6 +865,14 @@ Service-Type (6)
   - Re-Auth (Reauthentication): Forces the endpoint to reauthenticate using the same credentials but applying new authorization policies
   - Port-Bounce: Disconnects the client (causing a reauthentication) by momentarily shutting down the port (used in wired scenarios)
 
+### Accounting
+
+- Shows when user connects, disconnects, how much data sent/received
+- When a user/session begins, the Network Access Server (NAS) sends an Accounting-Start packet to the RADIUS server
+- During a session, the NAS may send Interim-Update packets at intervals (e.g., every 5 minutes) - with bytes sent/received for example
+- When the session ends, the NAS sends Accounting-Stop
+- Standard RADIUS accounting cannot log user commands, so it is useless for admin accounting
+ 
 ## Cisco switch commands
 
 - Show all dot1x configured ports: `show dot1x all`
@@ -920,4 +957,5 @@ Authorization Policy
 ### Monitor amount of requests
 
 `Operations > Reports > Reports > Device Administration`
+
 

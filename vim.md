@@ -27,3 +27,13 @@
     - They define how Vim should auto-indent based on the language.
     - Example: In Python: indent increases after :
     - In Markdown: indent list items automatically:
+
+- let g:markdown_folding = 1 - enable outline
+
+```
+zc   close fold
+zo   open fold
+za   toggle fold
+zr   reduce folding
+zm   increase folding
+```
