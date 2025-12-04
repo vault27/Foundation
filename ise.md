@@ -544,19 +544,24 @@ show application status ise
 - Work Centers -> Device Administration -> Policy Elements -> Results -> TACACS Profiles.
 - Any TACACS+ Shell Profile with "Shell" type should have "Idle Time" set to "10" minutes or less.
 
+### Web based authentication with redirection
+
+Portal types
+
+- admin portal
+- sponsor portal
+- guest portal
+
 
 ## RADIUS
 
 - RADIUS (Remote Authentication Dial-In User Service) is one of the fundamental AAA (Authentication, Authorization, Accounting) protocols in networking
-
 - UDP port 1812 - auth, 1813 - accounting, no retransmission state beyond NAS implementation
 - Radius does not provide the ability to control which commands can be executed - Only supports authorization after authentication is complete (not dynamic real-time policy during session)
 - Radius encrypts only password - No end-to-end encryption
-- Radius used PAP, CHAP, MS-CHAP
-- Radius carries authentication traffic
+- Radius uses PAP, CHAP, MS-CHAP, EAP methods for authentication
 - Radius combines auth and author in one reply in the form of AV pairs
-- Radius uses UDP ports: 1812 for auth and 1813 for accounting or
-- 1645 auth and 1646 accounting
+- 1645 auth and 1646 accounting - old style
 - Radius server cannot send requests to radius client, so RFC 3576 and RFC 5176 were created, so called Dyncamic Authorization Extensions or CoA - Change of Authorization
 - With these extensions we can disable port or disconnect user for example or request reauthentication
 - CoA - server initiated authorization update
@@ -684,10 +689,17 @@ RADIUS Protocol
         Message-Authenticator: 1c:ab:f1:77:1d:9e:bc:...
 ```
 
-- Thus initial packet contains a lot of useful information: NAS IP-address, Username, User password, vendor specific Attribute Value Pairs
+- Thus initial packet contains a lot of useful information: NAD IP-address, Username, User password, vendor specific Attribute Value Pairs
 - This informaytion may be used to identify which policy will be used to access the request
 - After first packet, if EAP is used, there is a series of packets to build the EAP tunnel
+- All of this is carried inside:
+- `RADIUS Access-Request (client → server)`
+- `RADIUS Access-Challenge (server → client)`
 - Next, there is another series of packets for inner method authentication, for example MSCHAPv2
+- These MSCHAPv2 exchanges are also transported using:
+- `RADIUS Access-Request`
+- `RADIUS Access-Challenge`
+- Example of `MSCHAPv2 in EAP in Radius`
 
 ```
 Code: Access-Challenge
@@ -710,6 +722,54 @@ AVPs:
     Message-Authenticator: <value>
 ```
 
+- Only after inner authentication succeeds, the RADIUS server sends: `Access-Accept` with MS-MPPE keys (for VPN encryption keys), VLAN attributes, etc.
+- If EAP is not used, then immediately after request NAC sends reply `Access-Accept/Reject`
+- All final authorization happens in the last Access-Accept packet
+- Examples of `authorization attributes`:
+  - VLAN assignment (Tunnel-Private-Group-ID)
+  - Access control lists (Filter-Id, Cisco-AVPair)
+  - Session timeout
+  - QoS policies (WLAN-QoS-Profile)
+  - Framed-IP-Address
+  - MPPE keys for VPN encryption
+- Example of RADIUS Access-Accept (802.1X)
+
+```
+RADIUS Protocol
+    Code: Access-Accept (2)
+    Identifier: 0x22
+    Length: 180
+    Authenticator: c515f2a8060b15d9f0c4b9ca795a8312
+    Attribute Value Pairs
+        EAP-Message: 03 04 00 04        <-- EAP Success
+        Message-Authenticator: 11:a8:...:de
+        Tunnel-Type: VLAN (13)
+        Tunnel-Medium-Type: IEEE-802 (6)
+        Tunnel-Private-Group-Id: "20"
+        Cisco-AVPair: "device-traffic-class=voice"
+        Class: 4953452d53455353494f4e2d32333038 ("ISE-SESSION-2308")
+        Session-Timeout: 86400
+```
+
+- Example of RADIUS Access-Accept (Router Login)
+
+```
+RADIUS Protocol
+    Code: Access-Accept (2)
+    Identifier: 0x17
+    Length: 120
+    Authenticator: 003fc47c11bc88357bd1fe7fddf3a881
+    Attribute Value Pairs
+        Service-Type: Login (1)
+        Class: "corp-admins"
+        Reply-Message: "Welcome admin"
+        Filter-Id: "ADMIN_PRIV15"
+        Idle-Timeout: 600
+```
+
+- After Access-Accept, authentication is over and no more RADIUS messages are exchanged for that session—unless `reauth or CoA occurs`
+- 802.1X Reauthentication / Re-Auth Timer, Switch/AP periodically sends: `Access-Request → Access-Accept`
+
 ### Packet Types
 
 Authentication
@@ -717,7 +777,7 @@ Authentication
 - Access-Request
 - Access-Accept
 - Access-Reject
-- Access-Challenge (used in EAP, token codes, OTP)
+- Access-Challenge (used to trabsport additional data: EAP, token codes, OTP, MSCHAP)
 
 Accounting
 
@@ -731,13 +791,32 @@ CoA / DM (RFC 5176)
 
 ### Attributes
 
-Radius attribute 6 Service-Type can be:
-- Framed - 802.1x
-- Call-Check - MAB
-- Login - Local Web auth
+User Identification Attributes
 
-Radius attribute 8 - framed ip address
-Radius atrribute 25 - Class
+- User-Name (1) - Example: User-Name = "jdoe" - Used in: PAP only (never for EAP)
+- User-Password (2) - Encrypted using shared secret (only for PAP). - example: User-Password = "encrypted" - Used in: PAP only (never for EAP)
+
+Network Access Server (NAS) Attributes
+
+- NAS-IP-Address (4) - Example: NAS-IP-Address = 10.1.10.1 - Meaning: IP of switch, AP, VPN gateway sending request
+- NAS-Identifier (32) - Example: NAS-Identifier = "SWITCH-1" - Meaning: Hostname or identifier of the NAS
+- NAS-Port (5) - Example: NAS-Port = 10113 - Meaning: Physical port or logical port number
+- NAS-Port-Type (61) - Example: Ethernet (15) for wired, Wireless-802.11 (19) for Wi-Fi, Virtual (5) for VPN - Used for: Policy rules
+
+Service-Type (6)
+
+- Common values:
+- 1 = Login - SSH/Terminal/Telnet sessions
+- 2 = Framed - 802.1X authentication for wired/wireless networks, PPP, PPPoE, and VPN connections
+- 5 = Call Check - MAB
+- Example: Service-Type = Framed
+
+- Radius attribute 6 Service-Type can be:
+  - Framed - 802.1x
+  - Call-Check - MAB
+  - Login - Local Web auth
+- Radius attribute 8 - framed ip address
+- Radius atrribute 25 - Class
 
 ## Security Model
 
