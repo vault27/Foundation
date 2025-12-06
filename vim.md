@@ -37,3 +37,38 @@ za   toggle fold
 zr   reduce folding
 zm   increase folding
 ```
+
+- Cursor - Block
+
+```
+" INSERT mode: block cursor
+let &t_SI = "\e[2 q"
+
+" NORMAL mode: block cursor
+let &t_EI = "\e[2 q"
+
+" REPLACE mode: block cursor (optional)
+let &t_SR = "\e[2 q"
+```
+
+- Extended markdown support
+
+```
+call plug#begin('~/.vim/plugged')
+Plug 'plasticboy/vim-markdown'
+Plug 'godlygeek/tabular'   " for table alignment support (required)
+call plug#end()
+```
+
+- Outline on the side: Plug 'preservim/tagbar' - :tagbartoggle - ctrl+w+w switch between windows - za,zc open,close folds
+
+## Plugin manager
+
+`curl -fLo ~/.vim/autoload/plug.vim --create-dirs \
+    https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim`
+
+:PlugInstall
+
+## Commands
+
+- :colorscheme tab

@@ -9,7 +9,7 @@
 - 802.1X is a framework that controls who can connect to the network by requiring authentication at the moment a device plugs in or associates to Wi-Fi
 - Login before network access
 - Supplicant - PC
-- Authenticator - switch, AP
+- Authenticator - switch, AP - NAS
 - Authentication server - ISE
 - This standard defines using of Radius, EAP, EAPOL...
 - 802.1X itself does not define authentication — it only transports EAP methods
@@ -25,7 +25,7 @@
 - EAP defines:
   - message types (Request, Response, Success, Failure)
   - how clients and servers negotiate methods
-  - how outer protocols encapsulate EAP
+  - how outer protocols 
 - EAP does not define:
   - how keys are exchanged
   - how clients authenticate
@@ -552,6 +552,21 @@ Portal types
 - sponsor portal
 - guest portal
 
+### CLI
+
+- show running config
+- Reset GUI admin passwords: `application reset-passwd ise admin`
+- Reset CLI admin password: `password`
+- List all ISE processes and their statuses: `show application status ise`
+- Configure DNS server: `config ip name-server 192.168.139.115`
+- Show version: `show application version ise`
+- Show interface: `show interface`
+- Show routes: `show ip route`
+- Reboot: `reload`
+- `Show timezone`
+- `show timezones`
+- `configure; clock timezone`
+- Show info required for license: `show udi`
 
 ## RADIUS
 
@@ -691,7 +706,7 @@ RADIUS Protocol
         Message-Authenticator: 1c:ab:f1:77:1d:9e:bc:...
 ```
 
-- Thus initial packet contains a lot of useful information: NAD IP-address, Username, User password, vendor specific Attribute Value Pairs
+- Thus initial packet contains a lot of useful information: NAS IP-address, Username, User password, vendor specific Attribute Value Pairs
 - This informaytion may be used to identify which policy will be used to access the request
 - After first packet, if EAP is used, there is a series of packets to build the EAP tunnel
 - All of this is carried inside:
@@ -725,6 +740,7 @@ AVPs:
 ```
 
 - Only after inner authentication succeeds, the RADIUS server sends: `Access-Accept` with MS-MPPE keys (for VPN encryption keys), VLAN attributes, etc.
+- MPPE keys (Microsoft Point-to-Point Encryption keys) are the session encryption keys used by PPTP and some L2TP/IPsec VPNs to encrypt PPP traffic
 - If EAP is not used, then immediately after request NAC sends reply `Access-Accept/Reject`
 - All final authorization happens in the last Access-Accept packet
 - Examples of `authorization attributes`:
@@ -860,7 +876,7 @@ Accounting Attributes
 - Change of Authorization (CoA) port is used to send dynamic policy updates to network devices after initial authentication
 - Part of the RADIUS protocol and is defined in the IETF RFC 5176
 - After an initial authentication, Cisco ISE can use CoA to dynamically update the authorization of a session (e.g., changing VLAN assignment or access control list (ACL) permissions)
-- The default CoA port for RADIUS is UDP port 1700.This is the port through which CoA messages are sent to network devices, such as switches or wireless controllers
+- The default CoA port for RADIUS is UDP port 1700. This is the port through which CoA messages are sent to network devices, such as switches or wireless controllers
 - CoA Types:
   - Re-Auth (Reauthentication): Forces the endpoint to reauthenticate using the same credentials but applying new authorization policies
   - Port-Bounce: Disconnects the client (causing a reauthentication) by momentarily shutting down the port (used in wired scenarios)
@@ -873,10 +889,106 @@ Accounting Attributes
 - When the session ends, the NAS sends Accounting-Stop
 - Standard RADIUS accounting cannot log user commands, so it is useless for admin accounting
  
-## Cisco switch commands
+## Cisco switch configuration for 802.1X
+
+Port can be configured in different modes:
+
+- single host - only one host connected - one MAC address
+- multi-host - many MAC addresses - first MAC open the door and then others can work as well
+- multi-domain - domains voice and data, when phone and PC on one port, auth of one device on voice VLAN and one device on data vlan
+- multi-auth - ever single mac address should be authenticated
+
+Verify configuration
 
 - Show all dot1x configured ports: `show dot1x all`
 - Show all dot1x authentications for particular port: `show authentication sessions int gig0/7`
+- show interface status
+- show authentication int gig0/7
+- debug radius authentication
+
+Switch configuration
+
+```
+aaa new-model
+aaa authentication login default enable
+
+#Enable dot1x globally
+dot1x system-auth-control
+
+#Enable ip device tracking, this command allows for the any source in the provided dACL to be replaced with the IP address of the single device connected to the port.
+ip device tracking
+
+#Enable AAA via Radius
+aaa authentication dot1x default group radius
+aaa authorization network default group radius
+aaa accounting dot1x default start-stop group radius
+
+#Configure Radius server
+radius server ise
+     address ipv4 192.168.139.114 auth-port 1812 acct-port 1813
+     key test
+aaa group server radius ise-group
+     server name ise
+
+[Optional]
+#Configure radius server load balancing
+radius-server load-balance method least-outstanding batch-size 5
+
+#Enable use of vendor specific attributes
+radius-server vsa send authentication
+radius-server vsa send accounting
+
+#Enable 3 VSAs
+radius-server attribute 8 include-in-access-req - include supplicant IP in a request
+radius-server attribute 6 on-for-login-auth - login request uncludes Service-Type
+radius-server attribute 25 access-request include - Class
+
+#Enable change of authorization
+aaa server radius dynamic-author
+client ise_ip server-key shared_secret
+
+#Configure actions in case of failures
+authentication event fail action next-method
+authentication event server dead action authorize
+authentication event server dead action authorize voice
+authentication event server alive action reinitialize
+
+#Configure violation action
+authentication violation restrict
+
+#Configure Interface
+int gig0/7
+switchport host or switchport mode access & spanning-tree portfast
+authentication host-mode multi-auth
+authentication open - open mode for testing
+authentication periodic
+authentication timer reauthenticate server - let server decide how often to reauthenticate
+dot1x pae authenticator
+dot1x timeout tx-period 10 - supplicant retry timeout
+authentication port-control auto
+do debug readius authentication
+no shutdown
+
+#Test
+test aaa group  ise-group bob passwd new-code
+```
+
+## Cisco switch configuration for MAB
+
+```
+#Let ISE understand that it is mac address
+radius-server attribute 6 on-for-login-auth
+radius-server attribute 25 access-request include
+
+#Enable mab
+mab
+
+#Authentication order
+authentication order mab dot1x
+
+#Authentication priority
+authentication priority dot1x mab
+```
 
 ## TACACS
 
@@ -958,4 +1070,34 @@ Authorization Policy
 
 `Operations > Reports > Reports > Device Administration`
 
+### Switch configuration
+
+```
+aaa new-model - enable aaa
+tacacs-server host 192.168.139.125
+Switch(config)#aaa authentication login default group tacacs+ local
+aaa authorization commands 15 default group tacacs+ local
+aaa authorization config-commands
+aaa authorization exec default group tacacs+ local
+aaa accounting commands 15 default start-stop group tacacs+
+```
+
+## PXGrid
+
+- Used to send info from ISE to all other devices, for example FTDsed to send info from ISE to all other devices, for example FTD
+
+## MACsec
+
+- To protect segment between PC and switch.
+- Confindetiality and integrity check of each of the frames
+- Macsec key agreement - MKA - between PC and switch
+- Different frame type - new 802.1AE Header + CMD field + ICV field
+- It can be extended to protect data berween switches
+- It uses hop by hop encryption 
+- Security Assosation Protocol - SAP - for encryption between two switches
+
+## Trustsec
+
+- Trustsec allows control and filter traffic based on Security Group Tags.
+- Every user gets its own tag after authentication and tag is injected into Ethernet frame
 

@@ -115,4 +115,24 @@ Some of main constraints
 
 - Failure isolation - large l2 domain is dangerous - we may connect hub and generate 
 - Can be done in every network protocol
-- 
+
+## RA VPN
+
+- Where to put VPN termination device
+    - `Internet > VPN server > Firewall > Core`
+    - `Internet > VPN server > Core`
+    - `Internet > Firewall > VPN Server (DMZ) > Firewall > Core`
+- How it wil propogate routes to VPN IP pools? Routing protocol? NAT?
+- How user will be authenticated?
+- Split tunneling?
+- Firewall rules
+- Number of simulteneous VPN connections
+- Bandwidth
+- Two factor authentication
+- Protocol used - SSL or IPSec.
+- Differentiated access—The remote access VPN is configured to provide different access policies depending on assigned user roles.
+- Strong encryption for data privacy—The Advanced Encryption Standard (AES) cipher with a key length of 256 bits is used for encrypting user data. Additional ciphers are also supported.
+- Hashing for data integrity—The Secure Hash Standard 1 (SHA-1) cryptographic hash function with a 160-bit message digest is used to ensure that data has not been modified during transit.
+- Internet link resiliency—A backup server reachable through the secondary ISP is configured in the AnyConnect client profile. This backup server is automatically used if the primary server is not reachable.
+- Default route via corporate Firewall/IPS for remote users
+- User groups which are allowed to access VPN
