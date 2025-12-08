@@ -136,3 +136,108 @@ Some of main constraints
 - Internet link resiliency—A backup server reachable through the secondary ISP is configured in the AnyConnect client profile. This backup server is automatically used if the primary server is not reachable.
 - Default route via corporate Firewall/IPS for remote users
 - User groups which are allowed to access VPN
+
+## Firewall
+
+- Firewall is always connected to switch only, usually with LACP, and all vlans are delivired via it.
+- The perfect scheme is to use different switches for internal and external connection.
+- Firewall have to be connected  with 2 stacked switches via fiber via LACP!!!
+- So, in most cases all interfaces will be called bond1.X except management 🙂
+- Draw L3 diagramm using routing tables.
+- Draw schematic L2 diagram to fully understand a network.
+- Diagram should be symmetric and streched
+- Power via different UPS
+- Check which cables and speeds are used between main switches in order to understand which speed is required to connect Firewall
+- All networks, even if the same VLAN and interface draw as separate networks
+- How backup is organized? It will clutter any fw. It should work directly
+
+Possible network segments:
+
+- Security
+- Infrastructure systems
+- Information systems
+- Crytical systems
+- Management
+- Campus
+- Technological
+- DMZ
+
+Data to request:
+
+- L2 diagram
+- L3 diagram
+- Location of network devices
+- Configs of network devices
+- Routing table of network devices
+
+L2 mode
+
+If we inject firewall in L2 mode, several options exist:
+
+- Between two incontrollable switches
+- Inline (impossible if we use cluster)
+- On the side of controllable switch via forward domains
+
+Pre-Deployment checklist
+
+- Latest firmware and updates are installed - negotiate with customer
+- License
+- Management network routing, how logs are sent, how AD integration is made
+- Hardware and software acceleration - provision in advance
+- Prepare suitable USB sticks
+- Think over RAID levels if it is required
+- Prepare data sheets, hardware guides, quick start guides
+- Think over exact location in rack, units number
+- Amount of patch cords and their length
+- Шестигранники, отвертки, стяжки, болты, гайки, салазки, нож
+- USB to com converter
+- Обжимщик, принтер, коннекторы
+- Провода питания - длина, разьем
+- Check access via LOM and MGMT if applicable
+- Console cable
+- Распечатать таблицу коммутации, все схемы
+- Download all required guides
+- Copy to laptop all docs
+- Exact address, contact person, pass
+- IPs for all interfaces
+- Make sure that devices have arrived
+- Packets to take tailings back
+- After installation check everything with pings
+- Check that cables are connected VERY well
+- One device installation is about 3 hours
+- Think over sync cables connection based on real ports location
+- Check both nodes in a cluster
+- Enable portfast - ?
+
+PFR checklist:
+
+- LAN
+- TKTS
+- DMZ
+- Inet
+- Proxy address - and connection to it
+- Континент СУФД
+- Прописать в випнете для связи с Менеджером
+- Default route to ZS_C
+- Draw L2 mode on L3 diagram
+- Use only approved transit networks
+- Which vipnet is a default gateway for every server
+- Full L2 diagram!!!!
+- 238, 236 VLAN
+- Mark new networks with red
+- Mark L2 mode with green
+
+Post-deployment check list
+
+- Hostname
+- VDOMS
+- NTP
+- DNS
+- Session timeout
+- Password policy
+- Interfaces + mask
+- Routes
+- Management interfaces
+- HA
+- Logging
+- Admin password + admin accounts

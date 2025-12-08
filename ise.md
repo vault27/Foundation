@@ -1101,3 +1101,13 @@ aaa accounting commands 15 default start-stop group tacacs+
 - Trustsec allows control and filter traffic based on Security Group Tags.
 - Every user gets its own tag after authentication and tag is injected into Ethernet frame
 
+## Design
+
+- 2 F5s in 2 different DataCenters - both have the same Anycast address - 10.255.255.3
+- Every F5 points to 2 VMs with Tacacs module in the same data centre
+- Request goes to the closest to the client F5, based on routing to Anycast address
+- So we have 4 VMs: 2 in each data center
+- It is better to use app level monitor on F5, because sometimes Tacacs service stuck and keeps replying to to TCP requests
+- The same for Radius
+
+
