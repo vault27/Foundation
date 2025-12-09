@@ -72,3 +72,11 @@ call plug#end()
 ## Commands
 
 - :colorscheme tab
+
+## Visual mode
+
+- v
+- Arrows
+- y - yank - copy
+- p - paste in any mode
+- d - cut
