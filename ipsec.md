@@ -57,9 +57,9 @@
 - IKE Phase 1 — Establish a secure channel (IKE SA) - starts with UDP/500, may switch to UDP/4500
     - `Main mode` - 6 messages
     - `Aggressive mode` - 3 messages
-    - SA negotiation
+    - SA negotiation - Agree on crypto parametersn
     - DH key exchange
-    - Authentication
+    - Authentication - encrypted already
     - NAT-T negotiation
     - IKE SA - one for inbound and outbound - IKE SA is bidirectional
     - Local SPI → The SPI that your router uses when sending ISAKMP messages
@@ -75,6 +75,8 @@
 - ESP encapsulation — Actual data traffic encryption/authentication using the negotiated keys - IP/50 or UDP/4500 - Destination SPI is in header
 
 ### Phase 1
+
+Concepts
 
 - During traffic capture you cannot see Phase 2 negotiation, only Phase 1 as ISAKMP protocol, everything else is encrypted
 - Phase 1 SA is called ISAKMP SA or IKE SA
@@ -102,7 +104,7 @@ IKE Phase 1 can be established via
 
 **Workflow**
   
-`HAGEL > DH exchange > Authentication ` 
+`HAGEL crypto negotiation > DH exchange > Authentication ` 
   
 **IKE identity**
 
@@ -117,7 +119,7 @@ IKE Phase 1 can be established via
 - In main mode, the initiator and recipient send three two-way exchanges (six messages total) to accomplish the following services:
 - First exchange (messages 1 and 2) — Proposes and accepts the encryption and authentication algorithms.
 - Second exchange (messages 3 and 4) — Executes a DH exchange, and the initiator and recipient each provide a pseudorandom number
-- Third exchange (messages 5 and 6) — Sends and verifies the identities of the initiator and recipient
+- Third exchange (messages 5 and 6) — Sends and verifies the identities of the initiator and recipient - authentication is here via PSK - `Each side now proves knowledge of the PSK without sending it` - Both nodes computes a hash based on PSK and many other parametres
 - The information transmitted in the third exchange of messages is protected by the encryption algorithm established in the first two exchanges. Thus, the participants’ identities are encrypted and therefore not transmitted “in the clear.”
 
 Message one example
