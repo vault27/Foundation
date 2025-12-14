@@ -57,6 +57,7 @@
 - IKE Phase 1 — Establish a secure channel (IKE SA) - starts with UDP/500, may switch to UDP/4500
     - `Main mode` - 6 messages
     - `Aggressive mode` - 3 messages
+    - SA negotiation
     - DH key exchange
     - Authentication
     - NAT-T negotiation
@@ -579,6 +580,34 @@ Internet Key Exchange Version 2
 - Transorm set for authentication header defines only HMAC function, for example `ah-sha-hmac`
 
 ## Configuration - Cisco
+
+Three possible ways to configure IPSec tunnel on Cisco Routers:
+
+- Pure (Policy-Based) IPsec - crypto-map–based IPsec
+    - Traffic is matched by crypto ACLs
+    - No tunnel interface
+    - IPSec is applied directly to the physical interface via a crypto map
+    - Routing is not aware of the tunnel
+    - No dynamic routing protocols
+- IPsec + VTI (Virtual Tunnel Interface) - route-based IPsec
+    - A logical Tunnel interface is created
+    - IPSec protects the tunnel traffic
+    - Routing happens over the tunnel
+    - Tunnel Interface
+                    └── IPSec Profile
+    - Supports dynamic routing
+- IPsec with GRE (GRE over IPsec) - A tunnel inside a tunnel
+    - GRE provides encapsulation
+    - IPSec encrypts the GRE packets
+    - GRE handles routing, MULTCAST, multiple subnets
+    - Can be policy-based or route-based
+    - Use only when multicast is required
+- A VTI-based (route-based) IPsec endpoint and a policy-based (crypto-map) endpoint are architecturally incompatible
+- Policy-based IPsec Expects specific proxy IDs (src/dst subnets)
+- VTI-based IPsec Proxy IDs are typically 0.0.0.0/0 ↔ 0.0.0.0/0 (or a host /32)
+- IKE Phase 2 (CHILD_SA) will fail
+- But At the protocol level, it is the same protocol
+
 
 `Tunnel` (vrf, bandwidth, ip, mss, mtu, load interval, bfd, source, mode, path mtu discovery, destination, **ipsec profile**) > `ipsec profile` (idle, **transform-set**, pfs group, **ike-v2-profile**) > `ike-v2-profile` (identity, authentication, **keyring**, lifetime, dpd), `transform set`(encryption, hash, mode) > `keyring` (address, key)  
   

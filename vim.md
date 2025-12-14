@@ -38,6 +38,14 @@ zr   reduce folding
 zm   increase folding
 ```
 
+- colorscheme retrobox
+
+- autocmd VimEnter * TagbarOpen
+
+- let g:tagbar_foldlevel = 1 
+
+- let g:tagbar_show_data_type = 1
+
 - Cursor - Block
 
 ```
