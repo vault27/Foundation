@@ -601,15 +601,16 @@ Three possible ways to configure IPSec tunnel on Cisco Routers:
 - IPsec with GRE (GRE over IPsec) - A tunnel inside a tunnel
     - GRE provides encapsulation
     - IPSec encrypts the GRE packets
-    - GRE handles routing, MULTCAST, multiple subnets
+    - GRE handles routing, MULTICAST, multiple subnets
     - Can be policy-based or route-based
-    - Use only when multicast is required
+    - `Use only when multicast is required`
 - A VTI-based (route-based) IPsec endpoint and a policy-based (crypto-map) endpoint are architecturally incompatible
 - Policy-based IPsec Expects specific proxy IDs (src/dst subnets)
 - VTI-based IPsec Proxy IDs are typically 0.0.0.0/0 ↔ 0.0.0.0/0 (or a host /32)
 - IKE Phase 2 (CHILD_SA) will fail
 - But At the protocol level, it is the same protocol
 
+**IPSec + VTI + IKEv2 example**
 
 `Tunnel` (vrf, bandwidth, ip, mss, mtu, load interval, bfd, source, mode, path mtu discovery, destination, **ipsec profile**) > `ipsec profile` (idle, **transform-set**, pfs group, **ike-v2-profile**) > `ike-v2-profile` (identity, authentication, **keyring**, lifetime, dpd), `transform set`(encryption, hash, mode) > `keyring` (address, key)  
   
