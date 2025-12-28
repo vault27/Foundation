@@ -570,6 +570,8 @@ Internet Key Exchange Version 2
     - DH group
     - Lifetime
 
+Packets layout:
+
 <img width="1151" alt="image" src="https://github.com/philipp-ov/foundation/assets/116812447/dd8e9064-7dde-478f-906f-48ef43077b04">
 
 ## Authentication Header
@@ -600,6 +602,7 @@ Three possible ways to configure IPSec tunnel on Cisco Routers:
     - Supports dynamic routing
 - IPsec with GRE (GRE over IPsec) - A tunnel inside a tunnel
     - GRE provides encapsulation
+    - `Can be done both with crypto maps and IPSec profile` 
     - IPSec encrypts the GRE packets
     - GRE handles routing, MULTICAST, multiple subnets
     - Can be policy-based or route-based
@@ -610,13 +613,30 @@ Three possible ways to configure IPSec tunnel on Cisco Routers:
 - IKE Phase 2 (CHILD_SA) will fail
 - But At the protocol level, it is the same protocol
 
-**IPSec + VTI + IKEv2 example**
+**Why we shouldnt use Crypto maps**
+
+- They cannot natively support MPLS
+- Configuration can be complex
+- They are commonly misconfigured
+- Consume excessive amount of TCAM
+
+### IPSec + VTI + IKEv2 example
 
 `Tunnel` (vrf, bandwidth, ip, mss, mtu, load interval, bfd, source, mode, path mtu discovery, destination, **ipsec profile**) > `ipsec profile` (idle, **transform-set**, pfs group, **ike-v2-profile**) > `ike-v2-profile` (identity, authentication, **keyring**, lifetime, dpd), `transform set`(encryption, hash, mode) > `keyring` (address, key)  
   
 `ike-v2-policy` (vrf, **proposals**) > `proposal` (encryption, hash, pfs group)
 
-### Tunnel
+```
+Tunnel
+  └─ IPsec Profile
+       ├─ Transform Set   (ESP parameters)
+       └─ IKEv2 Profile
+            └─ Keyring
+IKEv2 Policy
+  └─ Proposal             (IKE SA parameters)
+```
+
+#### Tunnel
 
 ```
 interface Tunnel12
@@ -640,7 +660,7 @@ interface Tunnel12
 end
 ```
 
-### IPSec Profile
+#### IPSec Profile
 
 ```
 crypto ipsec profile IPSEC-profile
@@ -650,7 +670,7 @@ crypto ipsec profile IPSEC-profile
  set ikev2-profile CorpIPSEC-Prisma-ikev2-profile
 ```
 
-### Transform set
+#### Transform set
 
 Phase 2 options
 
@@ -659,7 +679,7 @@ crypto ipsec transform-set IPSEC esp-aes 256 esp-sha256-hmac
  mode tunnel
 ```
 
-### IKE v2 Profile
+#### IKE v2 Profile
 
 Phase 1 options
 
@@ -673,7 +693,7 @@ crypto ikev2 profile IPSEC-profile
  dpd 10 3 periodic
 ```
 
-### Keyring
+#### Keyring
 
 ```
 crypto ikev2 keyring CorpIPSEC-vpn-keyring
@@ -682,7 +702,7 @@ crypto ikev2 keyring CorpIPSEC-vpn-keyring
   pre-shared-key CY5R2TugteXEGBv6
 ```
 
-### IKE-v2 Policy
+#### IKE-v2 Policy
 
 ```
 crypto ikev2 policy remote-ikev2-policy 
@@ -695,7 +715,7 @@ crypto ikev2 policy remote-ikev2-policy
  proposal oci_ikev2-proposal
 ```
 
-### IKE Proposal
+#### IKE Proposal
 
 Phase 1 options
 
@@ -704,6 +724,43 @@ crypto ikev2 proposal CorpIPSEC-ikev2-proposal
  encryption aes-cbc-256 aes-cbc-128
  integrity sha512 sha384 sha256
  group 19 14 5 2
+```
+
+### IPSec with GRE via Crypto Maps example - IKEv1 - Can be IKEv2
+
+```
+GRE Tunnel
+  └─ Crypto Map
+       ├─ Transform Set        (ESP parameters)
+       ├─ Peer                 (remote IP)
+       ├─ ACL (Interesting traffic)
+       └─ ISAKMP / IKE Policy
+            └─ Keyring / PSK
+```
+
+### Pure IPSec with Crypto Maps - IKEv1 - Can be IKEv2
+
+```
+Interface
+  └─ Crypto Map
+       ├─ ACL (interesting traffic)
+       ├─ Peer
+       ├─ Transform Set
+       └─ IKE / ISAKMP Policy
+            └─ Keyring / PSK
+```
+
+### IPSec + GRE - no Crypto Maps - IPSec profile - IKEv2 - can be IKEv1
+
+```
+GRE Tunnel
+  └─ Tunnel Protection
+       └─ IPsec Profile
+            ├─ Transform Set
+            └─ IKEv2 Profile
+                 └─ Keyring
+IKEv2 Policy
+  └─ Proposal
 ```
 
 ## Troubleshooting
