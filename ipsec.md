@@ -25,10 +25,93 @@ IPSec introduces several new  terms, here is their short description
 
 ### SA
 
-- SA - Security association - has 2 meanings
-    - Meaning 1 - it is a set of crypto graphic options that are negotiated between devices that are establishing an IPSec relationship
+- SA - Security association - `has 2 meanings`
+    - Meaning 1 - it is a set of cryptographic options that are negotiated between devices that are establishing an IPSec relationship
     - Meaning 2 - it is a logical object stored and tracked by the device (router/firewall)
-- SA, used during Phase 1, is called IKE SA and it is Bidirectional: used for protecting control traffic in both directions 
+- Phase 1 and Phase 2 of IKE negotioations have different SAs
+
+Phase 1 (IKE) SA
+
+- SA, used during Phase 1, is called IKE SA and it is `Bidirectional`: used for protecting control traffic in both directions 
+- IKE SA as a set of cryptographic options consist of `SPIs(initiator and responder) and Proposals` - this is what we see in a packet
+- `Proposal` consists of `Transforms`
+- Transforms maybe be different types: `Encryption, Hash, Authentication Method, DH group, Lifetime`
+- The `set of transforms` inside one proposal defines the full Phase 1 policy - `transform set`
+- Example on how SA looks like on the wire during phase 1 IKE v1::
+
+```
+SA payload
+ └── Proposal
+     ├── Transform 1: ENCR  → AES-CBC
+     ├── Transform 2: HASH  → SHA1
+     ├── Transform 3: AUTH  → PSK
+     └── Transform 4: GROUP → MODP-1024
+
+Internet Security Association and Key Management Protocol (ISAKMP)
+    Initiator SPI:  a1b2c3d4e5f60708
+    Responder SPI:  0000000000000000
+    Next payload:   Security Association (SA)
+    Version:        1.0
+    Exchange type:  Identity Protection (Main Mode) (5)
+    Flags:          0x00  (no encryption)
+    Message ID:     00000000
+    Length:         216  (example)
+
+Payload: Security Association (SA)
+    DOI:    IPsec (1)
+    Situation: Identity Only (1)
+    Proposal:
+        Proposal #1
+        Protocol ID: ISAKMP (1)
+        SPI Size: 0
+        # of Transforms: 4
+        Transform #1: Encryption Algorithm
+            Type:   ENCR
+            ID:     AES-CBC
+        Transform #2: Hash Algorithm
+            Type:   HASH
+            ID:     SHA1
+        Transform #3: Authentication Method
+            Type:   AUTH
+            ID:     Pre-shared Key (PSK)
+        Transform #4: Diffie-Hellman Group
+            Type:   GROUP_DESC
+            ID:     Group 2 (MODP-1024)
+```
+
+- Phase 1 SA as a logical object on router includes the following: 
+    - Peer identification
+        - Remote peer IP address (or FQDN)
+        - Local interface / local IP used
+        - Negotiated IKE identity (IP, FQDN, DN, etc.)
+    - Negotiated cryptographic parameters -Result of the accepted proposal + transforms
+        - Encryption algorithm (e.g. AES-CBC)
+        - Hash / integrity algorithm (e.g. SHA-1 / SHA-256)
+        - Authentication method (PSK, RSA signatures, etc.)
+        - Diffie-Hellman group
+    - SA lifetime (time and/or rekey margin)
+    - `These parameters are fixed for the lifetime of the IKE SA`
+    - Keying material (derived, not negotiated)-Derived encryption & integrity keys for IKE messages
+    - `Keys are never sent, only derived via DH + nonces`
+    - SPI values
+        - Initiator SPI
+        - Responder SPI
+    - `These uniquely identify the IKE SA in both directions`
+    - State information
+        - IKE state (MM_ACTIVE, QM_IDLE, ESTABLISHED, etc.)
+        - Mode used (Main Mode / Aggressive Mode)
+        - xchange progress markers
+    - Timers and counters
+        - SA creation time
+        - Remaining lifetime
+        - Rekey timers
+        - Message counters / retransmission state
+    - Authentication data (cached result)
+        - Peer authenticated successfully (yes/no)
+        - Identity matched PSK or certificate
+    - Relationship to Phase 2
+
+
 - SA, used during Phase 2, is called IPSec SA and it is Unidirectional: used for protecting Data traffic in one direction, so 2 SAs are required for communication
 - SA is uniquely identified by a Security Parameter Index (SPI), an IPv4 or IPv6 destination address, and a security protocol (AH or ESP) identifier 
 - Each SA payload contains one or more Proposals
@@ -234,41 +317,6 @@ IKE Phase 1 can be established via
 - Second exchange (messages 3 and 4) — Executes a DH exchange, and the initiator and recipient each provide a pseudorandom number
 - Third exchange (messages 5 and 6) — Sends and verifies the identities of the initiator and recipient - authentication is here via PSK - `Each side now proves knowledge of the PSK without sending it` - Both nodes computes a hash based on PSK and many other parametres
 - The information transmitted in the third exchange of messages is protected by the encryption algorithm established in the first two exchanges. Thus, the participants’ identities are encrypted and therefore not transmitted “in the clear.”
-
-Message one example
-
-```
-Internet Security Association and Key Management Protocol (ISAKMP)
-    Initiator SPI:  a1b2c3d4e5f60708
-    Responder SPI:  0000000000000000
-    Next payload:   Security Association (SA)
-    Version:        1.0
-    Exchange type:  Identity Protection (Main Mode) (5)
-    Flags:          0x00  (no encryption)
-    Message ID:     00000000
-    Length:         216  (example)
-
-Payload: Security Association (SA)
-    DOI:    IPsec (1)
-    Situation: Identity Only (1)
-    Proposal:
-        Proposal #1
-        Protocol ID: ISAKMP (1)
-        SPI Size: 0
-        # of Transforms: 4
-        Transform #1: Encryption Algorithm
-            Type:   ENCR
-            ID:     AES-CBC
-        Transform #2: Hash Algorithm
-            Type:   HASH
-            ID:     SHA1
-        Transform #3: Authentication Method
-            Type:   AUTH
-            ID:     Pre-shared Key (PSK)
-        Transform #4: Diffie-Hellman Group
-            Type:   GROUP_DESC
-            ID:     Group 2 (MODP-1024)
-```
 
 **Aggressive mode**
 
