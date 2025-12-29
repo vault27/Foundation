@@ -2,7 +2,7 @@
 
 ## Concepts
 
-- IPsec is not a protocol, it's a framework for securing unicast traffic, it cannot protect multicast or broadcast traffic, OSPF, EIGRP cannot be used, GRE tunnel inside IPSec tunnel solves the problem 
+- IPsec is not a protocol, it's a framework for securing `unicast` traffic, it cannot protect `multicast or broadcast` traffic, so  OSPF, EIGRP cannot be used over IPSec, GRE tunnel inside IPSec tunnel solves the problem 
 - IPSec consists of 3 protocols:
     - ESP - data plane
     - AH(obsolete)
@@ -28,24 +28,30 @@ IPSec introduces several new  terms, here is their short description
 - SA - Security association - `has 2 meanings`
     - Meaning 1 - it is a set of cryptographic options that are negotiated between devices that are establishing an IPSec relationship
     - Meaning 2 - it is a logical object stored and tracked by the device (router/firewall)
+- SAs are used in both meanings in both Phases of IKE protocol
 - Phase 1 and Phase 2 of IKE negotioations have different SAs
 
-Phase 1 (IKE) SA
+#### Phase 1 (IKE) SA
 
 - SA, used during Phase 1, is called IKE SA and it is `Bidirectional`: used for protecting control traffic in both directions 
 - IKE SA as a set of cryptographic options consist of `SPIs(initiator and responder) and Proposals` - this is what we see in a packet
 - `Proposal` consists of `Transforms`
 - Transforms maybe be different types: `Encryption, Hash, Authentication Method, DH group, Lifetime`
+- `Authentication method is not negotiated as a transform in IKEv2` - it’s implicit in the IKE_AUTH exchange
 - The `set of transforms` inside one proposal defines the full Phase 1 policy - `transform set`
 - Example on how SA looks like on the wire during phase 1 IKE v1::
 
 ```
+Logical structure:
+
 SA payload
  └── Proposal
      ├── Transform 1: ENCR  → AES-CBC
      ├── Transform 2: HASH  → SHA1
      ├── Transform 3: AUTH  → PSK
      └── Transform 4: GROUP → MODP-1024
+
+Packet capture:
 
 Internet Security Association and Key Management Protocol (ISAKMP)
     Initiator SPI:  a1b2c3d4e5f60708
@@ -110,6 +116,55 @@ Payload: Security Association (SA)
         - Peer authenticated successfully (yes/no)
         - Identity matched PSK or certificate
     - Relationship to Phase 2
+- Example of SA phase 1 IKEv1 as a logical object on router via Cisco command `show crypto isakmp sa` - It displays IKEv1 Phase 1 Security Associations currently known to the router
+
+```
+IPv4 Crypto ISAKMP SA
+dst             src             state          conn-id status
+192.0.2.2       192.0.2.1       QM_IDLE        1001    ACTIVE
+
+     IKE SA details:
+       Session-id: 1001
+       Status: ACTIVE
+       IKE version: 1
+       Exchange type: Main Mode
+       Authentication method: Pre-Shared Key
+       Encryption: AES-CBC
+       Hashing: SHA1
+       DH group: 2
+       Lifetime: 86400 seconds
+       Remaining lifetime: 83210 seconds
+       Local SPI: 0xA1B2C3D4
+       Remote SPI: 0xE5F6A7B8
+       NAT-T: enabled
+       DPD: enabled
+       Local ID: IPv4 address 192.0.2.1
+       Remote ID: IPv4 address 192.0.2.2
+```
+
+- For IKEv2 command is a little bit different: `show crypto ikev2 sa detail`
+
+```
+IKEv2 SAs:
+
+Session-id: 3, Status: UP-ACTIVE
+  IKE SA: local 192.0.2.1/500 remote 192.0.2.2/500
+  Local ID: ipv4 addr 192.0.2.1
+  Remote ID: ipv4 addr 192.0.2.2
+  Authentication: Pre-shared key
+  Encryption: AES-CBC, keysize 256
+  Integrity: SHA256
+  PRF: PRF_HMAC_SHA256
+  DH Group: 14
+  SPI(local): 0x1A2B3C4D5E6F7081
+  SPI(remote): 0x9988776655443322
+  Lifetime: 86400 seconds
+  Remaining Lifetime: 84123 seconds
+  NAT-T: detected, enabled
+  DPD configured: yes, interval 10, retry 5
+  Rekey SA: yes
+  Child SAs: 1 active
+```
 
 
 - SA, used during Phase 2, is called IPSec SA and it is Unidirectional: used for protecting Data traffic in one direction, so 2 SAs are required for communication
