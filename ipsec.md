@@ -2,55 +2,49 @@
 
 ## Concepts
 
-- IPsec is not a protocol, it's a framework for securing unicast traffic
-- It consists of 3 protocols:
-    - ESP 
+- IPsec is not a protocol, it's a framework for securing unicast traffic, it cannot protect multicast or broadcast traffic, OSPF, EIGRP cannot be used, GRE tunnel inside IPSec tunnel solves the problem 
+- IPSec consists of 3 protocols:
+    - ESP - data plane
     - AH(obsolete)
-    - IKE v1 or v2
-- For negotiations(IKE) UDP port 500 is used
-- Encapsulating Security Payload uses IP protocol 50 or UDP 4500 if NAT is present
-- Authentication Header uses IP protocol 51.  
-- IKE - set of protocols to exchange keys
-- ISAKMP -  protocol to manage keys - responsible for Security Associations
-- IPSec uses both of them
-- ISAKMP is part of IKE. IKE comprises the three following protocols:
-    - ISAKMP
-    - SKEME
-    - OAKLEY
-- Does not support multicast and broadcast, OSPF, EIGRP cannot be used, GRE inside IPSec solves the problem
-- IKE v1 Phase 1 + IKE Phase 2 - 2 tunnels
-- Tunnel 1 is used to negotiate parametres for tunnel 2, tunnel 1 is used only for communication between firewalls, then for actual data only tunnel 2 is used directly, they work in paralell
-- Is there any IKE traffic, when everything is established and data flows normally - yes, keepalives via port UDP/500, if NAT-T is enabled then UDP/4500 is used
-- Security Associations are negotiated for both tunnels
-- In the IPsec/IKE world, the “initiator” is the peer that first sends an IKE packet to start the negotiation
-- The responder replies. This role is independent of who sends actual data over ESP later
+    - IKE v1 or v2 - control plane - Authentication - Key exchange - SA management
+- IPSec goals:
+    - Mutual authentication of peers
+    - Secure key establishment
+    - Negotiation of security parameters
+    - Creation and management of Security Associations
+    - Data encryption - confidentiality
+    - Data integrity - data is not modified
+    - Authentication of packet origin - Verify that packets truly come from the expected peer - Cryptographic authentication per packet
+    - Anti-replay protection
+    - Traffic protection policy enforcement - Define which traffic is protected and how
+    - Secure transport over untrusted networks
 
 ## IKE v1
 
-- v1 - 9 messages in total via main mode
-- v1 - 6 messages in total via aggressive mode
-- v2 - 4 messages in total
-- IKE is a key exchange protocol that uses ISAKMP as its message framework
-- ISAKMP (RFC 2408) is a framework and message format for negotiating security associations (SAs)
-- It defines: How packets are formatted (headers, payload types), A generic state machine for SA negotiation, But not how keys are exchanged
-- IKE (Internet Key Exchange, RFC 2409 for v1, RFC 5996/7296 for v2) is a protocol that uses ISAKMP as its payload/container format plus adds the cryptographic logic
-- IKEv1 = Oakley + SKEME + ISAKMP
-- Oakley protocol → key exchange modes + use of Diffie-Hellman
-- Defines:
-    - Use of Diffie–Hellman
-    - Key derivation techniques
-    - Security properties (anti-clogging tokens, identities, nonces)
-    - "Oakley Groups": Predefined mathematical groups (e.g., specific prime numbers and generators) used for the DH exchange
-- SKEME protocol → ideas about rekeying, quick key refresh, key derivation
-- Contributed:
-    - Ideas for identity protection
-    - How to refresh keys easily
-    - Key hierarchy concepts
-- ISAKMP → packet format, payload types, SA negotiation framework
-- Negotiates and manages IKE and IPsec parameters
-- Authenticates secure key exchange
-- Provides mutual peer authentication by means of shared secrets (not passwords) and public keys
-- Provides identity protection (in main mode)
+- IKEv1 was designed by the IETF IPsec work group in the mid-1990s and standardized in 1998 as RFC 2409
+- First appeared in Research & open-source Unix IPsec stacks, then in Cisco IOS, Checkpoint, Juniper
+- IKE v1 goals: 
+    - Authenticate peers
+    - Negotiate cryptographic parameters
+    - Establish shared secret keys
+    - Create and manage IPsec Security Associations (SAs)
+    - Provide Perfect Forward Secrecy (PFS)
+    - Detect peer liveness
+    - Provides identity protection (in main mode)
+- IKE v1 uses UDP port 500 or UDP port 4500 in case of NAT-T technology
+- IKEv1 uses two phases to authenticate peers once and securely negotiate traffic protection many times
+- Phase 1 — Build a secure control channel
+- Phase 2 - negotiate parametres for Data traffic encryption via secure Control Channel
+- Phase 1 can work in 2 modes: main and aggressive
+- 9 messages in total if main mode is used in Phase 1
+- 6 messages in total if aggressive mode is used in Phase 1
+- IKEv1 was developed, combining ideas from three earlier protocols:
+    - ISAKMP – framework for messages and SA management, how packets are formatted (headers, payload types), a generic state machine for SA negotiation, but not how keys are exchanged
+    - Oakley – Diffie-Hellman key exchange and math, key derivation techniques, DH groups
+    - SKEME – identity protection, rekeying, multiple SAs, negotiate algorithms, separation of key exchange from authentication, multiple authentication styles
+- There is IKE traffic, when everything is established and data flows normally - keepalives via port UDP/500, if NAT-T is enabled then UDP/4500 is used
+- In the IPsec/IKE world, the “initiator” is the peer that first sends an IKE packet to start the negotiation
+- The responder replies. This role is independent of who sends actual data over ESP later
 
 ### Workflow
 
