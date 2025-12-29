@@ -19,6 +19,125 @@
     - Traffic protection policy enforcement - Define which traffic is protected and how
     - Secure transport over untrusted networks
 
+## Terminology: SA, Transform-Set, SPI
+
+IPSec introduces several new  terms, here is their short description
+
+### SA
+
+- SA - Security association - has 2 meanings
+    - Meaning 1 - it is a set of crypto graphic options that are negotiated between devices that are establishing an IPSec relationship
+    - Meaning 2 - it is a logical object stored and tracked by the device (router/firewall)
+- SA, used during Phase 1, is called IKE SA and it is Bidirectional: used for protecting control traffic in both directions 
+- SA, used during Phase 2, is called IPSec SA and it is Unidirectional: used for protecting Data traffic in one direction, so 2 SAs are required for communication
+- SA is uniquely identified by a Security Parameter Index (SPI), an IPv4 or IPv6 destination address, and a security protocol (AH or ESP) identifier 
+- Each SA payload contains one or more Proposals
+- Each Proposal has:
+    - Protocol ID (ESP = 50, AH = 51)
+    - SPI Size (usually 4 bytes)
+    - SPI Value (the actual 32-bit number)
+    - Transform set (encryption, auth, lifetime)
+- Outbound and inbound SAs are different
+- `Both SAs (inbound and outbound) use the same crypto parameters, negotiated during Phase 2`
+- `But the keys are different for each direction`
+- `Each SA has its own SPI`
+- We need multiple IPsec SAs between two peers because each SA is one-directional and tied to a specific set of crypto parameters
+- Any time direction, keying material, protocol, or traffic selectors differ → a separate SA is required
+- There are two types of SAs: manual and dynamic 
+
+**Manual SA**
+
+- Manual SAs require no negotiation; all values, including the keys, are static and specified in the configuration
+- If you configure static/manual IPsec SAs, you do not need (and cannot use) IKE
+- All parameters are manually configured on both sides:
+    - SPI (Security Parameter Index)
+    - Encryption & authentication algorithms
+    - Keys
+    - Peer IPs
+    - Lifetimes (if any)
+- There is no key negotiation, rekeying, or authentication exchange
+- Used only in test setups or simple, static environments
+- Drawback: keys must be changed manually — no automatic refresh → insecure and unscalable 
+
+**Dynamic SA**
+
+- Dynamic SAs require additional configuration. With dynamic SAs, you configure IKE first and then the SA. IKE creates dynamic security associations; it negotiates SAs for IPsec
+- The IKE configuration defines the algorithms and keys used to establish the secure IKE connection with the peer security gateway
+- This connection is then used to dynamically agree upon keys and other data used by the dynamic IPsec SA. The IKE SA is negotiated first and then used to protect the negotiations that determine the dynamic IPsec SAs
+
+**Transform set**
+
+- They are used only in Phase 2
+- A transform set is a combination of one or more transforms used to build an IPsec Security Association (SA) during Phase 2 (Quick Mode / Child SA) negotiation
+- Each transform describes one specific aspect of how IPsec protects the traffic
+- Transform types:
+    - Encryption Algorithm (ENCR) - AES-CBC, AES-GCM, 3DES, ChaCha20-Poly1305
+    - Pseudo-Random Function (PRF) - In IKEv1, PRF is not a separate transform — it’s implicit in Phase 1 - PRF-HMAC-SHA1, PRF-HMAC-SHA256
+    - Integrity / Authentication Algorithm (INTEG) - HMAC-SHA1, HMAC-SHA256, AES-XCBC
+    - Diffie-Hellman Group (D-H Group) - Defines key exchange strength (PFS in Phase 2) - MODP-2048 (Group 14), ECP-256 (Group 19)
+- ESP transform set includes encryption + integrity
+- AH - integrity only  
+
+**Traffic Selectors**
+
+- Proxy-IDs or traffic selectors: local networks, remote network, protocol, port - they should match on both sides
+- They are sent separatly outside the SA
+- Some vendors allow “any-to-any” traffic without strict traffic selectors, meaning the SA could match all traffic between the peers’ IPs
+- For route based VPN TS are set to 0.0.0.0
+
+**SPI**
+
+- Each peer generates its own SPI and sends to peer
+- So after Phase 2 completes, each side knows two SPIs: one for inbound traffic, one for outbound traffic
+- The SPI is never reused between peers
+- It uniquely identifies the IPsec SA in the device’s Security Association Database (SAD)
+- The ESP header in data packets uses the SPI as the first field to indicate which SA/key to use
+- SPI is the lookup key: Incoming ESP/AH packets contain SPI → device looks it up in the SAD
+- SPI in an ESP header is not encrypted
+- The SAD is a per-device table that stores all active Security Associations (SAs). Each SA represents a unidirectional IPsec tunnel (or flow) with all the parameters needed to process packets
+- Inbound SA: How to decrypt and authenticate packets arriving at the device
+- Outbound SA: How to encrypt and authenticate packets leaving the device
+- `Outbound SPI` - The SPI my router inserts into ESP packets I send
+- `Inbound SPI` - The SPI my router expects to see in ESP packets I receive
+- Every active SA has an entry in the SAD
+- Their SPIs appear ONLY inside ESP/AH packets, not in IKE messages
+- IKE messages use their own SPIs for phase 1
+
+Example of SAD entry: includes traffic selectors
+
+```
+Router# show crypto ipsec sa
+
+interface: GigabitEthernet0/0
+    Crypto map tag: VPN-MAP, local addr 203.0.113.10
+
+   protected vrf: (none)
+   local ident (addr/mask/prot/port): (10.1.0.0/255.255.255.0/0/0)
+   remote ident (addr/mask/prot/port): (10.2.0.0/255.255.255.0/0/0)
+
+   #pkts encaps:  12345, #pkts encrypt: 12345, #pkts digest: 12345
+   #pkts decaps:  12010, #pkts decrypt: 12010, #pkts verify: 12010
+
+   inbound esp sas:
+      spi: 0x32A1B44C(850000964)
+        transform: esp-aes esp-sha-hmac ,
+        in use settings ={Tunnel, }
+        conn id: 1011, flow_id: SW:11, crypto map: VPN-MAP
+        sa timing: remaining key lifetime (k/sec): (4294967295/2460)
+        replay detection support: Y
+        Status: ACTIVE
+
+   outbound esp sas:
+      spi: 0xA4BB9923(2769075235)
+        transform: esp-aes esp-sha-hmac ,
+        in use settings ={Tunnel, }
+        conn id: 1012, flow_id: SW:12, crypto map: VPN-MAP
+        sa timing: remaining key lifetime (k/sec): (4294967295/2460)
+        replay detection support: Y
+        Status: ACTIVE
+```
+
+
 ## IKE v1
 
 - IKEv1 was designed by the IETF IPsec work group in the mid-1990s and standardized in 1998 as RFC 2409
@@ -51,7 +170,7 @@
 - IKE Phase 1 — Establish a secure channel (IKE SA) - starts with UDP/500, may switch to UDP/4500
     - `Main mode` - 6 messages
     - `Aggressive mode` - 3 messages
-    - SA negotiation - Agree on crypto parametersn
+    - SA negotiation - Agree on crypto parametres
     - DH key exchange
     - Authentication - encrypted already
     - NAT-T negotiation
@@ -228,117 +347,6 @@ Encrypted Payloads (inside IKE SA):
 7. Optional Payloads
  ├─ NAT-D detection (if NAT present)
  └─ Vendor ID (if implementation-specific)
-```
-
-**SA**
-
-- SA is a set of IPSec specifications that are negotiated between devices that are establishing an IPSec relationship
-- SA can be either unidirectional or bidirectional, depending on the choices made by the network administrator
-- SA is uniquely identified by a Security Parameter Index (SPI), an IPv4 or IPv6 destination address, and a security protocol (AH or ESP) identifier 
-- Each SA payload contains one or more Proposals
-- Each Proposal has:
-    - Protocol ID (ESP = 50, AH = 51)
-    - SPI Size (usually 4 bytes)
-    - SPI Value (the actual 32-bit number)
-    - Transform set (encryption, auth, lifetime)
-- Outbound and inbound SAs are different
-- `Both SAs (inbound and outbound) use the same crypto parameters, negotiated during Phase 2`
-- `But the keys are different for each direction`
-- `Each SA has its own SPI`
-- We need multiple IPsec SAs between two peers because each SA is one-directional and tied to a specific set of crypto parameters
-- Any time direction, keying material, protocol, or traffic selectors differ → a separate SA is required
-- There are two types of SAs: manual and dynamic 
-
-**Manual SA**
-
-- Manual SAs require no negotiation; all values, including the keys, are static and specified in the configuration
-- If you configure static/manual IPsec SAs, you do not need (and cannot use) IKE
-- All parameters are manually configured on both sides:
-    - SPI (Security Parameter Index)
-    - Encryption & authentication algorithms
-    - Keys
-    - Peer IPs
-    - Lifetimes (if any)
-- There is no key negotiation, rekeying, or authentication exchange
-- Used only in test setups or simple, static environments
-- Drawback: keys must be changed manually — no automatic refresh → insecure and unscalable 
-
-**Dynamic SA**
-
-- Dynamic SAs require additional configuration. With dynamic SAs, you configure IKE first and then the SA. IKE creates dynamic security associations; it negotiates SAs for IPsec
-- The IKE configuration defines the algorithms and keys used to establish the secure IKE connection with the peer security gateway
-- This connection is then used to dynamically agree upon keys and other data used by the dynamic IPsec SA. The IKE SA is negotiated first and then used to protect the negotiations that determine the dynamic IPsec SAs
-
-**Transform set**
-
-- They are used only in Phase 2
-- A transform set is a combination of one or more transforms used to build an IPsec Security Association (SA) during Phase 2 (Quick Mode / Child SA) negotiation
-- Each transform describes one specific aspect of how IPsec protects the traffic
-- Transform types:
-    - Encryption Algorithm (ENCR) - AES-CBC, AES-GCM, 3DES, ChaCha20-Poly1305
-    - Pseudo-Random Function (PRF) - In IKEv1, PRF is not a separate transform — it’s implicit in Phase 1 - PRF-HMAC-SHA1, PRF-HMAC-SHA256
-    - Integrity / Authentication Algorithm (INTEG) - HMAC-SHA1, HMAC-SHA256, AES-XCBC
-    - Diffie-Hellman Group (D-H Group) - Defines key exchange strength (PFS in Phase 2) - MODP-2048 (Group 14), ECP-256 (Group 19)
-- ESP transform set includes encryption + integrity
-- AH - integrity only  
-
-**Traffic Selectors**
-
-- Proxy-IDs or traffic selectors: local networks, remote network, protocol, port - they should match on both sides
-- They are sent separatly outside the SA
-- Some vendors allow “any-to-any” traffic without strict traffic selectors, meaning the SA could match all traffic between the peers’ IPs
-- For route based VPN TS are set to 0.0.0.0
-
-**SPI**
-
-- Each peer generates its own SPI and sends to peer
-- So after Phase 2 completes, each side knows two SPIs: one for inbound traffic, one for outbound traffic
-- The SPI is never reused between peers
-- It uniquely identifies the IPsec SA in the device’s Security Association Database (SAD)
-- The ESP header in data packets uses the SPI as the first field to indicate which SA/key to use
-- SPI is the lookup key: Incoming ESP/AH packets contain SPI → device looks it up in the SAD
-- SPI in an ESP header is not encrypted
-- The SAD is a per-device table that stores all active Security Associations (SAs). Each SA represents a unidirectional IPsec tunnel (or flow) with all the parameters needed to process packets
-- Inbound SA: How to decrypt and authenticate packets arriving at the device
-- Outbound SA: How to encrypt and authenticate packets leaving the device
-- `Outbound SPI` - The SPI my router inserts into ESP packets I send
-- `Inbound SPI` - The SPI my router expects to see in ESP packets I receive
-- Every active SA has an entry in the SAD
-- Their SPIs appear ONLY inside ESP/AH packets, not in IKE messages
-- IKE messages use their own SPIs for phase 1
-
-Example of SAD entry: includes traffic selectors
-
-```
-Router# show crypto ipsec sa
-
-interface: GigabitEthernet0/0
-    Crypto map tag: VPN-MAP, local addr 203.0.113.10
-
-   protected vrf: (none)
-   local ident (addr/mask/prot/port): (10.1.0.0/255.255.255.0/0/0)
-   remote ident (addr/mask/prot/port): (10.2.0.0/255.255.255.0/0/0)
-
-   #pkts encaps:  12345, #pkts encrypt: 12345, #pkts digest: 12345
-   #pkts decaps:  12010, #pkts decrypt: 12010, #pkts verify: 12010
-
-   inbound esp sas:
-      spi: 0x32A1B44C(850000964)
-        transform: esp-aes esp-sha-hmac ,
-        in use settings ={Tunnel, }
-        conn id: 1011, flow_id: SW:11, crypto map: VPN-MAP
-        sa timing: remaining key lifetime (k/sec): (4294967295/2460)
-        replay detection support: Y
-        Status: ACTIVE
-
-   outbound esp sas:
-      spi: 0xA4BB9923(2769075235)
-        transform: esp-aes esp-sha-hmac ,
-        in use settings ={Tunnel, }
-        conn id: 1012, flow_id: SW:12, crypto map: VPN-MAP
-        sa timing: remaining key lifetime (k/sec): (4294967295/2460)
-        replay detection support: Y
-        Status: ACTIVE
 ```
 
 **Data flow in practice**
