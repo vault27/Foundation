@@ -1,6 +1,6 @@
 # IPSec
 
-## Concepts
+## 1. Concepts
 
 - IPsec is not a protocol, it's a framework for securing `unicast` traffic, it cannot protect `multicast or broadcast` traffic, so  OSPF, EIGRP cannot be used over IPSec, GRE tunnel inside IPSec tunnel solves the problem 
 - IPSec consists of 3 protocols:
@@ -27,27 +27,26 @@ IPSec has several new terms, which are used everywhere in protocol descriptions.
 
 Below is their meaning and description
 
-## SPI
+## 2. SPI
 
 - SPI is a number
 - It is used in both phases during tunnels establishment and in both tunnels: data and control
-- Each peer generates its own SPI and sends to peer
-- So after Phase 2 completes, each side knows two SPIs: one for inbound traffic, one for outbound traffic
+- Each peer generates its own SPI and sends to peer during Tunnel 1 creation and Tunnel 2 creation
+- Different SPIs for different tunnels are generated
+- For full IPSec connection with 2 tunnels router has to generate 2 SPIs
 - The SPI is never reused between peers
-- It uniquely identifies the IPsec SA in the device’s Security Association Database (SAD)
+- Phase 1 tunnel SA is uniquely identified by 2 SPIs: inbound and outbound - in the router's memory
+- Phase 2 tunnel SA is uniquely identified by 1 SPI, but at the same time there are 2 SAs in routers memory for each Phase 2 tunnel: Inbound SA and Outbound SA
 - The ESP header in data packets uses the SPI as the first field to indicate which SA/key to use
 - SPI is the lookup key: Incoming ESP/AH packets contain SPI → device looks it up in the SAD
 - SPI in an ESP header is not encrypted
-- The SAD is a per-device table that stores all active Security Associations (SAs). Each SA represents a unidirectional IPsec tunnel (or flow) with all the parameters needed to process packets
-- Inbound SA: How to decrypt and authenticate packets arriving at the device
-- Outbound SA: How to encrypt and authenticate packets leaving the device
-- `Outbound SPI` - The SPI my router inserts into ESP packets I send
-- `Inbound SPI` - The SPI my router expects to see in ESP packets I receive
-- Every active SA has an entry in the SAD
-- Their SPIs appear ONLY inside ESP/AH packets, not in IKE messages
-- IKE messages use their own SPIs for phase 1
+- One SA for Phase 1: how to decrypt/encrypt and authenticate packets arriving at the device and leaving device  based on SPI inside IKE Protocol  
+- Inbound SA for Phase 2: how to decrypt and authenticate packets arriving at the device based on SPI inside ESP protocol
+- Outbound SA for Phase 2: How to encrypt and authenticate packets leaving the device based on SPI inside ESP protocol
+- `Outbound SPI` - The SPI my router inserts into ESP and IKE packets I send
+- `Inbound SPI` - The SPI my router expects to see in ESP/IKE packets I receive
 
-## SA
+## 3. SA
 
 - SA - Security association - `has 2 meanings`
     - Meaning 1 - it is a set of cryptographic options that are negotiated between devices that are establishing an IPSec relationship
@@ -55,7 +54,7 @@ Below is their meaning and description
 - SAs are used in both meanings in both Phases of IKE protocol
 - Phase 1 and Phase 2 of IKE negotioations have different SAs
 
-### Phase 1 - IKE SA
+### 3.1 Phase 1 - IKE SA
 
 **As a set of options**
 
@@ -112,6 +111,17 @@ Payload: Security Association (SA)
 ```
 
 **As a logical object on router**
+
+```
+IKE SA
+├── Initiator SPI (chosen by initiator)
+├── Responder SPI (chosen by responder)
+├── Keys (inbound)
+├── Keys (outbound)
+├── Crypto parameters
+├── Timers
+└── State
+```
 
 - Phase 1 SA as a logical object on router includes the following: 
     - Peer identification
@@ -194,7 +204,7 @@ Session-id: 3, Status: UP-ACTIVE
   Child SAs: 1 active
 ```
 
-### Phase 2 - IPSec SA 
+### 3.2 Phase 2 - IPSec SA 
 
 **As a set of options during negotiations**
 
@@ -215,10 +225,23 @@ Session-id: 3, Status: UP-ACTIVE
 - `Each SA has its own SPI` - Inbound SA has a SPI of remote peer, what it expects to see in an incoming packet - Outbound SPI has an SPI of local router and is used when sending packets to remote router
 - Any time direction, keying material, protocol, or traffic selectors differ → a separate SA is required
 
+Phase 2 — `two SA objects` 
 
+```
+IPsec SA (outbound)
+├── SPI: 0x1001
+├── Encryption key
+├── Integrity key
+└── Traffic selector
 
+IPsec SA (inbound)
+├── SPI: 0x2002
+├── Encryption key
+├── Integrity key
+└── Traffic selector
+```
 
-- There are two types of SAs: manual and dynamic 
+### 3.3 Manual and Dynamic SAs
 
 **Manual SA**
 
