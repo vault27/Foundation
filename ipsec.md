@@ -1,6 +1,6 @@
 # IPSec
 
-## 1. Concepts
+## 1. Introduction
 
 - IPsec is not a protocol, it's a framework for securing `unicast` traffic, it cannot protect `multicast or broadcast` traffic, so  OSPF, EIGRP cannot be used over IPSec, GRE tunnel inside IPSec tunnel solves the problem 
 - IPSec consists of 3 protocols:
@@ -53,6 +53,8 @@ Below is their meaning and description
     - Meaning 2 - it is a logical object stored and tracked by the device (router/firewall)
 - SAs are used in both meanings in both Phases of IKE protocol
 - Phase 1 and Phase 2 of IKE negotioations have different SAs
+- Each IPSec connection to 1 peer has minimum 3 SAs in router's memory: 1 SA for Phase 1 tunnel (bidectional, used for inbound and outbound traffic) and 2 SAs for Phase 2 tunnel: one for Inbound traffic and one for Outbound
+- Each IPSec connection to a peer may have more than 2 Phase 2 SAs, it depends on the amount of traffic selectors, for each traffic selector another pair of SAs for Phase 2 is created
 
 ### 3.1 Phase 1 - IKE SA
 
