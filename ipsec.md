@@ -19,11 +19,35 @@
     - Traffic protection policy enforcement - Define which traffic is protected and how
     - Secure transport over untrusted networks
 
-## Terminology: SA, Transform-Set, SPI
+IPSec has several new terms, which are used everywhere in protocol descriptions. These terms are:
 
-IPSec introduces several new  terms, here is their short description
+- SPI
+- Transform set
+- SA - Security Assosiation
 
-### SA
+Below is their meaning and description
+
+## SPI
+
+- SPI is a number
+- It is used in both phases during tunnels establishment and in both tunnels: data and control
+- Each peer generates its own SPI and sends to peer
+- So after Phase 2 completes, each side knows two SPIs: one for inbound traffic, one for outbound traffic
+- The SPI is never reused between peers
+- It uniquely identifies the IPsec SA in the device’s Security Association Database (SAD)
+- The ESP header in data packets uses the SPI as the first field to indicate which SA/key to use
+- SPI is the lookup key: Incoming ESP/AH packets contain SPI → device looks it up in the SAD
+- SPI in an ESP header is not encrypted
+- The SAD is a per-device table that stores all active Security Associations (SAs). Each SA represents a unidirectional IPsec tunnel (or flow) with all the parameters needed to process packets
+- Inbound SA: How to decrypt and authenticate packets arriving at the device
+- Outbound SA: How to encrypt and authenticate packets leaving the device
+- `Outbound SPI` - The SPI my router inserts into ESP packets I send
+- `Inbound SPI` - The SPI my router expects to see in ESP packets I receive
+- Every active SA has an entry in the SAD
+- Their SPIs appear ONLY inside ESP/AH packets, not in IKE messages
+- IKE messages use their own SPIs for phase 1
+
+## SA
 
 - SA - Security association - `has 2 meanings`
     - Meaning 1 - it is a set of cryptographic options that are negotiated between devices that are establishing an IPSec relationship
@@ -31,7 +55,9 @@ IPSec introduces several new  terms, here is their short description
 - SAs are used in both meanings in both Phases of IKE protocol
 - Phase 1 and Phase 2 of IKE negotioations have different SAs
 
-#### Phase 1 (IKE) SA
+### Phase 1 - IKE SA
+
+**As a set of options**
 
 - SA, used during Phase 1, is called IKE SA and it is `Bidirectional`: used for protecting control traffic in both directions 
 - IKE SA as a set of cryptographic options consist of `SPIs(initiator and responder) and Proposals` - this is what we see in a packet
@@ -84,6 +110,8 @@ Payload: Security Association (SA)
             Type:   GROUP_DESC
             ID:     Group 2 (MODP-1024)
 ```
+
+**As a logical object on router**
 
 - Phase 1 SA as a logical object on router includes the following: 
     - Peer identification
@@ -166,21 +194,30 @@ Session-id: 3, Status: UP-ACTIVE
   Child SAs: 1 active
 ```
 
+### Phase 2 - IPSec SA 
 
-- SA, used during Phase 2, is called IPSec SA and it is Unidirectional: used for protecting Data traffic in one direction, so 2 SAs are required for communication
-- SA is uniquely identified by a Security Parameter Index (SPI), an IPv4 or IPv6 destination address, and a security protocol (AH or ESP) identifier 
+**As a set of options during negotiations**
+
 - Each SA payload contains one or more Proposals
 - Each Proposal has:
     - Protocol ID (ESP = 50, AH = 51)
     - SPI Size (usually 4 bytes)
     - SPI Value (the actual 32-bit number)
-    - Transform set (encryption, auth, lifetime)
-- Outbound and inbound SAs are different
+    - Transform set, consisting of several transforms: encryption, auth(Integrity, HMAC), lifetime, DH group - no Authentication method, like in Phase 1
+
+**As a logical object on a router**
+
+- SA, used during Phase 2, is called IPSec SA and it is Unidirectional: used for protecting Data traffic in one direction, so 2 SAs are required for communication
+- SA is uniquely identified by a Security Parameter Index (SPI), an IPv4 or IPv6 destination address, and a security protocol (AH or ESP) identifier 
+-  Outbound and inbound SAs are different
 - `Both SAs (inbound and outbound) use the same crypto parameters, negotiated during Phase 2`
 - `But the keys are different for each direction`
-- `Each SA has its own SPI`
-- We need multiple IPsec SAs between two peers because each SA is one-directional and tied to a specific set of crypto parameters
+- `Each SA has its own SPI` - Inbound SA has a SPI of remote peer, what it expects to see in an incoming packet - Outbound SPI has an SPI of local router and is used when sending packets to remote router
 - Any time direction, keying material, protocol, or traffic selectors differ → a separate SA is required
+
+
+
+
 - There are two types of SAs: manual and dynamic 
 
 **Manual SA**
@@ -222,24 +259,6 @@ Session-id: 3, Status: UP-ACTIVE
 - They are sent separatly outside the SA
 - Some vendors allow “any-to-any” traffic without strict traffic selectors, meaning the SA could match all traffic between the peers’ IPs
 - For route based VPN TS are set to 0.0.0.0
-
-**SPI**
-
-- Each peer generates its own SPI and sends to peer
-- So after Phase 2 completes, each side knows two SPIs: one for inbound traffic, one for outbound traffic
-- The SPI is never reused between peers
-- It uniquely identifies the IPsec SA in the device’s Security Association Database (SAD)
-- The ESP header in data packets uses the SPI as the first field to indicate which SA/key to use
-- SPI is the lookup key: Incoming ESP/AH packets contain SPI → device looks it up in the SAD
-- SPI in an ESP header is not encrypted
-- The SAD is a per-device table that stores all active Security Associations (SAs). Each SA represents a unidirectional IPsec tunnel (or flow) with all the parameters needed to process packets
-- Inbound SA: How to decrypt and authenticate packets arriving at the device
-- Outbound SA: How to encrypt and authenticate packets leaving the device
-- `Outbound SPI` - The SPI my router inserts into ESP packets I send
-- `Inbound SPI` - The SPI my router expects to see in ESP packets I receive
-- Every active SA has an entry in the SAD
-- Their SPIs appear ONLY inside ESP/AH packets, not in IKE messages
-- IKE messages use their own SPIs for phase 1
 
 Example of SAD entry: includes traffic selectors
 
