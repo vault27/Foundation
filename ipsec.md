@@ -2,22 +2,49 @@
 
 ## 1. Introduction
 
-- IPsec is not a protocol, it's a framework for securing `unicast` traffic, it cannot protect `multicast or broadcast` traffic, so  OSPF, EIGRP cannot be used over IPSec, GRE tunnel inside IPSec tunnel solves the problem 
+What is it?
+
+- IPsec is not a single protocol, but a framework for securing IP traffic
+- It is primarily designed to protect unicast traffic in point-to-point VPNs
+- IPsec establishes a secure control channel first - Phase 1, then negotiates data-protecting channel - Pahse 2
+- The control channel is used only for key management and crypto parametres negotioation for data channel
+- User data is protected separately using Data channel
+- All communications inside both tunnels are encrypted and authenticated
+- Routing protocols that rely on multicast or broadcast (e.g., OSPF, EIGRP) cannot run directly over classic IPsec tunnels
+- To support such protocols, a GRE tunnel is built first, and IPsec is used to encrypt the GRE traffic
+ Process of building a first tunnel is called Phase 1
 - IPSec consists of 3 protocols:
     - ESP - data plane
-    - AH(obsolete)
-    - IKE v1 or v2 - control plane - Authentication - Key exchange - SA management
-- IPSec goals:
-    - Mutual authentication of peers
-    - Secure key establishment
-    - Negotiation of security parameters
-    - Creation and management of Security Associations
-    - Data encryption - confidentiality
-    - Data integrity - data is not modified
-    - Authentication of packet origin - Verify that packets truly come from the expected peer - Cryptographic authentication per packet
-    - Anti-replay protection
-    - Traffic protection policy enforcement - Define which traffic is protected and how
-    - Secure transport over untrusted networks
+    - AH(obsolete) - data plane
+    - IKE v1 or v2 - control plane
+
+Why it was invented?
+
+- To add security to IP networking itself
+- Original Internet had no built-in security
+- IP provides no: Encryption, Authentication, Integrity protection, Anti-replay protection
+- Anyone on the path could: Read packets, Modify packets, Spoof IP addresses, Inject traffic
+- Security at higher layers was not enough: Every application had to implement its own security, traffic like routing, management, or custom protocols remained exposed
+- IPsec enabled: Site-to-site VPNs, Remote-access VPNs, Secure inter-datacenter links
+
+Who and when invented it?
+
+- Internet Engineering Task Force (IETF) in 1995
+- 1996–1998 - BSD Linux Implementations
+- Late 1990s – early 2000s: Cisco, Checkpoint, Juniper
+
+IPSec goals
+
+- Mutual authentication of peers
+- Secure key establishment
+- Negotiation of security parameters
+- Creation and management of Security Associations
+- Data encryption - confidentiality
+- Data integrity - data is not modified
+- Authentication of packet origin - Verify that packets truly come from the expected peer - Cryptographic authentication per packet
+- Anti-replay protection
+- Traffic protection policy enforcement - Define which traffic is protected and how
+- Secure transport over untrusted networks
 
 IPSec has several new terms, which are used everywhere in protocol descriptions. These terms are:
 
@@ -29,22 +56,26 @@ Below is their meaning and description
 
 ## 2. SPI
 
-- SPI is a number
+- SPI stands for `Security Parameters Index`
+- 32-bit identifier(number) used to identify a specific Security Association (SA) in IPsec
+- This number is injected into the header of  every ESP/AH/IKE packet, so the remote peer knows which Security Assosiation (SA) `[cryptographic parametres and keys]` to use for decryption and authentication
+- Also these numbers (for both local and remote peer) are stored in router's memory for Phase 1 and Phase 2 Security Assosiations 
 - It is used in both phases during tunnels establishment and in both tunnels: data and control
 - Each peer generates its own SPI and sends to peer during Tunnel 1 creation and Tunnel 2 creation
 - Different SPIs for different tunnels are generated
-- For full IPSec connection with 2 tunnels router has to generate 2 SPIs
 - The SPI is never reused between peers
-- Phase 1 tunnel SA is uniquely identified by 2 SPIs: inbound and outbound - in the router's memory
-- Phase 2 tunnel SA is uniquely identified by 1 SPI, but at the same time there are 2 SAs in routers memory for each Phase 2 tunnel: Inbound SA and Outbound SA
-- The ESP header in data packets uses the SPI as the first field to indicate which SA/key to use
-- SPI is the lookup key: Incoming ESP/AH packets contain SPI → device looks it up in the SAD
-- SPI in an ESP header is not encrypted
-- One SA for Phase 1: how to decrypt/encrypt and authenticate packets arriving at the device and leaving device  based on SPI inside IKE Protocol  
-- Inbound SA for Phase 2: how to decrypt and authenticate packets arriving at the device based on SPI inside ESP protocol
-- Outbound SA for Phase 2: How to encrypt and authenticate packets leaving the device based on SPI inside ESP protocol
-- `Outbound SPI` - The SPI my router inserts into ESP and IKE packets I send
-- `Inbound SPI` - The SPI my router expects to see in ESP/IKE packets I receive
+- `Outbound SPI` - The SPI my router inserts into ESP/AH/IKE  I send
+- `Inbound SPI` - The SPI my router expects to see in ESP/IKE/AH packets I receive
+
+Phase 1
+
+- Phase 1 tunnel SA is uniquely identified by 2 SPIs in router's logical object: local SPI and remote SPI
+
+Phase 2
+
+- Phase 2 tunnel SA is uniquely identified by `1 SPI`, but at the same time there are `2 SAs` in routers memory for each Phase 2 tunnel: `Inbound SA and Outbound SA`
+- The ESP/AH header in data packets uses the SPI as the first field to indicate which SA/key to use
+- For every new Phase 2 tunnel - because of different traffic selectors - new pairs of SPI are generated by both sides
 
 ## 3. SA
 
@@ -221,7 +252,9 @@ Session-id: 3, Status: UP-ACTIVE
 
 - SA, used during Phase 2, is called IPSec SA and it is Unidirectional: used for protecting Data traffic in one direction, so 2 SAs are required for communication
 - SA is uniquely identified by a Security Parameter Index (SPI), an IPv4 or IPv6 destination address, and a security protocol (AH or ESP) identifier 
--  Outbound and inbound SAs are different
+- Outbound and inbound SAs are differenti
+- Inbound SA for Phase 2: how to decrypt and authenticate packets arriving at the device based on SPI inside ESP protocol
+- Outbound SA for Phase 2: How to encrypt and authenticate packets leaving the device based on SPI inside ESP protocol
 - `Both SAs (inbound and outbound) use the same crypto parameters, negotiated during Phase 2`
 - `But the keys are different for each direction`
 - `Each SA has its own SPI` - Inbound SA has a SPI of remote peer, what it expects to see in an incoming packet - Outbound SPI has an SPI of local router and is used when sending packets to remote router
