@@ -387,13 +387,14 @@ interface: GigabitEthernet0/0
 - There is IKE traffic, when everything is established and data flows normally - keepalives via port UDP/500, if NAT-T is enabled then UDP/4500 is used
 - In the IPsec/IKE world, the “initiator” is the peer that first sends an IKE packet to start the negotiation
 - The responder replies. This role is independent of who sends actual data over ESP later
+- PFS in IKEv1 = `Perform a new DH exchange during Phase 2`. It does not mean “ephemeral DH” in the modern TLS sense
 
-### Workflow
+### 6.1 Workflow
 
 - IKE Phase 1 — Establish a secure channel (IKE SA) - starts with UDP/500, may switch to UDP/4500
     - `Main mode` - 6 messages
     - `Aggressive mode` - 3 messages
-    - SA negotiation - Agree on crypto parametres
+    - SA negotiation - Agree on crypto parametres - transform sets
     - DH key exchange
     - Authentication - encrypted already
     - NAT-T negotiation
@@ -407,10 +408,10 @@ interface: GigabitEthernet0/0
     - Exchange traffic selectors (Proxy-ID) - should be the same
     - `Outbound SPI` - The SPI my router inserts into ESP packets I send
     - `Inbound SPI` - The SPI my router expects to see in ESP packets I receive
-    - Transform sets
-- ESP encapsulation — Actual data traffic encryption/authentication using the negotiated keys - IP/50 or UDP/4500 - Destination SPI is in header
+    - Transform sets - negotiate crypto paramtres
+- ESP/AH encapsulation — Actual data traffic encryption/authentication using the negotiated keys - IP/50(ESP) or UDP/4500 or IP/51(AH) - Destination SPI is in header
 
-### Phase 1
+### 6.2 Phase 1
 
 Concepts
 
@@ -418,30 +419,27 @@ Concepts
 - Phase 1 SA is called ISAKMP SA or IKE SA
 - The Phase 1 keys are long-lived and tied to identity/authentication
 - IKE SA and IPSec SAs must be cryptographically independent
-- Phase 1 establishes an ISAKMP(Internet Security Association and Key Management Protocol) SA, which is a secure channel through which the IPsec SA negotiation can take place.  
-- Next step in Phase 1 is to run Diffie Hellman and to establish secret keys And the next step is to authenticate each other 
-- And only after this IKE Phase 1 is established, it is used only for communications between firewalls themselves
+- Phase 1 establishes an ISAKMP(Internet Security Association and Key Management Protocol) SA, which is a secure channel through which the IPsec SA negotiation can take place
+- Phase 1 workflow: `Crypto negotiations > DH exchange > Authentication > IKE communications between routers `
 - The ISAKMP header has its own SPI pair
 - These SPIs identify the IKE SA
-- IKE SAs are bidirectional
+- IKE SA is bidirectional
 
-Negotiations:
+Negotiations - The following crypto parametres are negotiated during Phase 1
 
-- Hashing - md5 or sha - used inside HMAC for authentication and integrity - Identity authentication (HASH_I / HASH_R) + Integrity of IKE messages
-- Authentication - PSK or certificates
+- Hashing - md5 or sha - used inside HMAC for authentication and integrity of every IKE packet
+- Authentication - Preshared Keys or certificates
 - Group - Diffie Helman group - algorithm which is used to establish shared secret keys
-- Lifetime - 24 hours default - don't have to match
 - Encryption
+- Lifetime - 24 hours default - don't have to match  
+   
+To easy remember this we can use first letters of these parametres: `HAGEL`
 
 IKE Phase 1 can be established via 
 
 - main mode(6 messages)  
 - aggressive mode(3 messages) 
 
-**Workflow**
-  
-`HAGEL crypto negotiation > DH exchange > Authentication ` 
-  
 **IKE identity**
 
 - If you do not configure a local-identity, the device uses the IPv4 or IPv6 address corresponding to the local endpoint by default
@@ -453,29 +451,50 @@ IKE Phase 1 can be established via
 
 - At the cost of three extra messages, Main Mode provides identity protection, enabling the peers to hide their actual identities from potential attackers. This means that the peers’ identities are never exchanged unencrypted in the course of the IKE negotiation
 - In main mode, the initiator and recipient send three two-way exchanges (six messages total) to accomplish the following services:
-- First exchange (messages 1 and 2) — Proposes and accepts the encryption and authentication algorithms.
-- Second exchange (messages 3 and 4) — Executes a DH exchange, and the initiator and recipient each provide a pseudorandom number
-- Third exchange (messages 5 and 6) — Sends and verifies the identities of the initiator and recipient - authentication is here via PSK - `Each side now proves knowledge of the PSK without sending it` - Both nodes computes a hash based on PSK and many other parametres
+- `First exchange` (messages 1 and 2) — `Proposes and accepts the encryption and authentication algorithms`
+- `Second exchange` (messages 3 and 4) — `Executes a DH exchange, and the initiator and recipient each provide a pseudorandom number`
+- `Third exchange` (messages 5 and 6) — `Sends and verifies the identities of the initiator and recipient - authentication is here via PSK` - `Each side now proves knowledge of the PSK without sending it` - Both nodes computes a hash based on PSK and many other parametres
 - The information transmitted in the third exchange of messages is protected by the encryption algorithm established in the first two exchanges. Thus, the participants’ identities are encrypted and therefore not transmitted “in the clear.”
 
 **Aggressive mode**
 
-In aggressive mode, the initiator and recipient accomplish the same objectives as with main mode, but in only two exchanges, with a total of three messages:
+- In aggressive mode, the initiator and recipient accomplish the same objectives as with main mode, but in only two exchanges, with a total of three messages:
 - First message — The initiator proposes the security association (SA), initiates a DH exchange, and sends a pseudorandom number and its IKE identity. When configuring aggressive mode with multiple proposals for Phase 1 negotiations, use the same DH group in all proposals because the DH group cannot be negotiated. Up to four proposals can be configured. Message one contains everything that was in messages 1,3,5 in Main mode.
 - Second message — The recipient accepts the SA; authenticates the initiator; and sends a pseudorandom number, its IKE identity, and, if using certificates, the recipient's certificate. It contains the same as messages 2,4,6 in Main mode
 - Third message — The initiator authenticates the recipient, confirms the exchange, and, if using certificates, sends the initiator's certificate
 - Because the participants’ identities are exchanged in the clear (in the first two messages), aggressive mode does not provide identity protection
 - Main and aggressive modes applies only to IKEv1 protocol. IKEv2 protocol does not negotiate using main and aggressive modes
 
-### Phase 2
+### 6.3 Phase 2
+
+- There is only one mode - `quick` in Phase 2, `3 packets`
+- By default, Phase 2 keys are derived from the session key created in Phase 1. Perfect Forward Secrecy (PFS)
+forces a new Diffie-Hellman exchange when the tunnel starts and whenever the Phase 2 keylife expires, causing
+a new key to be generated each time. This exchange ensures that the keys created in Phase 2 are unrelated to
+the Phase 1 keys or any other keys generated automatically in Phase 2
+- PFS does not mean “ephemeral DH” in the modern TLS sense
+- Cisco IOS example:
+
+```
+crypto map VPN 10 ipsec-isakmp
+ set pfs group14
+```
+
+- Phase 2 (Quick Mode) packets are sent inside that encrypted IKE SA
+- In your packet capture you will still see UDP 500 (or UDP 4500 if NAT-T) packets
+- But their payloads are encrypted — they look like random binary blobs
+- You can no longer see SA proposals, proxy-IDs, algorithms, etc
 
 Phase 2 has 3 packets only:
 
 ```
-Initiator → Responder : SA, Nonce, traffic selectors, key exchange - optional]
-Responder → Initiator : SA, Nonce, key exchange - optional]
+Initiator → Responder : SA, Nonce, traffic selectors, SPI, key exchange - optional
+Responder → Initiator : SA, Nonce, SPI, key exchange - optional
 Initiator → Responder : HASH (ack)
 ```
+
+- No authentication happens during Phase 2
+- Responder does not send Traffic Selectors, it just agrees or declines Traffic Selectors from initiator
 
 Example of first packet
 
@@ -537,42 +556,17 @@ Encrypted Payloads (inside IKE SA):
  └─ Vendor ID (if implementation-specific)
 ```
 
-**Data flow in practice**
-
-- Router receives an ESP packet
-- Reads SPI from the ESP header
-- Looks up SAD to find:
-    - Encryption key
-    - Integrity key
-    - Mode, lifetime, etc.
-- Verifies ICV (if authentication is used).
-- Decrypts payload only using the key.
-
-Negotiated options list
+Negotiated options list - what is negotiated during Phase 2
 
 - Protocol: ESP or AH
 - Mode: Tunnel or Transport
-- Encryption transform: AES-CBC-256 -If AEAD (e.g., AES-GCM) was chosen in the encryption transform, separate integrity transform is not needed
+- Encryption transform: AES-CBC-256 - If AEAD (e.g., AES-GCM) was chosen in the encryption transform, separate integrity transform is not needed
 - Integrity transform: HMAC-SHA1-96
 - Lifetime: 3600 seconds and 4608000 kilobytes
 - PFS: group 14 (if requested)
 - Traffic Selectors(Proxy ID): 10.0.0.0/24 <-> 192.168.0.0/24 (proto any)
 - Responder SPI (e.g. 0x3f2a1b4c) and Initiator SPI (e.g. 0x9a7e6c2d) — assigned by peers
-- ESN: enabled (if negotiated / supported)
-
-Concepts
-
-
-- There is only one mode - quick in Phase 2, 3 packets
-- By default, Phase 2 keys are derived from the session key created in Phase 1. Perfect Forward Secrecy (PFS)
-forces a new Diffie-Hellman exchange when the tunnel starts and whenever the Phase 2 keylife expires, causing
-a new key to be generated each time. This exchange ensures that the keys created in Phase 2 are unrelated to
-the Phase 1 keys or any other keys generated automatically in Phase 2
-- Keylife - When the Phase 2 key expires, a new key is generated without interrupting service
-- Phase 2 (Quick Mode) packets are sent inside that encrypted IKE SA
-- In your packet capture you will still see UDP 500 (or UDP 4500 if NAT-T) packets
-- But their payloads are encrypted — they look like random binary blobs
-- You can no longer see SA proposals, proxy-IDs, algorithms, etc
+- ESN: enabled (if negotiated / supported) - ESN = Extended Sequence Numbers - ESN extends the ESP sequence number from 32 bits to 64 bits
 
 To confirm Phase 2 happened, look for:
 
@@ -759,6 +753,17 @@ Internet Key Exchange Version 2
     - Hash
     - DH group
     - Lifetime
+
+**Data flow in practice**
+
+- Router receives an ESP packet
+- Reads SPI from the ESP header
+- Looks up SAD to find:
+    - Encryption key
+    - Integrity key
+    - Mode, lifetime, etc.
+- Verifies ICV (if authentication is used)
+- Decrypts payload only using the key
 
 Packets layout:
 
