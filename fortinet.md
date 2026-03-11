@@ -1,5 +1,117 @@
 # Fortinet
 
+## Hardware
+
+- General name for additional processors: SPU - security processor unit
+- CP - content processor - AV, attack detection, encryption, decryption,  - CP4,5,6,8,9
+- SP - Security processor - IPS - syn proxy,  Attack signature matching, flow based web filtering
+- NP - network processor - traffic
+- Because the NP6 processors are not connected, care must be taken with network design to make sure that all traffic to be offloaded enters and exits the FortiGate through interfaces connected to the same NP6 processor
+
+Show info about CP and NP processors
+
+```
+get hardware status
+```
+
+Show which port serves which port
+
+```
+get hardware npu np6 port-list
+```
+
+You can view the status of SSL acceleration using the following command:
+
+```
+get vpn status ssl hw-acceleration-status
+```
+Acceleration hardware detected: kxp=on cipher=on  
+Where kxp means key exchange acceleration.
+
+You can display information about installed SP modules using the CLI command
+
+```
+diagnose npu spm
+```
+
+## 2 factor auth via email
+
+- System > Messaging > SMTP servers
+- Import Google Intermediate and root certs
+- https://kb.fortinet.com/kb/documentLink.do?externalID=FD40548
+- Allow third party apps in Google Account
+- SMTP servers config:
+    - name: gmail
+    - Server name: smtp.gmail.com
+    - port: 587
+    - sender email address: user@gmail.com
+    - STARTTLS
+    - Account username: user@gmail.com
+    - Password
+- Authentication > User Management > Local users > Create user, allow tokens, choose email and add email address
+- Authentication >  Radius service > Clients, Policies
+
+## Routing
+
+- Distance - fortigate defines distance for different types of routes, static has one distance, BGP another.... - applies both to dynamic and static routes, it is nedded when the same route arrives from different routing protocols. The less the better
+- Metric - each routing protocol makes it own metric, for example RIP based on amount of hops - applies only to dynamic routes, the lower the better
+- Priority - can be configured only for static routes
+
+**Diagnose**
+
+```
+get router info routing-table all - only active routes
+get router info routing-table database - both active and inactive routes
+get router info ospf neighbor
+get router info bgp neighbor
+get router info bgp summary
+```
+
+**Show all routes even secondary ones with priorities:**
+
+```
+diagnose ip route list
+```
+
+If two routes have the same administrative distance and the same priority, then they are equal-cost multi-path (ECMP) routes.  
+Load balancing can be set to weighted, higher weights are more likely to be selected.
+
+**RPF**
+
+- Protects against IP spoofing attacks.
+- The source IP address is checked against the routing table for a return path.
+- RPF is only carried out on:
+- The first packet in the session, not on a reply.
+- The next packet in the original direction after a route change, not on a reply.
+- Two methods:
+    - Loose
+    - Strict
+
+```
+config system setting
+set strict-src-check [ disable | enable ]
+end
+```
+
+- strict-src-check disable – Loose RPF (default)
+- Checks only for the existence of at least one active route back to the source using the incoming interface
+- strict-src-check enable – Strict RPF
+- Checks that the best route back to the source uses the incoming interface
+- Two ways to disable RPF checking
+- Enable asymmetric routing, which disables RPF checking system wide
+- Disable RPF checking at the interface level
+- Reduces security! Not recommended!
+- `Disable RPF = IPS and Antivirus will not work`
+
+```
+config system interface
+edit <interface>
+set src-check [ enable | disable ]
+end
+```
+
+
+
 ## NAT
 
 - Firewall policy NAT - for small amount of IP addreses
