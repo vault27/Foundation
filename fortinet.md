@@ -110,7 +110,103 @@ set src-check [ enable | disable ]
 end
 ```
 
+## Kerberos
 
+Working config
+
+- Users go to explixit proxy proxy.test.ru
+- Domain name test.ru
+- All users have UPN user@test.ru
+
+```
+config user ldap
+    edit "test.ru"
+        set server "test.test.ru"
+        set cnid "sAMAccountName"
+        set dn "DC=test,DC=ru"
+        set type regular
+        set username "CN=FortiGate AD Read Service User,OU=Fortinet,OU=NOT-OFFICE,DC=test,DC=ru"
+        set password ENC MTAwNKi3BPCM6MB3FrNc5OEY37C9Aaci/WtqdL7h0FxPk0X8B0EzgZbim35cGRmNg5G6lJKDRNOWTtcUFuxuS5aAM7rmrxdSZtsMpIQVhvGaJZ94fsmipMdIryhKUSKO+MYc66Y/FsS1MCTxDoadKzBD8Ibh31uSOW6KF2IZkuCHgbWLxyC3FXSQSZdJcfH/Viy1RA==
+        set account-key-processing strip
+        set account-key-filter "(&(sAMAccountName=%s)(!(UserAccountControl:1.2.840.113556.1.4.803:=2)))"
+    next
+end
+config user krb-keytab
+    edit "http_service"
+        set pac-data disable
+        set principal "HTTP/proxy.test.ru@test.RU"
+        set ldap-server "test.ru"
+        set keytab "ENC vpCsR8hkDI7BtdsMrHPFunsy15zRCFy5gDzTWy/cu1kwwFVLhskx+eQ967OVTgpejlvFHsy4vgnUzrLcpk73rO1ZDgZiFb1lMm7APVqWoNhHoQg5lNGnj739munEL7Mr/PMMt0ltW/27OR04yW0fViUf+NTIm5w4/8PzejWvAXq/3KabixH1HpuOqzKCjFrD1wX5F3H5XJyKEvHDQ0yNn22ruwvd9L1VLslc9I8p4qna8tI8oCpka8sbLKJiYQai+J3T9oO+e3/v23BiAR4Lm6zh2F19BBlTjVF6gwe69dyaNpNDO20Gb5gu81RcWq8mB8/GWBvrRTTFaueMXrN4xC7umTBQbhgLeHvIQUQww1+rW4XLOpah0l6Cb/AVSl0Zf3E+Dn2erMD6+hBgCTHa0nYnAFep0bb/TFUmUjXFf0pTUWF336X/t0FnHmb9QV4a18sfoLJbIH3iC1u7HyCNLn9smjZwPq89XNxZpOMy6ojB0DediVumcaTFLY1glNjeYP8HshiKXWKgRSzoB1kPm1SkEiqEElWMF9i401f8L9T7wutJsnvjPBsBRnx5OI9bKRLmngJSaCYubPmaAOBGlAsCs5cil103nha42oiZscD/jVp30RXRxgvv9/LX0pQxUAXoCu7K47k8XUuLRvL8+zmPFQNk8WS5Hl6T0irHiCEztOVILq0QXUqxypnJEAonhZZlsVdsgsoJqeU2hfSSlMLRf3DdVgpZac7PjvkgEsLhbWTSeDOeOhnznXf089te26/tyw=="
+        set password ENC qmTI2Rofd1nAOQR9mxfwrn5GZVrvVSMljyCAKbct+9XrMHtGAxFGIBQlo7x7gQHgK+WPaSJMvlsWN3cluibrS0uNeD+0zy58dx5LIHl76LS4OeZGRRkfCTXmO9BkUsPZyGGdYIL9WWoh4Ycmkxq4cZ2sAfWyC7/F11q+YX4FXb04t0aGThU2U6oqBva6zAuLrANSyw==
+    next
+
+
+config user group
+    edit "SSO_Guest_Users"
+    next
+    edit "HTTP Users"
+        set member "test.ru"
+        config match
+            edit 1
+                set server-name "test.ru"
+                set group-name "CN=HTTP Internet Users,OU=Internet,OU=GROUP,DC=test,DC=ru"
+            next
+            edit 2
+                set server-name "test.ru"
+                set group-name "CN=HTTP users (Full Access),OU=Internet,OU=GROUP,DC=test,DC=ru"
+            next
+            edit 3
+                set server-name "test.ru"
+                set group-name "CN=Fortigate Access,OU=AccessGroups,OU=GROUP,DC=test,DC=ru"
+            next
+        end
+    next
+    edit "Ldap-Group"
+        set member "test.ru"
+    next
+end
+
+config firewall proxy-policy
+edit 12
+        set uuid 1674d708-1a58-51ea-10d1-ac3c0395f624
+        set proxy explicit-web
+        set dstintf "Bond3"
+        set srcaddr "all"
+        set dstaddr "all"
+        set service "webproxy"
+        set action accept
+        set schedule "always"
+        set logtraffic all
+        set groups "Ldap-Group"
+        set utm-status enable
+        set ssl-ssh-profile "test-ssl"
+        set av-profile "default"
+        set ips-sensor "high_security"
+        set application-list "default"
+        set comments "Full Access for HTTP users"
+    next
+
+
+ktpass -princ HTTP/proxy.test.ru@TEST.RU -mapuser rnd-proxy -pass <password> -crypto all -ptype KRB5_NT_PRINCIPAL -out C:\Users\Admin_RK\Desktop\msk_fgt.keytab
+```
+
+## Sessions
+
+You can see only sessions, which are not accelerated.
+
+TCP default TTL
+
+```
+config system session-ttl
+set default 3600
+end
+```
+
+Viewing sessions
+
+```
+diagnose sys session ?
+```
 
 ## NAT
 
